@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchoolDirect Ghana | Verified School Directory & Educational Procurement</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Discover, compare, and connect with accredited pre-schools, basic schools, and senior high schools in Greater Accra and Kumasi. Access educational suppliers and teacher recruitment.">
+  <meta name="keywords" content="Ghana schools, schools in Accra, schools in Kumasi, Cambridge schools Ghana, Montessori Accra, GES basic schools, East Legon schools, Cantonments schools, Ahodwo schools, school suppliers Ghana">
+  <meta name="author" content="SchoolDirect Ghana">
+  
+  <!-- Open Graph / Social Sharing -->
+  <meta property="og:title" content="SchoolDirect Ghana | Verified Education Directory & Network">
+  <meta property="og:description" content="Explore accredited schools in Accra & Kumasi. Filter by curriculum, fees, boarding, and contact admissions desks directly on WhatsApp.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="/assets/images/campus_hero.jpg">
+
+  <!-- PWA Manifest & Theme -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#0a1128">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+
+  <!-- Leaflet Map CSS (Feature 1: Interactive Geolocation) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/components.css">
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+<body>
+  <!-- Global Header Mount -->
+  <div id="header-root"></div>
+
+  <!-- Dynamic Main Content Mount -->
+  <main id="main-root"></main>
+
+  <!-- Global Footer Mount -->
+  <div id="footer-root"></div>
+
+  <!-- Client Application Scripts -->
+  <script src="/js/api.js?v=10"></script>
+  <script src="/js/state.js?v=10"></script>
+  <script src="/js/components/modals.js?v=10"></script>
+  <script src="/js/components/navbar.js?v=10"></script>
+  <script src="/js/components/footer.js?v=10"></script>
+  <script src="/js/components/chatbot.js?v=10"></script>
+  <script src="/js/views/homeView.js?v=10"></script>
+  <script src="/js/views/directoryView.js?v=10"></script>
+  <script src="/js/views/schoolDetailView.js?v=10"></script>
+  <script src="/js/views/compareView.js?v=10"></script>
+  <script src="/js/views/suppliersView.js?v=10"></script>
+  <script src="/js/views/jobsView.js?v=10"></script>
+  <script src="/js/views/dashboardView.js?v=10"></script>
+  <script src="/js/views/csspsView.js?v=10"></script>
+  <script src="/js/views/resourcesView.js?v=10"></script>
+  <script src="/js/views/parentPortalView.js?v=10"></script>
+  <script src="/js/app.js?v=10"></script>
+  <!-- PWA Service Worker Registration & Environment Check -->
+  <script>
+    if (window.location.protocol === 'file:') {
+      document.body.innerHTML = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 4rem auto; padding: 2rem; border: 2px solid #e11d48; border-radius: 12px; background: #fff1f2; color: #9f1239; text-align: center;">
+          <h2 style="margin-bottom: 0.5rem;">⚠️ Please open via localhost</h2>
+          <p style="font-size: 1rem; line-height: 1.6; margin-bottom: 1.5rem;">
+            You opened this file directly from the filesystem (file:///). Browser security prevents API calls and scripts from running this way.
+          </p>
+          <a href="http://localhost:3000" style="display: inline-block; background: #0a1128; color: #fff; padding: 0.75rem 1.75rem; border-radius: 9999px; text-decoration: none; font-weight: 700;">
+            Open http://localhost:3000 &rarr;
+          </a>
+        </div>
+      `;
+    } else if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => {
+            reg.update();
+            console.log('SchoolDirect Service Worker Active:', reg.scope);
+          })
+          .catch(err => console.log('Service Worker reg notice:', err));
+      });
+    }
+  </script>
+</body>
+</html>

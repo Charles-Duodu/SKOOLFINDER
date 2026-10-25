@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+package-lock.json.bak
+
+# Local Environment & Secrets
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Temporary Scratch Files & Test Runs
+scratch/
+temp/
+tmp/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database Backups (keep directory structure with .gitkeep)
+backups/*.json
+backups/*.meta.json
+!backups/.gitkeep
+
+# Operating System & IDE Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+*.swo
