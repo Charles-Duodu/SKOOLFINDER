@@ -1,12 +1,12 @@
-# 🇬🇭 SchoolDirect Ghana Enterprise Platform
+# 🇬🇭 SkoolFinder Ghana Enterprise Platform
 
-[![Node.js CI](https://github.com/schooldirect-gh/school-directory-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/schooldirect-gh/school-directory-platform/actions/workflows/ci.yml)
+[![Node.js CI](https://github.com/skoolfinder-gh/school-directory-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/skoolfinder-gh/school-directory-platform/actions/workflows/ci.yml)
 [![Node Version](https://img.shields.io/badge/Node.js-v20.x%20LTS-green.svg)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-Alpine%203.19-blue.svg)](https://www.docker.com/)
 [![License](https://img.shields.io/badge/License-ISC-purple.svg)](LICENSE)
 [![Accreditation](https://img.shields.io/badge/Standards-NaSIA%20%7C%20GES%20%7C%20CSSPS-gold.svg)](https://nasia.gov.gh/)
 
-**SchoolDirect Ghana** is a full-stack educational platform purpose-built for the Ghanaian basic, junior high, and senior high school ecosystem. It unifies **Parent Discovery**, **Digital Admissions Desk**, **Fee Invoicing with Mobile Money (MoMo)**, **Live School Bus Fleet Tracking**, **Student Sickbay Medical Passports**, **Library Circulation & SMS Notices**, **AI Admissions Guidance ("Akosua")**, **Laminated Digital Student ID Cards with Optical QR Verification**, and **B2B Educational Procurement**.
+**SkoolFinder Ghana** is a full-stack educational platform purpose-built for the Ghanaian basic, junior high, and senior high school ecosystem. It unifies **Parent Discovery**, **Digital Admissions Desk**, **Fee Invoicing with Mobile Money (MoMo)**, **Live School Bus Fleet Tracking**, **Student Sickbay Medical Passports**, **Library Circulation & SMS Notices**, **AI Admissions Guidance ("Akosua")**, **Laminated Digital Student ID Cards with Optical QR Verification**, and **B2B Educational Procurement**.
 
 ---
 
@@ -59,7 +59,7 @@
 ### Installation
 ```bash
 # 1. Clone the repository
-git clone https://github.com/schooldirect-gh/school-directory-platform.git
+git clone https://github.com/skoolfinder-gh/school-directory-platform.git
 cd school-directory-platform
 
 # 2. Install dependencies

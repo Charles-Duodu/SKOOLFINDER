@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Core Application Controller & Router
+ * SkoolFinder Ghana - Core Application Controller & Router
  */
 const App = {
   debounceTimer: null,
@@ -65,7 +65,7 @@ const App = {
       <div style="min-height: 50vh; display: flex; align-items: center; justify-content: center; padding: 4rem;">
         <div style="text-align: center;">
           <div style="font-size: 2rem; animation: pulse-dot 1s infinite;">🇬🇭</div>
-          <div style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-top: 0.5rem;">Loading SchoolDirect...</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-top: 0.5rem;">Loading SkoolFinder...</div>
         </div>
       </div>
     `;

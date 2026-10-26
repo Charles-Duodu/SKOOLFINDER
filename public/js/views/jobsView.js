@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Phase 2: Educator Directory, Teacher Subscription & Job Board
+ * SkoolFinder Ghana - Phase 2: Educator Directory, Teacher Subscription & Job Board
  */
 const JobsView = {
   activeTab: 'teachers', // 'teachers' | 'jobs'
@@ -372,7 +372,7 @@ const JobsView = {
         const rawWa = btn.dataset.wa;
         await API.recordTeacherLead(teacherId, 'whatsapp');
         const cleanWa = rawWa.replace(/[^0-9]/g, '');
-        window.open(`https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(name)},%20I%20found%20your%20educator%20profile%20on%20SchoolDirect%20Ghana.%20I%20would%20like%20to%20inquire%20about%20tutoring/teaching.`, '_blank');
+        window.open(`https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(name)},%20I%20found%20your%20educator%20profile%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20tutoring/teaching.`, '_blank');
         State.showToast(`Connecting to ${name} on WhatsApp...`, 'success');
       };
     });

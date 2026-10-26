@@ -1,6 +1,6 @@
-# 🇬🇭 SchoolDirect Ghana - Production Deployment & Cloud Packaging Guide
+# 🇬🇭 SkoolFinder Ghana - Production Deployment & Cloud Packaging Guide
 
-This document outlines the complete operational procedures for containerizing, deploying, and maintaining the **SchoolDirect Ghana Enterprise Platform** in production cloud environments (AWS, DigitalOcean, Linode, Hetzner, or local Ghanaian institutional on-premise servers).
+This document outlines the complete operational procedures for containerizing, deploying, and maintaining the **SkoolFinder Ghana Enterprise Platform** in production cloud environments (AWS, DigitalOcean, Linode, Hetzner, or local Ghanaian institutional on-premise servers).
 
 ---
 
@@ -36,7 +36,7 @@ This document outlines the complete operational procedures for containerizing, d
                                      v
                       +-----------------------------+
                       |      Node.js Express 20     |
-                      |   - SchoolDirect Server     |
+                      |   - SkoolFinder Server     |
                       |   - Akosua AI Chatbot       |
                       |   - QR Verification Hub     |
                       |   - CSSPS & WAEC Engine     |
@@ -70,7 +70,7 @@ This document outlines the complete operational procedures for containerizing, d
 
 ### Step 1: Clone Repository & Enter Directory
 ```bash
-git clone https://github.com/schooldirect-gh/school-directory-platform.git
+git clone https://github.com/skoolfinder-gh/school-directory-platform.git
 cd school-directory-platform
 ```
 
@@ -100,7 +100,7 @@ Expected JSON response:
   "timestamp": "2026-10-25T13:10:00.000Z",
   "environment": "production",
   "version": "1.0.0",
-  "platform": "SchoolDirect Ghana Enterprise"
+  "platform": "SkoolFinder Ghana Enterprise"
 }
 ```
 
@@ -123,7 +123,7 @@ sudo npm install -g pm2
 
 ### Step 3: Start Application with PM2
 ```bash
-pm2 start server.js --name "schooldirect-gh" -i max
+pm2 start server.js --name "skoolfinder-gh" -i max
 pm2 save
 pm2 startup
 ```
@@ -139,17 +139,17 @@ sudo apt-get install -y nginx certbot python3-certbot-nginx
 ```
 
 ### Step 2: Deploy Nginx Configuration
-Copy the provided [`nginx.conf`](./nginx.conf) to `/etc/nginx/sites-available/schooldirect.com.gh`:
+Copy the provided [`nginx.conf`](./nginx.conf) to `/etc/nginx/sites-available/skoolfinder.com.gh`:
 ```bash
-sudo cp nginx.conf /etc/nginx/sites-available/schooldirect.com.gh
-sudo ln -s /etc/nginx/sites-available/schooldirect.com.gh /etc/nginx/sites-enabled/
+sudo cp nginx.conf /etc/nginx/sites-available/skoolfinder.com.gh
+sudo ln -s /etc/nginx/sites-available/skoolfinder.com.gh /etc/nginx/sites-enabled/
 sudo nginx -t
 sudo systemctl reload nginx
 ```
 
 ### Step 3: Generate Let's Encrypt SSL Certificates
 ```bash
-sudo certbot --nginx -d schooldirect.com.gh -d www.schooldirect.com.gh
+sudo certbot --nginx -d skoolfinder.com.gh -d www.skoolfinder.com.gh
 ```
 
 ---
@@ -167,7 +167,7 @@ Set in `.env`:
 ```ini
 HUBTEL_CLIENT_ID=gh_hubtel_live_client_id_here
 HUBTEL_CLIENT_SECRET=gh_hubtel_live_client_secret_here
-HUBTEL_SENDER_ID=SchoolDirect
+HUBTEL_SENDER_ID=SkoolFinder
 ```
 
 ### Paystack Mobile Money Integration
@@ -185,7 +185,7 @@ PAYSTACK_SECRET_KEY=sk_live_your_paystack_secret_key
 
 Webhook URL to set in Paystack Dashboard:
 ```
-https://schooldirect.com.gh/api/invoices/paystack-webhook
+https://skoolfinder.com.gh/api/invoices/paystack-webhook
 ```
 
 ---
@@ -206,7 +206,7 @@ crontab -e
 ```
 Add the following line:
 ```cron
-0 2 * * * cd /var/www/schooldirect && /usr/bin/node scripts/backup_db.js >> /var/log/schooldirect_backup.log 2>&1
+0 2 * * * cd /var/www/skoolfinder && /usr/bin/node scripts/backup_db.js >> /var/log/skoolfinder_backup.log 2>&1
 ```
 
 ### Database Restoration Procedure
@@ -221,7 +221,7 @@ node scripts/backup_db.js --restore backups/db_backup_2026-10-25_131008.json
 
 ## 8. Health Checks & Observability
 
-SchoolDirect provides native observability endpoints:
+SkoolFinder provides native observability endpoints:
 - **Uptime & Health:** `GET /health` or `GET /api/health`
 - **School & Directory Aggregations:** `GET /api/stats`
 - **Container Telemetry:** Handled via Docker `HEALTHCHECK`

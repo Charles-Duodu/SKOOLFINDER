@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Paystack Mobile Money & Card Gateway Integration
+ * SkoolFinder Ghana - Paystack Mobile Money & Card Gateway Integration
  * 
  * Official client for initializing and verifying Mobile Money (MTN MoMo, Telecel Cash, AT Money)
  * and Visa/Mastercard payments for school fees, vouchers, and procurement in Ghana.
@@ -62,7 +62,7 @@ class PaystackPaymentService {
           channels,
           metadata: {
             ...metadata,
-            platform: 'SchoolDirect Ghana',
+            platform: 'SkoolFinder Ghana',
             country: 'GH'
           }
         };
@@ -119,7 +119,7 @@ class PaystackPaymentService {
       amountGHS,
       currency: 'GHS',
       channels,
-      note: 'Processed via SchoolDirect Local Sandbox Simulation. Set live PAYSTACK_SECRET_KEY in .env for production MoMo prompt processing.'
+      note: 'Processed via SkoolFinder Local Sandbox Simulation. Set live PAYSTACK_SECRET_KEY in .env for production MoMo prompt processing.'
     };
   }
 

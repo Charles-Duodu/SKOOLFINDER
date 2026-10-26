@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Feature 15: AI Admissions & CSSPS Guidance Chatbot ("Akosua")
+ * SkoolFinder Ghana - Feature 15: AI Admissions & CSSPS Guidance Chatbot ("Akosua")
  */
 const AIChatbot = {
   isOpen: false,
@@ -23,7 +23,7 @@ const AIChatbot = {
       this.messages.push({
         sender: 'bot',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        reply: `**Akwaaba! 🇬🇭** I am **Akosua**, your SchoolDirect AI Education & Admissions Advisor.\n\nI can help you navigate:\n* 🎯 **BECE CSSPS cut-offs & aggregate calculations**\n* 🏫 **Cambridge IGCSE vs GES (NaSIA) vs IB curricula**\n* 💰 **Transparent fees, PTA levies & Mobile Money payments**\n* 🚌 **School bus routes, live GPS tracking & infirmaries**\n* 📚 **Aki-Ola textbooks & WAEC/BECE past questions**\n\nHow can I help guide your ward's schooling today?`,
+        reply: `**Akwaaba! 🇬🇭** I am **Akosua**, your SkoolFinder AI Education & Admissions Advisor.\n\nI can help you navigate:\n* 🎯 **BECE CSSPS cut-offs & aggregate calculations**\n* 🏫 **Cambridge IGCSE vs GES (NaSIA) vs IB curricula**\n* 💰 **Transparent fees, PTA levies & Mobile Money payments**\n* 🚌 **School bus routes, live GPS tracking & infirmaries**\n* 📚 **Aki-Ola textbooks & WAEC/BECE past questions**\n\nHow can I help guide your ward's schooling today?`,
         suggestions: [
           "How do I calculate CSSPS BECE aggregate?",
           "Compare Cambridge vs GES curriculum",

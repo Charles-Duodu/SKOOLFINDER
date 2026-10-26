@@ -2389,7 +2389,7 @@
       "payerPhone": "0244123456",
       "network": "MTN MoMo",
       "targetId": "sch-gis-accra",
-      "targetTitle": "SchoolDirect Service",
+      "targetTitle": "SkoolFinder Service",
       "status": "pending",
       "timestamp": "2026-10-23T20:30:35.465Z"
     },
@@ -3014,7 +3014,7 @@
           "verified": true
         }
       ],
-      "adminNotes": "New application received via SchoolDirect Digital Admissions Portal. Admissions officer to schedule play-based developmental interview.",
+      "adminNotes": "New application received via SkoolFinder Digital Admissions Portal. Admissions officer to schedule play-based developmental interview.",
       "decisionDate": null
     },
     {
@@ -4506,7 +4506,7 @@
     {
       "id": "usr-teacher-emmanuel",
       "name": "Mr. Emmanuel Addo",
-      "email": "tutor@schooldirect.com",
+      "email": "tutor@skoolfinder.com",
       "phone": "+233244556677",
       "role": "teacher",
       "teacherProfileId": "tch-1",
@@ -4519,8 +4519,8 @@
     },
     {
       "id": "usr-super-admin",
-      "name": "SchoolDirect Systems Lead",
-      "email": "superadmin@schooldirect.gh",
+      "name": "SkoolFinder Systems Lead",
+      "email": "superadmin@skoolfinder.gh",
       "phone": "+233501234567",
       "role": "super_admin",
       "title": "Platform Infrastructure & Security Administrator",
@@ -4813,7 +4813,7 @@
       "channel": "SMS (Hubtel Ghana Gateway)",
       "category": "Admissions",
       "senderId": "GHANA-IN",
-      "messageText": "SchoolDirect: Terminal Report Card released.",
+      "messageText": "SkoolFinder: Terminal Report Card released.",
       "status": "Delivered",
       "deliveryTime": "2026-10-26T00:48:25.549Z",
       "network": "MTN GH",
@@ -4918,7 +4918,7 @@
       "channel": "SMS (Arkesel Ghana Bulk Gateway)",
       "category": "Academic Report Card",
       "senderId": "CAMPUS-ALERT",
-      "messageText": "GIS OFFICIAL NOTICE: Term 1 Continuous Assessment & Terminal Exam Report Cards for all classes have been certified. Parents can log in to view and download official stamped PDF report sheets: schooldirect.gh/#/parent-portal",
+      "messageText": "GIS OFFICIAL NOTICE: Term 1 Continuous Assessment & Terminal Exam Report Cards for all classes have been certified. Parents can log in to view and download official stamped PDF report sheets: skoolfinder.gh/#/parent-portal",
       "status": "Delivered",
       "deliveryTime": "2026-10-24T22:59:59.641Z",
       "network": "National Unified (MTN/Telecel/AT)",
@@ -4933,7 +4933,7 @@
       "channel": "SMS (Hubtel Ghana Gateway)",
       "category": "Academic Report Card",
       "senderId": "GIS-ACAD",
-      "messageText": "GIS OFFICIAL NOTICE: Terminal report card for Kwame Mensah (Term 1 (First Term)) has been certified & published. Position: 2nd. Log in to view stamped PDF: schooldirect.gh/#/parent-portal",
+      "messageText": "GIS OFFICIAL NOTICE: Terminal report card for Kwame Mensah (Term 1 (First Term)) has been certified & published. Position: 2nd. Log in to view stamped PDF: skoolfinder.gh/#/parent-portal",
       "status": "Delivered",
       "deliveryTime": "2026-10-24T22:59:53.666Z",
       "network": "MTN GH",
@@ -6467,7 +6467,7 @@
       "meetingPlatform": "Google Meet (Encrypted Video Room)",
       "meetingLink": "https://meet.google.com/gis-alm-kwamemen-4973",
       "status": "Confirmed",
-      "notes": "Virtual video mentorship session booked via SchoolDirect Ghana.",
+      "notes": "Virtual video mentorship session booked via SkoolFinder Ghana.",
       "createdAt": "2026-10-25T11:01:15.083Z"
     },
     {
@@ -6488,7 +6488,7 @@
       "meetingPlatform": "Google Meet (Encrypted Video Room)",
       "meetingLink": "https://meet.google.com/gis-alm-kwamemen-8209",
       "status": "Confirmed",
-      "notes": "Virtual video mentorship session booked via SchoolDirect Ghana.",
+      "notes": "Virtual video mentorship session booked via SkoolFinder Ghana.",
       "createdAt": "2026-10-25T10:58:08.077Z"
     },
     {

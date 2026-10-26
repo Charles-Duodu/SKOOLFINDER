@@ -20,7 +20,7 @@ app.get(['/health', '/api/health'], (req, res) => {
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || 'development',
     version: '1.0.0',
-    platform: 'SchoolDirect Ghana Enterprise'
+    platform: 'SkoolFinder Ghana Enterprise'
   });
 });
 
@@ -695,8 +695,8 @@ app.post('/api/payments/paystack-webhook', async (req, res) => {
       if (metadata.parentPhone) {
         await hubtelService.sendSMS({
           to: metadata.parentPhone,
-          message: `SchoolDirect Ghana: Payment of GH₵ ${amountGHS.toLocaleString()} received successfully for ${metadata.studentName || 'Student'}. Ref: ${data.reference}. Thank you.`,
-          senderId: 'SchoolDirect'
+          message: `SkoolFinder Ghana: Payment of GH₵ ${amountGHS.toLocaleString()} received successfully for ${metadata.studentName || 'Student'}. Ref: ${data.reference}. Thank you.`,
+          senderId: 'SkoolFinder'
         });
       }
     }
@@ -1068,7 +1068,7 @@ app.post('/api/library/loans/:id/overdue-notice', (req, res) => {
   }
 });
 
-// FEATURE 15: AI Admissions & CSSPS Guidance Chatbot ("Akosua" / SchoolDirect AI)
+// FEATURE 15: AI Admissions & CSSPS Guidance Chatbot ("Akosua" / SkoolFinder AI)
 app.post('/api/ai/chat', (req, res) => {
   try {
     const { message, history, context } = req.body || {};
@@ -1120,5 +1120,5 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`SchoolDirect Ghana Server running at http://localhost:${PORT}`);
+  console.log(`SkoolFinder Ghana Server running at http://localhost:${PORT}`);
 });

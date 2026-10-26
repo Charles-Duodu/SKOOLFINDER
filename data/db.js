@@ -1318,7 +1318,7 @@ function getInitialAdmissionApplications() {
         { docType: "Birth Certificate", fileName: "birth_cert_nana_yaw_osei.pdf", verified: true },
         { docType: "Ghana Child Health Record", fileName: "yellow_health_card.pdf", verified: true }
       ],
-      adminNotes: "New application received via SchoolDirect Digital Admissions Portal. Admissions officer to schedule play-based developmental interview.",
+      adminNotes: "New application received via SkoolFinder Digital Admissions Portal. Admissions officer to schedule play-based developmental interview.",
       decisionDate: null
     },
     {
@@ -2218,7 +2218,7 @@ function getInitialUsers() {
     {
       id: "usr-teacher-emmanuel",
       name: "Mr. Emmanuel Addo",
-      email: "tutor@schooldirect.com",
+      email: "tutor@skoolfinder.com",
       phone: "+233244556677",
       role: "teacher",
       teacherProfileId: "tch-1",
@@ -2231,8 +2231,8 @@ function getInitialUsers() {
     },
     {
       id: "usr-super-admin",
-      name: "SchoolDirect Systems Lead",
-      email: "superadmin@schooldirect.gh",
+      name: "SkoolFinder Systems Lead",
+      email: "superadmin@skoolfinder.gh",
       phone: "+233501234567",
       role: "super_admin",
       title: "Platform Infrastructure & Security Administrator",
@@ -4646,7 +4646,7 @@ class Database {
       payerPhone: data.payerPhone || '',
       network: data.network || 'MTN MoMo',
       targetId: data.targetId || null,
-      targetTitle: data.targetTitle || 'SchoolDirect Service',
+      targetTitle: data.targetTitle || 'SkoolFinder Service',
       status: 'pending',
       timestamp: new Date().toISOString()
     };
@@ -5010,7 +5010,7 @@ class Database {
         { docType: "Birth Certificate", fileName: "birth_cert_" + data.studentName.toLowerCase().replace(/[^a-z0-9]/g, '_') + ".pdf", verified: true },
         { docType: "Immunization Card", fileName: "immunization_record.pdf", verified: true }
       ],
-      adminNotes: data.specialNotes || 'Submitted via SchoolDirect Digital Admissions Portal.',
+      adminNotes: data.specialNotes || 'Submitted via SkoolFinder Digital Admissions Portal.',
       decisionDate: null
     };
 
@@ -6117,7 +6117,7 @@ class Database {
           channel: "SMS (Hubtel Ghana Gateway)",
           category: "Academic Report Card",
           senderId: "GIS-ACAD",
-          messageText: `GIS OFFICIAL NOTICE: Terminal report card for ${report.studentName} (${report.term}) has been certified & published. Position: ${report.positionInClass}. Log in to view stamped PDF: schooldirect.gh/#/parent-portal`
+          messageText: `GIS OFFICIAL NOTICE: Terminal report card for ${report.studentName} (${report.term}) has been certified & published. Position: ${report.positionInClass}. Log in to view stamped PDF: skoolfinder.gh/#/parent-portal`
         });
       } catch (e) {
         console.warn("SMS notification skipped:", e.message);
@@ -6504,7 +6504,7 @@ class Database {
       meetingPlatform: "Google Meet (Encrypted Video Room)",
       meetingLink: meetingLink,
       status: "Confirmed",
-      notes: bookingData.notes || "Virtual video mentorship session booked via SchoolDirect Ghana.",
+      notes: bookingData.notes || "Virtual video mentorship session booked via SkoolFinder Ghana.",
       createdAt: new Date().toISOString()
     };
 
@@ -7027,7 +7027,7 @@ class Database {
     const isGreeting = /^(hi|hello|hey|akwaaba|good\s*(morning|afternoon|evening)|yo|greetings|howdy|what\s*can\s*you\s*do|who\s*are\s*you)\b/i.test(q) && q.length < 35;
     if (isGreeting || q === '') {
       return {
-        reply: `**Akwaaba! 🇬🇭** I am **Akosua**, your SchoolDirect AI Education & Admissions Advisor.\n\nI can assist you with:\n* 🎯 **BECE CSSPS Placement & Raw Aggregate Calculations**\n* 🏫 **Comparing Cambridge (IGCSE/A-Levels), GES (NaSIA), & IB Curricula**\n* 💰 **Transparent School Fees, PTA Levies, & Mobile Money Payment Schedules**\n* 🚌 **School Bus Transit Tracking & GPS Geofence Alerts**\n* 🏥 **Infirmary & Sickbay Protocols (GHS-Certified Triage)**\n* 📚 **Textbook Lending (Aki-Ola Series & Past WAEC/BECE Papers)**\n* 🏫 **Tailored School Recommendations across Accra & Kumasi**\n\nHow may I help guide your ward's educational journey today?`,
+        reply: `**Akwaaba! 🇬🇭** I am **Akosua**, your SkoolFinder AI Education & Admissions Advisor.\n\nI can assist you with:\n* 🎯 **BECE CSSPS Placement & Raw Aggregate Calculations**\n* 🏫 **Comparing Cambridge (IGCSE/A-Levels), GES (NaSIA), & IB Curricula**\n* 💰 **Transparent School Fees, PTA Levies, & Mobile Money Payment Schedules**\n* 🚌 **School Bus Transit Tracking & GPS Geofence Alerts**\n* 🏥 **Infirmary & Sickbay Protocols (GHS-Certified Triage)**\n* 📚 **Textbook Lending (Aki-Ola Series & Past WAEC/BECE Papers)**\n* 🏫 **Tailored School Recommendations across Accra & Kumasi**\n\nHow may I help guide your ward's educational journey today?`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7217,7 +7217,7 @@ class Database {
     const isCurriculumQuery = /cambridge|cie|igcse|a-levels|ges|nasia|wassce|international baccalaureate|\bib\b|montessori|british curriculum|curricula|difference between/i.test(q);
     if (isCurriculumQuery) {
       return {
-        reply: `### 🇬🇭 Ghanaian Curriculum Comparison Guide\n\nChoosing the right academic framework depends on your family's higher education goals:\n\n| Curriculum | Key Examinations | Structure | Primary Advantage |\n| :--- | :--- | :--- | :--- |\n| **Cambridge (CIE)** | Cambridge Primary, Checkpoint, IGCSE, AS & A-Levels | Early inquiry, subject specialization, critical analysis | Direct recognition by global top 100 universities (UK UCAS, USA Common App, Canada). |\n| **GES (NaSIA)** | Basic 1-9, BECE, SHS 1-3 (WASSCE) | Standards-based national curriculum, civic & cultural grounding | Free SHS funding, seamless direct matriculation into UG Legon, KNUST, UCC, UPSA. |\n| **IB (World School)** | PYP, MYP, IB Diploma (DP) | Holistic inquiry, Theory of Knowledge (TOK), Creativity/Activity/Service (CAS) | World's premier pre-university qualification for independent research. |\n| **Montessori** | Early Childhood to Primary | Multi-age self-directed sensory exploration | Builds strong independence, numeracy, and fine motor confidence. |\n\n**School Examples on SchoolDirect:**\n* **Cambridge:** Ghana International School (GIS), The Roman Ridge School, Galaxy International.\n* **GES Accredited:** Morning Star School, Spintex Royal Preparatory, KNUST Basic School.\n* **IB Diploma:** SOS-Hermann Gmeiner International College (Tema).\n* **Montessori:** East Legon Montessori Academy.`,
+        reply: `### 🇬🇭 Ghanaian Curriculum Comparison Guide\n\nChoosing the right academic framework depends on your family's higher education goals:\n\n| Curriculum | Key Examinations | Structure | Primary Advantage |\n| :--- | :--- | :--- | :--- |\n| **Cambridge (CIE)** | Cambridge Primary, Checkpoint, IGCSE, AS & A-Levels | Early inquiry, subject specialization, critical analysis | Direct recognition by global top 100 universities (UK UCAS, USA Common App, Canada). |\n| **GES (NaSIA)** | Basic 1-9, BECE, SHS 1-3 (WASSCE) | Standards-based national curriculum, civic & cultural grounding | Free SHS funding, seamless direct matriculation into UG Legon, KNUST, UCC, UPSA. |\n| **IB (World School)** | PYP, MYP, IB Diploma (DP) | Holistic inquiry, Theory of Knowledge (TOK), Creativity/Activity/Service (CAS) | World's premier pre-university qualification for independent research. |\n| **Montessori** | Early Childhood to Primary | Multi-age self-directed sensory exploration | Builds strong independence, numeracy, and fine motor confidence. |\n\n**School Examples on SkoolFinder:**\n* **Cambridge:** Ghana International School (GIS), The Roman Ridge School, Galaxy International.\n* **GES Accredited:** Morning Star School, Spintex Royal Preparatory, KNUST Basic School.\n* **IB Diploma:** SOS-Hermann Gmeiner International College (Tema).\n* **Montessori:** East Legon Montessori Academy.`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7242,7 +7242,7 @@ class Database {
       const highest = sorted[sorted.length - 1];
 
       return {
-        reply: `### 💰 School Fees & Payment Structure in Ghana\n\nSchool fees vary significantly based on curriculum, facilities, and boarding status:\n\n* 💎 **Elite International (Cambridge / IB):**\n  * **Range:** GH₵ 10,000 – GH₵ 35,000+ per term\n  * **Examples:** ${highest.name} (GH₵ ${highest.tuitionBase?.toLocaleString()}/term), Galaxy International (GH₵ 11,000/term).\n  * **Includes:** International exam accreditation, Olympic pools, robotics suites, and low student-teacher ratios.\n* 🏫 **Premium Private Basic & Bilingual (GES / Cambridge):**\n  * **Range:** GH₵ 2,500 – GH₵ 5,000 per term\n  * **Examples:** ${mid.name} (GH₵ ${mid.tuitionBase?.toLocaleString()}/term), Ridge School Kumasi (GH₵ 3,100/term).\n* 🌿 **Affordable / Community Preparatory (GES):**\n  * **Range:** GH₵ 1,200 – GH₵ 2,200 per term\n  * **Example:** ${lowest.name} (GH₵ ${lowest.tuitionBase?.toLocaleString()}/term).\n* 🇬🇭 **Public Senior High Schools (CSSPS):**\n  * **Tuition:** Free under the Ghana Government **Free SHS Policy**.\n  * **Parental Outlay:** Basic personal kit, uniform tailoring, provisions (~GH₵ 1,500 – GH₵ 3,000 once per academic year).\n\n💳 **Payment Methods Supported on SchoolDirect:**\n* MTN Mobile Money, Telecel Cash, AT Money, and Visa/Mastercard via secure Paystack & Hubtel integration. Termly installment plans are available at participating schools.`,
+        reply: `### 💰 School Fees & Payment Structure in Ghana\n\nSchool fees vary significantly based on curriculum, facilities, and boarding status:\n\n* 💎 **Elite International (Cambridge / IB):**\n  * **Range:** GH₵ 10,000 – GH₵ 35,000+ per term\n  * **Examples:** ${highest.name} (GH₵ ${highest.tuitionBase?.toLocaleString()}/term), Galaxy International (GH₵ 11,000/term).\n  * **Includes:** International exam accreditation, Olympic pools, robotics suites, and low student-teacher ratios.\n* 🏫 **Premium Private Basic & Bilingual (GES / Cambridge):**\n  * **Range:** GH₵ 2,500 – GH₵ 5,000 per term\n  * **Examples:** ${mid.name} (GH₵ ${mid.tuitionBase?.toLocaleString()}/term), Ridge School Kumasi (GH₵ 3,100/term).\n* 🌿 **Affordable / Community Preparatory (GES):**\n  * **Range:** GH₵ 1,200 – GH₵ 2,200 per term\n  * **Example:** ${lowest.name} (GH₵ ${lowest.tuitionBase?.toLocaleString()}/term).\n* 🇬🇭 **Public Senior High Schools (CSSPS):**\n  * **Tuition:** Free under the Ghana Government **Free SHS Policy**.\n  * **Parental Outlay:** Basic personal kit, uniform tailoring, provisions (~GH₵ 1,500 – GH₵ 3,000 once per academic year).\n\n💳 **Payment Methods Supported on SkoolFinder:**\n* MTN Mobile Money, Telecel Cash, AT Money, and Visa/Mastercard via secure Paystack & Hubtel integration. Termly installment plans are available at participating schools.`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7277,7 +7277,7 @@ class Database {
         ).join("\n");
 
         return {
-          reply: `### 📍 Accredited Schools in ${matchedLoc.toUpperCase()}:\n\nHere are the top-rated schools currently verified on SchoolDirect in this area:\n\n${listStr}\n\nWould you like contact info, WhatsApp admissions links, or bus route details for any of these schools?`,
+          reply: `### 📍 Accredited Schools in ${matchedLoc.toUpperCase()}:\n\nHere are the top-rated schools currently verified on SkoolFinder in this area:\n\n${listStr}\n\nWould you like contact info, WhatsApp admissions links, or bus route details for any of these schools?`,
           sender: "Akosua AI",
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           actionCards: locSchools.slice(0, 3).map(s => ({
@@ -7306,7 +7306,7 @@ class Database {
     const isBusQuery = /bus|transport|shuttle|route|driver|tracking|gps|commute|pick\s*up|drop\s*off/i.test(q);
     if (isBusQuery) {
       return {
-        reply: `### 🚌 SchoolDirect Integrated Bus Transit & GPS Tracking\n\nSchoolDirect partners with school transport divisions to give Ghanaian parents complete peace of mind during daily school runs:\n\n1. **Live GPS Telematics:** Track your child's bus in real-time on our interactive Leaflet map as it navigates Accra or Kumasi traffic.\n2. **Smart Geofence SMS Alerts:** Receive automatic SMS notifications (via Hubtel) the moment the shuttle is **3km away**, when your child boards, and upon safe arrival on campus.\n3. **Certified Drivers & Matrons:** Every bus has an assigned driver and caregiver matron vetted with verified Ghana Card IDs, defensive driving credentials, and background checks.\n4. **Typical Routes Covered:**\n   * **Route 1:** East Legon & Adjiringanor\n   * **Route 2:** Airport Residential & Dzorwulu\n   * **Route 3:** Spintex Road & Sakumono\n   * **Route 4:** Cantonments & Osu\n   * **Route 5:** Tema Communities 1 - 25\n   * **Route 6 (Kumasi):** Ridge, Nhyiaeso, KNUST Enclave & Ahodwo\n\n*Average bus fee: GH₵ 1,200 – GH₵ 2,500 per term depending on zone distance.*`,
+        reply: `### 🚌 SkoolFinder Integrated Bus Transit & GPS Tracking\n\nSkoolFinder partners with school transport divisions to give Ghanaian parents complete peace of mind during daily school runs:\n\n1. **Live GPS Telematics:** Track your child's bus in real-time on our interactive Leaflet map as it navigates Accra or Kumasi traffic.\n2. **Smart Geofence SMS Alerts:** Receive automatic SMS notifications (via Hubtel) the moment the shuttle is **3km away**, when your child boards, and upon safe arrival on campus.\n3. **Certified Drivers & Matrons:** Every bus has an assigned driver and caregiver matron vetted with verified Ghana Card IDs, defensive driving credentials, and background checks.\n4. **Typical Routes Covered:**\n   * **Route 1:** East Legon & Adjiringanor\n   * **Route 2:** Airport Residential & Dzorwulu\n   * **Route 3:** Spintex Road & Sakumono\n   * **Route 4:** Cantonments & Osu\n   * **Route 5:** Tema Communities 1 - 25\n   * **Route 6 (Kumasi):** Ridge, Nhyiaeso, KNUST Enclave & Ahodwo\n\n*Average bus fee: GH₵ 1,200 – GH₵ 2,500 per term depending on zone distance.*`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7325,7 +7325,7 @@ class Database {
     const isHealthQuery = /sick\s*bay|infirmary|nurse|health|medical|malaria|doctor|allergy|first\s*aid|hospital/i.test(q);
     if (isHealthQuery) {
       return {
-        reply: `### 🏥 School Infirmary & Health Protocols (Ghana Health Service Aligned)\n\nEvery verified school on SchoolDirect maintains strict health and safety standards:\n\n* 👩🏾‍⚕️ **GHS-Registered Nurses:** Full-time pediatric and public health nurses stationed on campus during all school hours and sporting events.\n* 🩸 **Rapid Diagnostic Testing (RDT):** On-site testing for Malaria (Pf-HRP2), random blood glucose, and digital vital sign monitoring.\n* 📱 **Immediate Parent Telemetry:** Instant SMS notification whenever a child is admitted to the sickbay, documenting presenting symptoms, temperature, and administered first aid.\n* 🚨 **Emergency Referral Agreements:** Standing MoUs with premier facilities including Nyaho Medical Centre, 37 Military Hospital, and Ridge Hospital for urgent ambulance evacuation.\n* 📑 **Special Health Care Plans:** Comprehensive tracking of sickle cell (HbSS/SC), asthma triggers, and nut/lactose allergies.`,
+        reply: `### 🏥 School Infirmary & Health Protocols (Ghana Health Service Aligned)\n\nEvery verified school on SkoolFinder maintains strict health and safety standards:\n\n* 👩🏾‍⚕️ **GHS-Registered Nurses:** Full-time pediatric and public health nurses stationed on campus during all school hours and sporting events.\n* 🩸 **Rapid Diagnostic Testing (RDT):** On-site testing for Malaria (Pf-HRP2), random blood glucose, and digital vital sign monitoring.\n* 📱 **Immediate Parent Telemetry:** Instant SMS notification whenever a child is admitted to the sickbay, documenting presenting symptoms, temperature, and administered first aid.\n* 🚨 **Emergency Referral Agreements:** Standing MoUs with premier facilities including Nyaho Medical Centre, 37 Military Hospital, and Ridge Hospital for urgent ambulance evacuation.\n* 📑 **Special Health Care Plans:** Comprehensive tracking of sickle cell (HbSS/SC), asthma triggers, and nut/lactose allergies.`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7343,7 +7343,7 @@ class Database {
     const isLibraryQuery = /library|book|books|textbook|lending|aki-ola|past\s*questions|pasco|cockcrow|dilemma|things\s*fall\s*apart|bece\s*questions|wassce\s*questions/i.test(q);
     if (isLibraryQuery) {
       return {
-        reply: `### 📚 SchoolDirect Digital Library & Academic Textbooks\n\nWe provide integrated textbook management and past exam preparation for Ghanaian learners:\n\n* 📖 **Approved GES & Cambridge Textbooks:**\n  * **Aki-Ola Series:** Core Mathematics, Elective Mathematics, Integrated Science, Social Studies.\n  * **Cambridge IGCSE:** Complete Extended Mathematics, Cambridge Physics & Chemistry coursebooks.\n  * **Literature Set Books:** *The Cockcrow*, *The Dilemma of a Ghost & Anowa* (Ama Ata Aidoo), *Things Fall Apart* (Chinua Achebe).\n* 📝 **BECE & WASSCE Past Questions (Pasco):** Comprehensive 10-year past papers with marking schemes.\n* 🔄 **Textbook Lending Manager:** Borrow physical copies through school libraries, manage due dates, and track loans directly within your Parent Portal.\n\n*All students at registered schools can access textbook lending with zero deposit!*`,
+        reply: `### 📚 SkoolFinder Digital Library & Academic Textbooks\n\nWe provide integrated textbook management and past exam preparation for Ghanaian learners:\n\n* 📖 **Approved GES & Cambridge Textbooks:**\n  * **Aki-Ola Series:** Core Mathematics, Elective Mathematics, Integrated Science, Social Studies.\n  * **Cambridge IGCSE:** Complete Extended Mathematics, Cambridge Physics & Chemistry coursebooks.\n  * **Literature Set Books:** *The Cockcrow*, *The Dilemma of a Ghost & Anowa* (Ama Ata Aidoo), *Things Fall Apart* (Chinua Achebe).\n* 📝 **BECE & WASSCE Past Questions (Pasco):** Comprehensive 10-year past papers with marking schemes.\n* 🔄 **Textbook Lending Manager:** Borrow physical copies through school libraries, manage due dates, and track loans directly within your Parent Portal.\n\n*All students at registered schools can access textbook lending with zero deposit!*`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [
@@ -7363,7 +7363,7 @@ class Database {
     const isAdmissionsQuery = /admissions?|how\s*to\s*apply|application|enroll|register|deadline|intake|interview|entrance\s*exam/i.test(q);
     if (isAdmissionsQuery) {
       return {
-        reply: `### 🎓 How to Apply & Admissions Timeline in Ghana\n\nAdmissions processes differ between international, private basic, and public senior high schools:\n\n1. **International Schools (Cambridge / IB):**\n   * **Academic Year:** Starts late August / early September.\n   * **Application Window:** Open from **January to May** for the following academic year.\n   * **Requirements:** Previous school report cards, entrance assessment (Maths & English), student and parent interview.\n2. **Private GES Basic Schools (Creche to JHS):**\n   * Rolling admissions with major intakes in September (Term 1) and January (Term 2).\n   * Placement test for Primary and JHS entry.\n3. **Public Senior High Schools (GES / CSSPS):**\n   * Candidates sit BECE in June/July.\n   * Placement results released via CSSPS portal in September/October.\n\n✨ **Apply or Inquire on SchoolDirect:**\nClick on any school in our directory to submit an online admissions inquiry, schedule a campus visit, or connect directly on WhatsApp with admissions officers!`,
+        reply: `### 🎓 How to Apply & Admissions Timeline in Ghana\n\nAdmissions processes differ between international, private basic, and public senior high schools:\n\n1. **International Schools (Cambridge / IB):**\n   * **Academic Year:** Starts late August / early September.\n   * **Application Window:** Open from **January to May** for the following academic year.\n   * **Requirements:** Previous school report cards, entrance assessment (Maths & English), student and parent interview.\n2. **Private GES Basic Schools (Creche to JHS):**\n   * Rolling admissions with major intakes in September (Term 1) and January (Term 2).\n   * Placement test for Primary and JHS entry.\n3. **Public Senior High Schools (GES / CSSPS):**\n   * Candidates sit BECE in June/July.\n   * Placement results released via CSSPS portal in September/October.\n\n✨ **Apply or Inquire on SkoolFinder:**\nClick on any school in our directory to submit an online admissions inquiry, schedule a campus visit, or connect directly on WhatsApp with admissions officers!`,
         sender: "Akosua AI",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         suggestions: [

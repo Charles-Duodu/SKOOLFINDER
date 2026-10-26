@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Feature 4: WAEC / BECE / WASSCE & Cambridge Past Questions and Academic Resource Hub
+ * SkoolFinder Ghana - Feature 4: WAEC / BECE / WASSCE & Cambridge Past Questions and Academic Resource Hub
  */
 const ResourcesView = {
   filters: {
@@ -97,7 +97,7 @@ const ResourcesView = {
   `).join('')}
 
   <div style="margin-top: 3rem; border-top: 1px solid #cbd5e1; padding-top: 1rem; text-align: center; font-size: 0.8rem; color: #64748b;">
-    Published by SchoolDirect Ghana Academic Network — Empowering Ghanaian Students & Schools.
+    Published by SkoolFinder Ghana Academic Network — Empowering Ghanaian Students & Schools.
   </div>
 </body>
 </html>`;

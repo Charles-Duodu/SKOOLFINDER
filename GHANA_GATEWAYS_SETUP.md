@@ -1,4 +1,4 @@
-# 🇬🇭 SchoolDirect Ghana - Live Payment & SMS Gateway Integration Guide
+# 🇬🇭 SkoolFinder Ghana - Live Payment & SMS Gateway Integration Guide
 
 This guide walks you through activating real-world **Mobile Money (MTN MoMo, Telecel Cash, AT Money)** payments via **Paystack Ghana** and **SMS Parental Broadcasts** via **Hubtel Ghana**.
 
@@ -17,7 +17,7 @@ This guide walks you through activating real-world **Mobile Money (MTN MoMo, Tel
 
 ```
                       +-----------------------------+
-                      |   SchoolDirect Application  |
+                      |   SkoolFinder Application  |
                       +--------------+--------------+
                                      |
               +----------------------+----------------------+
@@ -88,7 +88,7 @@ Hubtel is the leading SMS and messaging gateway in Ghana, connecting directly to
 ### Step 2: Apply for an Official Sender ID
 By regulation of the National Communications Authority (NCA) of Ghana, all SMS messages must be sent from a pre-approved alphanumeric Sender ID:
 1. In your Hubtel Console, navigate to **SMS** &rarr; **Sender IDs**.
-2. Click **Add Sender ID** (e.g. `SchoolDirect` or your school's abbreviated name, maximum **11 characters**).
+2. Click **Add Sender ID** (e.g. `SkoolFinder` or your school's abbreviated name, maximum **11 characters**).
 3. Upload a brief authorization letter on your school's official letterhead.
 4. Approval typically takes **24–48 hours** by the NCA.
 
@@ -115,7 +115,7 @@ Open your `.env` file in the project root:
 # Hubtel Ghana SMS Gateway
 HUBTEL_CLIENT_ID=your_hubtel_client_id_here
 HUBTEL_CLIENT_SECRET=your_hubtel_client_secret_here
-HUBTEL_SENDER_ID=SchoolDirect
+HUBTEL_SENDER_ID=SkoolFinder
 
 # Paystack Ghana Mobile Money & Card Gateway
 PAYSTACK_PUBLIC_KEY=pk_live_your_paystack_public_key_here
@@ -123,7 +123,7 @@ PAYSTACK_SECRET_KEY=sk_live_your_paystack_secret_key_here
 ```
 
 > [!NOTE]
-> If keys are left empty or set to `mock`, SchoolDirect automatically operates in **Safe Sandbox Simulation Mode**, generating realistic MoMo prompts and simulated SMS delivery reports without crashing or making network calls.
+> If keys are left empty or set to `mock`, SkoolFinder automatically operates in **Safe Sandbox Simulation Mode**, generating realistic MoMo prompts and simulated SMS delivery reports without crashing or making network calls.
 
 ---
 
@@ -142,7 +142,7 @@ Expected response when live keys are configured:
 {
   "hubtel": {
     "isConfigured": true,
-    "senderId": "SchoolDirect",
+    "senderId": "SkoolFinder",
     "mode": "live"
   },
   "paystack": {
@@ -160,7 +160,7 @@ curl -X POST http://localhost:3000/api/notifications/sms/send \
   -d '{
     "recipientPhone": "0244318900",
     "recipientName": "Parent Name",
-    "messageText": "SchoolDirect Ghana Test Alert"
+    "messageText": "SkoolFinder Ghana Test Alert"
   }'
 ```
 

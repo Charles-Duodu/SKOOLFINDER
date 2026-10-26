@@ -1,6 +1,6 @@
 {
   "$schema": "https://agenticresourcediscovery.org/spec/v1/schema.json",
-  "name": "SchoolDirect Ghana",
+  "name": "SkoolFinder Ghana",
   "description": "Verified Ghanaian Education Directory & Institutional Procurement Platform",
   "version": "1.0.0",
   "url": "http://localhost:3000",

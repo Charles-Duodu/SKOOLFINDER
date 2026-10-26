@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - CSSPS Senior High School Placement & BECE Aggregate Predictor (Feature 2)
+ * SkoolFinder Ghana - CSSPS Senior High School Placement & BECE Aggregate Predictor (Feature 2)
  */
 const CSSPSView = {
   activeTab: 'calculator', // 'calculator' | 'directory'

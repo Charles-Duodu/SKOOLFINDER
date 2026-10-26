@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Parent Admissions & Tracking Portal View
+ * SkoolFinder Ghana - Parent Admissions & Tracking Portal View
  */
 const ParentPortalView = {
   activeTab: 'applications',
@@ -1488,7 +1488,7 @@ const ParentPortalView = {
             </h2>
 
             <p style="margin: 0 0 1.25rem 0; max-width: 680px; font-size: 0.95rem; color: #d1fae5; line-height: 1.5;">
-              SchoolDirect Ghana integrates directly with certified school sickbays. Monitor your ward's pediatric vital signs, acute dietary red flags for school canteen chefs, and official GHS immunization records.
+              SkoolFinder Ghana integrates directly with certified school sickbays. Monitor your ward's pediatric vital signs, acute dietary red flags for school canteen chefs, and official GHS immunization records.
             </p>
 
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">

@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - School Owner Lead Analytics Portal
+ * SkoolFinder Ghana - School Owner Lead Analytics Portal
  */
 const DashboardView = {
   async render(schoolId = 'sch-gis-accra') {
@@ -1829,7 +1829,7 @@ const DashboardView = {
       const school = await API.getSchoolById(schoolId);
       const analytics = await API.getSchoolAnalytics(schoolId);
       const csvContent = "data:text/csv;charset=utf-8," + 
-        `SchoolDirect Ghana Admissions Lead Report\n` +
+        `SkoolFinder Ghana Admissions Lead Report\n` +
         `School Name,${school.name}\n` +
         `Region,${school.region}\n` +
         `Total Profile Views,${analytics.totalViews}\n` +
@@ -2138,7 +2138,7 @@ const DashboardView = {
       const school = await API.getSchoolById(schoolId);
       const apps = currentApplications.length > 0 ? currentApplications : await API.getSchoolApplications(schoolId);
       let csvContent = "data:text/csv;charset=utf-8," + 
-        `SchoolDirect Ghana Admissions Roster - ${school.name}\n` +
+        `SkoolFinder Ghana Admissions Roster - ${school.name}\n` +
         `Application Code,Candidate Name,Gender,DOB,Grade Applying,Curriculum,Parent Name,Parent Phone,Parent WhatsApp,Status,Exam Date,Submitted Date\n`;
       
       apps.forEach(a => {
@@ -2360,7 +2360,7 @@ const DashboardView = {
       const schoolObj = await API.getSchoolById(schoolId);
       const inqList = currentInquiries.length > 0 ? currentInquiries : await API.getInquiries({ schoolId });
       let csvContent = "data:text/csv;charset=utf-8," +
-        `SchoolDirect Ghana Admissions Inquiries - ${schoolObj.name}\n` +
+        `SkoolFinder Ghana Admissions Inquiries - ${schoolObj.name}\n` +
         `Reference Code,Parent Name,Phone,WhatsApp,Email,Student Candidate,Grade Applying,Category,Campus Tour Requested,Status,Logged Date\n`;
       
       inqList.forEach(i => {
@@ -2405,7 +2405,7 @@ const DashboardView = {
         const phone = e.currentTarget.dataset.phone;
         const bal = Number(e.currentTarget.dataset.balance).toLocaleString();
         const invNum = e.currentTarget.dataset.invnum;
-        State.showToast(`📲 SMS Reminder Dispatched to ${phone} (${parent}): "Reminder: Term fee balance of GH₵ ${bal} for invoice ${invNum} is due. Settle via SchoolDirect MoMo."`, 'success');
+        State.showToast(`📲 SMS Reminder Dispatched to ${phone} (${parent}): "Reminder: Term fee balance of GH₵ ${bal} for invoice ${invNum} is due. Settle via SkoolFinder MoMo."`, 'success');
       });
     });
 
@@ -2454,7 +2454,7 @@ const DashboardView = {
       try {
         await API.broadcastSMS(schoolId, {
           category: 'Academic Report Card',
-          messageText: `GIS OFFICIAL NOTICE: Term 1 Continuous Assessment & Terminal Exam Report Cards for all classes have been certified. Parents can log in to view and download official stamped PDF report sheets: schooldirect.gh/#/parent-portal`
+          messageText: `GIS OFFICIAL NOTICE: Term 1 Continuous Assessment & Terminal Exam Report Cards for all classes have been certified. Parents can log in to view and download official stamped PDF report sheets: skoolfinder.gh/#/parent-portal`
         });
         State.showToast("📲 Broadcast SMS dispatched to all parents: 'Terminal Report Cards Available'!", "success");
       } catch (err) {

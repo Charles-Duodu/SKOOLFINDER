@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - School Showcase / Detail View
+ * SkoolFinder Ghana - School Showcase / Detail View
  */
 const SchoolDetailView = {
   async render(schoolId) {
@@ -529,7 +529,7 @@ const SchoolDetailView = {
         // Update UI
         document.getElementById('label-wa').innerText = rawWa;
         State.showToast(`Admissions WhatsApp revealed! Opening chat...`, 'success');
-        window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SchoolDirect%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+        window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
       };
     }
 

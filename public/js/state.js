@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Application State & UI Store
+ * SkoolFinder Ghana - Application State & UI Store
  */
 const State = {
   currentView: 'home', // 'home' | 'directory' | 'school-detail' | 'compare' | 'suppliers' | 'jobs' | 'dashboard'
@@ -21,7 +21,7 @@ const State = {
   // Authentication & Session (Feature 5)
   currentUser: (() => {
     try {
-      const stored = localStorage.getItem('schooldirect_user');
+      const stored = localStorage.getItem('skoolfinder_user');
       return stored ? JSON.parse(stored) : null;
     } catch (e) {
       return null;
@@ -30,7 +30,7 @@ const State = {
 
   authToken: (() => {
     try {
-      return localStorage.getItem('schooldirect_token') || null;
+      return localStorage.getItem('skoolfinder_token') || null;
     } catch (e) {
       return null;
     }
@@ -41,11 +41,11 @@ const State = {
     this.authToken = token;
     try {
       if (user && token) {
-        localStorage.setItem('schooldirect_user', JSON.stringify(user));
-        localStorage.setItem('schooldirect_token', token);
+        localStorage.setItem('skoolfinder_user', JSON.stringify(user));
+        localStorage.setItem('skoolfinder_token', token);
       } else {
-        localStorage.removeItem('schooldirect_user');
-        localStorage.removeItem('schooldirect_token');
+        localStorage.removeItem('skoolfinder_user');
+        localStorage.removeItem('skoolfinder_token');
       }
     } catch (e) {
       console.warn("Storage write error:", e);

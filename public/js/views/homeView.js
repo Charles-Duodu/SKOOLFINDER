@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Home View
+ * SkoolFinder Ghana - Home View
  */
 const HomeView = {
   async render() {
@@ -124,7 +124,7 @@ const HomeView = {
           <div class="section-header">
             <span class="section-tag">🤝 The Education Ecosystem</span>
             <h2 class="section-title">Empowering Schools, Suppliers & Educators</h2>
-            <p class="section-desc">SchoolDirect connects educational institutions with certified procurement vendors and top teaching talent.</p>
+            <p class="section-desc">SkoolFinder connects educational institutions with certified procurement vendors and top teaching talent.</p>
           </div>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem;">
@@ -395,7 +395,7 @@ const HomeView = {
         // Record lead
         await API.recordLead(schoolId, 'whatsapp_reveal');
         State.showToast("Direct WhatsApp connect recorded!", "success");
-        window.open(`https://wa.me/${waNumber}?text=Hello,%20I%20found%20your%20school%20on%20SchoolDirect%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+        window.open(`https://wa.me/${waNumber}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
       };
     });
 

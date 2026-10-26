@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - API Client Module
+ * SkoolFinder Ghana - API Client Module
  */
 const API = {
   baseUrl: '/api',

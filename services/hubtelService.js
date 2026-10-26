@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Hubtel SMS Integration Service
+ * SkoolFinder Ghana - Hubtel SMS Integration Service
  * 
  * Official REST API client for dispatching SMS notifications to Ghanaian mobile networks
  * (MTN, Telecel, AT) via the Hubtel Ghana Gateway.
@@ -13,7 +13,7 @@ class HubtelSMSService {
   constructor() {
     this.clientId = process.env.HUBTEL_CLIENT_ID || '';
     this.clientSecret = process.env.HUBTEL_CLIENT_SECRET || '';
-    this.defaultSenderId = process.env.HUBTEL_SENDER_ID || 'SchoolDirect';
+    this.defaultSenderId = process.env.HUBTEL_SENDER_ID || 'SkoolFinder';
   }
 
   /**
@@ -131,7 +131,7 @@ class HubtelSMSService {
       units: 1,
       rateGHS: 0.045,
       status: 'Delivered',
-      note: 'Processed via SchoolDirect Local Sandbox Simulation. Set live HUBTEL_CLIENT_ID and HUBTEL_CLIENT_SECRET in .env for production telco dispatch.'
+      note: 'Processed via SkoolFinder Local Sandbox Simulation. Set live HUBTEL_CLIENT_ID and HUBTEL_CLIENT_SECRET in .env for production telco dispatch.'
     };
   }
 }

@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Comparison View (Side-by-Side Matrix)
+ * SkoolFinder Ghana - Comparison View (Side-by-Side Matrix)
  */
 const CompareView = {
   render() {

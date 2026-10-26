@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Directory View (with Feature 1: Interactive Geolocation Map View)
+ * SkoolFinder Ghana - Directory View (with Feature 1: Interactive Geolocation Map View)
  */
 const DirectoryView = {
   viewMode: 'list', // 'list' | 'map'
@@ -220,7 +220,7 @@ const DirectoryView = {
 
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
-        attribution: '&copy; OpenStreetMap contributors | SchoolDirect'
+        attribution: '&copy; OpenStreetMap contributors | SkoolFinder'
       }).addTo(this.mapInstance);
 
       // Add school markers with popups

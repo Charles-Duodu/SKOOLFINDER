@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Phase 2: Educational Suppliers & RFQ B2B Hub
+ * SkoolFinder Ghana - Phase 2: Educational Suppliers & RFQ B2B Hub
  */
 const SuppliersView = {
   activeTab: 'rfqs', // 'rfqs' | 'directory'
@@ -150,7 +150,7 @@ const SuppliersView = {
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-light); padding-top: 1rem;">
-                      <a href="https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName)},%20I%20found%20your%20business%20on%20SchoolDirect%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; justify-content: center;">
+                      <a href="https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName)},%20I%20found%20your%20business%20on%20SkoolFinder%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; justify-content: center;">
                         💬 WhatsApp
                       </a>
                       <a href="tel:${s.phone.replace(/[^0-9+]/g, '')}" class="btn-card-view" style="flex: 1; text-align: center;">

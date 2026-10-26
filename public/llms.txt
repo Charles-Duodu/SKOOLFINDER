@@ -1,4 +1,4 @@
-# SchoolDirect Ghana (SKOOLFINDER)
+# SkoolFinder Ghana (SKOOLFINDER)
 
 > Ghana's verified education directory, admissions platform, and institutional procurement ecosystem.
 

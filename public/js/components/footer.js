@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Footer Component
+ * SkoolFinder Ghana - Footer Component
  */
 const Footer = {
   render() {
@@ -16,7 +16,7 @@ const Footer = {
                     <path d="M6 12v5c3 3 9 3 12 0v-5"/>
                   </svg>
                 </div>
-                <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800;">SchoolDirect</span>
+                <span style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800;">SkoolFinder</span>
               </div>
               <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; line-height: 1.6; max-width: 380px; margin-bottom: 1.5rem;">
                 Ghana’s premier verified education directory and institutional procurement platform. Connecting parents with accredited schools and schools with certified suppliers and educators.
@@ -71,7 +71,7 @@ const Footer = {
           <!-- Copyright Strip -->
           <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.75rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: rgba(255,255,255,0.6);">
             <div>
-              &copy; 2026 SchoolDirect Ghana. All rights reserved.
+              &copy; 2026 SkoolFinder Ghana. All rights reserved.
             </div>
             <div style="display: flex; gap: 1.5rem;">
               <a href="#" class="footer-policy-link" data-policy="privacy">Privacy Policy</a>

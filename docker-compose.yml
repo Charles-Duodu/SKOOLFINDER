@@ -1,17 +1,17 @@
 # ==============================================================================
-# SchoolDirect Ghana - Docker Compose Production Architecture
+# SkoolFinder Ghana - Docker Compose Production Architecture
 # Enterprise School Directory & Educational Procurement Platform
 # ==============================================================================
 
 version: '3.8'
 
 services:
-  schooldirect-app:
+  skoolfinder-app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: schooldirect-ghana:latest
-    container_name: schooldirect-production
+    image: skoolfinder-ghana:latest
+    container_name: skoolfinder-production
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -19,10 +19,10 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - TZ=Africa/Accra
-      - JWT_SECRET=schooldirect_ghana_secure_jwt_key_2026_enterprise
-      - HUBTEL_CLIENT_ID=gh_hubtel_live_schooldirect
+      - JWT_SECRET=skoolfinder_ghana_secure_jwt_key_2026_enterprise
+      - HUBTEL_CLIENT_ID=gh_hubtel_live_skoolfinder
       - HUBTEL_CLIENT_SECRET=gh_hubtel_secret_key_84920491
-      - HUBTEL_SENDER_ID=SchoolDirect
+      - HUBTEL_SENDER_ID=SkoolFinder
       - PAYSTACK_PUBLIC_KEY=pk_live_gh_paystack_school_direct_0921
       - PAYSTACK_SECRET_KEY=sk_live_gh_paystack_school_direct_0921
       - MAX_BACKUPS=30
@@ -38,8 +38,8 @@ services:
       retries: 3
       start_period: 10s
     networks:
-      - schooldirect-network
+      - skoolfinder-network
 
 networks:
-  schooldirect-network:
+  skoolfinder-network:
     driver: bridge

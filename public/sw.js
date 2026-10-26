@@ -1,7 +1,7 @@
 /**
- * SchoolDirect - Progressive Web App (PWA) Service Worker
+ * SkoolFinder - Progressive Web App (PWA) Service Worker
  */
-const CACHE_NAME = 'schooldirect-v12';
+const CACHE_NAME = 'skoolfinder-v12';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

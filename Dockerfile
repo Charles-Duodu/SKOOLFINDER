@@ -1,5 +1,5 @@
 # ==============================================================================
-# SchoolDirect Ghana - Production Docker Container
+# SkoolFinder Ghana - Production Docker Container
 # Multi-stage / Lean Production Node 20 Alpine Image
 # ==============================================================================
 
@@ -42,5 +42,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:3000/health || exit 1
 
-# Start SchoolDirect Enterprise Server
+# Start SkoolFinder Enterprise Server
 CMD ["node", "server.js"]

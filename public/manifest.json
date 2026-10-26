@@ -1,6 +1,6 @@
 {
-  "name": "SchoolDirect Ghana",
-  "short_name": "SchoolDirect",
+  "name": "SkoolFinder Ghana",
+  "short_name": "SkoolFinder",
   "description": "Ghana's verified school directory and educational procurement ecosystem.",
   "start_url": "/",
   "display": "standalone",

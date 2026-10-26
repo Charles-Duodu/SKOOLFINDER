@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Automated Database Backup & Integrity Engine
+ * SkoolFinder Ghana - Automated Database Backup & Integrity Engine
  * 
  * Creates timestamped snapshots of data/database.json with SHA-256 integrity checks,
  * record audit telemetry, companion metadata manifests, and automatic backup rotation.
@@ -45,7 +45,7 @@ function getFormattedTimestamp() {
 
 function runBackup() {
   console.log('====================================================');
-  console.log('🇬🇭 SchoolDirect Ghana - Enterprise Database Backup');
+  console.log('🇬🇭 SkoolFinder Ghana - Enterprise Database Backup');
   console.log('====================================================');
 
   if (!fs.existsSync(DB_PATH)) {
@@ -99,7 +99,7 @@ function runBackup() {
     fileSizeKB: (fileSize / 1024).toFixed(2),
     sha256Checksum: sha256,
     version: '1.0.0',
-    platform: 'SchoolDirect Ghana Enterprise',
+    platform: 'SkoolFinder Ghana Enterprise',
     recordAudit: stats
   };
 
@@ -144,7 +144,7 @@ function rotateBackups() {
 
 function restoreBackup(backupTarget) {
   console.log('====================================================');
-  console.log('🇬🇭 SchoolDirect Ghana - Database Restoration');
+  console.log('🇬🇭 SkoolFinder Ghana - Database Restoration');
   console.log('====================================================');
 
   const resolvedPath = path.isAbsolute(backupTarget) 

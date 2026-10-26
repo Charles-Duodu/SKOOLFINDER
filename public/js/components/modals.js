@@ -1,5 +1,5 @@
 /**
- * SchoolDirect Ghana - Modals & Dialogs Component
+ * SkoolFinder Ghana - Modals & Dialogs Component
  */
 const Modals = {
   activeModal: null,
@@ -654,7 +654,7 @@ const Modals = {
             }
           });
         } else {
-          State.showToast(`Profile published! You are now searchable as an educator on SchoolDirect.`, 'success');
+          State.showToast(`Profile published! You are now searchable as an educator on SkoolFinder.`, 'success');
           if (State.currentView === 'jobs') App.navigate('jobs');
         }
       } catch (err) {
@@ -707,7 +707,7 @@ const Modals = {
     document.getElementById('btn-modal-tch-wa').onclick = async () => {
       await API.recordTeacherLead(teacher.id, 'whatsapp');
       const cleanWa = teacher.whatsapp.replace(/[^0-9]/g, '');
-      window.open(`https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(teacher.fullName)},%20I%20found%20your%20educator%20profile%20on%20SchoolDirect%20Ghana.%20I%20am%20interested%20in%20discussing%20tutoring/teaching.`, '_blank');
+      window.open(`https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(teacher.fullName)},%20I%20found%20your%20educator%20profile%20on%20SkoolFinder%20Ghana.%20I%20am%20interested%20in%20discussing%20tutoring/teaching.`, '_blank');
       this.close();
       State.showToast("Connected to educator on WhatsApp!", "success");
     };
@@ -718,7 +718,7 @@ const Modals = {
     this.close();
     const amount = Number(options.amount) || 350;
     const purpose = options.purpose || 'subscription';
-    const targetTitle = options.targetTitle || 'SchoolDirect Premium Service';
+    const targetTitle = options.targetTitle || 'SkoolFinder Premium Service';
     const payerName = options.payerName || '';
     const payerPhone = options.payerPhone || '';
     const targetId = options.targetId || null;
@@ -737,7 +737,7 @@ const Modals = {
             </div>
             <div>
               <div style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-400); font-weight: 700;">Secured MoMo & Card Checkout</div>
-              <div style="font-weight: 800; font-size: 1.05rem; font-family: var(--font-heading); color: #fff;">SchoolDirect Ghana</div>
+              <div style="font-weight: 800; font-size: 1.05rem; font-family: var(--font-heading); color: #fff;">SkoolFinder Ghana</div>
             </div>
           </div>
           <button class="modal-close-btn" id="modal-close" style="color: #94a3b8; font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
@@ -947,7 +947,7 @@ const Modals = {
           const verifyRes = await API.verifyPayment(initTx.reference, { network });
           const tx = verifyRes.transaction;
 
-          // 4. Render SchoolDirect Official Electronic Receipt
+          // 4. Render SkoolFinder Official Electronic Receipt
           container.innerHTML = `
             <div class="official-receipt-card" style="padding: 1rem 0.5rem; text-align: center;">
               
@@ -967,7 +967,7 @@ const Modals = {
               <div style="background: #f8fafc; border: 1px dashed var(--border-light); border-radius: 12px; padding: 1rem 1.25rem; text-align: left; margin-bottom: 1.5rem; font-size: 0.85rem;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                   <span style="color: var(--text-muted);">Paid To:</span>
-                  <strong style="color: var(--primary-900);">SchoolDirect Ghana</strong>
+                  <strong style="color: var(--primary-900);">SkoolFinder Ghana</strong>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
                   <span style="color: var(--text-muted);">Purpose:</span>
@@ -1399,7 +1399,7 @@ const Modals = {
         
         // Connect to Admissions Desk on WhatsApp with prefilled message
         const cleanWa = school.whatsapp.replace(/[^0-9]/g, '');
-        const msg = encodeURIComponent(`Hello ${school.name} Admissions, my name is ${parentName}. I just submitted an official admission inquiry on SchoolDirect Ghana regarding ${grade} (${term}). ${notes ? 'Note: ' + notes : ''}`);
+        const msg = encodeURIComponent(`Hello ${school.name} Admissions, my name is ${parentName}. I just submitted an official admission inquiry on SkoolFinder Ghana regarding ${grade} (${term}). ${notes ? 'Note: ' + notes : ''}`);
         window.open(`https://wa.me/${cleanWa}?text=${msg}`, '_blank');
       } catch (err) {
         State.showToast(err.message, 'error');
@@ -1417,7 +1417,7 @@ const Modals = {
         <div class="modal-header">
           <div>
             <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Institutional Packages</div>
-            <h3 class="modal-title">Transparent SchoolDirect Monetization & Pricing</h3>
+            <h3 class="modal-title">Transparent SkoolFinder Monetization & Pricing</h3>
           </div>
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
@@ -1549,7 +1549,7 @@ const Modals = {
         <div class="modal-header">
           <div>
             <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Admissions & Platform Desk</div>
-            <h3 class="modal-title">SchoolDirect Client Support</h3>
+            <h3 class="modal-title">SkoolFinder Client Support</h3>
           </div>
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
@@ -1563,7 +1563,7 @@ const Modals = {
               <div style="font-size: 2rem; margin-bottom: 0.5rem;">💬</div>
               <strong style="color: var(--primary-900); display: block; margin-bottom: 0.25rem;">WhatsApp Support</strong>
               <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">+233 24 431 8900</div>
-              <a href="https://wa.me/233244318900?text=Hello%20SchoolDirect%20Support,%20I%20need%20assistance%20with%20the%20platform." target="_blank" class="btn-pill btn-emerald" style="width: 100%; justify-content: center; font-size: 0.82rem;">
+              <a href="https://wa.me/233244318900?text=Hello%20SkoolFinder%20Support,%20I%20need%20assistance%20with%20the%20platform." target="_blank" class="btn-pill btn-emerald" style="width: 100%; justify-content: center; font-size: 0.82rem;">
                 Open WhatsApp
               </a>
             </div>
@@ -1604,7 +1604,7 @@ const Modals = {
     const contents = {
       privacy: `
         <p><strong>Compliance with Ghana Data Protection Act, 2012 (Act 843):</strong></p>
-        <p>SchoolDirect is committed to safeguarding the privacy and personal data of students, parents, school proprietors, and certified educators across Ghana.</p>
+        <p>SkoolFinder is committed to safeguarding the privacy and personal data of students, parents, school proprietors, and certified educators across Ghana.</p>
         <ul style="padding-left: 1.25rem; margin: 1rem 0; line-height: 1.6;">
           <li><strong>Parent Data:</strong> Information submitted via admission inquiries and campus tour bookings is shared exclusively with the verified admissions desk of the target school.</li>
           <li><strong>Payment Data:</strong> All Mobile Money (MTN MoMo, Telecel Cash, AT Money) and Card transactions are processed through PCIDSS-compliant Paystack gateways. We do not store PINs or CVVs.</li>
@@ -1617,12 +1617,12 @@ const Modals = {
         <ul style="padding-left: 1.25rem; margin: 1rem 0; line-height: 1.6;">
           <li>Schools must provide an authentic Ghana Education Service (GES) Registration Certificate or Registrar General's Department incorporation document.</li>
           <li>Claimed profiles require direct verification with the Head of School, Proprietor, or Admissions Director.</li>
-          <li>SchoolDirect reserves the right to suspend or remove any profile containing misleading fee disclosures, false accreditation claims, or expired licenses.</li>
+          <li>SkoolFinder reserves the right to suspend or remove any profile containing misleading fee disclosures, false accreditation claims, or expired licenses.</li>
         </ul>
       `,
       accreditation: `
         <p><strong>Accreditation Standards & Curriculum Frameworks:</strong></p>
-        <p>All schools listed on SchoolDirect are classified according to approved Ghanaian and international examination councils:</p>
+        <p>All schools listed on SkoolFinder are classified according to approved Ghanaian and international examination councils:</p>
         <ul style="padding-left: 1.25rem; margin: 1rem 0; line-height: 1.6;">
           <li><strong>Cambridge International Education (CIE):</strong> Recognizes schools accredited for Cambridge Primary, Lower Secondary, IGCSE, and AS/A-Levels.</li>
           <li><strong>Ghana Education Service (GES):</strong> Evaluates standards-based curriculum compliance for BECE and WASSCE candidates.</li>
@@ -2950,7 +2950,7 @@ const Modals = {
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <a href="https://wa.me/${((school?.whatsapp || inquiry.parentWhatsapp) || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello, I submitted an official inquiry on SchoolDirect Ghana (Ref: ${inquiry.inquiryNumber}) for ${inquiry.studentName}.`)}" target="_blank" class="btn-pill" style="background: var(--whatsapp-green); color: #fff; font-weight: 700; text-decoration: none; justify-content: center; padding: 0.75rem 1rem;">
+            <a href="https://wa.me/${((school?.whatsapp || inquiry.parentWhatsapp) || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello, I submitted an official inquiry on SkoolFinder Ghana (Ref: ${inquiry.inquiryNumber}) for ${inquiry.studentName}.`)}" target="_blank" class="btn-pill" style="background: var(--whatsapp-green); color: #fff; font-weight: 700; text-decoration: none; justify-content: center; padding: 0.75rem 1rem;">
               <span>💬</span> Continue Direct via Admissions WhatsApp
             </a>
             <button type="button" class="btn-pill btn-outline" id="btn-inquiry-done" style="justify-content: center;">
@@ -3024,7 +3024,7 @@ const Modals = {
               <div><strong>Logged:</strong> ${new Date(inquiry.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-              <a href="https://wa.me/${(inquiry.parentWhatsapp || inquiry.parentPhone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inquiry.parentName}, this is ${school?.name || 'SchoolDirect Admissions Desk'} responding to your inquiry ${inquiry.inquiryNumber}.`)}" target="_blank" class="btn-pill" style="background: var(--whatsapp-green); color: #fff; font-size: 0.8rem; padding: 0.45rem 1rem; text-decoration: none; font-weight: 700;">
+              <a href="https://wa.me/${(inquiry.parentWhatsapp || inquiry.parentPhone).replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${inquiry.parentName}, this is ${school?.name || 'SkoolFinder Admissions Desk'} responding to your inquiry ${inquiry.inquiryNumber}.`)}" target="_blank" class="btn-pill" style="background: var(--whatsapp-green); color: #fff; font-size: 0.8rem; padding: 0.45rem 1rem; text-decoration: none; font-weight: 700;">
                 <span>💬</span> WhatsApp Parent
               </a>
             </div>
@@ -3846,7 +3846,7 @@ const Modals = {
             <div style="font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">
               🛡️ Secure Access & Role Verification
             </div>
-            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Sign In to SchoolDirect</h3>
+            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Sign In to SkoolFinder</h3>
           </div>
           <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1;">&times;</button>
         </div>
@@ -3871,10 +3871,10 @@ const Modals = {
               <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
                 <span>👨‍👩‍👧</span> Parent (Nana Aba)
               </button>
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="tutor@schooldirect.com" data-pass="TeacherPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
+              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
                 <span>👨‍🏫</span> Tutor (Emmanuel)
               </button>
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="superadmin@schooldirect.gh" data-pass="SuperSecure2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
+              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
                 <span>🛡️</span> Super Admin
               </button>
             </div>
@@ -4431,7 +4431,7 @@ const Modals = {
               SD-QR<br>VERIFIED
             </div>
             <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">
-              This receipt was generated by the SchoolDirect Ghana Unified Invoicing Gateway. Authentic digital proof of school fee settlement for accounting, tax, and visa clearance purposes.
+              This receipt was generated by the SkoolFinder Ghana Unified Invoicing Gateway. Authentic digital proof of school fee settlement for accounting, tax, and visa clearance purposes.
             </div>
           </div>
 
@@ -4622,7 +4622,7 @@ const Modals = {
               <button type="button" class="btn-sms-template btn-pill btn-outline" data-cat="Admissions" data-tpl="Dear [Parent], we are pleased to invite [Student] for the Cambridge entrance assessment on Saturday 15 Nov at 9:00 AM. Please arrive 30 mins early." style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
                 📝 Entrance Exam
               </button>
-              <button type="button" class="btn-sms-template btn-pill btn-outline" data-cat="Fee Reminder" data-tpl="GIS BURSARY: Reminder that Term 1 tuition balance of GH₵ [Balance] is due. Pay seamlessly via MTN MoMo / Telecel Cash on your SchoolDirect portal." style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+              <button type="button" class="btn-sms-template btn-pill btn-outline" data-cat="Fee Reminder" data-tpl="GIS BURSARY: Reminder that Term 1 tuition balance of GH₵ [Balance] is due. Pay seamlessly via MTN MoMo / Telecel Cash on your SkoolFinder portal." style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
                 💳 Fee Reminder
               </button>
               <button type="button" class="btn-sms-template btn-pill btn-outline" data-cat="Campus Tour" data-tpl="Hello [Parent], your scheduled campus tour and facility inspection at GIS is confirmed for Friday 31 Oct at 10:30 AM. Administration Gate B." style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
@@ -5408,7 +5408,7 @@ const Modals = {
               </div>
             </div>
             <div style="text-align: right;">
-              <div style="font-size: 0.72rem; color: #94a3b8;">Generated via SchoolDirect Ghana Certified Engine</div>
+              <div style="font-size: 0.72rem; color: #94a3b8;">Generated via SkoolFinder Ghana Certified Engine</div>
               <div style="font-weight: 700; color: #059669;">Valid Without Alterations • Ghana NaSIA / GES Verified</div>
             </div>
           </div>
@@ -7473,7 +7473,7 @@ const Modals = {
           <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 10px; padding: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
             <div>
               <div style="font-size: 0.82rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 0.35rem;">
-                <span>📱</span> SchoolDirect Digital E-Library Excerpt Active
+                <span>📱</span> SkoolFinder Digital E-Library Excerpt Active
               </div>
               <div style="font-size: 0.75rem; color: #15803d; margin-top: 0.15rem;">
                 Digital PDF reading companion available for registered pupils.

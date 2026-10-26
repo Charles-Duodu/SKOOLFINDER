@@ -1,5 +1,5 @@
 /**
- * SchoolDirect - Navbar Component
+ * SkoolFinder - Navbar Component
  */
 const Navbar = {
   isMobileMenuOpen: false,
@@ -16,7 +16,7 @@ const Navbar = {
                 <path d="M6 12v5c3 3 9 3 12 0v-5"/>
               </svg>
             </div>
-            <span>SchoolDirect</span>
+            <span>SkoolFinder</span>
           </a>
 
           <!-- Main Nav Links (Desktop) -->
