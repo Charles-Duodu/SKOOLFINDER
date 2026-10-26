@@ -8,6 +8,7 @@
     "dev": "node server.js",
     "backup": "node scripts/backup_db.js",
     "db:migrate": "node scripts/migrate_to_postgres.js",
+    "db:migrat": "node scripts/migrate_to_postgres.js",
     "gateways:verify": "node scripts/verify_gateways.js",
     "test": "node scratch/test_digital_id_endpoints.js"
   },
