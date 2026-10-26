@@ -1,11 +1,42 @@
 # ==============================================================================
 # SkoolFinder Ghana - Docker Compose Production Architecture
 # Enterprise School Directory & Educational Procurement Platform
+# Includes Scaled PostgreSQL 16 Relational Engine + Nginx Reverse Proxy Ready
 # ==============================================================================
 
 version: '3.8'
 
 services:
+  # --------------------------------------------------------------------------
+  # 1. Scaled PostgreSQL 16 Relational Database Engine
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: skoolfinder-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: skoolfinder_db
+      POSTGRES_USER: skoolfinder_admin
+      POSTGRES_PASSWORD: skoolfinder_prod_password_2026
+      TZ: Africa/Accra
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persistent PostgreSQL database storage
+      - pgdata:/var/lib/postgresql/data
+      # Automated schema initialization on first launch
+      - ./data/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skoolfinder_admin -d skoolfinder_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - skoolfinder-network
+
+  # --------------------------------------------------------------------------
+  # 2. SkoolFinder Core Application Service
+  # --------------------------------------------------------------------------
   skoolfinder-app:
     build:
       context: .
@@ -13,6 +44,9 @@ services:
     image: skoolfinder-ghana:latest
     container_name: skoolfinder-production
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
@@ -20,14 +54,17 @@ services:
       - PORT=3000
       - TZ=Africa/Accra
       - JWT_SECRET=skoolfinder_ghana_secure_jwt_key_2026_enterprise
-      - HUBTEL_CLIENT_ID=gh_hubtel_live_skoolfinder
-      - HUBTEL_CLIENT_SECRET=gh_hubtel_secret_key_84920491
-      - HUBTEL_SENDER_ID=SkoolFinder
-      - PAYSTACK_PUBLIC_KEY=pk_live_gh_paystack_school_direct_0921
-      - PAYSTACK_SECRET_KEY=sk_live_gh_paystack_school_direct_0921
+      # Scaled PostgreSQL Connection URL
+      - DATABASE_URL=postgres://skoolfinder_admin:skoolfinder_prod_password_2026@postgres:5432/skoolfinder_db
+      # Production Gateway Configuration
+      - HUBTEL_CLIENT_ID=${HUBTEL_CLIENT_ID:-gh_hubtel_live_skoolfinder}
+      - HUBTEL_CLIENT_SECRET=${HUBTEL_CLIENT_SECRET:-gh_hubtel_secret_key_84920491}
+      - HUBTEL_SENDER_ID=${HUBTEL_SENDER_ID:-SkoolFinder}
+      - PAYSTACK_PUBLIC_KEY=${PAYSTACK_PUBLIC_KEY:-pk_live_gh_paystack_skoolfinder_2026}
+      - PAYSTACK_SECRET_KEY=${PAYSTACK_SECRET_KEY:-sk_live_gh_paystack_skoolfinder_2026}
       - MAX_BACKUPS=30
     volumes:
-      # Persistent storage for JSON database and file attachments
+      # Persistent storage for JSON database fallback and file attachments
       - ./data:/app/data
       # Mount automated backups outside container
       - ./backups:/app/backups
@@ -40,6 +77,11 @@ services:
     networks:
       - skoolfinder-network
 
+volumes:
+  pgdata:
+    driver: local
+
 networks:
   skoolfinder-network:
     driver: bridge
+

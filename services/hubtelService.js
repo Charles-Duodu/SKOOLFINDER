@@ -7,6 +7,8 @@
  * Documentation: https://developers.hubtel.com/documentations/sms-api
  */
 
+require('dotenv').config();
+
 const HUBTEL_API_BASE = 'https://sms.hubtel.com/v1/messages/send';
 
 class HubtelSMSService {
@@ -53,6 +55,20 @@ class HubtelSMSService {
       !this.clientId.includes('mock') &&
       !this.clientSecret.includes('mock')
     );
+  }
+
+  /**
+   * Returns gateway production diagnostic metadata
+   */
+  getProductionStatus() {
+    return {
+      isConfigured: this.isConfigured(),
+      mode: this.isConfigured() ? 'live_production' : 'simulation_sandbox',
+      senderId: this.defaultSenderId,
+      clientIdPrefix: this.clientId && !this.clientId.includes('mock') ? this.clientId.slice(0, 6) + '...' : null,
+      supportedTelcos: ['MTN Ghana', 'Telecel Ghana', 'AT Ghana'],
+      e164Formatting: true
+    };
   }
 
   /**

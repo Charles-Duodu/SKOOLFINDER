@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const db = require('./data/db');
+const pgClient = require('./data/pgClient');
 const hubtelService = require('./services/hubtelService');
 const paystackService = require('./services/paystackService');
 
@@ -615,20 +617,40 @@ app.post('/api/invoices/:id/pay', (req, res) => {
   }
 });
 
-// Gateway Telemetry Status (Hubtel & Paystack)
-app.get('/api/gateways/status', (req, res) => {
+// Production Gateway Telemetry & Readiness Diagnostics (Hubtel & Paystack)
+app.get(['/api/gateways/status', '/api/admin/gateway-diagnostics'], (req, res) => {
   res.json({
-    hubtel: {
-      isConfigured: hubtelService.isConfigured(),
-      senderId: hubtelService.defaultSenderId,
-      mode: hubtelService.isConfigured() ? 'live' : 'simulation_sandbox'
+    paystack: paystackService.getProductionStatus(),
+    hubtel: hubtelService.getProductionStatus(),
+    database: {
+      isPostgresConfigured: pgClient.isConfigured(),
+      engine: pgClient.isConfigured() ? 'postgresql' : 'json_store'
     },
-    paystack: {
-      isConfigured: paystackService.isConfigured(),
-      publicKey: paystackService.publicKey ? `${paystackService.publicKey.slice(0, 8)}...` : null,
-      mode: paystackService.isConfigured() ? 'live' : 'simulation_sandbox'
-    }
+    platform: 'SkoolFinder Ghana Enterprise',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString()
   });
+});
+
+// Database Diagnostics & Scaling Engine Status (PostgreSQL vs JSON Store)
+app.get('/api/admin/db-diagnostics', async (req, res) => {
+  try {
+    const pgStatus = await pgClient.checkConnection();
+    const stats = db.getStats();
+    res.json({
+      activeEngine: pgStatus.connected ? 'postgresql_enterprise' : 'json_embedded_resilient',
+      postgres: pgStatus,
+      jsonStore: {
+        file: 'data/database.json',
+        collectionsCount: 33,
+        stats
+      },
+      scalingReady: true,
+      migrationCommand: 'npm run db:migrate'
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Paystack MoMo Checkout Initialization

@@ -7,6 +7,7 @@
  * Documentation: https://paystack.com/docs/api/
  */
 
+require('dotenv').config();
 const crypto = require('crypto');
 
 const PAYSTACK_API_BASE = 'https://api.paystack.co';
@@ -15,10 +16,11 @@ class PaystackPaymentService {
   constructor() {
     this.secretKey = process.env.PAYSTACK_SECRET_KEY || '';
     this.publicKey = process.env.PAYSTACK_PUBLIC_KEY || '';
+    this.webhookSecret = process.env.PAYSTACK_WEBHOOK_SECRET || this.secretKey;
   }
 
   /**
-   * Checks if live Paystack credentials are configured
+   * Checks if live or test Paystack credentials are configured
    */
   isConfigured() {
     return (
@@ -26,6 +28,29 @@ class PaystackPaymentService {
       !this.secretKey.includes('mock') &&
       this.secretKey.startsWith('sk_')
     );
+  }
+
+  /**
+   * Checks if production live keys (sk_live_...) are active
+   */
+  isLiveMode() {
+    return this.isConfigured() && this.secretKey.startsWith('sk_live_');
+  }
+
+  /**
+   * Returns gateway production diagnostic metadata
+   */
+  getProductionStatus() {
+    return {
+      isConfigured: this.isConfigured(),
+      isLive: this.isLiveMode(),
+      mode: this.isLiveMode() ? 'live_production' : (this.isConfigured() ? 'test_sandbox' : 'simulation_sandbox'),
+      publicKeyPrefix: this.publicKey ? this.publicKey.slice(0, 10) + '...' : null,
+      currency: 'GHS',
+      channels: ['mobile_money', 'card'],
+      networks: ['MTN Mobile Money', 'Telecel Cash', 'AT Money'],
+      webhookSecretConfigured: Boolean(this.webhookSecret && !this.webhookSecret.includes('mock'))
+    };
   }
 
   /**

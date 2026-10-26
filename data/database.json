@@ -2312,6 +2312,24 @@
       "schoolId": "sch-gis-accra",
       "type": "view",
       "timestamp": "2026-10-25T18:30:12.504Z"
+    },
+    {
+      "id": "lead-1792993562075",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-26T05:46:02.075Z"
+    },
+    {
+      "id": "lead-1792993571635",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-26T05:46:11.635Z"
+    },
+    {
+      "id": "lead-1792993577059",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-26T05:46:17.059Z"
     }
   ],
   "claims": [],
