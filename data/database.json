@@ -4805,6 +4805,21 @@
   ],
   "smsLogs": [
     {
+      "id": "sms-gh-1792975705549",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "recipientName": "Dr. Mensah",
+      "recipientPhone": "0244318900",
+      "channel": "SMS (Hubtel Ghana Gateway)",
+      "category": "Admissions",
+      "senderId": "GHANA-IN",
+      "messageText": "SchoolDirect: Terminal Report Card released.",
+      "status": "Delivered",
+      "deliveryTime": "2026-10-26T00:48:25.549Z",
+      "network": "MTN GH",
+      "unitsUsed": 1
+    },
+    {
       "id": "sms-gh-1792930845845",
       "schoolId": "sch-gis-accra",
       "schoolName": "Ghana International School (GIS)",
@@ -5031,7 +5046,7 @@
     }
   ],
   "smsCredits": {
-    "sch-gis-accra": 4662,
+    "sch-gis-accra": 4661,
     "sch-sos-tema": 3200,
     "sch-morning-star-cantonments": 2500
   },

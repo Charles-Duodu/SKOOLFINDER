@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const db = require('./data/db');
+const hubtelService = require('./services/hubtelService');
+const paystackService = require('./services/paystackService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -613,6 +615,99 @@ app.post('/api/invoices/:id/pay', (req, res) => {
   }
 });
 
+// Gateway Telemetry Status (Hubtel & Paystack)
+app.get('/api/gateways/status', (req, res) => {
+  res.json({
+    hubtel: {
+      isConfigured: hubtelService.isConfigured(),
+      senderId: hubtelService.defaultSenderId,
+      mode: hubtelService.isConfigured() ? 'live' : 'simulation_sandbox'
+    },
+    paystack: {
+      isConfigured: paystackService.isConfigured(),
+      publicKey: paystackService.publicKey ? `${paystackService.publicKey.slice(0, 8)}...` : null,
+      mode: paystackService.isConfigured() ? 'live' : 'simulation_sandbox'
+    }
+  });
+});
+
+// Paystack MoMo Checkout Initialization
+app.post('/api/payments/momo/initialize', async (req, res) => {
+  try {
+    const { email, amountGHS, reference, callbackUrl, metadata, channels } = req.body;
+    if (!amountGHS || !email) {
+      return res.status(400).json({ error: "Email and amountGHS are required" });
+    }
+    const result = await paystackService.initializeTransaction({
+      email,
+      amountGHS,
+      reference,
+      callbackUrl,
+      metadata,
+      channels
+    });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Paystack MoMo Transaction Verification
+app.get('/api/payments/momo/verify/:reference', async (req, res) => {
+  try {
+    const result = await paystackService.verifyTransaction(req.params.reference);
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Paystack Webhook Listener (Auto-updates Invoices & Dispatches Hubtel SMS Receipt)
+app.post('/api/payments/paystack-webhook', async (req, res) => {
+  try {
+    const signature = req.headers['x-paystack-signature'];
+    const event = req.body;
+
+    if (paystackService.isConfigured()) {
+      const isValid = paystackService.verifyWebhookSignature(signature, JSON.stringify(req.body));
+      if (!isValid) {
+        return res.status(400).json({ error: "Invalid webhook signature" });
+      }
+    }
+
+    if (event && event.event === 'charge.success') {
+      const data = event.data;
+      const metadata = data.metadata || {};
+      const amountGHS = data.amount / 100;
+
+      // Settle invoice if invoiceId present
+      if (metadata.invoiceId) {
+        db.recordInvoicePayment(metadata.invoiceId, {
+          amount: amountGHS,
+          method: data.channel === 'mobile_money' ? 'MTN Mobile Money' : 'Card',
+          payerName: metadata.parentName || data.customer?.email,
+          momoNumber: metadata.parentPhone || data.customer?.phone,
+          notes: `Paystack Auto-settlement (${data.reference})`
+        });
+      }
+
+      // Dispatch automated SMS confirmation via Hubtel
+      if (metadata.parentPhone) {
+        await hubtelService.sendSMS({
+          to: metadata.parentPhone,
+          message: `SchoolDirect Ghana: Payment of GH₵ ${amountGHS.toLocaleString()} received successfully for ${metadata.studentName || 'Student'}. Ref: ${data.reference}. Thank you.`,
+          senderId: 'SchoolDirect'
+        });
+      }
+    }
+
+    res.status(200).send('Webhook processed');
+  } catch (err) {
+    console.error('Paystack webhook error:', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // API: Automated SMS & WhatsApp Parent Communications (Feature 7)
 app.get('/api/notifications/sms', (req, res) => {
   try {
@@ -633,16 +728,32 @@ app.get('/api/notifications/credits/:schoolId', (req, res) => {
   }
 });
 
-app.post('/api/notifications/sms/send', (req, res) => {
+app.post('/api/notifications/sms/send', async (req, res) => {
   try {
-    const result = db.sendSMSNotification(req.body);
-    res.status(201).json(result);
+    // 1. Dispatch SMS via Hubtel Service (Live or Sandbox Simulation)
+    const hubtelResult = await hubtelService.sendSMS({
+      to: req.body.recipientPhone,
+      message: req.body.messageText,
+      senderId: req.body.senderId
+    });
+
+    // 2. Persist audit log in database
+    const result = db.sendSMSNotification({
+      ...req.body,
+      channel: hubtelResult.isLive ? 'SMS (Hubtel Live Gateway)' : 'SMS (Hubtel Ghana Gateway)',
+      hubtelMessageId: hubtelResult.messageId
+    });
+
+    res.status(201).json({
+      ...result,
+      gateway: hubtelResult
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-app.post('/api/notifications/sms/broadcast', (req, res) => {
+app.post('/api/notifications/sms/broadcast', async (req, res) => {
   try {
     const { schoolId, ...broadcastData } = req.body;
     const result = db.broadcastParentSMS(schoolId, broadcastData);
