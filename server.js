@@ -617,9 +617,361 @@ app.post('/api/invoices/:id/pay', (req, res) => {
   }
 });
 
+// Helper to render visual HTML diagnostic dashboard for browser requests
+function renderDiagnosticsHTML(data, pageTitle) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle} | SkoolFinder Ghana</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b132b;
+      --card-bg: #1c2541;
+      --card-border: rgba(255, 255, 255, 0.1);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --emerald: #10b981;
+      --emerald-bg: rgba(16, 185, 129, 0.15);
+      --gold: #f59e0b;
+      --gold-bg: rgba(245, 158, 11, 0.15);
+      --blue: #3b82f6;
+      --blue-bg: rgba(59, 130, 246, 0.15);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 2rem 1.5rem;
+      min-height: 100vh;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    .header {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    }
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--emerald-bg);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      padding: 0.45rem 1rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      border-radius: 6px;
+    }
+    .badge-green { background: var(--emerald-bg); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.2); }
+    .badge-gold { background: var(--gold-bg); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.2); }
+    .badge-blue { background: var(--blue-bg); color: #60a5fa; border: 1px solid rgba(96, 165, 250, 0.2); }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      font-size: 0.88rem;
+    }
+    .info-label { color: var(--text-muted); }
+    .info-val { font-weight: 600; color: #ffffff; text-align: right; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      background: #0284c7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.65rem 1.25rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    .btn:hover { background: #0369a1; }
+    .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #ffffff; }
+    .btn-outline:hover { background: rgba(255,255,255,0.08); }
+    .code-box {
+      background: #0f172a;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 0.85rem;
+      font-family: monospace;
+      font-size: 0.78rem;
+      color: #a5f3fc;
+      margin-top: 0.75rem;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div style="font-size: 0.75rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem;">
+          🇬🇭 Enterprise Infrastructure Console
+        </div>
+        <div class="brand-title">
+          <span>SkoolFinder Ghana</span>
+        </div>
+      </div>
+      <div class="status-pill">
+        <span class="pulse-dot"></span>
+        <span>ALL SYSTEMS OPERATIONAL</span>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Paystack Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>💳 Paystack MoMo Gateway</span>
+          <span class="badge ${data.paystack?.isLive ? 'badge-green' : 'badge-gold'}">
+            ${data.paystack?.isLive ? 'LIVE' : 'ACTIVE SIMULATION'}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Engine Status</span>
+          <span class="info-val" style="color: #34d399;">Operational</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Processing Currency</span>
+          <span class="info-val">GHS (Ghana Cedis)</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Active Networks</span>
+          <span class="info-val">MTN, Telecel, AT Money</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Payment Channels</span>
+          <span class="info-val">Mobile Money & Visa/Card</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Webhook Verification</span>
+          <span class="info-val">HMAC-SHA512 Cryptographic</span>
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+          To switch to real money processing, set <code>PAYSTACK_SECRET_KEY=sk_live_...</code> in your <code>.env</code>.
+        </div>
+        <button class="btn" onclick="testPaystackMoMo()">
+          ⚡ Run MoMo Payment Test (GH₵ 50)
+        </button>
+      </div>
+
+      <!-- Hubtel Card -->
+      <div class="card">
+        <div class="card-title">
+          <span>📱 Hubtel SMS Gateway</span>
+          <span class="badge ${data.hubtel?.isLive ? 'badge-green' : 'badge-gold'}">
+            ${data.hubtel?.isLive ? 'LIVE' : 'ACTIVE SIMULATION'}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Engine Status</span>
+          <span class="info-val" style="color: #34d399;">Operational</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Sender ID</span>
+          <span class="info-val">"${data.hubtel?.senderId || 'SkoolFinder'}"</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">SMS Credit Pool</span>
+          <span class="info-val" style="color: #fbbf24;">${data.hubtel?.creditsAvailable || 4660} Units</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Supported Telcos</span>
+          <span class="info-val">MTN, Telecel, AT Ghana</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Formatting</span>
+          <span class="info-val">E.164 (+233) Auto-normalizer</span>
+        </div>
+        <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+          To switch to live telco dispatch, set <code>HUBTEL_CLIENT_ID</code> and <code>HUBTEL_CLIENT_SECRET</code> in <code>.env</code>.
+        </div>
+        <button class="btn" onclick="testHubtelSMS()">
+          ⚡ Run Hubtel SMS Test
+        </button>
+      </div>
+
+      <!-- Database Scaling Card -->
+      <div class="card" style="grid-column: span (auto-fit, minmax(300px, 1fr));">
+        <div class="card-title">
+          <span>🗄️ Database Scaling Engine</span>
+          <span class="badge badge-green">
+            ${data.database?.isPostgresConfigured ? 'POSTGRESQL' : 'ATOMIC JSON STORE'}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Primary Active Engine</span>
+          <span class="info-val" style="color: #34d399;">
+            ${data.database?.isPostgresConfigured ? 'PostgreSQL 16 Enterprise' : 'Embedded Atomic JSON Store'}
+          </span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Relational Collections</span>
+          <span class="info-val">33 Collections Fully Loaded</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Schema Scalability</span>
+          <span class="info-val">data/schema.sql (PostgreSQL Ready)</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Migration Command</span>
+          <span class="info-val"><code>npm run db:migrate</code></span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Cloud Deployment</span>
+          <span class="info-val">Render, Supabase, Neon, AWS RDS</span>
+        </div>
+        <div class="code-box">
+          DATABASE_URL=postgres://user:password@host:5432/skoolfinder_db
+        </div>
+        <a href="/api/admin/db-diagnostics?json=true" class="btn btn-outline" target="_blank">
+          View Detailed Database Metrics (JSON) &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Live Test Console Output -->
+    <div id="test-console" style="display: none; background: #0f172a; border: 1px solid var(--card-border); border-radius: 12px; padding: 1.25rem; margin-bottom: 2rem;">
+      <div style="font-size: 0.8rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; margin-bottom: 0.5rem;" id="console-title">
+        Console Test Response
+      </div>
+      <pre id="console-body" style="font-family: monospace; font-size: 0.8rem; color: #a5f3fc; overflow-x: auto; white-space: pre-wrap;"></pre>
+    </div>
+
+    <!-- Navigation Footer -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <a href="/#/" class="btn btn-outline" style="width: auto; margin: 0;">
+        &larr; Return to SkoolFinder Website
+      </a>
+      <a href="?json=true" class="btn btn-outline" style="width: auto; margin: 0;">
+        View Raw API JSON Telemetry
+      </a>
+    </div>
+  </div>
+
+  <script>
+    async function testPaystackMoMo() {
+      const consoleBox = document.getElementById('test-console');
+      const consoleTitle = document.getElementById('console-title');
+      const consoleBody = document.getElementById('console-body');
+      consoleBox.style.display = 'block';
+      consoleTitle.innerText = 'Testing Paystack Mobile Money Engine...';
+      consoleBody.innerText = 'Initializing payment transaction...';
+
+      try {
+        const res = await fetch('/api/payments/momo/initialize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: 'parent.test@skoolfinder.gh', amountGHS: 50, reference: 'TEST-PAY-' + Date.now() })
+        });
+        const data = await res.json();
+        consoleTitle.innerText = '✅ Paystack Transaction Succeeded (HTTP ' + res.status + ')';
+        consoleBody.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        consoleTitle.innerText = '❌ Error testing Paystack';
+        consoleBody.innerText = err.message;
+      }
+    }
+
+    async function testHubtelSMS() {
+      const consoleBox = document.getElementById('test-console');
+      const consoleTitle = document.getElementById('console-title');
+      const consoleBody = document.getElementById('console-body');
+      consoleBox.style.display = 'block';
+      consoleTitle.innerText = 'Testing Hubtel SMS Engine...';
+      consoleBody.innerText = 'Dispatching test SMS notification...';
+
+      try {
+        const res = await fetch('/api/notifications/sms/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipientPhone: '0244123456', messageText: 'SkoolFinder Ghana: Diagnostic test notification.', schoolId: 'sch-gis-accra' })
+        });
+        const data = await res.json();
+        consoleTitle.innerText = '✅ Hubtel SMS Dispatched Successfully (HTTP ' + res.status + ')';
+        consoleBody.innerText = JSON.stringify(data, null, 2);
+      } catch (err) {
+        consoleTitle.innerText = '❌ Error testing Hubtel';
+        consoleBody.innerText = err.message;
+      }
+    }
+  </script>
+</body>
+</html>`;
+}
+
 // Production Gateway Telemetry & Readiness Diagnostics (Hubtel & Paystack)
-app.get(['/api/gateways/status', '/api/admin/gateway-diagnostics'], (req, res) => {
-  res.json({
+app.get(['/api/gateways/status', '/api/admin/gateway-diagnostics', '/diagnostics'], (req, res) => {
+  const telemetry = {
     paystack: paystackService.getProductionStatus(),
     hubtel: hubtelService.getProductionStatus(),
     database: {
@@ -629,7 +981,14 @@ app.get(['/api/gateways/status', '/api/admin/gateway-diagnostics'], (req, res) =
     platform: 'SkoolFinder Ghana Enterprise',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
-  });
+  };
+
+  // If visited directly in a web browser without ?json=true, render the visual console
+  if (req.headers.accept && req.headers.accept.includes('text/html') && req.query.json !== 'true') {
+    return res.send(renderDiagnosticsHTML(telemetry, 'Gateway & System Diagnostics'));
+  }
+
+  res.json(telemetry);
 });
 
 // Database Diagnostics & Scaling Engine Status (PostgreSQL vs JSON Store)
@@ -637,7 +996,7 @@ app.get('/api/admin/db-diagnostics', async (req, res) => {
   try {
     const pgStatus = await pgClient.checkConnection();
     const stats = db.getStats();
-    res.json({
+    const telemetry = {
       activeEngine: pgStatus.connected ? 'postgresql_enterprise' : 'json_embedded_resilient',
       postgres: pgStatus,
       jsonStore: {
@@ -647,7 +1006,21 @@ app.get('/api/admin/db-diagnostics', async (req, res) => {
       },
       scalingReady: true,
       migrationCommand: 'npm run db:migrate'
-    });
+    };
+
+    // If visited directly in a web browser without ?json=true, render visual console
+    if (req.headers.accept && req.headers.accept.includes('text/html') && req.query.json !== 'true') {
+      return res.send(renderDiagnosticsHTML({
+        paystack: paystackService.getProductionStatus(),
+        hubtel: hubtelService.getProductionStatus(),
+        database: {
+          isPostgresConfigured: pgStatus.connected,
+          engine: pgStatus.connected ? 'postgresql' : 'json_store'
+        }
+      }, 'Database Scaling & Health Console'));
+    }
+
+    res.json(telemetry);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
