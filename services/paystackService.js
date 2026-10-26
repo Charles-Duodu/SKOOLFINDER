@@ -48,7 +48,7 @@ class PaystackPaymentService {
     channels = ['mobile_money', 'card']
   }) {
     const amountInPesewas = Math.round(Number(amountGHS) * 100);
-    const txRef = reference || `SD-PAY-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const txRef = reference || `SF-PAY-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
     // 1. Live Paystack API Request
     if (this.isConfigured()) {
