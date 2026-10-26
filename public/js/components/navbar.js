@@ -62,6 +62,10 @@ const Navbar = {
 
           <!-- Nav Action Buttons -->
           <div class="nav-actions">
+            <button id="btn-nav-tour" class="btn-pill nav-action-desktop" style="font-size: 0.8rem; padding: 0.45rem 0.85rem; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; border: 1.5px solid #10b981; box-shadow: 0 2px 6px rgba(16,185,129,0.3); font-weight: 700;" title="Guided Role Tour (Parent, School, Supplier, Teacher)">
+              <span>🧭</span> Role Tour
+            </button>
+
             <button id="btn-nav-akosua-ai" class="btn-pill nav-action-desktop" style="font-size: 0.8rem; padding: 0.45rem 0.85rem; background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border: 1.5px solid #f59e0b; box-shadow: 0 2px 6px rgba(245,158,11,0.25);" title="Ask Akosua AI Admissions Advisor">
               <span>👩🏾‍💼</span> Akosua AI
             </button>
@@ -154,6 +158,9 @@ const Navbar = {
             </a>
             <a href="#" id="mob-link-track" class="mobile-nav-item">
               <span>🔍</span> Track Inquiries & Admissions
+            </a>
+            <a href="#" id="mob-link-tour" class="mobile-nav-item" style="color: #047857; font-weight: 700; background: #ecfdf5;">
+              <span>🧭</span> Guided Role Tour (Parent, School, Supplier, Teacher)
             </a>
             <a href="#" id="mob-link-akosua-ai" class="mobile-nav-item" style="color: #1d4ed8; font-weight: 700; background: #eff6ff;">
               <span>👩🏾‍💼</span> Akosua AI Advisor (CSSPS & Admissions)
@@ -259,6 +266,18 @@ const Navbar = {
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
       State.logout();
+    });
+
+    document.getElementById('btn-nav-tour')?.addEventListener('click', () => {
+      Modals.openRoleTourModal();
+    });
+
+    document.getElementById('mob-link-tour')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.isMobileMenuOpen = false;
+      const drawer = document.getElementById('mobile-nav-drawer');
+      if (drawer) drawer.classList.remove('open');
+      Modals.openRoleTourModal();
     });
 
     document.getElementById('btn-nav-akosua-ai')?.addEventListener('click', () => {

@@ -97,6 +97,90 @@ const HomeView = {
         </div>
       </section>
 
+      <!-- Interactive Guided Role Tour Banner -->
+      <section style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); padding: 2.5rem 0; color: #ffffff;">
+        <div class="container">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+            <div>
+              <div style="font-size: 0.78rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+                <span>🇬🇭</span> Step-by-Step Experience Guide
+              </div>
+              <h3 style="color: #ffffff; font-size: 1.45rem; font-family: var(--font-heading); margin-top: 0.2rem; margin-bottom: 0.25rem;">
+                Explore SkoolFinder by Your Role
+              </h3>
+              <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; max-width: 620px;">
+                Select your perspective below to explore tailored workflows, 1-click live demo portals, and automated features.
+              </p>
+            </div>
+            <button id="btn-home-full-tour" class="btn-pill btn-gold" style="font-size: 0.88rem; padding: 0.6rem 1.25rem;">
+              <span>🧭</span> Launch Full Interactive Tour
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem;">
+            <!-- Role 1: Parent -->
+            <div class="home-role-tour-card" data-role="parent" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.75rem;">👨‍👩‍👧</span>
+                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(16,185,129,0.25); color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 100px;">PARENT</span>
+              </div>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Parent</h4>
+              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Find schools, predict BECE placement, apply online & pay fees via MTN/Telecel MoMo.
+              </p>
+              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Take Parent Tour &rarr;
+              </div>
+            </div>
+
+            <!-- Role 2: School -->
+            <div class="home-role-tour-card" data-role="school" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.75rem;">🏫</span>
+                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(245,158,11,0.25); color: #fde68a; padding: 0.2rem 0.5rem; border-radius: 100px;">SCHOOL</span>
+              </div>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a School Head</h4>
+              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Manage admissions, issue offer letters, publish report cards & send Hubtel SMS.
+              </p>
+              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Take School Tour &rarr;
+              </div>
+            </div>
+
+            <!-- Role 3: Supplier -->
+            <div class="home-role-tour-card" data-role="supplier" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.75rem;">📦</span>
+                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(59,130,246,0.25); color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">SUPPLIER</span>
+              </div>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Supplier</h4>
+              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Bid on school RFQs & tenders for desks, lab chemicals, ICT gear, and uniforms.
+              </p>
+              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Take Supplier Tour &rarr;
+              </div>
+            </div>
+
+            <!-- Role 4: Teacher -->
+            <div class="home-role-tour-card" data-role="teacher" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.75rem;">👨‍🏫</span>
+                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(236,72,153,0.25); color: #fbcfe8; padding: 0.2rem 0.5rem; border-radius: 100px;">TEACHER</span>
+              </div>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Teacher</h4>
+              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Find teaching jobs, list as a private tutor, and access WAEC syllabus & past papers.
+              </p>
+              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Take Teacher Tour &rarr;
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Featured Schools Section -->
       <section style="padding: 4.5rem 0; background: var(--bg-main);">
         <div class="container">
@@ -422,5 +506,17 @@ const HomeView = {
     document.getElementById('btn-home-cssps-calc')?.addEventListener('click', () => App.navigate('cssps'));
     document.getElementById('btn-home-register-school')?.addEventListener('click', () => Modals.openListSchoolModal());
     document.getElementById('btn-home-school-portal')?.addEventListener('click', () => App.navigate('dashboard', 'sch-gis-accra'));
+
+    // Role Tour Banner Events
+    document.getElementById('btn-home-full-tour')?.addEventListener('click', () => {
+      Modals.openRoleTourModal('parent');
+    });
+
+    document.querySelectorAll('.home-role-tour-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const role = card.dataset.role || 'parent';
+        Modals.openRoleTourModal(role);
+      });
+    });
   }
 };

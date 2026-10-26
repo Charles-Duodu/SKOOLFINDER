@@ -8290,6 +8290,487 @@ const Modals = {
     if (initialQuery) {
       setTimeout(() => runVerification(initialQuery), 100);
     }
+  },
+
+  openRoleTourModal(initialRole = 'parent') {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    const renderRoleContent = (role) => {
+      if (role === 'parent') {
+        return `
+          <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #a7f3d0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.75rem;">👨‍👩‍👧</span>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.15rem; color: #065f46; font-weight: 800;">Parent & Student Journey</h4>
+                  <div style="font-size: 0.8rem; color: #047857;">Discover schools, calculate BECE cut-offs, pay fees via MoMo & track your child's schooling.</div>
+                </div>
+              </div>
+              <button type="button" id="btn-tour-parent-launch" class="btn-pill btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <span>🚀</span> Launch Parent Portal
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: #047857; background: #d1fae5; padding: 0.4rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🔑</span> Demo Account: <strong>parent@gmail.com</strong> (Mrs. Nana Aba Mensah) • Password: <strong>ParentPass2026!</strong>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <!-- Stop 1 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase;">Step 1 • Discovery</span>
+                <span style="font-size: 1.1rem;">🏫</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Find & Filter Schools</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Filter schools across Greater Accra & Kumasi by curriculum (GES, Cambridge, IB), boarding, fees, and NaSIA accreditation.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="directory" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Browse School Directory &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 2 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Step 2 • Placement</span>
+                <span style="font-size: 1.1rem;">🎓</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">CSSPS Placement Predictor</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Input student BECE aggregates (e.g. Aggregate 06-12) to calculate admission odds into Category A, B, and C Senior High Schools.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="cssps" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Open CSSPS Calculator &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 3 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">Step 3 • Daily Schooling</span>
+                <span style="font-size: 1.1rem;">👨‍👩‍👧</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Unified Parent Portal</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Pay fees via MTN MoMo, view Terminal Report Cards, track school bus routes live, and check sickbay medical records.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="parent-portal" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Open Parent Portal &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 4 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #d97706; text-transform: uppercase;">Step 4 • Exam Prep</span>
+                <span style="font-size: 1.1rem;">📚</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Past Questions & Schemes</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Download authentic WAEC BECE and WASSCE past exam papers, marking guides, and Chief Examiner reports.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="past-questions" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Download Past Papers &rarr;
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (role === 'school') {
+        return `
+          <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1.5px solid #fde68a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.75rem;">🏫</span>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.15rem; color: #92400e; font-weight: 800;">School Administrator & Headteacher Journey</h4>
+                  <div style="font-size: 0.8rem; color: #b45309;">Manage admissions, issue official offer letters, collect fees via MoMo, broadcast SMS & enter grades.</div>
+                </div>
+              </div>
+              <button type="button" id="btn-tour-school-launch" class="btn-pill btn-gold" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <span>🚀</span> Launch GIS Admin Portal
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: #92400e; background: #fef3c7; padding: 0.4rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🔑</span> Demo Account: <strong>admin@gis.edu.gh</strong> (Dr. Mary Ashun - GIS) • Password: <strong>AdminPass2026!</strong>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <!-- Stop 1 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #d97706; text-transform: uppercase;">Feature 1 • Admissions</span>
+                <span style="font-size: 1.1rem;">📄</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Admissions & Offer Letters</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Review student applications, accept candidates, and automatically generate printable official Admission Offer Letters.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="dashboard" data-param="sch-gis-accra" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Open Admissions Dashboard &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 2 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">Feature 2 • Payments</span>
+                <span style="font-size: 1.1rem;">💳</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">School Fee Invoicing</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Create student invoices, view Paystack Mobile Money settlement timestamps, and reconcile fee payments in real-time.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="dashboard" data-param="sch-gis-accra" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                View Fee Invoices &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 3 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase;">Feature 3 • Hubtel SMS</span>
+                <span style="font-size: 1.1rem;">📱</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Bulk Parent SMS Broadcasts</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Send automated SMS alerts, PTA meeting invites, and emergency notices to parents via Hubtel with live credit balance tracking.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="dashboard" data-param="sch-gis-accra" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Open SMS Dispatcher &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 4 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">Feature 4 • Security & QR</span>
+                <span style="font-size: 1.1rem;">🛡️</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Digital Student IDs & Gate Pass</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Issue cryptographic QR student ID badges and scan credentials at school gates for real-time security verification.
+              </p>
+              <button type="button" class="btn-pill btn-outline" id="btn-tour-open-id-scanner" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Launch Gate Pass Scanner &rarr;
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (role === 'supplier') {
+        return `
+          <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.75rem;">📦</span>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.15rem; color: #1e40af; font-weight: 800;">Educational Supplier & Procurement Journey</h4>
+                  <div style="font-size: 0.8rem; color: #1d4ed8;">Bid on institutional RFQs, quote on uniforms, desks, and lab kits, and connect directly with schools.</div>
+                </div>
+              </div>
+              <button type="button" id="btn-tour-supplier-launch" class="btn-pill btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem;">
+                <span>🚀</span> Browse School Tenders (RFQs)
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: #1e40af; background: #dbeafe; padding: 0.4rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>💼</span> Open to all verified Ghanaian educational suppliers, bookshops, and fabricators.
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <!-- Stop 1 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">Opportunity 1 • Tenders</span>
+                <span style="font-size: 1.1rem;">📑</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">School Requests for Quote (RFQs)</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Browse public procurement tenders posted by schools for science chemicals, student desks, dining hall supplies, and uniforms.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="suppliers" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                View Active School RFQs &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 2 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">Opportunity 2 • Quoting</span>
+                <span style="font-size: 1.1rem;">💰</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Submit Instant Quotations</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Submit your competitive unit pricing in GH₵, delivery lead times, and product warranties directly to school procurement committees.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="suppliers" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Learn Quoting Process &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 3 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #d97706; text-transform: uppercase;">Opportunity 3 • Visibility</span>
+                <span style="font-size: 1.1rem;">🏪</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">List Your Supply Business</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Register your enterprise in the national directory so schools can contact you directly for direct procurement.
+              </p>
+              <button type="button" class="btn-pill btn-outline" id="btn-tour-open-supplier-modal" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Register Supplier Profile &rarr;
+              </button>
+            </div>
+          </div>
+        `;
+      } else if (role === 'teacher') {
+        return `
+          <div style="background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%); border: 1.5px solid #fbcfe8; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <span style="font-size: 1.75rem;">👨‍🏫</span>
+                <div>
+                  <h4 style="margin: 0; font-size: 1.15rem; color: #9d174d; font-weight: 800;">Teacher & Private Tutor Journey</h4>
+                  <div style="font-size: 0.8rem; color: #be185d;">Find teaching jobs, list as a verified private home/online tutor, and access WAEC lesson resources.</div>
+                </div>
+              </div>
+              <button type="button" id="btn-tour-teacher-launch" class="btn-pill btn-primary" style="font-size: 0.85rem; padding: 0.5rem 1rem; background: #be185d; border-color: #9d174d;">
+                <span>🚀</span> Explore Teaching Hub
+              </button>
+            </div>
+            <div style="font-size: 0.75rem; color: #9d174d; background: #fce7f3; padding: 0.4rem 0.75rem; border-radius: 6px; display: inline-flex; align-items: center; gap: 0.4rem;">
+              <span>🔑</span> Demo Account: <strong>tutor@skoolfinder.com</strong> (Mr. Emmanuel Addo) • Password: <strong>TeacherPass2026!</strong>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <!-- Stop 1 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #be185d; text-transform: uppercase;">Step 1 • Vacancies</span>
+                <span style="font-size: 1.1rem;">💼</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Find Teaching Jobs</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Filter openings by subject (Math, Physics, English, ICT), grade level, and curriculum (WASSCE, Cambridge, IB).
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="jobs" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Browse Teaching Openings &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 2 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase;">Step 2 • Private Tutoring</span>
+                <span style="font-size: 1.1rem;">🎓</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">Register as Private Tutor</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Set your hourly rate in GH₵, specify subjects, and receive direct WhatsApp/phone inquiries from interested parents.
+              </p>
+              <button type="button" class="btn-pill btn-outline" id="btn-tour-open-tutor-modal" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Create Tutor Profile &rarr;
+              </button>
+            </div>
+
+            <!-- Stop 3 -->
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: 10px; padding: 1rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase;">Step 3 • Curriculum</span>
+                <span style="font-size: 1.1rem;">📖</span>
+              </div>
+              <h5 style="margin: 0 0 0.35rem 0; font-size: 0.95rem; font-weight: 700;">WAEC Past Questions & Syllabus</h5>
+              <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.75rem;">
+                Prepare class lesson notes with syllabus guides, Chief Examiner reports, and past question papers with solutions.
+              </p>
+              <button type="button" class="btn-pill btn-outline btn-tour-jump" data-view="past-questions" style="font-size: 0.75rem; padding: 0.35rem 0.65rem; width: 100%; justify-content: center;">
+                Access Past Papers &rarr;
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    };
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 820px; border-radius: var(--radius-xl); overflow: hidden;">
+        <!-- Header -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.5rem 1.75rem;">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🇬🇭</span> SkoolFinder Interactive Navigation Tour
+            </div>
+            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Choose Your Perspective</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1;">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.5rem 1.75rem;">
+          <!-- Role Navigation Tabs -->
+          <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid var(--border-light); padding-bottom: 0.75rem; margin-bottom: 1.25rem; overflow-x: auto;">
+            <button type="button" class="btn-pill role-tour-tab ${initialRole === 'parent' ? 'btn-primary' : 'btn-outline'}" data-role="parent" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
+              <span>👨‍👩‍👧</span> Parent & Student
+            </button>
+            <button type="button" class="btn-pill role-tour-tab ${initialRole === 'school' ? 'btn-primary' : 'btn-outline'}" data-role="school" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
+              <span>🏫</span> School & Headteacher
+            </button>
+            <button type="button" class="btn-pill role-tour-tab ${initialRole === 'supplier' ? 'btn-primary' : 'btn-outline'}" data-role="supplier" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
+              <span>📦</span> Educational Supplier
+            </button>
+            <button type="button" class="btn-pill role-tour-tab ${initialRole === 'teacher' ? 'btn-primary' : 'btn-outline'}" data-role="teacher" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
+              <span>👨‍🏫</span> Teacher & Tutor
+            </button>
+          </div>
+
+          <!-- Dynamic Role Body Container -->
+          <div id="role-tour-content-container">
+            ${renderRoleContent(initialRole)}
+          </div>
+
+          <!-- Quick Jump Bar -->
+          <div style="background: #f8fafc; border-top: 1px solid var(--border-light); padding: 0.85rem 1rem; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">
+              Need advice on Ghanaian schools or BECE cut-offs?
+            </div>
+            <button type="button" id="btn-tour-ask-akosua" class="btn-pill" style="font-size: 0.78rem; padding: 0.4rem 0.85rem; background: #0a1128; color: #fbbf24; border: 1px solid #f59e0b;">
+              <span>👩🏾‍💼</span> Chat with Akosua AI Advisor
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+
+    const container = document.getElementById('role-tour-content-container');
+
+    const attachRoleEvents = (currentRole) => {
+      // 1. Jump buttons
+      document.querySelectorAll('.btn-tour-jump').forEach(btn => {
+        btn.onclick = () => {
+          const view = btn.dataset.view;
+          const param = btn.dataset.param || null;
+          this.close();
+          App.navigate(view, param);
+        };
+      });
+
+      // 2. Akosua button
+      document.getElementById('btn-tour-ask-akosua').onclick = () => {
+        this.close();
+        if (typeof AIChatbot !== 'undefined') {
+          AIChatbot.open();
+        }
+      };
+
+      // 3. Parent 1-click launch
+      const parentLaunch = document.getElementById('btn-tour-parent-launch');
+      if (parentLaunch) {
+        parentLaunch.onclick = async () => {
+          this.close();
+          try {
+            const res = await API.login('parent@gmail.com', 'ParentPass2026!');
+            State.setCurrentUser(res.user, res.token);
+            if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+              document.getElementById('header-root').innerHTML = Navbar.render();
+              Navbar.attachEvents();
+            }
+            State.showToast("Logged in as Mrs. Nana Aba Mensah. Welcome to your Parent Portal!", "success");
+            App.navigate('parent-portal');
+          } catch (e) {
+            App.navigate('parent-portal');
+          }
+        };
+      }
+
+      // 4. School 1-click launch
+      const schoolLaunch = document.getElementById('btn-tour-school-launch');
+      if (schoolLaunch) {
+        schoolLaunch.onclick = async () => {
+          this.close();
+          try {
+            const res = await API.login('admin@gis.edu.gh', 'AdminPass2026!');
+            State.setCurrentUser(res.user, res.token);
+            if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+              document.getElementById('header-root').innerHTML = Navbar.render();
+              Navbar.attachEvents();
+            }
+            State.showToast("Logged in as Dr. Mary Ashun (GIS Head). Opening Management Dashboard!", "success");
+            App.navigate('dashboard', 'sch-gis-accra');
+          } catch (e) {
+            App.navigate('dashboard', 'sch-gis-accra');
+          }
+        };
+      }
+
+      // 5. Supplier 1-click launch
+      const supplierLaunch = document.getElementById('btn-tour-supplier-launch');
+      if (supplierLaunch) {
+        supplierLaunch.onclick = () => {
+          this.close();
+          App.navigate('suppliers');
+        };
+      }
+
+      // 6. Teacher 1-click launch
+      const teacherLaunch = document.getElementById('btn-tour-teacher-launch');
+      if (teacherLaunch) {
+        teacherLaunch.onclick = async () => {
+          this.close();
+          try {
+            const res = await API.login('tutor@skoolfinder.com', 'TeacherPass2026!');
+            State.setCurrentUser(res.user, res.token);
+            if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+              document.getElementById('header-root').innerHTML = Navbar.render();
+              Navbar.attachEvents();
+            }
+            State.showToast("Logged in as Mr. Emmanuel Addo. Welcome to Teaching Hub!", "success");
+            App.navigate('jobs');
+          } catch (e) {
+            App.navigate('jobs');
+          }
+        };
+      }
+
+      // 7. Modals
+      document.getElementById('btn-tour-open-id-scanner')?.addEventListener('click', () => {
+        this.openDigitalIDVerificationModal();
+      });
+
+      document.getElementById('btn-tour-open-supplier-modal')?.addEventListener('click', () => {
+        this.openAddSupplierModal();
+      });
+
+      document.getElementById('btn-tour-open-tutor-modal')?.addEventListener('click', () => {
+        this.openAddTeacherModal();
+      });
+    };
+
+    attachRoleEvents(initialRole);
+
+    // Tab switching
+    document.querySelectorAll('.role-tour-tab').forEach(tab => {
+      tab.onclick = () => {
+        document.querySelectorAll('.role-tour-tab').forEach(t => {
+          t.className = 'btn-pill role-tour-tab btn-outline';
+        });
+        tab.className = 'btn-pill role-tour-tab btn-primary';
+        const role = tab.dataset.role;
+        container.innerHTML = renderRoleContent(role);
+        attachRoleEvents(role);
+      };
+    });
   }
 
 };
+
