@@ -2330,6 +2330,42 @@
       "schoolId": "sch-gis-accra",
       "type": "view",
       "timestamp": "2026-10-26T05:46:17.059Z"
+    },
+    {
+      "id": "lead-1793050342807",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-26T21:32:22.807Z"
+    },
+    {
+      "id": "lead-1793050342835",
+      "schoolId": "sch-gis-accra",
+      "type": "whatsapp_reveal",
+      "timestamp": "2026-10-26T21:32:22.835Z"
+    },
+    {
+      "id": "lead-1793050342863",
+      "schoolId": "sch-gis-accra",
+      "type": "admission_application",
+      "timestamp": "2026-10-26T21:32:22.863Z"
+    },
+    {
+      "id": "lead-1793050446136",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-26T21:34:06.136Z"
+    },
+    {
+      "id": "lead-1793050446157",
+      "schoolId": "sch-gis-accra",
+      "type": "whatsapp_reveal",
+      "timestamp": "2026-10-26T21:34:06.157Z"
+    },
+    {
+      "id": "lead-1793050446187",
+      "schoolId": "sch-gis-accra",
+      "type": "admission_application",
+      "timestamp": "2026-10-26T21:34:06.187Z"
     }
   ],
   "claims": [],
@@ -2347,6 +2383,40 @@
     }
   ],
   "transactions": [
+    {
+      "id": "tx-1793050446203",
+      "reference": "SD-PAY-LEC5-5635",
+      "amount": 350,
+      "currency": "GHS",
+      "purpose": "subscription",
+      "payerName": "Dr. Kwame Addo",
+      "payerPhone": "+233 24 412 3456",
+      "network": "MTN Mobile Money",
+      "targetId": "sch-gis-accra",
+      "targetTitle": "SkoolFinder Service",
+      "status": "success",
+      "timestamp": "2026-10-26T21:34:06.203Z",
+      "receiptNumber": "SD-REC-50446216",
+      "completedAt": "2026-10-26T21:34:06.216Z",
+      "authCode": "123456"
+    },
+    {
+      "id": "tx-1793050342885",
+      "reference": "SD-PAY-3LTV-3615",
+      "amount": 350,
+      "currency": "GHS",
+      "purpose": "subscription",
+      "payerName": "Dr. Kwame Addo",
+      "payerPhone": "+233 24 412 3456",
+      "network": "MTN Mobile Money",
+      "targetId": "sch-gis-accra",
+      "targetTitle": "SkoolFinder Service",
+      "status": "success",
+      "timestamp": "2026-10-26T21:32:22.885Z",
+      "receiptNumber": "SD-REC-50342891",
+      "completedAt": "2026-10-26T21:32:22.891Z",
+      "authCode": "123456"
+    },
     {
       "id": "tx-1792879544854",
       "type": "school_fee",
@@ -2817,6 +2887,110 @@
     }
   ],
   "admissionApplications": [
+    {
+      "id": "app-1793050446187",
+      "applicationNumber": "SD-ADM-2026-8433",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "termApplied": "Term 1 (September 2026)",
+      "gradeApplying": "Primary 1",
+      "curriculum": "Cambridge Primary",
+      "status": "Received",
+      "entranceExamDate": "Pending Review by Admissions Desk",
+      "createdAt": "2026-10-26T21:34:06.187Z",
+      "student": {
+        "fullName": "Kofi Mensah Addo",
+        "gender": "Male",
+        "dateOfBirth": "2018-01-01",
+        "nationality": "Ghanaian",
+        "religiousAffiliation": "Christian",
+        "bloodGroup": "O+",
+        "allergies": "None declared",
+        "emergencyContact": "+233 24 412 3456"
+      },
+      "previousSchool": {
+        "schoolName": "First time school entry",
+        "lastClassPassed": "Kindergarten",
+        "reasonForTransfer": "Enrollment progression"
+      },
+      "parentGuardian": {
+        "primaryGuardianName": "Dr. Kwame Addo",
+        "relationship": "Parent / Guardian",
+        "occupation": "Professional",
+        "residentialAddress": "Cantonments",
+        "phone": "+233 24 412 3456",
+        "whatsapp": "+233 24 412 3456",
+        "email": "kwame.addo@example.gh",
+        "secondaryContactName": "",
+        "secondaryPhone": ""
+      },
+      "documentsSubmitted": [
+        {
+          "docType": "Birth Certificate",
+          "fileName": "birth_cert_kofi_mensah_addo.pdf",
+          "verified": true
+        },
+        {
+          "docType": "Immunization Card",
+          "fileName": "immunization_record.pdf",
+          "verified": true
+        }
+      ],
+      "adminNotes": "Submitted via SkoolFinder Digital Admissions Portal.",
+      "decisionDate": null
+    },
+    {
+      "id": "app-1793050342863",
+      "applicationNumber": "SD-ADM-2026-4275",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "termApplied": "Term 1 (September 2026)",
+      "gradeApplying": "Primary 1",
+      "curriculum": "Cambridge Primary",
+      "status": "Received",
+      "entranceExamDate": "Pending Review by Admissions Desk",
+      "createdAt": "2026-10-26T21:32:22.863Z",
+      "student": {
+        "fullName": "Kofi Mensah Addo",
+        "gender": "Male",
+        "dateOfBirth": "2018-01-01",
+        "nationality": "Ghanaian",
+        "religiousAffiliation": "Christian",
+        "bloodGroup": "O+",
+        "allergies": "None declared",
+        "emergencyContact": "+233 24 412 3456"
+      },
+      "previousSchool": {
+        "schoolName": "First time school entry",
+        "lastClassPassed": "Kindergarten",
+        "reasonForTransfer": "Enrollment progression"
+      },
+      "parentGuardian": {
+        "primaryGuardianName": "Dr. Kwame Addo",
+        "relationship": "Parent / Guardian",
+        "occupation": "Professional",
+        "residentialAddress": "Cantonments",
+        "phone": "+233 24 412 3456",
+        "whatsapp": "+233 24 412 3456",
+        "email": "kwame.addo@example.gh",
+        "secondaryContactName": "",
+        "secondaryPhone": ""
+      },
+      "documentsSubmitted": [
+        {
+          "docType": "Birth Certificate",
+          "fileName": "birth_cert_kofi_mensah_addo.pdf",
+          "verified": true
+        },
+        {
+          "docType": "Immunization Card",
+          "fileName": "immunization_record.pdf",
+          "verified": true
+        }
+      ],
+      "adminNotes": "Submitted via SkoolFinder Digital Admissions Portal.",
+      "decisionDate": null
+    },
     {
       "id": "app-1792795416829",
       "applicationNumber": "SD-ADM-2026-9139",

@@ -46,13 +46,11 @@ const Navbar = {
                 📚 Past Questions
               </a>
             </li>
-            ${State.currentUser && State.currentUser.role === 'parent' ? `
-              <li>
-                <a href="#" id="nav-link-parent" class="nav-link ${State.currentView === 'parent-portal' ? 'active' : ''}" style="color: var(--primary-700); font-weight: 700;">
-                  👨‍👩‍👧 My Admissions
-                </a>
-              </li>
-            ` : ''}
+            <li>
+              <a href="#" id="nav-link-parent" class="nav-link ${State.currentView === 'parent-portal' ? 'active' : ''}" style="color: var(--primary-700); font-weight: 700;">
+                👨‍👩‍👧 Parent Portal
+              </a>
+            </li>
             <li>
               <a href="#" id="nav-link-dashboard" class="nav-link ${State.currentView === 'dashboard' ? 'active' : ''}">
                 ${State.isAuthenticated() && State.isSchoolAdmin() ? '🏫 School Portal' : '🔒 School Portal'}
@@ -145,11 +143,9 @@ const Navbar = {
             <a href="#" id="mob-link-resources" class="mobile-nav-item ${State.currentView === 'past-questions' ? 'active' : ''}">
               <span>📚</span> Past Questions & Schemes
             </a>
-            ${State.currentUser && State.currentUser.role === 'parent' ? `
-              <a href="#" id="mob-link-parent" class="mobile-nav-item ${State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> My Admissions & Inquiries
-              </a>
-            ` : ''}
+            <a href="#" id="mob-link-parent" class="mobile-nav-item ${State.currentView === 'parent-portal' ? 'active' : ''}">
+              <span>👨‍👩‍👧</span> Parent & Student Portal
+            </a>
             <a href="#" id="mob-link-dashboard" class="mobile-nav-item ${State.currentView === 'dashboard' ? 'active' : ''}">
               <span>${State.isAuthenticated() && State.isSchoolAdmin() ? '🏫' : '🔒'}</span> School Admin Portal
             </a>

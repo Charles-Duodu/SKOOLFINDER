@@ -66,7 +66,36 @@ This document outlines the complete operational procedures for containerizing, d
 
 ---
 
-## 3. Quick Start with Docker & Docker Compose
+## 3. Deploy to Render Cloud (Fastest Free Option - 2 Minutes)
+
+Render provides automatic Git-push deployments and free SSL/HTTPS certificates:
+
+1. Go to **[https://dashboard.render.com](https://dashboard.render.com)** and sign in with GitHub.
+2. Click **New +** ➔ **Web Service**.
+3. Select your repository: **`Charles-Duodu/SKOOLFINDER`**.
+4. Render will automatically detect Node.js:
+   - **Name**: `skoolfinder-ghana`
+   - **Region**: Frankfurt (closest European region to Ghana)
+   - **Branch**: `main`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Free
+5. Under **Environment Variables**, add:
+   - `DATABASE_URL`: *(Your Neon PostgreSQL connection string)*
+   - `NODE_ENV`: `production`
+   - `PORT`: `3000`
+   - `TZ`: `Africa/Accra`
+   - `PAYSTACK_PUBLIC_KEY`: `pk_live_...` (or test key)
+   - `PAYSTACK_SECRET_KEY`: `sk_live_...` (or test key)
+   - `HUBTEL_CLIENT_ID`: *(Your Hubtel Client ID)*
+   - `HUBTEL_CLIENT_SECRET`: *(Your Hubtel Client Secret)*
+   - `HUBTEL_SENDER_ID`: `SkoolFinder`
+6. Click **Deploy Web Service**.
+7. In ~2 minutes, your platform will be live at `https://skoolfinder-ghana.onrender.com`!
+
+---
+
+## 4. Quick Start with Docker & Docker Compose
 
 ### Step 1: Clone Repository & Enter Directory
 ```bash
