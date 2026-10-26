@@ -287,7 +287,7 @@ CREATE TABLE IF NOT EXISTS teachers (
     subjects JSONB DEFAULT '[]'::jsonb,
     curriculum JSONB DEFAULT '[]'::jsonb,
     levels JSONB DEFAULT '[]'::jsonb,
-    teaching_mode VARCHAR(50) DEFAULT 'Hybrid',
+    teaching_mode VARCHAR(150) DEFAULT 'Hybrid',
     hourly_rate_ghs NUMERIC(10, 2) NOT NULL,
     region VARCHAR(100) NOT NULL,
     suburb VARCHAR(100),
@@ -482,7 +482,7 @@ CREATE INDEX IF NOT EXISTS idx_digital_id_qr ON student_digital_ids(qr_verificat
 -- 23. Leads & Conversion Telemetry
 CREATE TABLE IF NOT EXISTS leads (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) REFERENCES schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100),
     type VARCHAR(50) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

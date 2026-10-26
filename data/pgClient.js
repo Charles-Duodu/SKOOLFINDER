@@ -27,18 +27,25 @@ class PostgreSQLClient {
     }
 
     try {
-      const isProduction = process.env.NODE_ENV === 'production';
       const connectionString = process.env.DATABASE_URL;
+      const isCloudOrProd = process.env.NODE_ENV === 'production' || 
+        Boolean(connectionString && (
+          connectionString.includes('sslmode=require') || 
+          connectionString.includes('neon.tech') || 
+          connectionString.includes('supabase.co') ||
+          connectionString.includes('render.com') ||
+          connectionString.includes('amazonaws.com')
+        ));
 
       const config = connectionString
         ? {
             connectionString,
-            ssl: isProduction && !connectionString.includes('localhost') && !connectionString.includes('@postgres:')
+            ssl: isCloudOrProd && !connectionString.includes('localhost') && !connectionString.includes('@postgres:')
               ? { rejectUnauthorized: false }
               : false,
             max: parseInt(process.env.PG_POOL_MAX || '20', 10),
             idleTimeoutMillis: 30000,
-            connectionTimeoutMillis: 5000
+            connectionTimeoutMillis: 10000
           }
         : {
             host: process.env.PGHOST || 'localhost',

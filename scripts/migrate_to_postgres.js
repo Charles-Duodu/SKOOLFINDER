@@ -102,6 +102,16 @@ async function runMigration() {
   try {
     const schemaResult = await pgClient.initSchema();
     console.log(`   ${schemaResult.message}\n`);
+    // Ensure column widening in case tables were previously initialized with narrower columns
+    const clientPre = await pgClient.pool.connect();
+    try {
+      await clientPre.query(`
+        ALTER TABLE IF EXISTS teachers ALTER COLUMN teaching_mode TYPE VARCHAR(150);
+        ALTER TABLE IF EXISTS admission_applications ALTER COLUMN grade_applying TYPE VARCHAR(100);
+      `);
+    } catch (_) {} finally {
+      clientPre.release();
+    }
   } catch (err) {
     console.error(`❌ Failed applying schema: ${err.message}`);
     process.exit(1);
@@ -114,6 +124,26 @@ async function runMigration() {
   const client = await pgClient.pool.connect();
   try {
     await client.query('BEGIN');
+
+    // Build lookup set of valid school IDs and alias resolver
+    const schoolIdsSet = new Set((dbData.schools || []).map(s => s.id));
+    const fallbackSchoolId = dbData.schools?.[0]?.id || 'sch-gis-accra';
+
+    const SCHOOL_ALIASES = {
+      'sch-roman-ridge': 'sch-roman-ridge-accra',
+      'sch-galaxy-accra': 'sch-galaxy-international-accra'
+    };
+
+    function resolveSchoolId(id, allowNull = false) {
+      if (!id) return allowNull ? null : fallbackSchoolId;
+      const mapped = SCHOOL_ALIASES[id] || id;
+      if (schoolIdsSet.has(mapped)) {
+        return mapped;
+      }
+      if (allowNull) return null;
+      console.warn(`   ⚠️ Warning: School ID '${id}' not in schools table. Using '${fallbackSchoolId}'.`);
+      return fallbackSchoolId;
+    }
 
     // 4.1 Schools
     if (Array.isArray(dbData.schools)) {
@@ -153,7 +183,7 @@ async function runMigration() {
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, role = EXCLUDED.role;
         `, [
           u.id, u.email, u.phone || '', u.name, u.password || 'demo123',
-          u.role, u.schoolId || null, u.avatar || '👤', Boolean(u.verified)
+          u.role, resolveSchoolId(u.schoolId, true), u.avatar || '👤', Boolean(u.verified)
         ]);
       }
       stats.users = dbData.users.length;
@@ -167,11 +197,22 @@ async function runMigration() {
             id, reference_number, school_id, student_first_name, student_last_name,
             grade_applying, parent_name, parent_email, parent_phone, status, notes
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-          ON CONFLICT (id) DO NOTHING;
+          ON CONFLICT (id) DO UPDATE SET
+            school_id = EXCLUDED.school_id,
+            status = EXCLUDED.status,
+            updated_at = CURRENT_TIMESTAMP;
         `, [
-          a.id, a.referenceNumber || a.id, a.schoolId, a.studentFirstName || a.studentName || 'Student',
-          a.studentLastName || '', a.gradeApplying || 'Primary', a.parentName || 'Parent',
-          a.parentEmail || '', a.parentPhone || '', a.status || 'pending', a.notes || ''
+          a.id,
+          a.referenceNumber || a.applicationNumber || a.id,
+          resolveSchoolId(a.schoolId),
+          a.studentFirstName || (a.student?.fullName ? a.student.fullName.split(' ')[0] : 'Student'),
+          a.studentLastName || (a.student?.fullName ? a.student.fullName.split(' ').slice(1).join(' ') : 'Applicant'),
+          a.gradeApplying || 'Primary',
+          a.parentName || a.parentGuardian?.primaryGuardianName || 'Parent',
+          a.parentEmail || a.parentGuardian?.email || 'parent@example.com',
+          a.parentPhone || a.parentGuardian?.phone || '+233000000000',
+          a.status || 'pending',
+          a.notes || a.adminNotes || ''
         ]);
       }
       stats.admissionApplications = dbData.admissionApplications.length;
@@ -187,10 +228,21 @@ async function runMigration() {
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
           ON CONFLICT (id) DO NOTHING;
         `, [
-          inv.id, inv.invoiceNumber || inv.id, inv.schoolId, inv.studentName, inv.gradeLevel || '',
-          inv.term || 'Term 1', inv.academicYear || '2026/2027', inv.parentName || '', inv.parentEmail || '',
-          inv.parentPhone || '', inv.tuitionAmount || 0, inv.totalAmount || inv.amount || 0,
-          inv.amountPaid || 0, inv.balance || 0, inv.status || 'unpaid'
+          inv.id,
+          inv.invoiceNumber || inv.id,
+          resolveSchoolId(inv.schoolId),
+          inv.studentName || 'Student',
+          inv.studentGrade || inv.gradeLevel || '',
+          inv.term || 'Term 1',
+          inv.academicYear || '2026/2027',
+          inv.parentName || '',
+          inv.parentEmail || '',
+          inv.parentPhone || '',
+          inv.tuitionAmount || 0,
+          inv.totalAmount || inv.amount || 0,
+          inv.amountPaid || 0,
+          inv.balanceDue !== undefined ? inv.balanceDue : (inv.balance || 0),
+          inv.status || 'unpaid'
         ]);
       }
       stats.invoices = dbData.invoices.length;
@@ -216,12 +268,23 @@ async function runMigration() {
     // 4.6 RFQs
     if (Array.isArray(dbData.rfqs)) {
       for (const r of dbData.rfqs) {
+        const parsedQty = parseInt(String(r.quantity || '1').replace(/[^0-9]/g, ''), 10) || 1;
         await client.query(`
-          INSERT INTO rfqs (id, rfq_number, school_id, title, category, quantity, specifications, status)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+          INSERT INTO rfqs (id, rfq_number, school_id, title, category, quantity, unit_description, delivery_deadline, budget_range_ghs, specifications, status)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           ON CONFLICT (id) DO NOTHING;
         `, [
-          r.id, r.rfqNumber || r.id, r.schoolId, r.title, r.category, r.quantity || 1, r.specifications || '', r.status || 'open'
+          r.id,
+          r.rfqNumber || ('RFQ-' + r.id),
+          resolveSchoolId(r.schoolId),
+          r.title,
+          r.category,
+          parsedQty,
+          String(r.quantity || 'units'),
+          r.deadline || null,
+          r.budgetRange || '',
+          r.description || r.specifications || 'Standard specifications',
+          r.status || 'open'
         ]);
       }
       stats.rfqs = dbData.rfqs.length;
@@ -230,12 +293,23 @@ async function runMigration() {
     // 4.7 Jobs
     if (Array.isArray(dbData.jobs)) {
       for (const j of dbData.jobs) {
+        const curriculumStr = Array.isArray(j.curriculum) ? j.curriculum.join(', ') : (j.curriculum || 'General');
+        const levelStr = Array.isArray(j.level) ? j.level.join(', ') : (j.level || 'Secondary');
         await client.query(`
           INSERT INTO jobs (id, school_id, title, subject, level, curriculum, region, salary_range_ghs, description, status)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
           ON CONFLICT (id) DO NOTHING;
         `, [
-          j.id, j.schoolId, j.title, j.subject, j.level, j.curriculum, j.region, j.salaryRange || '', j.description || '', j.status || 'active'
+          j.id,
+          resolveSchoolId(j.schoolId, true),
+          j.title,
+          j.subject || 'General Instruction',
+          levelStr,
+          curriculumStr,
+          j.region || 'Greater Accra',
+          j.salaryRange || j.salary_range_ghs || '',
+          j.description || `${j.title} opening at ${j.schoolName || 'partner institution'}.`,
+          j.status || 'active'
         ]);
       }
       stats.jobs = dbData.jobs.length;
@@ -244,14 +318,29 @@ async function runMigration() {
     // 4.8 Teachers / Tutors
     if (Array.isArray(dbData.teachers)) {
       for (const t of dbData.teachers) {
+        const parsedRate = parseInt(String(t.rate || t.hourlyRateGHS || t.hourlyRate || '80').replace(/[^0-9]/g, ''), 10) || 80;
+        const mode = (Array.isArray(t.teachingModes) ? t.teachingModes.join(', ') : (t.teachingMode || 'Hybrid')).slice(0, 150);
         await client.query(`
           INSERT INTO teachers (id, name, subjects, curriculum, levels, teaching_mode, hourly_rate_ghs, region, suburb, phone, whatsapp, bio, rating)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-          ON CONFLICT (id) DO NOTHING;
+          ON CONFLICT (id) DO UPDATE SET
+            name = EXCLUDED.name,
+            teaching_mode = EXCLUDED.teaching_mode,
+            hourly_rate_ghs = EXCLUDED.hourly_rate_ghs;
         `, [
-          t.id, t.name, JSON.stringify(t.subjects || []), JSON.stringify(t.curriculum || []), JSON.stringify(t.levels || []),
-          t.teachingMode || 'Hybrid', t.hourlyRateGHS || t.hourlyRate || 80, t.region || 'Greater Accra',
-          t.suburb || '', t.phone || '', t.whatsapp || '', t.bio || '', t.rating || 5.0
+          t.id,
+          t.name || t.fullName || 'Certified Teacher',
+          JSON.stringify(t.subjects || []),
+          JSON.stringify(t.curricula || t.curriculum || []),
+          JSON.stringify(t.levels || []),
+          mode,
+          parsedRate,
+          t.region || 'Greater Accra',
+          t.suburb || '',
+          t.phone || t.whatsapp || '+233000000000',
+          t.whatsapp || t.phone || '',
+          t.bio || t.headline || '',
+          t.rating || 5.0
         ]);
       }
       stats.teachers = dbData.teachers.length;
@@ -267,13 +356,80 @@ async function runMigration() {
           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
           ON CONFLICT (id) DO NOTHING;
         `, [
-          idCard.id, idCard.indexNumber, idCard.schoolId, idCard.studentName, idCard.gradeLevel,
-          idCard.house || '', idCard.bloodGroup || 'O+', idCard.genotype || 'AA', idCard.medicalAlert || 'None',
-          idCard.busPassRoute || '', idCard.busPassStatus || 'active', idCard.qrVerificationCode || idCard.indexNumber,
-          idCard.signatureHash || 'sha256-verified', idCard.status || 'active', idCard.expiryDate || '2027-08-31'
+          idCard.id,
+          idCard.indexNumber || idCard.id,
+          resolveSchoolId(idCard.schoolId),
+          idCard.studentName || idCard.studentId || 'Student',
+          idCard.gradeLevel || 'Class 1',
+          idCard.house || '',
+          idCard.bloodGroup || 'O+',
+          idCard.genotype || 'AA',
+          idCard.medicalAlert || 'None',
+          idCard.busPassRoute || '',
+          idCard.busPassStatus || 'active',
+          idCard.qrVerificationCode || idCard.barcodeNumber || idCard.indexNumber || idCard.id,
+          idCard.verificationHash || idCard.signatureHash || 'sha256-verified',
+          idCard.status || 'active',
+          idCard.expiryDate || '2027-08-31'
         ]);
       }
       stats.studentDigitalIDs = dbData.studentDigitalIDs.length;
+    }
+
+    // 4.10 Reviews
+    if (Array.isArray(dbData.reviews)) {
+      for (const rev of dbData.reviews) {
+        await client.query(`
+          INSERT INTO reviews (
+            id, school_id, author_name, author_email, parent_child_grade,
+            verified_parent, rating_overall, rating_academics, rating_facilities,
+            rating_discipline, rating_fees_value, title, content, helpful_count,
+            headteacher_reply, status
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+          ON CONFLICT (id) DO NOTHING;
+        `, [
+          rev.id,
+          resolveSchoolId(rev.schoolId),
+          rev.authorName || 'Parent Reviewer',
+          rev.authorEmail || '',
+          rev.wardGrade || rev.parentChildGrade || '',
+          Boolean(rev.verifiedBadge || rev.verifiedParent),
+          rev.overallRating || 5.0,
+          rev.dimensions?.academics || 5.0,
+          rev.dimensions?.facilities || 5.0,
+          rev.dimensions?.discipline || 5.0,
+          rev.dimensions?.valueForMoney || 5.0,
+          rev.title || '',
+          rev.content || 'Great school environment.',
+          rev.helpfulCount || 0,
+          rev.officialReply ? rev.officialReply.message : (rev.headteacherReply || null),
+          rev.status || 'published'
+        ]);
+      }
+      stats.reviews = dbData.reviews.length;
+    }
+
+    // 4.11 Inquiries
+    if (Array.isArray(dbData.inquiries)) {
+      for (const inq of dbData.inquiries) {
+        await client.query(`
+          INSERT INTO inquiries (
+            id, inquiry_number, school_id, parent_name, parent_email, parent_phone, child_grade_applying, message, status
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (id) DO NOTHING;
+        `, [
+          inq.id,
+          inq.inquiryNumber || ('INQ-' + inq.id),
+          resolveSchoolId(inq.schoolId),
+          inq.parentName || inq.name || 'Parent',
+          inq.email || inq.parentEmail || '',
+          inq.phone || inq.parentPhone || '+233000000000',
+          inq.grade || inq.childGrade || inq.childGradeApplying || '',
+          inq.message || inq.inquiryDetails || 'General inquiry',
+          inq.status || 'open'
+        ]);
+      }
+      stats.inquiries = dbData.inquiries.length;
     }
 
     await client.query('COMMIT');

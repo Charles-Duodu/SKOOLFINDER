@@ -3038,7 +3038,7 @@
     {
       "id": "app-2026-004",
       "applicationNumber": "SD-ADM-2026-7731",
-      "schoolId": "sch-roman-ridge",
+      "schoolId": "sch-roman-ridge-accra",
       "schoolName": "The Roman Ridge School",
       "termApplied": "Term 1 (September 2026)",
       "gradeApplying": "Senior High School (Year 10 / IGCSE)",
@@ -3276,7 +3276,7 @@
     },
     {
       "id": "rev-2026-005",
-      "schoolId": "sch-roman-ridge",
+      "schoolId": "sch-roman-ridge-accra",
       "schoolName": "The Roman Ridge School",
       "authorName": "Mrs. Cynthia Opoku-Ware",
       "affiliation": "Verified Current Parent",
@@ -3304,7 +3304,7 @@
     },
     {
       "id": "rev-2026-006",
-      "schoolId": "sch-galaxy-accra",
+      "schoolId": "sch-galaxy-international-accra",
       "schoolName": "Galaxy International School",
       "authorName": "Alhaji Farouk Ibrahim",
       "affiliation": "Verified Current Parent",
@@ -3466,7 +3466,7 @@
     {
       "id": "inq-2026-004",
       "inquiryNumber": "INQ-ROM-2026-7210",
-      "schoolId": "sch-roman-ridge",
+      "schoolId": "sch-roman-ridge-accra",
       "schoolName": "The Roman Ridge School",
       "parentName": "Mr. Patrick Mensah-Bonsu",
       "parentPhone": "+233 27 740 5511",
@@ -4823,6 +4823,51 @@
   ],
   "smsLogs": [
     {
+      "id": "sms-gh-1793006112241",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "recipientName": "Parent / Guardian",
+      "recipientPhone": "0244123456",
+      "channel": "SMS (Hubtel Ghana Gateway)",
+      "category": "Admissions",
+      "senderId": "GHANA-IN",
+      "messageText": "SkoolFinder Ghana: Diagnostic test notification.",
+      "status": "Delivered",
+      "deliveryTime": "2026-10-26T09:15:12.241Z",
+      "network": "MTN GH",
+      "unitsUsed": 1
+    },
+    {
+      "id": "sms-gh-1793001609094",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "recipientName": "Parent / Guardian",
+      "recipientPhone": "0244123456",
+      "channel": "SMS (Hubtel Ghana Gateway)",
+      "category": "Admissions",
+      "senderId": "GHANA-IN",
+      "messageText": "SkoolFinder Ghana: Diagnostic test notification.",
+      "status": "Delivered",
+      "deliveryTime": "2026-10-26T08:00:09.094Z",
+      "network": "MTN GH",
+      "unitsUsed": 1
+    },
+    {
+      "id": "sms-gh-1793001445740",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "recipientName": "Parent / Guardian",
+      "recipientPhone": "0244123456",
+      "channel": "SMS (Hubtel Ghana Gateway)",
+      "category": "Admissions",
+      "senderId": "GHANA-IN",
+      "messageText": "Test SMS from SkoolFinder",
+      "status": "Delivered",
+      "deliveryTime": "2026-10-26T07:57:25.740Z",
+      "network": "MTN GH",
+      "unitsUsed": 1
+    },
+    {
       "id": "sms-gh-1792975705549",
       "schoolId": "sch-gis-accra",
       "schoolName": "Ghana International School (GIS)",
@@ -5064,7 +5109,7 @@
     }
   ],
   "smsCredits": {
-    "sch-gis-accra": 4661,
+    "sch-gis-accra": 4658,
     "sch-sos-tema": 3200,
     "sch-morning-star-cantonments": 2500
   },
