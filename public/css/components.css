@@ -20,14 +20,14 @@
 
 .badge-verified {
   background: #e0f2fe;
-  color: #0284c7;
-  border: 1px solid rgba(2, 132, 199, 0.2);
+  color: #0369a1;
+  border: 1px solid rgba(3, 105, 161, 0.25);
 }
 
 .badge-admissions {
   background: var(--emerald-50);
-  color: var(--emerald-600);
-  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #047857;
+  border: 1px solid rgba(4, 120, 87, 0.25);
 }
 
 .badge-pulse-dot {
@@ -172,7 +172,7 @@
 .school-card-motto {
   font-style: italic;
   font-size: 0.82rem;
-  color: var(--text-light);
+  color: var(--text-muted);
   margin-bottom: 0.85rem;
 }
 
@@ -244,7 +244,7 @@
 
 .btn-card-wa {
   padding: 0.6rem 0.85rem;
-  background: var(--whatsapp-green);
+  background: #0f766e;
   color: #ffffff;
   border-radius: var(--radius-md);
   font-weight: 700;
@@ -256,7 +256,7 @@
 }
 
 .btn-card-wa:hover {
-  background: var(--whatsapp-dark);
+  background: #115e59;
 }
 
 .btn-card-compare {

@@ -496,7 +496,7 @@ button {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--gold-600);
+  color: #92400e;
   margin-bottom: 0.5rem;
 }
 
@@ -641,6 +641,31 @@ button {
   }
   .search-btn-hero {
     grid-column: span 1;
+  }
+/* Accessible Footer Styles */
+.sd-footer {
+  background-color: #0a1128 !important;
+  color: #ffffff;
+}
+.sd-footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.sd-footer a:hover {
+  color: #ffffff;
+}
+.sd-footer h3 {
+  color: #ffffff !important;
+}
+.footer-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  background-color: #0a1128 !important;
+}
+@media (max-width: 640px) {
+  .footer-grid-responsive {
+    grid-template-columns: 1fr !important;
   }
 }
 

@@ -4,9 +4,9 @@
 const Footer = {
   render() {
     return `
-      <footer style="background: var(--primary-900); color: #ffffff; padding: 4.5rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
-        <div class="container">
-          <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3.5rem; flex-wrap: wrap;">
+      <footer class="sd-footer" style="background-color: #0a1128; color: #ffffff; padding: 4.5rem 0 2rem; border-top: 1px solid rgba(255,255,255,0.1);">
+        <div class="container" style="background-color: #0a1128;">
+          <div class="footer-grid-responsive" style="background-color: #0a1128; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2.5rem; margin-bottom: 3.5rem;">
             <!-- Brand Column -->
             <div>
               <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
@@ -28,9 +28,9 @@ const Footer = {
 
             <!-- Parent Quick Links -->
             <div>
-              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
                 For Parents
-              </h4>
+              </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
                 <li><a href="#" class="footer-link-schools">Search Accra Schools</a></li>
                 <li><a href="#" class="footer-link-kumasi">Search Kumasi Schools</a></li>
@@ -42,9 +42,9 @@ const Footer = {
 
             <!-- Ecosystem & B2B Links -->
             <div>
-              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
                 Ecosystem Hubs
-              </h4>
+              </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
                 <li><a href="#" class="footer-link-suppliers">Educational Suppliers</a></li>
                 <li><a href="#" class="footer-link-rfqs">Post School RFQ</a></li>
@@ -56,9 +56,9 @@ const Footer = {
 
             <!-- School Proprietors -->
             <div>
-              <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
+              <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
                 For Schools
-              </h4>
+              </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
                 <li><a href="#" class="footer-link-claim">Claim Your School Profile</a></li>
                 <li><a href="#" class="footer-link-pricing">Pricing & Monetization Packages</a></li>

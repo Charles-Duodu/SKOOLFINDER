@@ -1,0 +1,11 @@
+# SchoolDirect Ghana (SKOOLFINDER)
+
+> Ghana's verified education directory, admissions platform, and institutional procurement ecosystem.
+
+## Key Resources
+- [School Directory](http://localhost:3000/#/directory): Search and filter accredited schools across Accra and Kumasi by curriculum (GES, Cambridge CIE, IB, Montessori), fee band, boarding, and amenities.
+- [BECE CSSPS Placement Predictor](http://localhost:3000/#/cssps): Dynamic raw aggregate calculation (4 core + 2 best electives) and Category A/B/C matching.
+- [Admissions Desk & Tracking](http://localhost:3000/#/parent-portal): Online admissions applications, Mobile Money fee invoicing, bus passes, and student digital ID cards.
+- [Educational Procurement & RFQ Hub](http://localhost:3000/#/suppliers): Verified suppliers across food & catering, ICT labs, uniforms, and classroom furniture.
+- [Academic Resources Vault](http://localhost:3000/#/resources): WAEC BECE/WASSCE past question papers and GES curriculum syllabi.
+- [REST API Documentation](http://localhost:3000/api/stats): Directory statistics, school lookup, fee invoicing, and digital student ID verification endpoints.

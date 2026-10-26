@@ -33,8 +33,8 @@ const HomeView = {
               </div>
               
               <div class="search-field">
-                <label class="search-label">🎓 School Level</label>
-                <select id="hero-search-level" class="search-select">
+                <label for="hero-search-level" class="search-label">🎓 School Level</label>
+                <select id="hero-search-level" class="search-select" aria-label="Filter by School Level">
                   <option value="All">All Levels (Crèche to SHS)</option>
                   <option value="Crèche">Crèche & Daycare</option>
                   <option value="Kindergarten">Nursery & Kindergarten</option>
@@ -45,8 +45,8 @@ const HomeView = {
               </div>
 
               <div class="search-field">
-                <label class="search-label">📚 Curriculum</label>
-                <select id="hero-search-curriculum" class="search-select">
+                <label for="hero-search-curriculum" class="search-label">📚 Curriculum</label>
+                <select id="hero-search-curriculum" class="search-select" aria-label="Filter by Curriculum">
                   <option value="All">All Curricula</option>
                   <option value="Cambridge">Cambridge (CIE / IGCSE)</option>
                   <option value="GES">GES Standards-based</option>
@@ -191,9 +191,9 @@ const HomeView = {
                   100% free revision library with authentic BECE, WASSCE, and Cambridge past papers, step-by-step marking rubrics (M1, A1), and Chief Examiner warnings.
                 </p>
                 <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                  <span class="badge" style="background: #ffffff; color: #0284c7;">WAEC BECE</span>
-                  <span class="badge" style="background: #ffffff; color: #b45309;">WAEC WASSCE</span>
-                  <span class="badge" style="background: #ffffff; color: #16a34a;">Timed Mock Exams</span>
+                  <span class="badge" style="background: #ffffff; color: #0369a1; border: 1px solid #bfdbfe;">WAEC BECE</span>
+                  <span class="badge" style="background: #ffffff; color: #92400e; border: 1px solid #fde68a;">WAEC WASSCE</span>
+                  <span class="badge" style="background: #ffffff; color: #15803d; border: 1px solid #bbf7d0;">Timed Mock Exams</span>
                 </div>
               </div>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -309,7 +309,7 @@ const HomeView = {
           </div>
           <h3 class="school-card-name">${school.name}</h3>
           <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; margin: 0.2rem 0 0.4rem;">
-            <span style="color: #f59e0b; font-weight: 800;">★ 4.9</span>
+            <span style="color: #b45309; font-weight: 800;">★ 4.9</span>
             <span style="color: var(--text-muted); font-size: 0.75rem;">(Verified Parent Reviews)</span>
           </div>
           <div class="school-card-motto">"${school.motto || 'Excellence in Education'}"</div>

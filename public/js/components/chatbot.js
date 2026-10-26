@@ -46,7 +46,7 @@ const AIChatbot = {
 
     root.innerHTML = `
       <!-- Floating Action Button -->
-      <button class="sd-chatbot-fab" id="sd-chatbot-fab-btn" aria-label="Open Akosua AI Advisor" style="${this.isOpen ? 'display: none;' : 'display: flex;'}">
+      <button class="sd-chatbot-fab" id="sd-chatbot-fab-btn" aria-label="Akosua AI Advisor - CSSPS & School Admissions" style="${this.isOpen ? 'display: none;' : 'display: flex;'}">
         <div class="sd-chatbot-avatar-wrap">
           👩🏾‍💼
           <span class="sd-chatbot-status-dot"></span>
