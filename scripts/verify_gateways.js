@@ -138,4 +138,13 @@ async function runDiagnostics() {
   console.log('================================================================\n');
 }
 
-runDiagnostics().catch(console.error);
+runDiagnostics()
+  .then(async () => {
+    await pgClient.close();
+    process.exit(0);
+  })
+  .catch(async (err) => {
+    console.error(err);
+    await pgClient.close().catch(() => {});
+    process.exit(1);
+  });

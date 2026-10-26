@@ -141,6 +141,15 @@ class PostgreSQLClient {
     if (!this.pool) throw new Error('Database pool not initialized');
     return this.pool.query(text, params);
   }
+
+  /**
+   * Closes connection pool gracefully
+   */
+  async close() {
+    if (this.pool) {
+      await this.pool.end();
+    }
+  }
 }
 
 module.exports = new PostgreSQLClient();
