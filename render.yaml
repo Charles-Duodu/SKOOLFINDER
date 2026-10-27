@@ -19,12 +19,12 @@ services:
       - key: DATABASE_URL
         sync: false
       - key: PAYSTACK_PUBLIC_KEY
-        sync: false
+        value: pk_test_skoolfinder_ghana_sandbox
       - key: PAYSTACK_SECRET_KEY
-        sync: false
+        value: sk_test_skoolfinder_ghana_sandbox
       - key: HUBTEL_CLIENT_ID
-        sync: false
+        value: simulated_hubtel_client_id
       - key: HUBTEL_CLIENT_SECRET
-        sync: false
+        value: simulated_hubtel_client_secret
       - key: HUBTEL_SENDER_ID
         value: SkoolFinder
