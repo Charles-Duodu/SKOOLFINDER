@@ -2,7 +2,10 @@
   "name": "skoolfinder",
   "version": "1.0.0",
   "description": "SkoolFinder Ghana - Verified School Directory, Admissions & Educational Procurement Ecosystem",
-  "main": "index.js",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",

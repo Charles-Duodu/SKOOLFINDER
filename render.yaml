@@ -10,14 +10,12 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3000
       - key: TZ
         value: Africa/Accra
       - key: PG_POOL_MAX
         value: "20"
       - key: DATABASE_URL
-        sync: false
+        value: postgresql://Postgres.database_owner:npg_VjG87PxJERsq@ep-tiny-violet-b4m7ip56-pooler.c-6.us-east-2.aws.neon.tech/Postgres.database?sslmode=require&channel_binding=require
       - key: PAYSTACK_PUBLIC_KEY
         value: pk_test_skoolfinder_ghana_sandbox
       - key: PAYSTACK_SECRET_KEY
