@@ -10,7 +10,20 @@ const HomeView = {
     return `
       <!-- Hero Section -->
       <section class="hero-section">
+        <div class="hero-ambient-glow-1"></div>
+        <div class="hero-ambient-glow-2"></div>
         <div class="hero-bg-overlay"></div>
+
+        <!-- Floating Live Platform Activity Chips -->
+        <div class="hero-floating-chip hero-floating-chip-left">
+          <span class="radar-pulse-core" style="display:inline-block; margin-right:4px;"></span>
+          <span><b>Admissions Open</b>: GIS, SOS-HGIC & Achimota</span>
+        </div>
+        <div class="hero-floating-chip hero-floating-chip-right">
+          <span>⚡</span>
+          <span><b>Live Inquiries</b>: 28 Parents in East Legon today</span>
+        </div>
+
         <div class="container hero-content">
           <div class="hero-pill">
             <span>🇬🇭</span> Ghana's Verified Education Directory & Network
@@ -19,7 +32,7 @@ const HomeView = {
             Find the <span>Right School</span> for Your Child in Ghana
           </h1>
           <p class="hero-subtitle">
-            Explore accredited pre-schools, basic schools, and senior high schools across Greater Accra and Kumasi. Compare curricula, fees, and contact admissions directly.
+            Explore accredited pre-schools, basic schools, and senior high schools across Greater Accra and Kumasi. Compare curricula, fees, and connect directly with admissions offices.
           </p>
 
           <!-- Search Widget -->
@@ -374,16 +387,36 @@ const HomeView = {
     if (curriculumTag.includes('IB')) badgeClass = 'badge-ib';
     if (curriculumTag.includes('Montessori')) badgeClass = 'badge-montessori';
 
+    // Fee Tier Metallic Badges
+    const feeRaw = (school.feeBand || '').toLowerCase();
+    let feeTierClass = 'badge-fee-moderate';
+    if (feeRaw.includes('budget') || feeRaw.includes('under')) feeTierClass = 'badge-fee-budget';
+    if (feeRaw.includes('premium')) feeTierClass = 'badge-fee-premium';
+    if (feeRaw.includes('elite') || feeRaw.includes('international') || feeRaw.includes('10,000+')) feeTierClass = 'badge-fee-elite';
+
+    const galleryImgs = [
+      school.coverImage || '/assets/images/campus_hero.jpg',
+      '/assets/images/science_lab.jpg',
+      '/assets/images/montessori_class.jpg'
+    ];
+
     return `
-      <div class="school-card" id="card-${school.id}">
-        <div class="school-card-media">
-          <img src="${school.coverImage}" alt="${school.name}" class="school-card-img" />
+      <div class="school-card-enhanced school-card" id="card-${school.id}">
+        <div class="card-mini-carousel" id="carousel-${school.id}">
+          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" />
+          
+          <div class="carousel-nav-dots" data-school-id="${school.id}">
+            <span class="carousel-dot active" data-img="${galleryImgs[0]}" title="Campus Front"></span>
+            <span class="carousel-dot" data-img="${galleryImgs[1]}" title="Science & Tech Labs"></span>
+            <span class="carousel-dot" data-img="${galleryImgs[2]}" title="Modern Classrooms"></span>
+          </div>
+
           <div class="school-card-badges">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
             ${school.verified ? '<span class="badge badge-verified">🛡️ Verified</span>' : ''}
-            <span class="badge badge-admissions"><span class="badge-pulse-dot"></span> Admissions Open</span>
+            <span class="badge-radar-container"><span class="radar-pulse-core"></span> Admissions Open</span>
           </div>
-          <div class="school-card-fee-pill">
+          <div class="school-card-fee-pill ${feeTierClass}">
             ${school.feeBand.split('(')[0].trim()}
           </div>
         </div>
@@ -408,10 +441,10 @@ const HomeView = {
           </div>
 
           <div class="school-card-footer">
-            <button class="btn-card-view" data-school-id="${school.id}">
+            <button class="btn-card-view btn-pill btn-primary" style="padding: 0.6rem 1.15rem; font-size: 0.88rem;" data-school-id="${school.id}">
               View Profile
             </button>
-            <button class="btn-card-wa btn-quick-wa" data-school-id="${school.id}" data-wa="${school.whatsapp}" title="Chat Admissions on WhatsApp">
+            <button class="btn-card-wa btn-quick-wa btn-whatsapp-glow" style="padding: 0.6rem 1rem; font-size: 0.88rem;" data-school-id="${school.id}" data-wa="${school.whatsapp}" title="Chat Admissions on WhatsApp">
               💬 WhatsApp
             </button>
             <button class="btn-card-compare ${isCompared ? 'active' : ''}" data-school-id="${school.id}" title="${isCompared ? 'Remove from Compare' : 'Add to Compare'}">
@@ -491,6 +524,25 @@ const HomeView = {
         const school = await API.getSchoolById(schoolId);
         State.toggleCompare(school);
         btn.classList.toggle('active', State.isInCompare(schoolId));
+      };
+    });
+
+    // Carousel mini dots switcher
+    document.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.onclick = (e) => {
+        e.stopPropagation();
+        const parentDots = dot.parentElement;
+        const schoolId = parentDots?.dataset?.schoolId;
+        const targetImg = document.getElementById(`img-${schoolId}`);
+        if (targetImg && dot.dataset.img) {
+          targetImg.style.opacity = '0.5';
+          setTimeout(() => {
+            targetImg.src = dot.dataset.img;
+            targetImg.style.opacity = '1';
+          }, 120);
+          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+        }
       };
     });
 

@@ -76,9 +76,19 @@ const AIChatbot = {
               </div>
             </div>
           </div>
-          <div class="sd-chat-actions">
-            <button class="sd-chat-btn-icon" id="sd-chat-restart-btn" title="Restart Conversation">🔄</button>
-            <button class="sd-chat-btn-icon" id="sd-chat-close-btn" title="Minimize Chat">✕</button>
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <!-- Soundwave Audio Visualization -->
+            <div class="ai-soundwave-wrap" id="akosua-soundwave" title="Live AI Admissions Intelligence Active">
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+              <span class="soundwave-bar"></span>
+            </div>
+            <div class="sd-chat-actions">
+              <button class="sd-chat-btn-icon" id="sd-chat-restart-btn" title="Restart Conversation">🔄</button>
+              <button class="sd-chat-btn-icon" id="sd-chat-close-btn" title="Minimize Chat">✕</button>
+            </div>
           </div>
         </div>
 

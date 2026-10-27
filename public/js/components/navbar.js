@@ -100,6 +100,11 @@ const Navbar = {
               </button>
             `}
 
+            <!-- Theme Toggle Button -->
+            <button id="btn-theme-toggle" class="theme-toggle-btn nav-action-desktop" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Dark Mode">
+              🌙
+            </button>
+
             <!-- Mobile Hamburger Menu Button -->
             <button id="btn-mobile-menu-toggle" class="mobile-menu-btn ${this.isMobileMenuOpen ? 'active' : ''}" aria-label="Toggle Navigation Menu">
               <span class="hamburger-bar"></span>
@@ -112,6 +117,10 @@ const Navbar = {
         <!-- Mobile Drawer Dropdown -->
         <div id="mobile-nav-drawer" class="mobile-nav-drawer ${this.isMobileMenuOpen ? 'open' : ''}">
           <div class="mobile-nav-links">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.5rem 0.75rem 0.5rem; border-bottom: 1px solid var(--border-light); margin-bottom: 0.75rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Scholastic Theme</span>
+              <button id="mob-btn-theme-toggle" class="theme-toggle-btn" title="Toggle Dark Mode">🌙</button>
+            </div>
             ${State.isAuthenticated() ? `
               <div style="background: #f8fafc; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
                 <div>
@@ -303,6 +312,38 @@ const Navbar = {
     document.getElementById('btn-nav-list-school')?.addEventListener('click', () => {
       Modals.openListSchoolModal();
     });
+
+    // Theme Toggle Logic (Scholastic Midnight)
+    const updateThemeUI = (theme) => {
+      const isDark = theme === 'dark';
+      const icon = isDark ? '☀️' : '🌙';
+      const title = isDark ? 'Switch to Scholastic Ivory Light Mode' : 'Switch to Scholastic Midnight Dark Mode';
+      const desktopBtn = document.getElementById('btn-theme-toggle');
+      if (desktopBtn) {
+        desktopBtn.innerText = icon;
+        desktopBtn.title = title;
+      }
+      const mobBtn = document.getElementById('mob-btn-theme-toggle');
+      if (mobBtn) {
+        mobBtn.innerText = icon;
+        mobBtn.title = title;
+      }
+    };
+
+    const toggleTheme = () => {
+      const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('skoolfinder_theme', next);
+      updateThemeUI(next);
+      State.showToast(`Theme: ${next === 'dark' ? 'Scholastic Midnight (Dark)' : 'Scholastic Ivory (Light)'}`, 'info');
+    };
+
+    document.getElementById('btn-theme-toggle')?.addEventListener('click', toggleTheme);
+    document.getElementById('mob-btn-theme-toggle')?.addEventListener('click', toggleTheme);
+
+    const activeTheme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('skoolfinder_theme') || 'light';
+    updateThemeUI(activeTheme);
 
     // Mobile Hamburger Toggle
     const toggleBtn = document.getElementById('btn-mobile-menu-toggle');

@@ -115,18 +115,23 @@ const CSSPSView = {
         <!-- Left Column: Input Form Card -->
         <div class="card" style="padding: 1.75rem; border: 1px solid var(--border-light); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); background: var(--bg-surface);">
           
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
             <div>
               <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--primary-900); margin-bottom: 0.2rem;">
                 1. Enter BECE Mock Grades
               </h3>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Scale 1 (Highest) to 9 (Lowest)</p>
+              <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Tap dials 1 (Highest) to 9 (Lowest) for instant score calculation</p>
             </div>
-            <!-- Live Aggregate Badge -->
-            <div id="live-aggregate-badge" style="background: var(--primary-900); color: #fff; padding: 0.5rem 0.9rem; border-radius: 10px; text-align: center; border: 1px solid var(--gold-500);">
-              <div style="font-size: 0.65rem; color: var(--gold-400); font-weight: 700; text-transform: uppercase;">Current Total</div>
-              <div style="font-size: 1.25rem; font-weight: 900; font-family: var(--font-heading);">
-                Aggregate <span id="live-agg-num">${liveAgg < 10 ? '0' + liveAgg : liveAgg}</span>
+            <!-- Animated SVG Circular Aggregate Gauge -->
+            <div class="cssps-gauge-container" style="padding: 1rem 1.5rem;">
+              <svg class="cssps-gauge-svg" viewBox="0 0 160 160" style="width: 130px; height: 130px;">
+                <circle class="gauge-bg-ring" cx="80" cy="80" r="68"></circle>
+                <circle class="gauge-fill-ring" id="cssps-gauge-fill" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="${Math.max(0, Math.min(427, 427 - ((54 - liveAgg) / 48) * 427))}"></circle>
+              </svg>
+              <div class="gauge-center-content">
+                <div style="font-size: 0.65rem; color: var(--gold-400); font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">BECE TOTAL</div>
+                <div class="gauge-number-val" id="live-agg-num" style="font-size: 2.2rem; color: #ffffff;">${liveAgg < 10 ? '0' + liveAgg : liveAgg}</div>
+                <div style="font-size: 0.6rem; color: rgba(255,255,255,0.7); font-weight: 600;">Out of 54</div>
               </div>
             </div>
           </div>
@@ -134,86 +139,105 @@ const CSSPSView = {
           <form id="form-cssps-calculator">
             <!-- Core 4 Subjects (Mandatory in Ghana) -->
             <div style="margin-bottom: 1.25rem;">
-              <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-800); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
-                <span>📚</span> Core 4 Subjects (Compulsory)
+              <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-800); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                <span style="display: flex; align-items: center; gap: 0.4rem;">📚 Core 4 Subjects (Compulsory)</span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Tap grade: 1 is best</span>
               </div>
               
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
-                <div class="form-group" style="margin-bottom: 0.5rem;">
-                  <label class="form-label" style="font-size: 0.8rem;">English Language *</label>
-                  <select id="grade-english" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.english == g ? 'selected' : ''}>Grade ${g} (${this.getGradeLabel(g)})</option>`).join('')}
-                  </select>
+              <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <!-- English Language -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <label class="form-label" style="font-size: 0.82rem; margin: 0; font-weight: 700;">English Language *</label>
+                    <span class="badge badge-emerald grade-display-pill" id="badge-english" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.english} (${this.getGradeLabel(this.gradeInputs.english)})</span>
+                  </div>
+                  <input type="hidden" id="grade-english" class="grade-input" value="${this.gradeInputs.english}" />
+                  <div class="grade-dials-row" data-target="grade-english">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.english == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
+                  </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0.5rem;">
-                  <label class="form-label" style="font-size: 0.8rem;">Mathematics *</label>
-                  <select id="grade-maths" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.maths == g ? 'selected' : ''}>Grade ${g} (${this.getGradeLabel(g)})</option>`).join('')}
-                  </select>
+                <!-- Mathematics -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <label class="form-label" style="font-size: 0.82rem; margin: 0; font-weight: 700;">Mathematics *</label>
+                    <span class="badge badge-emerald grade-display-pill" id="badge-maths" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.maths} (${this.getGradeLabel(this.gradeInputs.maths)})</span>
+                  </div>
+                  <input type="hidden" id="grade-maths" class="grade-input" value="${this.gradeInputs.maths}" />
+                  <div class="grade-dials-row" data-target="grade-maths">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.maths == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
+                  </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0.5rem;">
-                  <label class="form-label" style="font-size: 0.8rem;">Integrated Science *</label>
-                  <select id="grade-science" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.science == g ? 'selected' : ''}>Grade ${g} (${this.getGradeLabel(g)})</option>`).join('')}
-                  </select>
+                <!-- Integrated Science -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <label class="form-label" style="font-size: 0.82rem; margin: 0; font-weight: 700;">Integrated Science *</label>
+                    <span class="badge badge-emerald grade-display-pill" id="badge-science" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.science} (${this.getGradeLabel(this.gradeInputs.science)})</span>
+                  </div>
+                  <input type="hidden" id="grade-science" class="grade-input" value="${this.gradeInputs.science}" />
+                  <div class="grade-dials-row" data-target="grade-science">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.science == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
+                  </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0.5rem;">
-                  <label class="form-label" style="font-size: 0.8rem;">Social Studies *</label>
-                  <select id="grade-social" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.social == g ? 'selected' : ''}>Grade ${g} (${this.getGradeLabel(g)})</option>`).join('')}
-                  </select>
+                <!-- Social Studies -->
+                <div class="form-group" style="margin-bottom: 0;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                    <label class="form-label" style="font-size: 0.82rem; margin: 0; font-weight: 700;">Social Studies *</label>
+                    <span class="badge badge-emerald grade-display-pill" id="badge-social" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.social} (${this.getGradeLabel(this.gradeInputs.social)})</span>
+                  </div>
+                  <input type="hidden" id="grade-social" class="grade-input" value="${this.gradeInputs.social}" />
+                  <div class="grade-dials-row" data-target="grade-social">
+                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.social == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- 2 Best Electives -->
-            <div style="margin-bottom: 1.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-light);">
+            <div style="margin-bottom: 1.5rem; padding-top: 0.75rem; border-top: 1px dashed var(--border-light);">
               <div style="font-size: 0.8rem; font-weight: 800; color: var(--primary-800); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
                 <span>✨</span> 2 Best Elective Subjects
               </div>
 
               <!-- Elective 1 -->
-              <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
-                <div>
-                  <label class="form-label" style="font-size: 0.78rem;">Elective 1 Subject</label>
-                  <select id="elective-1-name" class="form-select" style="font-size: 0.85rem;">
-                    <option value="ICT" ${this.gradeInputs.elective1Name === 'ICT' ? 'selected' : ''}>Information & Comm. Tech (ICT)</option>
-                    <option value="BDT / Pre-Technical" ${this.gradeInputs.elective1Name === 'BDT / Pre-Technical' ? 'selected' : ''}>Basic Design & Tech (BDT)</option>
-                    <option value="French" ${this.gradeInputs.elective1Name === 'French' ? 'selected' : ''}>French Language</option>
-                    <option value="Ghanaian Language" ${this.gradeInputs.elective1Name === 'Ghanaian Language' ? 'selected' : ''}>Ghanaian Language (Twi/Ga/Ewe)</option>
-                    <option value="RME" ${this.gradeInputs.elective1Name === 'RME' ? 'selected' : ''}>Rel. & Moral Education (RME)</option>
-                    <option value="Home Economics" ${this.gradeInputs.elective1Name === 'Home Economics' ? 'selected' : ''}>Home Economics</option>
-                  </select>
+              <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.78rem; margin: 0; font-weight: 700;">Elective 1 Subject</label>
+                  <span class="badge badge-gold grade-display-pill" id="badge-elective1" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.elective1}</span>
                 </div>
-                <div>
-                  <label class="form-label" style="font-size: 0.78rem;">Grade</label>
-                  <select id="grade-elective1" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.elective1 == g ? 'selected' : ''}>Grade ${g}</option>`).join('')}
-                  </select>
+                <select id="elective-1-name" class="form-select" style="font-size: 0.85rem; margin-bottom: 0.4rem;">
+                  <option value="ICT" ${this.gradeInputs.elective1Name === 'ICT' ? 'selected' : ''}>Information & Comm. Tech (ICT)</option>
+                  <option value="BDT / Pre-Technical" ${this.gradeInputs.elective1Name === 'BDT / Pre-Technical' ? 'selected' : ''}>Basic Design & Tech (BDT)</option>
+                  <option value="French" ${this.gradeInputs.elective1Name === 'French' ? 'selected' : ''}>French Language</option>
+                  <option value="Ghanaian Language" ${this.gradeInputs.elective1Name === 'Ghanaian Language' ? 'selected' : ''}>Ghanaian Language (Twi/Ga/Ewe)</option>
+                  <option value="RME" ${this.gradeInputs.elective1Name === 'RME' ? 'selected' : ''}>Rel. & Moral Education (RME)</option>
+                  <option value="Home Economics" ${this.gradeInputs.elective1Name === 'Home Economics' ? 'selected' : ''}>Home Economics</option>
+                </select>
+                <input type="hidden" id="grade-elective1" class="grade-input" value="${this.gradeInputs.elective1}" />
+                <div class="grade-dials-row" data-target="grade-elective1">
+                  ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.elective1 == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
                 </div>
               </div>
 
               <!-- Elective 2 -->
-              <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 0.75rem;">
-                <div>
-                  <label class="form-label" style="font-size: 0.78rem;">Elective 2 Subject</label>
-                  <select id="elective-2-name" class="form-select" style="font-size: 0.85rem;">
-                    <option value="BDT / Pre-Technical" ${this.gradeInputs.elective2Name === 'BDT / Pre-Technical' ? 'selected' : ''}>Basic Design & Tech (BDT)</option>
-                    <option value="ICT" ${this.gradeInputs.elective2Name === 'ICT' ? 'selected' : ''}>Information & Comm. Tech (ICT)</option>
-                    <option value="French" ${this.gradeInputs.elective2Name === 'French' ? 'selected' : ''}>French Language</option>
-                    <option value="Ghanaian Language" ${this.gradeInputs.elective2Name === 'Ghanaian Language' ? 'selected' : ''}>Ghanaian Language (Twi/Ga/Ewe)</option>
-                    <option value="RME" ${this.gradeInputs.elective2Name === 'RME' ? 'selected' : ''}>Rel. & Moral Education (RME)</option>
-                    <option value="Home Economics" ${this.gradeInputs.elective2Name === 'Home Economics' ? 'selected' : ''}>Home Economics</option>
-                  </select>
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.78rem; margin: 0; font-weight: 700;">Elective 2 Subject</label>
+                  <span class="badge badge-gold grade-display-pill" id="badge-elective2" style="font-size: 0.72rem; font-weight: 800;">Grade ${this.gradeInputs.elective2}</span>
                 </div>
-                <div>
-                  <label class="form-label" style="font-size: 0.78rem;">Grade</label>
-                  <select id="grade-elective2" class="form-select grade-select" required>
-                    ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<option value="${g}" ${this.gradeInputs.elective2 == g ? 'selected' : ''}>Grade ${g}</option>`).join('')}
-                  </select>
+                <select id="elective-2-name" class="form-select" style="font-size: 0.85rem; margin-bottom: 0.4rem;">
+                  <option value="BDT / Pre-Technical" ${this.gradeInputs.elective2Name === 'BDT / Pre-Technical' ? 'selected' : ''}>Basic Design & Tech (BDT)</option>
+                  <option value="ICT" ${this.gradeInputs.elective2Name === 'ICT' ? 'selected' : ''}>Information & Comm. Tech (ICT)</option>
+                  <option value="French" ${this.gradeInputs.elective2Name === 'French' ? 'selected' : ''}>French Language</option>
+                  <option value="Ghanaian Language" ${this.gradeInputs.elective2Name === 'Ghanaian Language' ? 'selected' : ''}>Ghanaian Language (Twi/Ga/Ewe)</option>
+                  <option value="RME" ${this.gradeInputs.elective2Name === 'RME' ? 'selected' : ''}>Rel. & Moral Education (RME)</option>
+                  <option value="Home Economics" ${this.gradeInputs.elective2Name === 'Home Economics' ? 'selected' : ''}>Home Economics</option>
+                </select>
+                <input type="hidden" id="grade-elective2" class="grade-input" value="${this.gradeInputs.elective2}" />
+                <div class="grade-dials-row" data-target="grade-elective2">
+                  ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(g => `<button type="button" class="grade-dial-btn ${this.gradeInputs.elective2 == g ? 'active' : ''}" data-val="${g}">${g}</button>`).join('')}
                 </div>
               </div>
             </div>
@@ -483,6 +507,10 @@ const CSSPSView = {
   },
 
   renderSchoolMatchCard(s, userAgg) {
+    const chanceClass = s.probability >= 80 ? 'chance-safe' : (s.probability >= 50 ? 'chance-target' : 'chance-reach');
+    const chanceIcon = s.probability >= 80 ? '🟢' : (s.probability >= 50 ? '🟡' : '🔵');
+    const chanceText = s.probability >= 80 ? 'Safe Match' : (s.probability >= 50 ? 'Target Choice' : 'Reach / High Cutoff');
+
     return `
       <div class="card" style="padding: 1.25rem 1.5rem; border: 1px solid var(--border-light); border-radius: var(--radius-lg); background: var(--bg-surface); transition: var(--transition-fast); box-shadow: var(--shadow-sm);">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem;">
@@ -506,13 +534,13 @@ const CSSPSView = {
             </div>
           </div>
 
-          <!-- Probability Meter Badge -->
+          <!-- Probability & Chances Meter Badge -->
           <div style="text-align: right;">
-            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Admission Likelihood</div>
-            <div style="display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; margin-top: 0.2rem;">
-              <div style="font-size: 1.1rem; font-weight: 900; color: ${s.probability >= 80 ? 'var(--emerald-600)' : (s.probability >= 50 ? 'var(--gold-600)' : 'var(--rose-600)')}; font-family: var(--font-heading);">
-                ${s.probability}%
-              </div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Placement Feasibility</div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem; margin-top: 0.25rem;">
+              <span class="chance-meter-pill ${chanceClass}">
+                <span>${chanceIcon}</span> ${chanceText} (${s.probability}%)
+              </span>
               <span class="badge ${s.badgeClass}" style="font-size: 0.7rem;">
                 ${s.feasibilityLabel}
               </span>
@@ -673,30 +701,66 @@ const CSSPSView = {
       App.navigate('past-questions');
     });
 
-    // Grade dropdown live change listeners
-    const gradeSelects = document.querySelectorAll('.grade-select');
-    gradeSelects.forEach(select => {
-      select.addEventListener('change', () => {
-        const eng = Number(document.getElementById('grade-english')?.value) || 1;
-        const mat = Number(document.getElementById('grade-maths')?.value) || 1;
-        const sci = Number(document.getElementById('grade-science')?.value) || 1;
-        const soc = Number(document.getElementById('grade-social')?.value) || 1;
-        const e1 = Number(document.getElementById('grade-elective1')?.value) || 1;
-        const e2 = Number(document.getElementById('grade-elective2')?.value) || 1;
+    // Recalculate Live Aggregate and Animate Circular SVG Gauge
+    const updateCalculatorUI = () => {
+      const eng = Number(document.getElementById('grade-english')?.value) || 1;
+      const mat = Number(document.getElementById('grade-maths')?.value) || 1;
+      const sci = Number(document.getElementById('grade-science')?.value) || 1;
+      const soc = Number(document.getElementById('grade-social')?.value) || 1;
+      const e1 = Number(document.getElementById('grade-elective1')?.value) || 1;
+      const e2 = Number(document.getElementById('grade-elective2')?.value) || 1;
 
-        this.gradeInputs.english = eng;
-        this.gradeInputs.maths = mat;
-        this.gradeInputs.science = sci;
-        this.gradeInputs.social = soc;
-        this.gradeInputs.elective1 = e1;
-        this.gradeInputs.elective2 = e2;
+      this.gradeInputs.english = eng;
+      this.gradeInputs.maths = mat;
+      this.gradeInputs.science = sci;
+      this.gradeInputs.social = soc;
+      this.gradeInputs.elective1 = e1;
+      this.gradeInputs.elective2 = e2;
 
-        const liveAgg = eng + mat + sci + soc + e1 + e2;
-        const elNum = document.getElementById('live-agg-num');
-        if (elNum) {
-          elNum.innerText = liveAgg < 10 ? '0' + liveAgg : liveAgg;
+      const liveAgg = eng + mat + sci + soc + e1 + e2;
+      const elNum = document.getElementById('live-agg-num');
+      if (elNum) {
+        elNum.innerText = liveAgg < 10 ? '0' + liveAgg : liveAgg;
+      }
+
+      // Animate Circular Gauge Fill Ring & Adaptive Stroke Color
+      const gaugeFill = document.getElementById('cssps-gauge-fill');
+      if (gaugeFill) {
+        const offset = Math.max(0, Math.min(427, 427 - ((54 - liveAgg) / 48) * 427));
+        gaugeFill.style.strokeDashoffset = offset;
+        gaugeFill.style.stroke = liveAgg <= 12 ? '#10b981' : (liveAgg <= 24 ? '#f59e0b' : '#ef4444');
+      }
+    };
+
+    // Tactile Grade Dial Click Handlers
+    document.querySelectorAll('.grade-dial-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const row = e.currentTarget.closest('.grade-dials-row');
+        if (!row) return;
+        const targetId = row.dataset.target;
+        const val = Number(e.currentTarget.dataset.val);
+        const input = document.getElementById(targetId);
+        if (input) input.value = val;
+
+        // Update active class on row
+        row.querySelectorAll('.grade-dial-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+
+        // Update badge indicator if present
+        const badgeKey = targetId.replace('grade-', 'badge-');
+        const badge = document.getElementById(badgeKey);
+        if (badge) {
+          const isCore = ['english', 'maths', 'science', 'social'].includes(targetId.replace('grade-', ''));
+          badge.innerText = isCore ? `Grade ${val} (${this.getGradeLabel(val)})` : `Grade ${val}`;
         }
+
+        updateCalculatorUI();
       });
+    });
+
+    // Also support any legacy select changes if present
+    document.querySelectorAll('.grade-select').forEach(select => {
+      select.addEventListener('change', updateCalculatorUI);
     });
 
     // Form submission

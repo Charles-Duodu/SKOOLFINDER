@@ -355,17 +355,21 @@ const ParentPortalView = {
                   </div>
                 </div>
 
-                <!-- Top Subjects Highlight Chips -->
-                <div style="margin-bottom: 1.5rem; background: #fafafa; border: 1px solid #f1f5f9; border-radius: var(--radius-md); padding: 1rem;">
-                  <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.5rem;">
-                    Key Subject Highlights:
+                <!-- Key Subject Mastery Bars -->
+                <div style="margin-bottom: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem;">
+                  <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; color: var(--gold-600); margin-bottom: 0.85rem; letter-spacing: 0.05em;">
+                    Subject Mastery & Continuous Assessment:
                   </div>
-                  <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
                     ${topSubjects.map(sub => `
-                      <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: var(--radius-full); padding: 0.35rem 0.85rem; font-size: 0.82rem; display: flex; align-items: center; gap: 0.4rem;">
-                        <span style="font-weight: 600; color: #1e293b;">${sub.name}:</span>
-                        <strong style="color: #059669;">${sub.totalScore}%</strong>
-                        <span class="badge" style="font-size: 0.7rem; padding: 0.1rem 0.4rem; background: #ecfdf5; color: #065f46;">${sub.grade}</span>
+                      <div style="background: var(--bg-main); border: 1px solid var(--border-light); border-radius: 10px; padding: 0.75rem 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; font-size: 0.82rem;">
+                          <span style="font-weight: 700; color: var(--primary-900);">${sub.name}</span>
+                          <strong style="color: #059669;">${sub.totalScore}% (${sub.grade})</strong>
+                        </div>
+                        <div style="height: 6px; background: var(--border-light); border-radius: 3px; overflow: hidden;">
+                          <div style="width: ${sub.totalScore}%; height: 100%; background: ${sub.totalScore >= 80 ? 'var(--gradient-emerald)' : 'var(--gradient-gold)'}; border-radius: 3px; transition: width 0.8s ease;"></div>
+                        </div>
                       </div>
                     `).join('')}
                   </div>
@@ -991,20 +995,51 @@ const ParentPortalView = {
 
             </div>
 
-            <!-- Stop Progress Mini-Bar -->
-            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 12px; padding: 1rem 1.25rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
-                <div style="font-weight: 700; font-size: 0.85rem; color: #1e40af; display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #2563eb; box-shadow: 0 0 6px #2563eb;"></span>
-                  Live Shuttle Progression: Currently at <strong>${busPass.liveRoute?.currentStopName || 'East Legon Shell'}</strong>
+            <!-- Bus Route Tracker Interactive Timeline -->
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: 16px; padding: 1.5rem 1.25rem; margin-top: 1rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div style="font-weight: 800; font-size: 0.95rem; color: var(--primary-900); display: flex; align-items: center; gap: 0.5rem;">
+                  <span>📍</span> Live Bus Route Stations & Telematics
                 </div>
-                <span style="font-size: 0.78rem; color: #64748b; font-weight: 600;">
-                  Stop 3 of 5 on Morning Run
+                <span class="badge" style="background: #ecfdf5; color: #065f46; font-weight: 800; font-size: 0.72rem;">
+                  ● Current: ${busPass.liveRoute?.currentStopName || 'East Legon Shell'}
                 </span>
               </div>
 
-              <div style="height: 8px; background: #cbd5e1; border-radius: 4px; overflow: hidden; position: relative;">
-                <div style="width: 60%; height: 100%; background: linear-gradient(90deg, #10b981 0%, #2563eb 100%); border-radius: 4px;"></div>
+              <div class="bus-timeline-container">
+                <div class="bus-timeline-track">
+                  <div class="bus-timeline-track-progress" style="width: 55%;"></div>
+                </div>
+
+                <div class="bus-station-node">
+                  <div class="bus-node-circle passed">✓</div>
+                  <div style="font-weight: 700; font-size: 0.75rem; color: var(--primary-900); margin-top: 0.4rem;">Cantonments</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">06:15 AM</div>
+                </div>
+
+                <div class="bus-station-node">
+                  <div class="bus-node-circle passed">✓</div>
+                  <div style="font-weight: 700; font-size: 0.75rem; color: var(--primary-900); margin-top: 0.4rem;">Airport Res.</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">06:35 AM</div>
+                </div>
+
+                <div class="bus-station-node">
+                  <div class="bus-node-circle active">🚌</div>
+                  <div style="font-weight: 800; font-size: 0.75rem; color: var(--gold-600); margin-top: 0.4rem;">East Legon</div>
+                  <div style="font-size: 0.65rem; color: var(--emerald-600); font-weight: 700;">Boarding Now</div>
+                </div>
+
+                <div class="bus-station-node">
+                  <div class="bus-node-circle">⏳</div>
+                  <div style="font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">American House</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">07:10 AM ETA</div>
+                </div>
+
+                <div class="bus-station-node">
+                  <div class="bus-node-circle">🏫</div>
+                  <div style="font-weight: 700; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.4rem;">GIS Campus</div>
+                  <div style="font-size: 0.65rem; color: var(--text-muted);">07:30 AM ETA</div>
+                </div>
               </div>
             </div>
 
@@ -1949,36 +1984,52 @@ const ParentPortalView = {
               </span>
             </div>
 
-            <!-- Mini ID Badge Preview -->
-            <div style="background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border-radius: 14px; overflow: hidden; border: 2px solid #f59e0b; box-shadow: 0 10px 25px rgba(10,17,40,0.25);">
-              <div style="padding: 0.85rem 1.25rem; border-bottom: 2px solid #f59e0b; display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-weight: 900; font-size: 0.85rem; letter-spacing: -0.01em;">
-                  🎓 ${idData.schoolName}
+            <!-- 3D Holographic ID Badge Preview -->
+            <div class="student-id-perspective-wrap" style="max-width: 100%; margin-bottom: 1.25rem;">
+              <div class="student-id-card-3d" style="padding: 1.25rem; aspect-ratio: auto; min-height: 220px;">
+                <div class="id-card-hologram-sheen"></div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.85rem; position: relative; z-index: 2;">
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="id-chip-gold"></div>
+                    <div>
+                      <div style="font-size: 0.82rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; color: #ffffff;">
+                        🎓 ${idData.schoolName}
+                      </div>
+                      <div style="font-size: 0.62rem; color: #fbbf24; font-weight: 600;">
+                        OFFICIAL SECURE DIGITAL CREDENTIAL
+                      </div>
+                    </div>
+                  </div>
+                  <span class="badge" style="background: rgba(245,158,11,0.25); color: #fef08a; font-size: 0.6rem; border: 1px solid rgba(245,158,11,0.5);">
+                    ● ${idData.status}
+                  </span>
                 </div>
-                <span class="badge" style="background: rgba(245,158,11,0.25); color: #fef08a; font-size: 0.6rem;">CR80 PASS</span>
-              </div>
-              <div style="padding: 1rem 1.25rem; display: flex; gap: 1rem; align-items: center;">
-                <div style="width: 72px; height: 90px; border-radius: 6px; background: #e2e8f0; border: 2px solid #ffffff; overflow: hidden; flex-shrink: 0;">
-                  <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80" alt="${idData.studentName}" style="width: 100%; height: 100%; object-fit: cover;" />
+
+                <div style="display: flex; gap: 1rem; align-items: center; position: relative; z-index: 2;">
+                  <div style="width: 76px; height: 95px; border-radius: 8px; background: #ffffff; border: 2px solid #fbbf24; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                    <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80" alt="${idData.studentName}" style="width: 100%; height: 100%; object-fit: cover;" />
+                  </div>
+                  <div>
+                    <div style="font-size: 1.25rem; font-weight: 900; color: #ffffff; line-height: 1.2; letter-spacing: -0.01em;">
+                      ${idData.studentName}
+                    </div>
+                    <div style="font-family: monospace; font-size: 0.8rem; color: #fbbf24; font-weight: 800; margin-top: 0.25rem;">
+                      INDEX: ${idData.indexNumber}
+                    </div>
+                    <div style="font-size: 0.75rem; color: #e2e8f0; margin-top: 0.2rem;">
+                      ${idData.gradeLevel} • ${idData.house}
+                    </div>
+                    <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 0.2rem;">
+                      Valid Thru: <strong style="color: #ffffff;">${idData.expiryDate}</strong>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div style="font-size: 1.25rem; font-weight: 900; color: #ffffff; line-height: 1.2;">
-                    ${idData.studentName}
-                  </div>
-                  <div style="font-family: monospace; font-size: 0.8rem; color: #fef08a; font-weight: 700; margin-top: 0.25rem;">
-                    INDEX: ${idData.indexNumber}
-                  </div>
-                  <div style="font-size: 0.78rem; color: #cbd5e1; margin-top: 0.25rem;">
-                    ${idData.gradeLevel} • ${idData.house}
-                  </div>
-                  <div style="font-size: 0.72rem; color: #94a3b8; margin-top: 0.25rem;">
-                    Expires: <strong style="color: #ffffff;">${idData.expiryDate}</strong>
-                  </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.68rem; color: #cbd5e1; position: relative; z-index: 2;">
+                  <span>🩸 Blood Group: <strong style="color: #fbbf24;">${idData.bloodGroup} (${idData.genotype})</strong></span>
+                  <span>🚌 Shuttle Pass: <strong style="color: #10b981;">Active</strong></span>
                 </div>
-              </div>
-              <div style="background: rgba(0,0,0,0.3); padding: 0.6rem 1.25rem; font-size: 0.7rem; color: #cbd5e1; display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1);">
-                <span>🩸 Blood: <strong>${idData.bloodGroup} (${idData.genotype})</strong></span>
-                <span>🚌 <strong>${idData.busPassRoute.split(':')[0]} PASS ACTIVE</strong></span>
               </div>
             </div>
 

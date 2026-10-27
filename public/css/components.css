@@ -1800,5 +1800,467 @@
   100% { top: 0%; opacity: 0.8; }
 }
 
+/* ========================================================
+   Pillar 2: Luminous School Cards & Mini Carousel Preview
+   ======================================================== */
+.school-card-enhanced {
+  position: relative;
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.school-card-enhanced:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 48px -12px rgba(10, 17, 40, 0.18), 0 0 0 1.5px rgba(245, 158, 11, 0.35);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.card-mini-carousel {
+  position: relative;
+  height: 215px;
+  background: var(--primary-900);
+  overflow: hidden;
+}
+
+.carousel-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
+.school-card-enhanced:hover .carousel-img {
+  transform: scale(1.06);
+}
+
+.carousel-nav-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+  background: rgba(10, 17, 40, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 4px 8px;
+  border-radius: 100px;
+}
+
+.carousel-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.carousel-dot.active {
+  background: #fbbf24;
+  width: 18px;
+  border-radius: 10px;
+}
+
+/* Radar Pulse Double-Ring Badge */
+.badge-radar-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--emerald-50);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 100px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.radar-pulse-core {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  background: #10b981;
+  border-radius: 50%;
+}
+
+.radar-pulse-core::before,
+.radar-pulse-core::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid #10b981;
+  animation: radar-ripple 2s infinite ease-out;
+}
+
+.radar-pulse-core::after {
+  animation-delay: 1s;
+}
+
+@keyframes radar-ripple {
+  0% { transform: scale(0.6); opacity: 1; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* Fee Tiers */
+.badge-fee-budget {
+  background: #ecfdf5;
+  color: #047857;
+  border: 1px solid rgba(4, 120, 87, 0.25);
+}
+.badge-fee-moderate {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid rgba(29, 78, 216, 0.25);
+}
+.badge-fee-premium {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+.badge-fee-elite {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* WhatsApp Glow Button */
+.btn-whatsapp-glow {
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: #ffffff !important;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+
+.btn-whatsapp-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(37, 211, 102, 0.45);
+}
+
+/* ========================================================
+   Pillar 3: CSSPS BECE Placement Dynamic UI
+   ======================================================== */
+.cssps-gauge-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #091e42 0%, #0f172a 100%);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.cssps-gauge-svg {
+  width: 170px;
+  height: 170px;
+  transform: rotate(-90deg);
+}
+
+.gauge-bg-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 12;
+}
+
+.gauge-fill-ring {
+  fill: none;
+  stroke: #10b981;
+  stroke-width: 12;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.8s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.4s ease;
+}
+
+.gauge-center-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.gauge-number-val {
+  font-family: var(--font-heading);
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Tactile Grade Dials (1 to 9 buttons) */
+.grade-dials-row {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 4px;
+  margin-top: 0.35rem;
+}
+
+.grade-dial-btn {
+  padding: 0.5rem 0.2rem;
+  background: var(--bg-alt);
+  border: 1.5px solid var(--border-light);
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.grade-dial-btn:hover {
+  border-color: var(--gold-500);
+  background: var(--bg-surface);
+  transform: translateY(-2px);
+}
+
+.grade-dial-btn.active {
+  background: var(--gradient-gold);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+  transform: scale(1.08);
+}
+
+/* Chances Meter Badges */
+.chance-meter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 100px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.chance-safe {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+}
+
+.chance-target {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid rgba(217, 119, 6, 0.3);
+}
+
+.chance-reach {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid rgba(30, 64, 175, 0.25);
+}
+
+/* ========================================================
+   Pillar 4: Holographic 3D Digital Student ID Card
+   ======================================================== */
+.student-id-perspective-wrap {
+  perspective: 1200px;
+  max-width: 480px;
+  margin: 0 auto 2rem;
+}
+
+.student-id-card-3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1.586;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #091224 0%, #11224d 50%, #060d1d 100%);
+  border: 1.5px solid rgba(251, 191, 36, 0.5);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 30px rgba(245, 158, 11, 0.15);
+  padding: 1.5rem;
+  color: #ffffff;
+  overflow: hidden;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+}
+
+.student-id-card-3d:hover {
+  transform: rotateY(6deg) rotateX(4deg) translateY(-8px);
+  box-shadow: 0 35px 70px -15px rgba(0, 0, 0, 0.65), 0 0 45px rgba(245, 158, 11, 0.3);
+}
+
+.id-card-hologram-sheen {
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(251, 191, 36, 0.15) 50%,
+    rgba(56, 189, 248, 0.12) 60%,
+    transparent 80%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: holo-sheen 6s infinite ease-in-out;
+}
+
+@keyframes holo-sheen {
+  0% { transform: translateX(-60%) rotate(25deg); }
+  50% { transform: translateX(60%) rotate(25deg); }
+  100% { transform: translateX(-60%) rotate(25deg); }
+}
+
+.id-chip-gold {
+  width: 42px;
+  height: 32px;
+  background: linear-gradient(135deg, #fcd34d 0%, #b45309 100%);
+  border-radius: 6px;
+  border: 1px solid #78350f;
+  position: relative;
+  overflow: hidden;
+}
+
+.id-chip-gold::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+}
+
+/* Bus Route Tracker Timeline */
+.bus-timeline-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  padding: 2rem 0.5rem;
+  overflow-x: auto;
+}
+
+.bus-timeline-track {
+  position: absolute;
+  top: 50%;
+  left: 30px;
+  right: 30px;
+  height: 4px;
+  background: var(--border-light);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.bus-timeline-track-progress {
+  height: 100%;
+  background: var(--gradient-gold);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.bus-station-node {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 100px;
+}
+
+.bus-node-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.bus-node-circle.passed {
+  background: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.bus-node-circle.active {
+  background: var(--gold-500);
+  border-color: #fbbf24;
+  color: #ffffff;
+  box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25);
+  animation: pulse-node 1.5s infinite;
+}
+
+@keyframes pulse-node {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+/* ========================================================
+   Pillar 5: Akosua AI Dynamic Waveform Soundwave
+   ======================================================== */
+.ai-soundwave-wrap {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+  padding: 0 6px;
+}
+
+.soundwave-bar {
+  width: 3px;
+  height: 6px;
+  background: #fbbf24;
+  border-radius: 3px;
+  animation: soundwave-pulse 1s infinite ease-in-out;
+}
+
+.soundwave-bar:nth-child(1) { animation-delay: 0.1s; }
+.soundwave-bar:nth-child(2) { animation-delay: 0.3s; }
+.soundwave-bar:nth-child(3) { animation-delay: 0.5s; }
+.soundwave-bar:nth-child(4) { animation-delay: 0.2s; }
+.soundwave-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes soundwave-pulse {
+  0%, 100% { height: 4px; }
+  50% { height: 18px; }
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-light);
+  background: var(--bg-alt);
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: rotate(20deg) scale(1.08);
+  border-color: var(--gold-500);
+  background: var(--bg-surface);
+}
+
 
 
