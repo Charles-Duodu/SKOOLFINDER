@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: skoolfinder-ghana
+    name: SKOOLFINDER-1
     runtime: node
     plan: free
     region: frankfurt
@@ -8,6 +8,8 @@ services:
     startCommand: npm start
     healthCheckPath: /health
     envVars:
+      - key: APP_URL
+        value: https://skoolfinder-1.onrender.com
       - key: NODE_ENV
         value: production
       - key: TZ
