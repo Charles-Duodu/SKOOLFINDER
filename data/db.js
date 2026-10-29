@@ -5866,6 +5866,11 @@ class Database {
       if (school) schoolName = school.name;
     }
 
+    const childName = (userData.childName || '').trim();
+    const childLevel = (userData.childLevel || '').trim() || 'Primary';
+    const suburb = (userData.suburb || '').trim();
+    const targetSchoolId = userData.targetSchoolId || userData.schoolId || 'sch-gis-accra';
+
     const newUser = {
       id: "usr-" + Date.now(),
       name: userData.name.trim(),
@@ -5878,10 +5883,74 @@ class Database {
       password: userData.password,
       verified: true,
       avatar: role === 'school_admin' ? '🏫' : (role === 'teacher' ? '👨‍🏫' : '👨‍👩‍👧'),
+      childName: childName || null,
+      childLevel: childLevel || null,
+      suburb: suburb || null,
+      targetSchoolId: targetSchoolId || null,
       createdAt: new Date().toISOString()
     };
 
     this.data.users.push(newUser);
+
+    // If registered as parent and provided child details, automatically provision initial admissions tracking record
+    if (role === 'parent' && childName) {
+      if (!this.data.admissionApplications) this.data.admissionApplications = [];
+      const school = (this.data.schools || []).find(s => s.id === targetSchoolId) || this.data.schools[0];
+      const newApp = {
+        id: "app-" + Date.now(),
+        applicationNumber: "SKF-APP-2026-" + Math.floor(1000 + Math.random() * 9000),
+        schoolId: school?.id || "sch-gis-accra",
+        schoolName: school?.name || "Ghana International School (GIS)",
+        academicYear: "2026/2027",
+        term: "First Term",
+        gradeApplyingFor: childLevel,
+        status: "Submitted (Under Review)",
+        statusColor: "gold",
+        submissionDate: new Date().toISOString().split('T')[0],
+        userId: newUser.id,
+        guardianEmail: newUser.email,
+        student: {
+          fullName: childName,
+          gender: userData.childGender || "Not Specified",
+          dob: "2015-05-12",
+          currentSchool: userData.currentSchool || "Ghana Basic School",
+          specialNeeds: "None"
+        },
+        parentGuardian: {
+          name: newUser.name,
+          relationship: "Parent / Guardian",
+          phone: newUser.phone,
+          email: newUser.email,
+          occupation: userData.occupation || "Professional",
+          address: suburb ? `${suburb}, Ghana` : "Accra, Ghana"
+        },
+        documents: [
+          { name: "Birth Certificate", verified: true, uploadDate: new Date().toISOString().split('T')[0] },
+          { name: "Previous Terminal Report Card", verified: true, uploadDate: new Date().toISOString().split('T')[0] }
+        ],
+        reviewNotes: "Online parent portal registration. Application pending admission committee vetting.",
+        createdAt: new Date().toISOString()
+      };
+      this.data.admissionApplications.unshift(newApp);
+
+      // Also create an initial inquiry record
+      if (!this.data.inquiries) this.data.inquiries = [];
+      this.data.inquiries.unshift({
+        id: "inq-" + Date.now(),
+        schoolId: school?.id || "sch-gis-accra",
+        schoolName: school?.name || "Ghana International School (GIS)",
+        parentName: newUser.name,
+        parentEmail: newUser.email,
+        parentPhone: newUser.phone,
+        wardName: childName,
+        wardLevel: childLevel,
+        message: `Inquiry registered during parent portal onboarding. Seeking admission for ${childName} into ${childLevel}.`,
+        status: "Pending Response",
+        statusColor: "gold",
+        userId: newUser.id,
+        createdAt: new Date().toISOString()
+      });
+    }
 
     const token = 'sdtk_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 12);
     this.data.sessions.push({

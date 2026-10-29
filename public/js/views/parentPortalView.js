@@ -6,6 +6,11 @@ const ParentPortalView = {
   overviewData: null,
 
   async render() {
+    // 1. If not authenticated or not logged in as a parent, render Parent Sign Up & Auth Gateway
+    if (!State.isAuthenticated() || !State.isParent()) {
+      return this.renderAuthGateway();
+    }
+
     const user = State.currentUser;
     // Fetch parent overview from API (with fallback if offline or demo)
     try {
@@ -24,15 +29,38 @@ const ParentPortalView = {
     }
 
     const { user: profile, stats, applications = [], inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData;
-    const parentName = profile?.name || "Parent / Guardian";
-    const parentEmail = profile?.email || "parent@gmail.com";
-    const parentPhone = profile?.phone || "+233 24 412 9845";
+    const parentName = profile?.name || user?.name || "Parent / Guardian";
+    const parentEmail = profile?.email || user?.email || "parent@gmail.com";
+    const parentPhone = profile?.phone || user?.phone || "+233 24 412 9845";
 
     const totalOutstanding = invoices.reduce((acc, inv) => acc + (Number(inv.balanceDue) || 0), 0);
 
     return `
       <section style="background: var(--bg-main); min-height: 85vh; padding: 2.5rem 0 5rem;">
         <div class="container">
+          <!-- Active Parent Account Status Banner -->
+          <div style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 0.9rem 1.4rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-sm);">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <span style="font-size: 1.8rem; background: var(--primary-50); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">👨‍👩‍👧</span>
+              <div>
+                <div style="font-size: 0.95rem; font-weight: 800; color: var(--primary-900);">
+                  ${parentName}
+                  <span class="badge" style="background: var(--emerald-50); color: var(--emerald-800); border: 1px solid var(--emerald-200); font-weight: 700; font-size: 0.72rem; margin-left: 0.5rem;">
+                    🟢 ACTIVE PARENT SESSION
+                  </span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">
+                  ✉️ ${parentEmail} &bull; 📞 ${parentPhone} &bull; 📍 ${profile?.suburb || 'Ghana Basic / SHS'}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <button id="btn-parent-logout" class="btn-pill" style="font-size: 0.82rem; padding: 0.45rem 1rem; background: #fee2e2; color: #991b1b; border: 1.5px solid #fecaca; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;">
+                <span>🚪</span> Sign Out
+              </button>
+            </div>
+          </div>
+
           <!-- Parent Portal Header -->
           <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
             <div>
@@ -2235,6 +2263,18 @@ const ParentPortalView = {
   },
 
   attachEvents() {
+    if (!State.isAuthenticated() || !State.isParent()) {
+      this.attachAuthGatewayEvents();
+      return;
+    }
+
+    // Logout button
+    document.getElementById('btn-parent-logout')?.addEventListener('click', () => {
+      State.logout();
+      State.showToast("Signed out of Parent Portal", "info");
+      App.navigate('parents');
+    });
+
     // Tab switching
     document.querySelectorAll('.parent-tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -2614,6 +2654,427 @@ const ParentPortalView = {
     overlay.querySelector('#btn-close-slip-2').addEventListener('click', close);
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) close();
+    });
+  },
+
+  renderAuthGateway() {
+    return `
+      <section style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 85vh; padding: 3rem 1.5rem 5rem;">
+        <div class="container" style="max-width: 920px; margin: 0 auto;">
+          
+          <!-- Header Banner -->
+          <div style="text-align: center; margin-bottom: 2.25rem;">
+            <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1.5px solid #bfdbfe; padding: 6px 16px; font-weight: 700; font-size: 0.85rem; border-radius: 9999px;">
+              🇬🇭 SkoolFinder Ghana • Unified Admissions & Student Life
+            </span>
+            <h1 style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 800; color: #0f172a; margin: 0.85rem 0 0.5rem 0;">
+              Parent Admissions & Student Portal
+            </h1>
+            <p style="color: #64748b; font-size: 1.05rem; max-width: 680px; margin: 0 auto; line-height: 1.6;">
+              Sign up as a new parent or log in to submit admissions applications to accredited Ghanaian schools, verify digital student ID cards, settle school fees via Mobile Money, and track school bus routes.
+            </p>
+          </div>
+
+          <!-- Auth Card -->
+          <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 3rem;">
+            <!-- Tab Switcher -->
+            <div style="display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+              <button id="tab-btn-parent-signup" class="parent-auth-tab" style="flex: 1; padding: 1.25rem 1rem; border: none; background: #ffffff; font-weight: 800; font-size: 1.05rem; color: #1e3a8a; border-bottom: 3px solid #f59e0b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+                <span>✨</span> Create New Parent Account
+              </button>
+              <button id="tab-btn-parent-signin" class="parent-auth-tab" style="flex: 1; padding: 1.25rem 1rem; border: none; background: transparent; font-weight: 600; font-size: 1.05rem; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+                <span>🔑</span> Sign In (Existing Parent)
+              </button>
+            </div>
+
+            <!-- Tab 1: SIGN UP FORM -->
+            <div id="parent-signup-panel" style="padding: 2.5rem 2rem;">
+              <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: flex-start; gap: 0.75rem;">
+                <span style="font-size: 1.3rem;">ℹ️</span>
+                <div style="font-size: 0.88rem; color: #1e3a8a; line-height: 1.5;">
+                  <strong>New Parent Registration:</strong> Fill in your details below to create your parent profile. You can register your child now so your admissions dashboard is set up immediately.
+                </div>
+              </div>
+
+              <form id="form-parent-signup">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Parent / Guardian Full Name <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" id="parent-reg-name" required placeholder="e.g. Mrs. Elizabeth Quaye" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Ghana Mobile Number <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="tel" id="parent-reg-phone" required placeholder="e.g. 024 412 3456" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts & MoMo fee invoices.</div>
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Email Address <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="email" id="parent-reg-email" required placeholder="e.g. elizabeth.quaye@gmail.com" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Create Password <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="password" id="parent-reg-password" required minlength="6" placeholder="Minimum 6 characters" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Child / Ward Full Name <span style="color: #ef4444;">*</span>
+                    </label>
+                    <input type="text" id="parent-reg-child-name" required placeholder="e.g. David Quaye" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Class / Grade Level Applying For <span style="color: #ef4444;">*</span>
+                    </label>
+                    <select id="parent-reg-child-level" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
+                      <option value="Daycare / Crèche">Daycare / Crèche (Age 6m - 2 yrs)</option>
+                      <option value="Nursery / KG">Nursery & Kindergarten (KG 1 - 2)</option>
+                      <option value="Lower Primary (Class 1-3)" selected>Lower Primary (Class 1 - 3)</option>
+                      <option value="Upper Primary (Class 4-6)">Upper Primary (Class 4 - 6)</option>
+                      <option value="Junior High (JHS 1-3 / BECE)">Junior High School (JHS 1 - 3 / BECE)</option>
+                      <option value="Senior High (SHS 1-3 / WASSCE)">Senior High School (SHS 1 - 3 / WASSCE)</option>
+                      <option value="Cambridge Primary / Checkpoint">Cambridge Primary / Checkpoint</option>
+                      <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Residential Region / Suburb
+                    </label>
+                    <select id="parent-reg-suburb" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
+                      <option value="East Legon, Greater Accra">Greater Accra - East Legon / Adjiringanor</option>
+                      <option value="Cantonments, Greater Accra">Greater Accra - Cantonments / Labone / Airport</option>
+                      <option value="Tema, Greater Accra">Greater Accra - Tema / Community 1-25</option>
+                      <option value="Spintex, Greater Accra">Greater Accra - Spintex / Sakumono</option>
+                      <option value="Achimota, Greater Accra">Greater Accra - Achimota / Dome / West Legon</option>
+                      <option value="Kumasi, Ashanti">Ashanti - Kumasi / Ahodwo / Nhyiaeso</option>
+                      <option value="Cape Coast, Central">Central - Cape Coast / Elmina</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                      Preferred School for Initial Admission
+                    </label>
+                    <select id="parent-reg-school" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
+                      <option value="sch-gis-accra">Ghana International School (GIS) - Cantonments</option>
+                      <option value="sch-sos-tema">SOS-Hermann Gmeiner College - Tema</option>
+                      <option value="sch-morning-star-cantonments">Morning Star School - Cantonments</option>
+                      <option value="sch-roman-ridge-accra">The Roman Ridge School - Accra</option>
+                      <option value="sch-ridge-school-kumasi">The Ridge School - Kumasi</option>
+                      <option value="sch-east-legon-montessori">East Legon Montessori - Accra</option>
+                      <option value="sch-galaxy-international-accra">Galaxy International School - Accra</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="submit" id="btn-parent-submit-signup" class="btn-pill btn-gold" style="width: 100%; padding: 1.05rem; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(245,158,11,0.35); cursor: pointer; border: none;">
+                  <span>🚀</span> Create Parent Account & Enter Portal
+                </button>
+              </form>
+
+              <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b;">
+                Already have an account? 
+                <a href="javascript:void(0)" id="link-switch-to-signin" style="color: #1e3a8a; font-weight: 700; text-decoration: underline; margin-left: 0.25rem;">
+                  Sign In to Parent Portal
+                </a>
+              </div>
+            </div>
+
+            <!-- Tab 2: SIGN IN FORM -->
+            <div id="parent-signin-panel" style="padding: 2.5rem 2rem; display: none;">
+              <!-- Sub-tabs: Email Password vs SMS OTP -->
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+                <button type="button" id="subtab-btn-email" style="flex: 1; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #3b82f6; background: #eff6ff; color: #1e40af; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
+                  ✉️ Email & Password
+                </button>
+                <button type="button" id="subtab-btn-otp" style="flex: 1; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-weight: 600; font-size: 0.88rem; cursor: pointer;">
+                  📲 Ghana Phone SMS OTP
+                </button>
+              </div>
+
+              <!-- Form A: Email & Password -->
+              <form id="form-parent-signin-email">
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    Parent Email Address
+                  </label>
+                  <input type="email" id="parent-login-email" required placeholder="e.g. parent@gmail.com" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    Password
+                  </label>
+                  <input type="password" id="parent-login-password" required placeholder="Enter your password" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                </div>
+                <button type="submit" id="btn-parent-submit-login" class="btn-pill btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
+                  Sign In to Parent Portal
+                </button>
+              </form>
+
+              <!-- Form B: Phone SMS OTP -->
+              <form id="form-parent-signin-otp" style="display: none;">
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    Ghanaian Phone Number
+                  </label>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <input type="tel" id="parent-otp-phone" placeholder="024 412 3456" class="form-input" style="flex: 1; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <button type="button" id="btn-parent-send-otp" class="btn-pill btn-outline" style="padding: 0.8rem 1.25rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                      📲 Send OTP
+                    </button>
+                  </div>
+                </div>
+                <div id="parent-otp-box" style="margin-bottom: 1.5rem; display: none;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    Enter 6-Digit Hubtel SMS Code
+                  </label>
+                  <input type="text" id="parent-otp-code" maxlength="6" placeholder="e.g. 457133" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.1rem; letter-spacing: 4px; text-align: center; font-weight: 700;">
+                  <button type="button" id="btn-parent-verify-otp" class="btn-pill btn-gold" style="width: 100%; margin-top: 0.75rem; padding: 0.9rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
+                    Verify & Sign In
+                  </button>
+                </div>
+              </form>
+
+              <!-- Quick Demo Access Button -->
+              <div style="margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px dashed #cbd5e1; text-align: center;">
+                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.6rem;">Testing the platform?</div>
+                <button type="button" id="btn-parent-quick-demo" class="btn-pill" style="width: 100%; padding: 0.75rem; background: #f8fafc; color: #1e3a8a; border: 1.5px solid #cbd5e1; font-weight: 700; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                  <span>⚡</span> Quick Demo Access (Mrs. Nana Aba Mensah)
+                </button>
+              </div>
+
+              <div style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem; color: #64748b;">
+                Need an account? 
+                <a href="javascript:void(0)" id="link-switch-to-signup" style="color: #1e3a8a; font-weight: 700; text-decoration: underline; margin-left: 0.25rem;">
+                  Register as new parent
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Pillars Feature Ribbon -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🏫</div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">NaSIA Accreditation</div>
+              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Direct access to vetted Ghanaian schools</div>
+            </div>
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">📲</div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">MoMo Fee Settlements</div>
+              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">MTN, Telecel Cash & AT Money receipts</div>
+            </div>
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🪪</div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Digital Student ID</div>
+              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Optical QR scanner & medical passports</div>
+            </div>
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
+              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🚌</div>
+              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Live Bus Route GPS</div>
+              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Real-time boarding & delay alerts</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  attachAuthGatewayEvents() {
+    const tabSignup = document.getElementById('tab-btn-parent-signup');
+    const tabSignin = document.getElementById('tab-btn-parent-signin');
+    const panelSignup = document.getElementById('parent-signup-panel');
+    const panelSignin = document.getElementById('parent-signin-panel');
+
+    const showSignup = () => {
+      if (!tabSignup || !tabSignin || !panelSignup || !panelSignin) return;
+      tabSignup.style.background = '#ffffff';
+      tabSignup.style.color = '#1e3a8a';
+      tabSignup.style.borderBottom = '3px solid #f59e0b';
+      tabSignin.style.background = 'transparent';
+      tabSignin.style.color = '#64748b';
+      tabSignin.style.borderBottom = '3px solid transparent';
+      panelSignup.style.display = 'block';
+      panelSignin.style.display = 'none';
+    };
+
+    const showSignin = () => {
+      if (!tabSignup || !tabSignin || !panelSignup || !panelSignin) return;
+      tabSignin.style.background = '#ffffff';
+      tabSignin.style.color = '#1e3a8a';
+      tabSignin.style.borderBottom = '3px solid #f59e0b';
+      tabSignup.style.background = 'transparent';
+      tabSignup.style.color = '#64748b';
+      tabSignup.style.borderBottom = '3px solid transparent';
+      panelSignin.style.display = 'block';
+      panelSignup.style.display = 'none';
+    };
+
+    tabSignup?.addEventListener('click', showSignup);
+    tabSignin?.addEventListener('click', showSignin);
+    document.getElementById('link-switch-to-signin')?.addEventListener('click', showSignin);
+    document.getElementById('link-switch-to-signup')?.addEventListener('click', showSignup);
+
+    // Sub-tabs in Signin: Email vs Phone OTP
+    const btnSubEmail = document.getElementById('subtab-btn-email');
+    const btnSubOtp = document.getElementById('subtab-btn-otp');
+    const formEmail = document.getElementById('form-parent-signin-email');
+    const formOtp = document.getElementById('form-parent-signin-otp');
+
+    btnSubEmail?.addEventListener('click', () => {
+      btnSubEmail.style.background = '#eff6ff';
+      btnSubEmail.style.borderColor = '#3b82f6';
+      btnSubEmail.style.color = '#1e40af';
+      btnSubOtp.style.background = '#ffffff';
+      btnSubOtp.style.borderColor = '#cbd5e1';
+      btnSubOtp.style.color = '#64748b';
+      formEmail.style.display = 'block';
+      formOtp.style.display = 'none';
+    });
+
+    btnSubOtp?.addEventListener('click', () => {
+      btnSubOtp.style.background = '#eff6ff';
+      btnSubOtp.style.borderColor = '#3b82f6';
+      btnSubOtp.style.color = '#1e40af';
+      btnSubEmail.style.background = '#ffffff';
+      btnSubEmail.style.borderColor = '#cbd5e1';
+      btnSubEmail.style.color = '#64748b';
+      formOtp.style.display = 'block';
+      formEmail.style.display = 'none';
+    });
+
+    // 1. Submit Sign Up Form
+    const formSignup = document.getElementById('form-parent-signup');
+    formSignup?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-parent-submit-signup');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
+
+      try {
+        const payload = {
+          name: document.getElementById('parent-reg-name').value.trim(),
+          phone: document.getElementById('parent-reg-phone').value.trim(),
+          email: document.getElementById('parent-reg-email').value.trim(),
+          password: document.getElementById('parent-reg-password').value,
+          childName: document.getElementById('parent-reg-child-name').value.trim(),
+          childLevel: document.getElementById('parent-reg-child-level').value,
+          suburb: document.getElementById('parent-reg-suburb').value,
+          targetSchoolId: document.getElementById('parent-reg-school').value,
+          role: 'parent'
+        };
+
+        const res = await API.register(payload);
+        if (res.token && res.user) {
+          State.setCurrentUser(res.user, res.token);
+          State.showToast(`🎉 Welcome to SkoolFinder, ${res.user.name}! Your parent account is active.`, 'success');
+          App.navigate('parents');
+        } else {
+          throw new Error("Invalid response from server");
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🚀</span> Create Parent Account & Enter Portal';
+        State.showToast(err.message || 'Registration failed. Please check your details.', 'error');
+      }
+    });
+
+    // 2. Submit Email Sign In Form
+    formEmail?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btn-parent-submit-login');
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        const email = document.getElementById('parent-login-email').value.trim();
+        const password = document.getElementById('parent-login-password').value;
+        const res = await API.login(email, password);
+        if (res.token && res.user) {
+          State.setCurrentUser(res.user, res.token);
+          State.showToast(`Welcome back, ${res.user.name}!`, 'success');
+          App.navigate('parents');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Parent Portal';
+        State.showToast(err.message || 'Invalid email or password', 'error');
+      }
+    });
+
+    // 3. Phone OTP Send & Verify
+    let currentOtpPhone = '';
+    document.getElementById('btn-parent-send-otp')?.addEventListener('click', async () => {
+      const phone = document.getElementById('parent-otp-phone').value.trim();
+      if (!phone) return State.showToast('Please enter your Ghanaian mobile number', 'error');
+      currentOtpPhone = phone;
+      const btn = document.getElementById('btn-parent-send-otp');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const res = await API.sendOTP(phone, 'parent_login');
+        State.showToast(`OTP Code dispatched via Hubtel SMS to ${phone}! (Code: ${res.debugCode || 'sent'})`, 'info');
+        document.getElementById('parent-otp-box').style.display = 'block';
+        if (res.debugCode) {
+          document.getElementById('parent-otp-code').value = res.debugCode;
+        }
+        btn.textContent = 'Resend OTP';
+        btn.disabled = false;
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Send OTP';
+        State.showToast(err.message || 'Failed to send OTP SMS', 'error');
+      }
+    });
+
+    document.getElementById('btn-parent-verify-otp')?.addEventListener('click', async () => {
+      const code = document.getElementById('parent-otp-code').value.trim();
+      if (!code) return State.showToast('Please enter the 6-digit SMS code', 'error');
+
+      try {
+        const res = await fetch('/api/auth/otp/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: currentOtpPhone, code })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Verification failed');
+
+        State.setCurrentUser(data.user, data.token);
+        State.showToast(`Verified! Welcome, ${data.user.name}`, 'success');
+        App.navigate('parents');
+      } catch (err) {
+        State.showToast(err.message || 'Invalid OTP code', 'error');
+      }
+    });
+
+    // 4. Quick Demo Button
+    document.getElementById('btn-parent-quick-demo')?.addEventListener('click', async () => {
+      try {
+        const res = await API.login('parent@gmail.com', 'ParentPass2026!');
+        if (res.token && res.user) {
+          State.setCurrentUser(res.user, res.token);
+          State.showToast("Loaded Demo Parent Account (Mrs. Nana Aba Mensah)", "info");
+          App.navigate('parents');
+        }
+      } catch (err) {
+        State.showToast("Could not load demo account: " + err.message, "error");
+      }
     });
   }
 };

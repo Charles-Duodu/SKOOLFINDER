@@ -51,9 +51,74 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
-app.post('/api/auth/register', (req, res) => {
+app.post(['/api/auth/register', '/api/parents/register'], async (req, res) => {
   try {
-    const result = db.registerUser(req.body || {});
+    const payload = {
+      role: 'parent',
+      ...req.body
+    };
+    const result = db.registerUser(payload);
+
+    // Optional PostgreSQL sync
+    if (pgClient && pgClient.isConfigured && pgClient.isConfigured()) {
+      try {
+        await pgClient.query(`
+          INSERT INTO users (id, email, phone, name, password_hash, role, school_id, avatar, verified)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+          ON CONFLICT (email) DO UPDATE SET
+            name = EXCLUDED.name,
+            phone = EXCLUDED.phone,
+            password_hash = EXCLUDED.password_hash;
+        `, [
+          result.user.id,
+          result.user.email,
+          result.user.phone || null,
+          result.user.name,
+          payload.password || 'securePass2026!',
+          result.user.role || 'parent',
+          result.user.schoolId || null,
+          result.user.avatar || '👨‍👩‍👧',
+          true
+        ]);
+
+        if (result.token) {
+          const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          await pgClient.query(`
+            INSERT INTO sessions (token, user_id, expires_at)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (token) DO NOTHING;
+          `, [result.token, result.user.id, expiresAt]);
+        }
+      } catch (pgErr) {
+        console.warn('PostgreSQL user registration sync notice:', pgErr.message);
+      }
+    }
+
+    // Optional: send welcome email via Resend
+    if (result.user.email && resendService && resendService.isConfigured && resendService.isConfigured()) {
+      resendService.sendEmail({
+        to: result.user.email,
+        subject: `Welcome to SkoolFinder Ghana, ${result.user.name}!`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="border-bottom: 2px solid #1e3a8a; padding-bottom: 15px; margin-bottom: 20px;">
+              <h2 style="color: #1e3a8a; margin: 0 0 5px 0;">🇬🇭 Welcome to SkoolFinder Ghana</h2>
+              <span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">PARENT ACCOUNT ACTIVATED</span>
+            </div>
+            <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+              Dear <strong>${result.user.name}</strong>,<br/><br/>
+              Your parent account has been successfully registered. You now have immediate access to submit admissions applications, verify digital student IDs, track school bus routes, and pay school fees via Mobile Money.
+            </p>
+            <div style="background: #f8fafc; border-left: 4px solid #1e3a8a; padding: 15px 20px; border-radius: 6px; margin: 20px 0;">
+              <div><strong>Account Name:</strong> ${result.user.name}</div>
+              <div><strong>Registered Email:</strong> ${result.user.email}</div>
+              <div><strong>Registered Phone:</strong> ${result.user.phone || 'N/A'}</div>
+            </div>
+          </div>
+        `
+      }).catch(e => console.warn("Welcome email notice:", e.message));
+    }
+
     res.status(201).json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -1746,7 +1811,7 @@ app.post('/api/auth/logout', (req, res) => {
 });
 
 // API: Parent Portal Overview
-app.get('/api/parent/overview', (req, res) => {
+app.get(['/api/parent/overview', '/api/parents/overview'], (req, res) => {
   try {
     const user = getAuthenticatedUser(req);
     if (!user) {

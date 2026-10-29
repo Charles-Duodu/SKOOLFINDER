@@ -915,6 +915,26 @@
   ],
   "rfqs": [
     {
+      "id": "rfq-1793318232901",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-29T23:57:12.901Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "budgetRange": "GH₵ 15,000 - 20,000",
+      "deadline": "2026-11-30",
+      "description": "Procurement for new Chemistry laboratory wing.",
+      "awardedQuoteId": "quote-1793318234139",
+      "awardedSupplier": "LabEquip West Africa Ltd",
+      "awardedPrice": "GH₵ 17,500",
+      "awardedAt": "2026-10-29T23:57:15.563Z",
+      "lpoId": "lpo-1793318235563",
+      "lpoNumber": "LPO-GH-2026-3513"
+    },
+    {
       "id": "rfq-1793312623240",
       "status": "Tender Awarded",
       "quotesReceived": 1,
@@ -1172,6 +1192,24 @@
       "updatedAt": "2026-10-29T22:23:45.677Z",
       "lpoId": "lpo-1793312625677",
       "lpoNumber": "LPO-GH-2026-7119"
+    },
+    {
+      "id": "quote-1793318234139",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T23:57:14.139Z",
+      "rfqId": "rfq-1793318232901",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "price": "GH₵ 17,500",
+      "deliveryDays": 5,
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "phone": "+233244889900",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Frank Mensah",
+      "declineReason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "updatedAt": "2026-10-29T23:57:15.563Z",
+      "lpoId": "lpo-1793318235563",
+      "lpoNumber": "LPO-GH-2026-3513"
     }
   ],
   "jobs": [
@@ -2967,6 +3005,12 @@
       "schoolId": "sch-gis-accra",
       "type": "view",
       "timestamp": "2026-10-29T10:53:01.874Z"
+    },
+    {
+      "id": "lead-1793315839293",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T23:17:19.293Z"
     }
   ],
   "claims": [],
@@ -3521,6 +3565,92 @@
     }
   ],
   "admissionApplications": [
+    {
+      "id": "app-1793318224710",
+      "applicationNumber": "SKF-APP-2026-4042",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "academicYear": "2026/2027",
+      "term": "First Term",
+      "gradeApplyingFor": "Junior High (JHS 1-3 / BECE)",
+      "status": "Submitted (Under Review)",
+      "statusColor": "gold",
+      "submissionDate": "2026-10-29",
+      "userId": "usr-1793318224710",
+      "guardianEmail": "patrick.annan.1793318224678@gmail.com",
+      "student": {
+        "fullName": "Ewurama Annan",
+        "gender": "Not Specified",
+        "dob": "2015-05-12",
+        "currentSchool": "Ghana Basic School",
+        "specialNeeds": "None"
+      },
+      "parentGuardian": {
+        "name": "Mr. Patrick Annan",
+        "relationship": "Parent / Guardian",
+        "phone": "0245890011",
+        "email": "patrick.annan.1793318224678@gmail.com",
+        "occupation": "Professional",
+        "address": "East Legon, Greater Accra, Ghana"
+      },
+      "documents": [
+        {
+          "name": "Birth Certificate",
+          "verified": true,
+          "uploadDate": "2026-10-29"
+        },
+        {
+          "name": "Previous Terminal Report Card",
+          "verified": true,
+          "uploadDate": "2026-10-29"
+        }
+      ],
+      "reviewNotes": "Online parent portal registration. Application pending admission committee vetting.",
+      "createdAt": "2026-10-29T23:57:04.710Z"
+    },
+    {
+      "id": "app-1793318159720",
+      "applicationNumber": "SKF-APP-2026-4580",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "academicYear": "2026/2027",
+      "term": "First Term",
+      "gradeApplyingFor": "Junior High (JHS 1-3 / BECE)",
+      "status": "Submitted (Under Review)",
+      "statusColor": "gold",
+      "submissionDate": "2026-10-29",
+      "userId": "usr-1793318159720",
+      "guardianEmail": "patrick.annan.1793318159688@gmail.com",
+      "student": {
+        "fullName": "Ewurama Annan",
+        "gender": "Not Specified",
+        "dob": "2015-05-12",
+        "currentSchool": "Ghana Basic School",
+        "specialNeeds": "None"
+      },
+      "parentGuardian": {
+        "name": "Mr. Patrick Annan",
+        "relationship": "Parent / Guardian",
+        "phone": "0245890011",
+        "email": "patrick.annan.1793318159688@gmail.com",
+        "occupation": "Professional",
+        "address": "East Legon, Greater Accra, Ghana"
+      },
+      "documents": [
+        {
+          "name": "Birth Certificate",
+          "verified": true,
+          "uploadDate": "2026-10-29"
+        },
+        {
+          "name": "Previous Terminal Report Card",
+          "verified": true,
+          "uploadDate": "2026-10-29"
+        }
+      ],
+      "reviewNotes": "Online parent portal registration. Application pending admission committee vetting.",
+      "createdAt": "2026-10-29T23:55:59.720Z"
+    },
     {
       "id": "app-1793116530464",
       "applicationNumber": "SD-ADM-2026-5614",
@@ -4191,6 +4321,36 @@
     }
   ],
   "inquiries": [
+    {
+      "id": "inq-1793318224710",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "parentName": "Mr. Patrick Annan",
+      "parentEmail": "patrick.annan.1793318224678@gmail.com",
+      "parentPhone": "0245890011",
+      "wardName": "Ewurama Annan",
+      "wardLevel": "Junior High (JHS 1-3 / BECE)",
+      "message": "Inquiry registered during parent portal onboarding. Seeking admission for Ewurama Annan into Junior High (JHS 1-3 / BECE).",
+      "status": "Pending Response",
+      "statusColor": "gold",
+      "userId": "usr-1793318224710",
+      "createdAt": "2026-10-29T23:57:04.710Z"
+    },
+    {
+      "id": "inq-1793318159720",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "parentName": "Mr. Patrick Annan",
+      "parentEmail": "patrick.annan.1793318159688@gmail.com",
+      "parentPhone": "0245890011",
+      "wardName": "Ewurama Annan",
+      "wardLevel": "Junior High (JHS 1-3 / BECE)",
+      "message": "Inquiry registered during parent portal onboarding. Seeking admission for Ewurama Annan into Junior High (JHS 1-3 / BECE).",
+      "status": "Pending Response",
+      "statusColor": "gold",
+      "userId": "usr-1793318159720",
+      "createdAt": "2026-10-29T23:55:59.720Z"
+    },
     {
       "id": "inq-1792881077024",
       "inquiryNumber": "INQ-GHA-2026-5878",
@@ -5470,6 +5630,42 @@
         "STU-2026-001"
       ],
       "createdAt": "2026-10-29T22:18:54.033Z"
+    },
+    {
+      "id": "usr-1793318159720",
+      "name": "Mr. Patrick Annan",
+      "email": "patrick.annan.1793318159688@gmail.com",
+      "phone": "0245890011",
+      "role": "parent",
+      "schoolId": null,
+      "schoolName": null,
+      "title": "Parent / Guardian",
+      "password": "ParentPass2026!",
+      "verified": true,
+      "avatar": "👨‍👩‍👧",
+      "childName": "Ewurama Annan",
+      "childLevel": "Junior High (JHS 1-3 / BECE)",
+      "suburb": "East Legon, Greater Accra",
+      "targetSchoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T23:55:59.720Z"
+    },
+    {
+      "id": "usr-1793318224710",
+      "name": "Mr. Patrick Annan",
+      "email": "patrick.annan.1793318224678@gmail.com",
+      "phone": "0245890011",
+      "role": "parent",
+      "schoolId": null,
+      "schoolName": null,
+      "title": "Parent / Guardian",
+      "password": "ParentPass2026!",
+      "verified": true,
+      "avatar": "👨‍👩‍👧",
+      "childName": "Ewurama Annan",
+      "childLevel": "Junior High (JHS 1-3 / BECE)",
+      "suburb": "East Legon, Greater Accra",
+      "targetSchoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T23:57:04.710Z"
     }
   ],
   "sessions": [
@@ -6256,6 +6452,76 @@
       "role": "parent",
       "schoolId": null,
       "createdAt": "2026-10-29T22:23:43.223Z"
+    },
+    {
+      "token": "sdtk_mvu5wd58qiqovto8cl",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:15:55.916Z"
+    },
+    {
+      "token": "sdtk_mvu7bvxkt0ju3rdqh7",
+      "userId": "usr-1793318159720",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:55:59.720Z"
+    },
+    {
+      "token": "sdtk_mvu7da2uduxj0x8pcc",
+      "userId": "usr-1793318224710",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:04.710Z"
+    },
+    {
+      "token": "sdtk_mvu7daw1qnu0bna8o7",
+      "userId": "usr-1793318224710",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:05.761Z"
+    },
+    {
+      "token": "sdtk_mvu7dgd4wsmolp97un",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:12.856Z"
+    },
+    {
+      "token": "sdtk_mvu7dgd966eolkq1tt",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:12.861Z"
+    },
+    {
+      "token": "sdtk_mvu7dgdenjrtw5uda1",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:12.867Z"
+    },
+    {
+      "token": "sdtk_mvu7dgdkflyesyu1qc",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T23:57:12.872Z"
+    },
+    {
+      "token": "sdtk_mvu7dgdpaiw24xp3n1",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:12.877Z"
+    },
+    {
+      "token": "sdtk_mvu7dgdwn35c8wcfo2",
+      "userId": "usr-parent-1793312334033",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T23:57:12.884Z"
     }
   ],
   "bookmarks": {
@@ -8969,6 +9235,24 @@
   ],
   "tutorBookings": [
     {
+      "id": "tbk-1793318232894",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mr. Kojo Baffoe",
+      "parentEmail": "",
+      "parentPhone": "+233244001122",
+      "studentName": "Yaw Baffoe",
+      "studentGrade": "JHS 2",
+      "subject": "Elective Physics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T23:57:12.894Z"
+    },
+    {
       "id": "tbk-1793312623236",
       "teacherId": "tch-1",
       "teacherName": "Mr. Emmanuel Addo",
@@ -9267,6 +9551,51 @@
   ],
   "procurementAuditLogs": [
     {
+      "id": "plog-1793318235586-632",
+      "timestamp": "2026-10-29T23:57:15.586Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793318232901",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "reason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 17,500 from LabEquip West Africa Ltd for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\"."
+    },
+    {
+      "id": "plog-1793318234145-430",
+      "timestamp": "2026-10-29T23:57:14.145Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793318232901",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "summary": "LabEquip West Africa Ltd submitted a quotation of GH₵ 17,500 (lead time: 5 days) for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793318232905-210",
+      "timestamp": "2026-10-29T23:57:12.905Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793318232901",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 15,000 - 20,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" (200 Sets). Budget: GH₵ 15,000 - 20,000."
+    },
+    {
       "id": "plog-1793312625700-302",
       "timestamp": "2026-10-29T22:23:45.700Z",
       "stage": "tender_awarded",
@@ -9509,6 +9838,58 @@
     }
   ],
   "purchaseOrders": [
+    {
+      "id": "lpo-1793318235563",
+      "lpoNumber": "LPO-GH-2026-3513",
+      "quoteId": "quote-1793318234139",
+      "rfqId": "rfq-1793318232901",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "supplierPhone": "+233244889900",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "specifications": "Procurement for new Chemistry laboratory wing.",
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "deliveryLeadTime": "5 Business Days",
+      "deliveryDeadline": "2026-11-30",
+      "totalAmountGHS": 17500,
+      "totalAmountFormatted": "GH₵ 17,500",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Disbursement",
+          "disbursedAt": null,
+          "transactionRef": null
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Delivery",
+          "disbursedAt": null,
+          "transactionRef": null
+        }
+      ],
+      "paymentStatus": "Issued",
+      "createdAt": "2026-10-29T23:57:15.563Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    },
     {
       "id": "lpo-1793312625677",
       "lpoNumber": "LPO-GH-2026-7119",
