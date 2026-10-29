@@ -40,17 +40,17 @@ const Footer = {
               </ul>
             </div>
 
-            <!-- Ecosystem & B2B Links -->
+            <!-- The 5 Dedicated Portals -->
             <div>
               <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
-                Ecosystem Hubs
+                The 5 Portals
               </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
-                <li><a href="#" class="footer-link-suppliers">Educational Suppliers</a></li>
-                <li><a href="#" class="footer-link-rfqs">Post School RFQ</a></li>
-                <li><a href="#" class="footer-link-jobs">Teacher Job Board</a></li>
-                <li><a href="#" class="footer-link-portal">School Admin Portal</a></li>
-                <li><a href="#" class="footer-link-cssps" style="color: var(--gold-400); font-weight: 600;">🎓 CSSPS Placement Predictor</a></li>
+                <li><a href="/parents" class="footer-portal-link" data-portal="parents">👨‍👩‍👧 Parents Family Hub</a></li>
+                <li><a href="/teachers" class="footer-portal-link" data-portal="teachers">🧑‍🏫 Teachers & Tutors Portal</a></li>
+                <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers B2B Portal</a></li>
+                <li><a href="/schools" class="footer-portal-link" data-portal="schools">🏫 School Management OS</a></li>
+                <li><a href="/admin" class="footer-portal-link" data-portal="admin">🛡️ Super Admin Console</a></li>
               </ul>
             </div>
 
@@ -125,38 +125,15 @@ const Footer = {
       };
     });
 
-    document.querySelectorAll('.footer-link-suppliers').forEach(el => {
+    document.querySelectorAll('.footer-portal-link').forEach(el => {
       el.onclick = (e) => {
         e.preventDefault();
-        App.navigate('suppliers');
-      };
-    });
-
-    document.querySelectorAll('.footer-link-rfqs').forEach(el => {
-      el.onclick = (e) => {
-        e.preventDefault();
-        Modals.openPostRFQModal();
-      };
-    });
-
-    document.querySelectorAll('.footer-link-jobs').forEach(el => {
-      el.onclick = (e) => {
-        e.preventDefault();
-        App.navigate('jobs');
-      };
-    });
-
-    document.querySelectorAll('.footer-link-cssps').forEach(el => {
-      el.onclick = (e) => {
-        e.preventDefault();
-        App.navigate('cssps');
-      };
-    });
-
-    document.querySelectorAll('.footer-link-portal').forEach(el => {
-      el.onclick = (e) => {
-        e.preventDefault();
-        App.navigate('dashboard', 'sch-gis-accra');
+        const portal = el.getAttribute('data-portal');
+        if (portal === 'schools') {
+          App.navigate('schools', State.currentUser?.schoolId || 'sch-gis-accra');
+        } else {
+          App.navigate(portal);
+        }
       };
     });
 

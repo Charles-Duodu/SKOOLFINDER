@@ -45,6 +45,8 @@ const DashboardView = {
     const activeBorrowersCount = libraryLoans.filter(l => l.status === 'Active Loan' || l.status === 'Overdue').length || 12;
     const overdueLoansCount = libraryLoans.filter(l => l.status === 'Overdue' || (l.fineDueGHS && l.fineDueGHS > 0)).length;
     const digitalIDs = (await API.getStudentDigitalIDs(schoolId)) || [];
+    const schoolRfqs = (await API.getRFQs(schoolId)) || [];
+    const teacherApps = (await API.getTeacherApplications(schoolId)) || [];
 
     const totalApps = applications.length;
     const receivedApps = applications.filter(a => a.status === 'Received').length;
@@ -58,26 +60,78 @@ const DashboardView = {
           <!-- Dashboard Header -->
           <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
             <div>
-              <div style="font-size: 0.85rem; color: var(--gold-600); font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">
-                🛡️ Verified School Administration Portal
+              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #f3e8ff; border: 1px solid #ddd6fe; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #6b21a8; margin-bottom: 0.75rem;">
+                <span>🏫</span> SkoolFinder Campus • School Management OS (/schools)
               </div>
-              <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900);">
+              <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900); margin: 0 0 0.4rem 0;">
                 ${school.name}
               </h1>
-              <p style="color: var(--text-muted); font-size: 0.95rem;">
+              <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
                 📍 ${school.suburb}, ${school.region} &nbsp;|&nbsp; 
-                <span class="badge badge-admissions">${school.packageTier} Partner Tier</span>
+                <span class="badge badge-admissions">${school.packageTier} Partner Tier</span> &nbsp;|&nbsp;
+                <span class="badge badge-emerald">NaSIA Verified 🛡️</span>
               </p>
             </div>
 
-            <!-- School Switcher (Demo helper) -->
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Switch Campus:</span>
-              <select id="dash-school-select" class="form-select" style="width: auto;">
-                ${allSchools.map(s => `<option value="${s.id}" ${s.id === school.id ? 'selected' : ''}>${s.name}</option>`).join('')}
-              </select>
+            <!-- Portal Cross-Actions & Switcher -->
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+              <button class="btn-pill btn-emerald" onclick="App.navigate('teachers')" style="font-size: 0.82rem;">
+                <span>🧑‍🏫</span> Recruit Teachers (/teachers)
+              </button>
+              <button class="btn-pill btn-gold" onclick="App.navigate('suppliers')" style="font-size: 0.82rem;">
+                <span>📦</span> Post RFQ (/suppliers)
+              </button>
+              <button class="btn-pill btn-outline" onclick="Modals.openListSchoolModal()" style="font-size: 0.82rem; background: #fff;">
+                <span>➕</span> List New Campus
+              </button>
+              <div style="display: flex; align-items: center; gap: 0.5rem; background: #fff; padding: 0.35rem 0.65rem; border-radius: 999px; border: 1px solid var(--border-light);">
+                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Campus:</span>
+                <select id="dash-school-select" class="form-select" style="width: auto; padding: 0.2rem 1.5rem 0.2rem 0.5rem; font-size: 0.82rem; border: none; background-color: transparent;">
+                  ${allSchools.map(s => `<option value="${s.id}" ${s.id === school.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+                </select>
+              </div>
             </div>
           </div>
+
+          ${school.subscriptionStatus === 'active' || school.trialStatus === 'converted_to_paid' ? `
+            <!-- Active SaaS License Banner -->
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: var(--radius-xl); padding: 1.25rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.12);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.2rem; background: #ffffff; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                  🛡️
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 1.1rem; color: #166534;">
+                    🟢 Active ${school.packageTier || 'SaaS Growth'} License (${school.billingCycle ? school.billingCycle.toUpperCase() : 'MONTHLY'})
+                  </div>
+                  <div style="font-size: 0.84rem; color: #15803d; margin-top: 0.2rem;">
+                    Institutional tier active. Renews on <strong>${school.subscriptionExpiresAt ? new Date(school.subscriptionExpiresAt).toLocaleDateString('en-GB') : 'Active'}</strong> via Paystack Mobile Money.
+                  </div>
+                </div>
+              </div>
+              <button class="btn-pill btn-outline" id="btn-manage-subscription" style="font-weight: 700; font-size: 0.85rem; padding: 0.6rem 1.25rem; color: #166534; border-color: #22c55e; background: #ffffff;">
+                <span>⚙️</span> Upgrade / Renewal Options
+              </button>
+            </div>
+          ` : (school.status === 'active_trial' || school.trialEndsAt ? `
+            <!-- 14-Day Free SaaS Trial Notification -->
+            <div style="background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%); border: 2px solid #f59e0b; border-radius: var(--radius-xl); padding: 1.25rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.2rem;">⏳</div>
+                <div>
+                  <div style="font-weight: 800; font-size: 1.05rem; color: #92400e;">
+                    14-Day Free SaaS Trial Active (${Math.max(1, Math.ceil((new Date(school.trialEndsAt || Date.now() + 14 * 86400000) - new Date()) / 86400000))} Days Remaining)
+                  </div>
+                  <div style="font-size: 0.84rem; color: #b45309; margin-top: 0.2rem;">
+                    Operating with <strong>${school.packageTier || 'SaaS Starter'}</strong>. Select your production tier below to lock in uninterrupted service.
+                  </div>
+                </div>
+              </div>
+              <button class="btn-pill btn-gold" id="btn-choose-plan" style="font-weight: 700; font-size: 0.85rem; padding: 0.6rem 1.2rem;">
+                <span>⚡</span> Choose Plan (Starter / Growth / Enterprise)
+              </button>
+            </div>
+          ` : '')}
 
           <!-- Value Proposition Banner (Why Lead Analytics Matter) -->
           <div style="background: var(--gradient-navy); border-radius: var(--radius-xl); padding: 2rem; color: #ffffff; margin-bottom: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
@@ -1598,6 +1652,195 @@ const DashboardView = {
                 </div>
               </div>
 
+              <!-- Institutional Procurement & RFQ Management -->
+              <div style="background: var(--bg-main); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="badge" style="background: #fef3c7; color: #92400e;">📦 B2B Procurement Tenders</span>
+                      <span class="badge badge-admissions">${schoolRfqs.length} Active Tenders</span>
+                    </div>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--primary-900); margin: 0.25rem 0 0 0;">
+                      Institutional Procurement & Received Supplier Bids
+                    </h3>
+                  </div>
+                  <button id="btn-dash-panel-post-rfq" class="btn-pill btn-primary" style="font-size: 0.85rem;">
+                    <span>➕</span> Post New Procurement RFQ
+                  </button>
+                </div>
+
+                ${schoolRfqs.length === 0 ? `
+                  <div style="text-align: center; padding: 2.5rem 1.5rem; background: #ffffff; border-radius: var(--radius-lg); border: 1px dashed var(--border-light);">
+                    <div style="font-size: 2.25rem; margin-bottom: 0.5rem;">📦</div>
+                    <h4 style="font-size: 1.1rem; color: var(--primary-900); font-weight: 700; margin-bottom: 0.25rem;">No Procurement RFQs Posted Yet</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); max-width: 480px; margin: 0 auto 1.25rem auto;">
+                      Post your school's need for classroom desks, bulk rice & dining supplies, Cambridge/GES textbooks, or ICT gear to receive competitive bids from verified Ghanaian suppliers.
+                    </p>
+                    <button id="btn-dash-empty-post-rfq" class="btn-pill btn-gold" style="font-size: 0.85rem;">
+                      Post First RFQ Now &rarr;
+                    </button>
+                  </div>
+                ` : `
+                  <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                    ${schoolRfqs.map(rfq => `
+                      <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.03);">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 0.75rem;">
+                          <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                              <span class="badge" style="background: var(--primary-50); color: var(--primary-700);">${rfq.category}</span>
+                              <span class="badge ${rfq.status === 'Tender Awarded' ? 'badge-emerald' : 'badge-admissions'}">${rfq.status}</span>
+                            </div>
+                            <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--primary-900); margin: 0 0 0.25rem 0;">
+                              ${rfq.title}
+                            </h4>
+                            <div style="font-size: 0.82rem; color: var(--text-muted);">
+                              <strong>Quantity:</strong> ${rfq.quantity} &bull; 
+                              <strong>Target Budget:</strong> <span style="font-weight: 700; color: var(--primary-800);">${rfq.budgetRange}</span> &bull; 
+                              <strong>Deadline:</strong> ${rfq.deadline}
+                            </div>
+                          </div>
+                          <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="btn-pill btn-outline btn-dash-view-quotes" data-rfq-id="${rfq.id}" style="font-size: 0.82rem; padding: 0.45rem 0.9rem;">
+                              📋 Review Quotes (${rfq.quotesReceived || (rfq.quotes || []).length})
+                            </button>
+                            <button class="btn-pill btn-gold btn-dash-bid-rfq" data-rfq-id="${rfq.id}" style="font-size: 0.82rem; padding: 0.45rem 0.9rem;">
+                              + Submit Bid
+                            </button>
+                          </div>
+                        </div>
+
+                        ${(rfq.quotes && rfq.quotes.length > 0) ? `
+                          <div style="background: var(--bg-main); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem; border: 1px solid var(--border-light);">
+                            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+                              Received Supplier Quotations (${rfq.quotes.length}):
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                              ${rfq.quotes.map(q => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-light); font-size: 0.84rem; flex-wrap: wrap; gap: 0.5rem;">
+                                  <div>
+                                    <strong style="color: var(--primary-900);">${q.supplierName}</strong>
+                                    <span style="color: var(--text-muted); font-size: 0.78rem; margin-left: 0.35rem;">(${q.deliveryDays} days lead time &bull; ${q.warrantyTerms || 'Warranty included'})</span>
+                                  </div>
+                                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <span style="font-weight: 800; color: var(--emerald-600);">${q.price}</span>
+                                    <span class="badge ${q.status === 'Awarded' ? 'badge-emerald' : (q.status === 'Declined' ? 'badge-rose' : 'badge-admissions')}" style="font-size: 0.72rem;">${q.status}</span>
+                                    ${q.status === 'Awarded' ? `
+                                      <div style="display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                        <span style="font-size: 0.75rem; color: var(--emerald-600); font-weight: 700;">🟢 Tender Awarded</span>
+                                        <button class="btn-pill btn-gold btn-dash-view-lpo" data-quote-id="${q.id}" style="font-size: 0.72rem; padding: 0.2rem 0.55rem;">
+                                          📄 View LPO
+                                        </button>
+                                      </div>
+                                    ` : q.status === 'Declined' ? `
+                                      <span style="font-size: 0.75rem; color: #dc2626; font-weight: 700;">🔴 Bid Declined</span>
+                                    ` : `
+                                      <div style="display: flex; gap: 0.35rem;">
+                                        <button class="btn-pill btn-emerald btn-dash-award-quote" data-quote-id="${q.id}" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+                                          ✓ Award
+                                        </button>
+                                        <button class="btn-pill btn-outline btn-dash-decline-quote" data-quote-id="${q.id}" style="font-size: 0.75rem; padding: 0.25rem 0.65rem; color: #dc2626; border-color: #fca5a5;">
+                                          ✕ Decline
+                                        </button>
+                                      </div>
+                                    `}
+                                  </div>
+                                </div>
+                              `).join('')}
+                            </div>
+                          </div>
+                        ` : `
+                          <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.5rem; font-style: italic;">
+                            No quotes submitted yet for this tender. Vetted suppliers in Accra & Kumasi have been notified.
+                          </div>
+                        `}
+                      </div>
+                    `).join('')}
+                  </div>
+                `}
+              </div>
+
+              <!-- FEATURE 4: TEACHER APPLICATIONS & HIRING PIPELINE -->
+              <div style="background: var(--bg-main); border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;">🧑‍🏫 Academic Staffing &amp; Hiring Pipeline</span>
+                      <span class="badge badge-admissions">${teacherApps.length} Candidates</span>
+                    </div>
+                    <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--primary-900); margin: 0.25rem 0 0 0;">
+                      Educator Applications, NTC Licensure &amp; Hiring Pipeline
+                    </h3>
+                  </div>
+                  <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn-pill btn-emerald" onclick="App.navigate('teachers')" style="font-size: 0.85rem;">
+                      <span>🔍</span> Search Teacher Talent Pool
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Candidates List -->
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                  ${teacherApps.map(app => `
+                    <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                      <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="width: 48px; height: 48px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700;">
+                          ${app.teacherName.split(' ').map(w => w[0]).slice(0, 2).join('')}
+                        </div>
+                        <div>
+                          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <strong style="color: var(--primary-900); font-size: 1.05rem;">${app.teacherName}</strong>
+                            <span class="badge ${app.ntcVerified ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.72rem;">
+                              ${app.ntcVerified ? '🛡️ NTC Certified' : '⚠️ Unverified NTC'} (${app.licenseNumber})
+                            </span>
+                            <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.72rem;">
+                              ${app.status}
+                            </span>
+                          </div>
+                          <div style="font-size: 0.85rem; color: var(--text-dark); margin-top: 0.2rem;">
+                            Position: <strong style="color: var(--primary-800);">${app.jobTitle}</strong> &nbsp;|&nbsp; 
+                            ${app.qualification} &nbsp;|&nbsp; 
+                            <strong>${app.experienceYears} Years Exp</strong>
+                          </div>
+                          ${app.interviewDetails ? `
+                            <div style="font-size: 0.78rem; color: #2563eb; margin-top: 0.35rem; background: #eff6ff; padding: 0.35rem 0.65rem; border-radius: 6px; display: inline-block;">
+                              📅 Interview: <strong>${app.interviewDetails.date} at ${app.interviewDetails.time}</strong> (${app.interviewDetails.venue})
+                            </div>
+                          ` : ''}
+                          ${app.contractDetails ? `
+                            <div style="font-size: 0.78rem; color: #047857; margin-top: 0.35rem; background: #ecfdf5; padding: 0.35rem 0.65rem; border-radius: 6px; display: inline-block;">
+                              🤝 Hired: <strong>${app.contractDetails.role}</strong> &bull; Remuneration: <strong>GH₵ ${app.contractDetails.salaryGHS.toLocaleString()}/mo</strong> &bull; Starts: ${app.contractDetails.commencementDate}
+                            </div>
+                          ` : ''}
+                        </div>
+                      </div>
+
+                      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        ${!app.ntcVerified ? `
+                          <button class="btn-pill btn-outline btn-dash-verify-ntc" data-app-id="${app.id}" data-app='${JSON.stringify(app).replace(/'/g, "&apos;")}' style="font-size: 0.78rem; color: #d97706; border-color: #f59e0b;">
+                            <span>🛡️</span> Verify NTC
+                          </button>
+                        ` : ''}
+                        ${app.status !== 'Hired / Contract Offered' ? `
+                          <button class="btn-pill btn-primary btn-dash-interview" data-app-id="${app.id}" data-app='${JSON.stringify(app).replace(/'/g, "&apos;")}' style="font-size: 0.78rem;">
+                            <span>📅</span> Schedule Interview
+                          </button>
+                          <button class="btn-pill btn-emerald btn-dash-hire" data-app-id="${app.id}" data-app='${JSON.stringify(app).replace(/'/g, "&apos;")}' style="font-size: 0.78rem;">
+                            <span>🤝</span> Hire &amp; Issue Contract
+                          </button>
+                        ` : `
+                          <span class="badge badge-emerald" style="font-size: 0.8rem; padding: 0.4rem 0.75rem;">
+                            ✓ Contract Active
+                          </span>
+                        `}
+                        <a href="https://wa.me/${app.teacherPhone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-pill btn-outline" style="font-size: 0.78rem; color: #25d366; border-color: #86efac; text-decoration: none;">
+                          💬 WhatsApp
+                        </a>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+
               <!-- Campus Profile Status -->
               <div style="border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
                 <h4 style="font-size: 1.05rem; color: var(--primary-900); font-weight: 700; margin-bottom: 0.75rem;">
@@ -1813,9 +2056,111 @@ const DashboardView = {
       };
     }
 
-    // Post RFQ
-    document.getElementById('btn-dash-post-rfq')?.addEventListener('click', () => {
-      Modals.openPostRFQModal();
+    // Post RFQ handlers (Header, Panel, Empty state)
+    const openPostRFQForSchool = async () => {
+      const school = await API.getSchoolById(schoolId);
+      Modals.openPostRFQModal({ schoolId, schoolName: school.name });
+    };
+    document.getElementById('btn-dash-post-rfq')?.addEventListener('click', openPostRFQForSchool);
+    document.getElementById('btn-dash-panel-post-rfq')?.addEventListener('click', openPostRFQForSchool);
+    document.getElementById('btn-dash-empty-post-rfq')?.addEventListener('click', openPostRFQForSchool);
+
+    // Review Quotes
+    document.querySelectorAll('.btn-dash-view-quotes').forEach(btn => {
+      btn.onclick = async () => {
+        const rfqId = btn.dataset.rfqId;
+        const rfqs = await API.getRFQs(schoolId);
+        const rfq = rfqs.find(r => r.id === rfqId);
+        if (rfq) Modals.openRFQQuotesModal(rfq);
+      };
+    });
+
+    // Submit Bid from dashboard
+    document.querySelectorAll('.btn-dash-bid-rfq').forEach(btn => {
+      btn.onclick = async () => {
+        const rfqId = btn.dataset.rfqId;
+        const rfqs = await API.getRFQs(schoolId);
+        const rfq = rfqs.find(r => r.id === rfqId);
+        if (rfq) Modals.openSubmitQuoteModal(rfq);
+      };
+    });
+
+    // Award Quote button in dashboard
+    document.querySelectorAll('.btn-dash-award-quote').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        try {
+          await API.updateQuoteStatus(quoteId, 'Awarded');
+          State.showToast(`🎉 Tender awarded! The supplier and Super Admin have been notified.`, 'success');
+          App.navigate('dashboard', schoolId);
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    // Decline Quote button in dashboard
+    document.querySelectorAll('.btn-dash-decline-quote').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        const reason = prompt("Enter a brief reason for declining this bid (e.g. Exceeded budget, specs mismatch):", "Proposal did not meet current school procurement requirements");
+        if (reason === null) return;
+        try {
+          await API.updateQuoteStatus(quoteId, 'Declined', reason);
+          State.showToast(`Bid declined. The supplier and Super Admin have been notified.`, 'info');
+          App.navigate('dashboard', schoolId);
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    // View Official LPO button in dashboard
+    document.querySelectorAll('.btn-dash-view-lpo').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        try {
+          const res = await API.generateLPO(quoteId);
+          if (res && res.lpo) Modals.openLPOModal(res.lpo);
+          else State.showToast('LPO not found', 'error');
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    // Feature 4: Teacher NTC Verification & Hiring Actions
+    document.querySelectorAll('.btn-dash-verify-ntc').forEach(btn => {
+      btn.onclick = () => {
+        try {
+          const app = JSON.parse(btn.dataset.app);
+          Modals.openVerifyNTCModal(app, () => App.refreshCurrentView());
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-dash-interview').forEach(btn => {
+      btn.onclick = () => {
+        try {
+          const app = JSON.parse(btn.dataset.app);
+          Modals.openScheduleInterviewModal(app, () => App.refreshCurrentView());
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-dash-hire').forEach(btn => {
+      btn.onclick = () => {
+        try {
+          const app = JSON.parse(btn.dataset.app);
+          Modals.openHireTeacherModal(app, () => App.refreshCurrentView());
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
     });
 
     // Post Teaching Job
@@ -2675,6 +3020,17 @@ const DashboardView = {
     // Feature 16: Top Open Gate Scanner
     document.getElementById('btn-dash-open-gate-scanner')?.addEventListener('click', () => {
       Modals.openVerifyIDScannerModal('GIS-2026-0842');
+    });
+
+    // SaaS Subscription & Plan Upgrades Modal Trigger
+    document.getElementById('btn-choose-plan')?.addEventListener('click', async () => {
+      const schoolObj = await API.getSchoolById(schoolId);
+      Modals.openSaaSSubscriptionModal(schoolObj);
+    });
+
+    document.getElementById('btn-manage-subscription')?.addEventListener('click', async () => {
+      const schoolObj = await API.getSchoolById(schoolId);
+      Modals.openSaaSSubscriptionModal(schoolObj);
     });
 
     // Initial load

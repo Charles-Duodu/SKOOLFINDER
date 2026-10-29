@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SkoolFinder Ghana - Administrator & Backend Architecture Master Guide</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #ffffff;
+    line-height: 1.55;
+    font-size: 10.5pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header-cover {
+    background: linear-gradient(135deg, #091325 0%, #172554 60%, #1e3a8a 100%);
+    color: #ffffff;
+    padding: 28px 32px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    position: relative;
+    border-bottom: 4px solid #f59e0b;
+  }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #fde047;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: 22pt;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 6px 0;
+    color: #ffffff;
+  }
+
+  .subtitle {
+    font-size: 11pt;
+    color: #cbd5e1;
+    margin: 0 0 16px 0;
+    font-weight: 400;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 8.5pt;
+  }
+
+  .meta-item strong {
+    display: block;
+    color: #94a3b8;
+    text-transform: uppercase;
+    font-size: 7.5pt;
+    margin-bottom: 2px;
+  }
+
+  .meta-item span {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-size: 14pt;
+    font-weight: 800;
+    color: #0f172a;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 6px;
+    margin-top: 26px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+
+  p {
+    margin: 0 0 10px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px 0;
+    font-size: 9pt;
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #cbd5e1;
+  }
+
+  th {
+    background: #0f172a;
+    color: #ffffff;
+    text-align: left;
+    padding: 10px 12px;
+    font-weight: 700;
+    font-size: 8.5pt;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) td {
+    background: #f8fafc;
+  }
+
+  .service-name {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 9.5pt;
+  }
+
+  .service-var {
+    font-family: "SF Mono", Consolas, Menlo, monospace;
+    font-size: 8pt;
+    color: #475569;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .badge-live { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+  .badge-core { background: #dbeafe; color: #1d4ed8; border: 1px solid #93c5fd; }
+  .badge-redundant { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+  .callout-box {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 14px 0;
+    font-size: 9.5pt;
+  }
+
+  .callout-box.warn {
+    background: #fffbeb;
+    border-left-color: #f59e0b;
+  }
+
+  .callout-title {
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+    font-size: 10pt;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 12px 0;
+  }
+
+  .card {
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .card-title {
+    font-weight: 700;
+    font-size: 10.5pt;
+    color: #0f172a;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  pre, code {
+    font-family: "SF Mono", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    font-size: 8pt;
+  }
+
+  pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 8px 0 14px 0;
+    border: 1px solid #334155;
+    line-height: 1.45;
+  }
+
+  code.inline {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+
+  .page-break {
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  ul, ol {
+    margin: 0 0 10px 0;
+    padding-left: 20px;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 8pt;
+    color: #94a3b8;
+    margin-top: 30px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- COVER HEADER -->
+  <div class="header-cover">
+    <div class="brand-badge">🇬🇭 SkoolFinder Ghana • Enterprise Operations Manual</div>
+    <h1>Platform Architecture, Connected Services & Admin Navigation Guide</h1>
+    <div class="subtitle">Complete technical specification, production backend audit, and administrator database operations manual.</div>
+    <div class="meta-grid">
+      <div class="meta-item">
+        <strong>Document Version</strong>
+        <span>v1.0 (Production Ready)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Primary Database</strong>
+        <span>Neon PostgreSQL 16</span>
+      </div>
+      <div class="meta-item">
+        <strong>Target Market</strong>
+        <span>Ghana (16 Regions)</span>
+      </div>
+      <div class="meta-item">
+        <strong>Application Server</strong>
+        <span>Node.js / Express</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <h2>1. Connected Services & Complete Functional Audit</h2>
+  <p>The table below provides a comprehensive mapping of every internal component and third-party cloud service connected to the SkoolFinder Ghana backend, specifying their direct business and system applications.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 28%;">SERVICE</th>
+        <th style="width: 72%;">USES & FUNCTIONALITY IN SKOOLFINDER</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="badge badge-live">Live Active</span>
+          <div class="service-name">Neon Cloud PostgreSQL</div>
+          <span class="service-var">DATABASE_URL • data/pgClient.js</span>
+        </td>
+        <td>
+          <strong>Primary Relational Database Engine (PostgreSQL 16).</strong><br>
+          Stores and indexes 33+ relational collections with SSL connection pooling. Manages all core institutional records: verified schools, user credentials, student admissions, school fee invoices, teacher applications, B2B supplier bids, purchase orders (LPOs), and national audit logs.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-redundant">Redundant</span>
+          <div class="service-name">Supabase Cloud</div>
+          <span class="service-var">SUPABASE_URL • services/supabaseService.js</span>
+        </td>
+        <td>
+          <strong>BaaS & Object Storage (Duplicate Database Configuration).</strong><br>
+          Originally configured for Row-Level Security (RLS) data partitioning and file storage. In the current codebase, it simply connects to <code>DATABASE_URL</code> (Neon). Recommended to be phased out as a database, or reserved purely for object storage (student photos, teacher CVs, and PDF report cards).
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Paystack Ghana Gateway</div>
+          <span class="service-var">PAYSTACK_SECRET_KEY • services/paystackService.js</span>
+        </td>
+        <td>
+          <strong>Payment Gateway & Milestone Escrow.</strong><br>
+          Processes automated Mobile Money (MTN MoMo, Telecel Cash, AT Money) and Visa/Mastercard transactions. Powers parent tuition fee collections, school subscription billing, and B2B school-to-supplier procurement 50/50 escrow disbursements with cryptographic HMAC-SHA512 webhook signature verification.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Hubtel Ghana SMS Gateway</div>
+          <span class="service-var">HUBTEL_CLIENT_ID • services/hubtelService.js</span>
+        </td>
+        <td>
+          <strong>Regulated Telecom SMS & 2FA Dispatch.</strong><br>
+          Delivers transactional SMS messages across MTN Ghana, Telecel Ghana, and AT Ghana using E.164 phone normalization (<code>+233...</code>). Dispatches parent 6-digit login OTPs, tuition fee digital receipt SMS alerts, admission status notices, and teacher interview invitations.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Resend Transactional Email</div>
+          <span class="service-var">RESEND_API_KEY • services/resendService.js</span>
+        </td>
+        <td>
+          <strong>Official Transactional Email Delivery.</strong><br>
+          Sends branded HTML email correspondence: school onboarding and trial confirmations, official Ghana Local Purchase Order (LPO) vouchers with 50/50 escrow schedules, student admission updates, and teacher employment appointment contracts.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-redundant">Redundant</span>
+          <div class="service-name">Clerk Authentication</div>
+          <span class="service-var">CLERK_SECRET_KEY • services/clerkService.js</span>
+        </td>
+        <td>
+          <strong>Multi-Tenant Identity & RBAC.</strong><br>
+          Configured to provision school organizations and member roles. However, because Ghanaian parents and teachers log in using Ghana Mobile Money phone numbers and Hubtel SMS OTPs, Clerk's hosted authentication is redundant with the platform's native JWT and OTP engine.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Akosua AI Advisory Engine</div>
+          <span class="service-var">server.js • data/db.js (queryAIChatbot)</span>
+        </td>
+        <td>
+          <strong>Ghanaian Educational AI Advisor.</strong><br>
+          Trained specifically on Ghana’s Computerized School Selection and Placement System (CSSPS), BECE aggregate calculations, GES versus Cambridge/IB curriculum comparisons, and regional boarding school recommendations.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Express.js API Gateway</div>
+          <span class="service-var">server.js (Node.js)</span>
+        </td>
+        <td>
+          <strong>Central Application & Route Controller.</strong><br>
+          Serves 55+ REST API endpoints, enforces Helmet/CORS security, JWT token verification, rate limiting, and strictly isolates and routes the 5 platform portals (<code>/parents</code>, <code>/teachers</code>, <code>/suppliers</code>, <code>/schools</code>, <code>/admin</code>).
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span class="badge badge-core">Core Essential</span>
+          <div class="service-name">Atomic Document Store</div>
+          <span class="service-var">data/db.js • data/database.json</span>
+        </td>
+        <td>
+          <strong>High-Speed Local Cache & Zero-Downtime Fallback.</strong><br>
+          Embedded JSON storage engine with automated rolling backup snapshots (up to 30 snapshots in <code>backups/</code>). Ensures that if internet connectivity to Neon drops, read queries and development tasks continue without crashing.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECTION 2 -->
+  <div class="page-break"></div>
+  <h2>2. Production Architecture & Backend Recommendation</h2>
+
+  <div class="callout-box">
+    <div class="callout-title">The Recommended Market Backbone: Node.js/Express + Neon PostgreSQL</div>
+    Standardize on <strong>Node.js/Express + Neon PostgreSQL</strong> as your single source of truth. Remove the redundant Supabase database and Clerk keys from <code>.env</code> to eliminate confusion and simplify maintenance.
+  </div>
+
+  <div class="grid-2 avoid-break">
+    <div class="card">
+      <div class="card-title">❌ What to Retire / Clean Up</div>
+      <ul>
+        <li><strong>Supabase (Database):</strong> Having both <code>DATABASE_URL</code> (Neon) and <code>SUPABASE_URL</code> causes architectural duplicate storage. Neon is already tested, connected, and active (v16.15).</li>
+        <li><strong>Clerk Auth:</strong> Ghanaian parents and educators interact with phone numbers and SMS OTPs. Your platform already has a native Ghana Phone OTP + JWT engine, making Clerk's external hosted popups unnecessary.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">✅ What to Retain (The 4 Pillars)</div>
+      <ul>
+        <li><strong>Neon PostgreSQL:</strong> High-performance serverless cloud relational database storing all 33 business collections.</li>
+        <li><strong>Paystack Ghana:</strong> Handles automated Mobile Money (MTN MoMo, Telecel, AT) and card fee payments.</li>
+        <li><strong>Hubtel SMS:</strong> Direct telecom SMS delivery for parent OTPs and fee payment receipts.</li>
+        <li><strong>Resend Email:</strong> Delivery of formal PDF receipts, LPO purchase orders, and employment contracts.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout-box warn avoid-break">
+    <div class="callout-title">Will Removing Supabase or Clerk Affect the 5 Portals?</div>
+    <strong>No. Absolutely 100% of the 5 portals will continue to work perfectly.</strong><br>
+    All 5 portals (Parents, Teachers, Suppliers, Schools, and Admin) are built into your own Single-Page Application (<code>parentDashboardView.js</code>, <code>teachersView.js</code>, <code>suppliersView.js</code>, <code>dashboardView.js</code>, and <code>adminView.js</code>). Routing is managed by <code>public/js/app.js</code> and data is served by <code>server.js</code> via Neon PostgreSQL. You will not lose a single page, button, or feature.
+  </div>
+
+  <!-- SECTION 3 -->
+  <h2>3. Step-by-Step Administrator & Database Navigation Guide</h2>
+
+  <h3>Part 1: Accessing the Super Admin Console (Browser GUI)</h3>
+  <p>You can manage the entire national platform visually without writing a single line of SQL:</p>
+  <ol>
+    <li>Open your browser to: <code class="inline">http://localhost:3000/admin</code> (or your live production domain).</li>
+    <li>Log in using your Super Administrator credentials:
+      <ul>
+        <li><strong>Email:</strong> <code class="inline">superadmin@skoolfinder.gh</code></li>
+        <li><strong>Password:</strong> <code class="inline">AdminPass2026!</code></li>
+      </ul>
+    </li>
+    <li>Once authenticated, the console gives you direct operational control over:
+      <ul>
+        <li><strong>School Vetting & Licensing:</strong> Inspect NaSIA accreditation status and issue verified directory badges.</li>
+        <li><strong>Teacher NTC Licensure Vault:</strong> Audit 10-digit National Teaching Council licenses, issue gold badges, and track interviews and contracts.</li>
+        <li><strong>Procurement & 50/50 MoMo Escrow:</strong> Monitor school RFQ tenders, supplier bids, LPO vouchers, and disburse 50% upfront / 50% completion funds.</li>
+        <li><strong>Tuition Fee Auditing:</strong> View student fee receipts (e.g. <code class="inline">GIS-REC-2026-XXX</code>) and Paystack transaction logs.</li>
+        <li><strong>System Telemetry & Audit Trails:</strong> Review live gateway latency and real-time national event logs.</li>
+      </ul>
+    </li>
+  </ol>
+
+  <div class="page-break"></div>
+  <h3>Part 2: Navigating the Backend Codebase</h3>
+  <p>The directory tree below illustrates where core backend modules reside:</p>
+
+<pre>
+School_Directory_Platform/
+├── server.js               ── Central API gateway (55+ endpoints, rate limits, webhooks)
+├── .env                    ── Environment credentials (Neon, Paystack, Hubtel, Resend)
+├── data/
+│   ├── pgClient.js         ── Neon PostgreSQL connection pool manager (SSL enabled)
+│   ├── db.js               ── Data query layer (getSchools, recordPayment, verifyTeacherNTC)
+│   ├── database.json       ── Atomic local JSON document store (resilient zero-downtime cache)
+│   └── schema.sql          ── PostgreSQL relational table definitions and indexes
+├── services/
+│   ├── paystackService.js  ── Paystack MoMo STK Push & Webhook HMAC verification
+│   ├── hubtelService.js    ── Hubtel Ghana telecom SMS engine (E.164 auto-formatting)
+│   ├── otpService.js       ── 6-digit SMS OTP generation and validation
+│   └── resendService.js    ── Branded transactional email templates (Receipts, LPOs, Contracts)
+└── scripts/
+    ├── verify_gateways.js  ── Gateway and database health diagnostic suite
+    ├── migrate_to_postgres.js ── Local data to PostgreSQL cloud synchronization script
+    └── backup_db.js        ── Automated rolling database snapshot creator (MAX_BACKUPS=30)
+</pre>
+
+  <h3>Part 3: Navigating and Querying the Database Directly</h3>
+  <p>You have three convenient methods to inspect, manage, and query your data:</p>
+
+  <div class="card avoid-break">
+    <div class="card-title">Option A: Neon Cloud Web Console (Recommended)</div>
+    <ol>
+      <li>Log in to your Neon dashboard at <code class="inline">https://console.neon.tech</code>.</li>
+      <li>Open your project (<code>ep-tiny-violet-b4m7ip56</code>).</li>
+      <li>Click <strong>"Tables"</strong> in the sidebar to browse records like a spreadsheet, or open the <strong>"SQL Editor"</strong> to run direct queries:</li>
+    </ol>
+<pre>
+-- 1. View all verified schools and their curriculum
+SELECT id, name, region, curriculum, verified FROM schools ORDER BY created_at DESC;
+
+-- 2. Audit parent tuition fee collections and Mobile Money reference numbers
+SELECT id, school_name, student_name, amount, payment_method, status, receipt_number 
+FROM payments ORDER BY created_at DESC;
+
+-- 3. Review all B2B procurement tenders and awarded supplier bids
+SELECT id, title, school_name, budget_ghs, status, winning_supplier FROM rfqs;
+
+-- 4. Inspect real-time national activity and audit logs
+SELECT stage, summary, created_at FROM procurement_logs ORDER BY created_at DESC LIMIT 25;
+</pre>
+  </div>
+
+  <div class="card avoid-break" style="margin-top: 14px;">
+    <div class="card-title">Option B: Desktop Database GUIs (TablePlus / DBeaver / pgAdmin)</div>
+    <p>Connect your favorite database GUI client using the connection URL found in your <code>.env</code> file:</p>
+<pre>
+postgresql://Postgres.database_owner:npg_VjG87PxJERsq@ep-tiny-violet-b4m7ip56-pooler.c-6.us-east-2.aws.neon.tech/Postgres.database?sslmode=require
+</pre>
+    <p>This allows visual editing, filtering, and instant export of records to Excel or CSV.</p>
+  </div>
+
+  <div class="card avoid-break" style="margin-top: 14px;">
+    <div class="card-title">Option C: Local Data Inspection (Offline Cache)</div>
+    <p>Open <code class="inline">data/database.json</code> in your code editor to inspect the raw JSON collections whenever working locally or reviewing cache state.</p>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="page-break"></div>
+  <h2>4. Administrator Command Line Cheatsheet</h2>
+  <p>Run these commands from the project root directory in PowerShell or terminal:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 32%;">COMMAND</th>
+        <th style="width: 68%;">WHAT IT DOES</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code class="inline">npm run gateways:verify</code></td>
+        <td><strong>Health Diagnostic Suite:</strong> Tests live connectivity and latency to Neon PostgreSQL, checks Paystack and Hubtel credentials, and prints a deployment readiness checklist.</td>
+      </tr>
+      <tr>
+        <td><code class="inline">npm run backup</code></td>
+        <td><strong>Manual Snapshot:</strong> Immediately creates a timestamped JSON backup snapshot of all 33 collections inside the <code>backups/</code> directory.</td>
+      </tr>
+      <tr>
+        <td><code class="inline">npm run db:migrate</code></td>
+        <td><strong>Database Sync & Migration:</strong> Pushes and syncs all institutions, tenders, quotes, and users from the local document store into the Neon PostgreSQL cloud database.</td>
+      </tr>
+      <tr>
+        <td><code class="inline">npm start</code> or <code class="inline">npm run dev</code></td>
+        <td><strong>Boots the Application Server:</strong> Starts the Express.js gateway on port <code>3000</code> with active PostgreSQL connection pooling and background health monitors.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5. Pre-Market Launch Checklist</h2>
+  <div class="card avoid-break">
+    <ol>
+      <li><strong>Switch Paystack to Live Mode:</strong> In <code>.env</code>, replace <code>pk_test_...</code> and <code>sk_test_...</code> with your live keys from the Paystack Ghana dashboard. Add your <code>PAYSTACK_WEBHOOK_SECRET</code>.</li>
+      <li><strong>Register Hubtel Sender ID:</strong> Ensure your Sender ID (<code>SkoolFinder</code>) is registered with the National Communications Authority (NCA) via Hubtel Unity, then insert your live Client ID and Secret in <code>.env</code>.</li>
+      <li><strong>Deploy to Cloud Host:</strong> Deploy <code>server.js</code> to Render, Railway, or AWS ECS with environment variables configured, and map your official domain (e.g., <code>skoolfinder.com.gh</code>).</li>
+    </ol>
+  </div>
+
+  <div class="footer-note">
+    SkoolFinder Ghana Operations Manual • Confidential & Proprietary • Powered by Neon PostgreSQL & Node.js
+  </div>
+
+</body>
+</html>

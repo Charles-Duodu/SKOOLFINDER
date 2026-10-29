@@ -54,11 +54,20 @@ const ParentPortalView = {
             </div>
 
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button id="btn-parent-cssps" class="btn-pill" style="font-size: 0.85rem; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #3b82f6; font-weight: 700;" onclick="App.navigate('cssps')">
+                🎓 BECE CSSPS Predictor
+              </button>
+              <button id="btn-parent-past-questions" class="btn-pill" style="font-size: 0.85rem; background: #fdf2f8; color: #9d174d; border: 1.5px solid #ec4899; font-weight: 700;" onclick="App.navigate('past-questions')">
+                📚 Past Questions & Schemes
+              </button>
               <button id="btn-parent-digital-id" class="btn-pill" style="font-size: 0.85rem; background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border: 1.5px solid #f59e0b; box-shadow: 0 4px 12px rgba(10,17,40,0.25); font-weight: 700;">
                 🪪 Digital Student ID
               </button>
+              <button id="btn-open-link-student" class="btn-pill btn-gold" style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+                <span>➕</span> Link Child by Student ID
+              </button>
               <button id="btn-browse-schools" class="btn-pill btn-outline" style="font-size: 0.85rem;" onclick="App.navigate('directory')">
-                🔍 Explore More Schools
+                🔍 Find Schools
               </button>
               <button id="btn-parent-switch-demo" class="btn-pill btn-secondary" style="font-size: 0.85rem;">
                 🔄 Switch Demo Role
@@ -188,6 +197,11 @@ const ParentPortalView = {
               <span class="badge" style="background: #f1f5f9; color: var(--text-dark);">${savedSchools.length}</span>
             </button>
 
+            <button class="parent-tab-btn ${this.activeTab === 'tutors' ? 'active' : ''}" data-tab="tutors" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'tutors' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'tutors' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
+              🧑‍🏫 Hired Private Tutors
+              <span class="badge" style="background: #ecfdf5; color: #065f46;">1 Active</span>
+            </button>
+
             <button class="parent-tab-btn ${this.activeTab === 'sms' ? 'active' : ''}" data-tab="sms" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'sms' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'sms' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
               📲 SMS & WhatsApp Alerts
               <span class="badge" style="background: #eff6ff; color: #1e40af;">${smsNotifications.length}</span>
@@ -222,6 +236,8 @@ const ParentPortalView = {
       return this.renderLibraryTab();
     } else if (this.activeTab === 'digital-id') {
       return this.renderDigitalIDTab();
+    } else if (this.activeTab === 'tutors') {
+      return this.renderTutorsTab();
     } else if (this.activeTab === 'sms') {
       return this.renderSMSTab();
     } else if (this.activeTab === 'inquiries') {
@@ -229,6 +245,64 @@ const ParentPortalView = {
     } else {
       return this.renderBookmarksTab();
     }
+  },
+
+  renderTutorsTab() {
+    return `
+      <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.78rem; font-weight: 700; color: #047857; text-transform: uppercase;">Portal Integration</span>
+            <h2 style="font-size: 1.45rem; font-weight: 800; color: var(--text-main); margin: 0.2rem 0 0 0;">
+              Your Active Private Home Tutors & Exam Coaches
+            </h2>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+              Verified educators hired from the <strong>SkoolFinder Teach (/teachers)</strong> marketplace.
+            </p>
+          </div>
+          <button class="btn-pill btn-emerald" onclick="App.navigate('teachers')">
+            <span>🔍</span> Browse & Hire More Tutors on /teachers &rarr;
+          </button>
+        </div>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <div style="width: 58px; height: 58px; border-radius: 50%; background: #fff; border: 2px solid #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+              👨‍🏫
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #065f46; margin: 0;">Mr. Emmanuel Addo</h3>
+                <span class="badge badge-emerald" style="font-size: 0.7rem;">🛡️ NTC Certified</span>
+              </div>
+              <div style="font-size: 0.82rem; color: #166534; margin-top: 0.2rem;">
+                Assigned Student: <strong>Kwame Mensah (JHS 1)</strong> • Subject: <strong>Physics & Core Mathematics</strong>
+              </div>
+              <div style="font-size: 0.78rem; color: #047857; margin-top: 0.2rem;">
+                ⏰ Schedule: <strong>Tuesdays & Thursdays (4:30 PM)</strong> • Location: <strong>In-Person at East Legon Home</strong>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: right;">
+            <div style="font-size: 1.25rem; font-weight: 800; color: #065f46;">GH₵ 120 / hr</div>
+            <div style="font-size: 0.75rem; color: #047857; margin-bottom: 0.5rem;">Settled via Paystack MoMo</div>
+            <a href="https://wa.me/233244556677?text=Hello%20Mr.%20Emmanuel,%20confirming%20Kwame's%20maths%20session%20today." target="_blank" class="btn-pill btn-emerald" style="font-size: 0.8rem; padding: 0.4rem 0.85rem;">
+              WhatsApp Tutor &rarr;
+            </a>
+          </div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center;">
+          <p style="font-size: 0.9rem; color: #475569; margin: 0 0 1rem 0;">
+            Need help with Cambridge IGCSE, French, Phonics, or Coding? Hire verified educators directly.
+          </p>
+          <button class="btn-pill btn-outline" onclick="App.navigate('teachers')">
+            <span>🧑‍🏫</span> Open Teachers Portal (/teachers)
+          </button>
+        </div>
+      </div>
+    `;
   },
 
   renderReportCardsTab() {
@@ -2180,6 +2254,11 @@ const ParentPortalView = {
           });
         }
       });
+    });
+
+    // Link Child / Student Modal Trigger
+    document.getElementById('btn-open-link-student')?.addEventListener('click', () => {
+      Modals.openLinkStudentModal();
     });
 
     // Switch Demo Role

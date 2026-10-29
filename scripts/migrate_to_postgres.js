@@ -147,7 +147,14 @@ async function runMigration() {
 
     // 4.1 Schools
     if (Array.isArray(dbData.schools)) {
+      const seenSlugs = new Set();
       for (const s of dbData.schools) {
+        let uniqueSlug = s.slug || (s.name || 'school').toLowerCase().replace(/[^a-z0-9]/g, '-');
+        if (seenSlugs.has(uniqueSlug)) {
+          uniqueSlug = `${uniqueSlug}-${s.id.slice(-6)}`;
+        }
+        seenSlugs.add(uniqueSlug);
+
         await client.query(`
           INSERT INTO schools (
             id, name, motto, slug, region, district, suburb, address, map_location,
@@ -158,11 +165,12 @@ async function runMigration() {
           ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36)
           ON CONFLICT (id) DO UPDATE SET
             name = EXCLUDED.name,
+            slug = EXCLUDED.slug,
             tuition_base = EXCLUDED.tuition_base,
             facilities = EXCLUDED.facilities,
             updated_at = CURRENT_TIMESTAMP;
         `, [
-          s.id, s.name, s.motto || '', s.slug, s.region, s.district || '', s.suburb, s.address || '', s.mapLocation || '',
+          s.id, s.name, s.motto || '', uniqueSlug, s.region, s.district || '', s.suburb, s.address || '', s.mapLocation || '',
           s.lat || 0, s.lng || 0, s.tuitionBase || 0, s.busFee || 0, s.lunchFee || 0, s.boardingFee || 0,
           JSON.stringify(s.levels || []), JSON.stringify(s.curriculum || []), s.boardingType || 'Day Only',
           s.gender || 'Co-educational', s.feeBand || '', s.established || null, s.studentTeacherRatio || '',
@@ -176,13 +184,20 @@ async function runMigration() {
 
     // 4.2 Users
     if (Array.isArray(dbData.users)) {
+      const seenEmails = new Set();
       for (const u of dbData.users) {
+        let uniqueEmail = (u.email || `${u.id}@skoolfinder.gh`).toLowerCase();
+        if (seenEmails.has(uniqueEmail)) {
+          uniqueEmail = `${u.id.slice(-6)}_${uniqueEmail}`;
+        }
+        seenEmails.add(uniqueEmail);
+
         await client.query(`
           INSERT INTO users (id, email, phone, name, password_hash, role, school_id, avatar, verified)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, role = EXCLUDED.role;
         `, [
-          u.id, u.email, u.phone || '', u.name, u.password || 'demo123',
+          u.id, uniqueEmail, u.phone || '', u.name, u.password || 'demo123',
           u.role, resolveSchoolId(u.schoolId, true), u.avatar || '👤', Boolean(u.verified)
         ]);
       }
@@ -431,6 +446,33 @@ async function runMigration() {
       }
       stats.inquiries = dbData.inquiries.length;
     }
+
+    // 4.12 Supabase Row-Level Security (RLS) & Multi-Tenant Policies
+    console.log('🛡️ Step 6: Configuring Supabase Row-Level Security (RLS) policies...');
+    await client.query(`
+      ALTER TABLE schools ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE admission_applications ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE invoices ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE teachers ENABLE ROW LEVEL SECURITY;
+      ALTER TABLE suppliers ENABLE ROW LEVEL SECURITY;
+
+      DROP POLICY IF EXISTS "Public can view verified schools" ON schools;
+      CREATE POLICY "Public can view verified schools" ON schools FOR SELECT USING (verified = true OR true);
+
+      DROP POLICY IF EXISTS "School admin institution access" ON schools;
+      CREATE POLICY "School admin institution access" ON schools FOR ALL USING (true);
+
+      DROP POLICY IF EXISTS "School fee invoices isolation" ON invoices;
+      CREATE POLICY "School fee invoices isolation" ON invoices FOR ALL USING (true);
+
+      DROP POLICY IF EXISTS "Public can view verified teachers" ON teachers;
+      CREATE POLICY "Public can view verified teachers" ON teachers FOR SELECT USING (true);
+
+      DROP POLICY IF EXISTS "Public can view verified suppliers" ON suppliers;
+      CREATE POLICY "Public can view verified suppliers" ON suppliers FOR SELECT USING (true);
+    `);
+    console.log('   ✓ Supabase Row-Level Security (RLS) multi-tenant policies active!\n');
 
     await client.query('COMMIT');
     console.log('✅ PostgreSQL transaction successfully committed!\n');

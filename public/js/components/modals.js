@@ -90,59 +90,83 @@ const Modals = {
     };
   },
 
-  openPostRFQModal() {
+  openPostRFQModal(preset = {}) {
     this.close();
     const div = document.createElement('div');
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
     div.innerHTML = `
-      <div class="modal-dialog">
+      <div class="modal-dialog" style="max-width: 620px;">
         <div class="modal-header">
           <div>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">School Procurement</div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Institutional B2B Procurement</div>
             <h3 class="modal-title">Post Request for Quotation (RFQ)</h3>
           </div>
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
         <form id="form-post-rfq" class="modal-body">
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-            Verified suppliers in Accra & Kumasi will review your request and submit competing price quotations.
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+            Verified suppliers in Greater Accra and Kumasi will review your request and submit competing wholesale price quotations directly to your school administration.
           </p>
-          <div class="form-group">
-            <label class="form-label">School Name *</label>
-            <input type="text" id="rfq-school-name" class="form-input" placeholder="e.g. Jack & Jill Basic School" required />
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">School Name *</label>
+              <input type="text" id="rfq-school-name" class="form-input" value="${preset.schoolName || ''}" placeholder="e.g. Jack & Jill Basic School" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Category *</label>
+              <select id="rfq-category" class="form-select" required>
+                <option value="Furniture & Hardware">Furniture & Hardware (Desks, Tables, Bunks)</option>
+                <option value="Food & Catering">Food & Catering (Bulk Rice, Cooking Oil, Produce)</option>
+                <option value="Books & Stationery">Books & Stationery (Textbooks, Exercise Books)</option>
+                <option value="IT / Software / Computers">IT / Software (Smartboards, PCs, SMS)</option>
+                <option value="Science & Lab Equipment">Science & Lab (Microscopes, Chemicals, Kits)</option>
+                <option value="Uniforms & Textiles">Uniforms & Textiles (Polos, Sportswear)</option>
+                <option value="Cleaning & Security">Cleaning & Security (CCTV, Sanitation)</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label">Category *</label>
-            <select id="rfq-category" class="form-select" required>
-              <option value="Furniture & Hardware">Furniture & Hardware (Desks, Tables, Bunks)</option>
-              <option value="Food & Catering">Food & Catering (Bulk Rice, Oil, Produce)</option>
-              <option value="Books & Stationery">Books & Stationery (Textbooks, Exercise Books)</option>
-              <option value="IT / Software / Computers">IT / Software (Smartboards, PCs, SMS)</option>
-              <option value="Uniforms & Textiles">Uniforms & Textiles (Polos, Sportswear)</option>
-              <option value="Cleaning & Security">Cleaning & Security (CCTV, Sanitation)</option>
-            </select>
-          </div>
+
           <div class="form-group">
             <label class="form-label">Procurement Title *</label>
-            <input type="text" id="rfq-title" class="form-input" placeholder="e.g. Supply of 200 Class 3-6 Mono Desks" required />
+            <input type="text" id="rfq-title" class="form-input" placeholder="e.g. Supply of 150 Dual Student Desks & 10 Teacher Tables" required />
           </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Quantity & Unit Description *</label>
+              <input type="text" id="rfq-quantity" class="form-input" placeholder="e.g. 150 dual desks + 10 teacher tables" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estimated Budget Range (GH₵)</label>
+              <input type="text" id="rfq-budget" class="form-input" placeholder="e.g. GH₵ 30,000 - 45,000" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Delivery Region *</label>
+              <select id="rfq-region" class="form-select" required>
+                <option value="Greater Accra">Greater Accra</option>
+                <option value="Ashanti">Ashanti</option>
+                <option value="Western">Western</option>
+                <option value="Central">Central</option>
+                <option value="Eastern">Eastern</option>
+                <option value="Volta">Volta</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Delivery Deadline *</label>
+              <input type="date" id="rfq-deadline" class="form-input" required />
+            </div>
+          </div>
+
           <div class="form-group">
-            <label class="form-label">Quantity & Specs *</label>
-            <input type="text" id="rfq-quantity" class="form-input" placeholder="e.g. 200 pieces, Odum wood or durable plastic" required />
+            <label class="form-label">Specifications & Inspection Requirements</label>
+            <textarea id="rfq-description" class="form-textarea" rows="3" placeholder="Specify materials (e.g. Odum hardwood, steel gauges), sample inspection terms, delivery location/suburb, and warranty expectations."></textarea>
           </div>
-          <div class="form-group">
-            <label class="form-label">Estimated Budget Range (GH₵)</label>
-            <input type="text" id="rfq-budget" class="form-input" placeholder="e.g. GH₵ 30,000 - 45,000" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Delivery Deadline *</label>
-            <input type="date" id="rfq-deadline" class="form-input" required />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Detailed Notes / Requirements</label>
-            <textarea id="rfq-description" class="form-textarea" rows="3" placeholder="Specify any delivery location, sample requirements, or terms."></textarea>
-          </div>
+
           <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: none;">
             <button type="button" class="btn-pill btn-outline" id="btn-cancel-rfq">Cancel</button>
             <button type="submit" class="btn-pill btn-primary">Publish RFQ to Suppliers</button>
@@ -155,21 +179,41 @@ const Modals = {
     document.getElementById('modal-close').onclick = () => this.close();
     document.getElementById('btn-cancel-rfq').onclick = () => this.close();
 
+    // Set default deadline to 3 weeks ahead
+    const dateInput = document.getElementById('rfq-deadline');
+    if (dateInput) {
+      const future = new Date();
+      future.setDate(future.getDate() + 21);
+      dateInput.value = future.toISOString().split('T')[0];
+    }
+
     document.getElementById('form-post-rfq').onsubmit = async (e) => {
       e.preventDefault();
-      const schoolName = document.getElementById('rfq-school-name').value;
+      const schoolName = document.getElementById('rfq-school-name').value.trim();
       const category = document.getElementById('rfq-category').value;
-      const title = document.getElementById('rfq-title').value;
-      const quantity = document.getElementById('rfq-quantity').value;
-      const budgetRange = document.getElementById('rfq-budget').value || "Negotiable";
+      const title = document.getElementById('rfq-title').value.trim();
+      const quantity = document.getElementById('rfq-quantity').value.trim();
+      const budgetRange = document.getElementById('rfq-budget').value.trim() || "Negotiable";
+      const region = document.getElementById('rfq-region').value;
       const deadline = document.getElementById('rfq-deadline').value;
-      const description = document.getElementById('rfq-description').value;
+      const description = document.getElementById('rfq-description').value.trim();
 
       try {
-        await API.createRFQ({ schoolName, category, title, quantity, budgetRange, deadline, description });
+        await API.createRFQ({
+          schoolId: preset.schoolId || null,
+          schoolName,
+          category,
+          title,
+          quantity,
+          budgetRange,
+          region,
+          deadline,
+          description
+        });
         this.close();
-        State.showToast(`RFQ successfully published! Suppliers have been notified.`, 'success');
+        State.showToast(`🎉 RFQ "${title}" published! Verified suppliers will submit bids.`, 'success');
         if (State.currentView === 'suppliers') App.navigate('suppliers');
+        else if (State.currentView === 'dashboard') App.navigate('dashboard', preset.schoolId);
       } catch (err) {
         State.showToast(err.message, 'error');
       }
@@ -182,7 +226,7 @@ const Modals = {
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
     div.innerHTML = `
-      <div class="modal-dialog">
+      <div class="modal-dialog" style="max-width: 620px;">
         <div class="modal-header">
           <div>
             <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Submit Supplier Bid</div>
@@ -191,29 +235,70 @@ const Modals = {
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
         <form id="form-submit-quote" class="modal-body">
-          <div style="background: var(--primary-50); padding: 0.85rem 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
-            <div style="font-size: 0.82rem; color: var(--primary-700); font-weight: 700;">School: ${rfq.schoolName}</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">Required: ${rfq.quantity} | Budget: ${rfq.budgetRange}</div>
+          <div style="background: var(--primary-50); border: 1px solid var(--primary-100); padding: 0.85rem 1.15rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+              <span style="font-size: 0.85rem; color: var(--primary-800); font-weight: 700;">🏫 School: ${rfq.schoolName}</span>
+              <span class="badge badge-admissions">${rfq.status}</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              <strong>Quantity:</strong> ${rfq.quantity} &bull; 
+              <strong>Budget:</strong> ${rfq.budgetRange} &bull; 
+              <strong>Deadline:</strong> ${rfq.deadline}
+            </div>
           </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Supplier / Company Name *</label>
+              <input type="text" id="quote-supplier" class="form-input" placeholder="e.g. Modern Class Furniture Ltd" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Contact Person *</label>
+              <input type="text" id="quote-contact-person" class="form-input" placeholder="e.g. Samuel K. Mensah" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Phone Number (MoMo / WhatsApp) *</label>
+              <input type="tel" id="quote-phone" class="form-input" placeholder="e.g. 0244123456" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Business Email</label>
+              <input type="email" id="quote-email" class="form-input" placeholder="e.g. sales@modernclass.gh" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Total Quoted Price (GH₵) *</label>
+              <input type="text" id="quote-price" class="form-input" placeholder="e.g. GH₵ 32,500" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estimated Delivery Time (Days) *</label>
+              <input type="number" id="quote-days" class="form-input" placeholder="e.g. 10" min="1" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Warranty / Quality Terms</label>
+              <input type="text" id="quote-warranty" class="form-input" placeholder="e.g. 12 Months free replacement warranty" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Payment Terms</label>
+              <input type="text" id="quote-payment-terms" class="form-input" placeholder="e.g. 50% mobilization, 50% on delivery" />
+            </div>
+          </div>
+
           <div class="form-group">
-            <label class="form-label">Your Supplier / Company Name *</label>
-            <input type="text" id="quote-supplier" class="form-input" placeholder="e.g. Modern Class Furniture Ltd" required />
+            <label class="form-label">Proposal Notes & Material Details</label>
+            <textarea id="quote-notes" class="form-textarea" rows="3" placeholder="Mention sample availability, wood species / steel gauges, durability guarantee, and free installation."></textarea>
           </div>
-          <div class="form-group">
-            <label class="form-label">Quoted Price (GH₵) *</label>
-            <input type="text" id="quote-price" class="form-input" placeholder="e.g. GH₵ 32,500" required />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Estimated Delivery Time (Days) *</label>
-            <input type="number" id="quote-days" class="form-input" placeholder="e.g. 10" required />
-          </div>
-          <div class="form-group">
-            <label class="form-label">Proposal Notes & Quality Terms</label>
-            <textarea id="quote-notes" class="form-textarea" rows="3" placeholder="Mention sample availability, warranty, materials used."></textarea>
-          </div>
+
           <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: none;">
             <button type="button" class="btn-pill btn-outline" id="btn-cancel-quote">Cancel</button>
-            <button type="submit" class="btn-pill btn-gold">Send Quotation to School</button>
+            <button type="submit" class="btn-pill btn-gold">Send Quotation to School Board</button>
           </div>
         </form>
       </div>
@@ -225,20 +310,380 @@ const Modals = {
 
     document.getElementById('form-submit-quote').onsubmit = async (e) => {
       e.preventDefault();
-      const supplierName = document.getElementById('quote-supplier').value;
-      const price = document.getElementById('quote-price').value;
-      const deliveryDays = document.getElementById('quote-days').value;
-      const notes = document.getElementById('quote-notes').value;
+      const supplierName = document.getElementById('quote-supplier').value.trim();
+      const contactPerson = document.getElementById('quote-contact-person').value.trim();
+      const phone = document.getElementById('quote-phone').value.trim();
+      const email = document.getElementById('quote-email').value.trim();
+      const price = document.getElementById('quote-price').value.trim();
+      const deliveryDays = document.getElementById('quote-days').value.trim();
+      const warrantyTerms = document.getElementById('quote-warranty').value.trim();
+      const paymentTerms = document.getElementById('quote-payment-terms').value.trim();
+      const notes = document.getElementById('quote-notes').value.trim();
 
       try {
-        await API.submitQuote(rfq.id, { supplierName, price, deliveryDays, notes });
+        await API.submitQuote(rfq.id, {
+          supplierName,
+          contactPerson,
+          phone,
+          email,
+          price,
+          deliveryDays,
+          warrantyTerms,
+          paymentTerms,
+          notes
+        });
         this.close();
-        State.showToast(`Quotation submitted to ${rfq.schoolName}!`, 'success');
+        State.showToast(`🎉 Quotation submitted to ${rfq.schoolName}! School head has been notified via Email & SMS.`, 'success');
         if (State.currentView === 'suppliers') App.navigate('suppliers');
+        else if (State.currentView === 'dashboard') App.navigate('dashboard', rfq.schoolId);
       } catch (err) {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  openRFQQuotesModal(rfq) {
+    this.close();
+    const quotes = rfq.quotes || [];
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 680px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Procurement Bids Review</div>
+            <h3 class="modal-title">${rfq.title}</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="background: var(--primary-50); padding: 0.85rem 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+            <div style="font-size: 0.85rem; color: var(--primary-800); font-weight: 700;">School: ${rfq.schoolName}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              <strong>Quantity:</strong> ${rfq.quantity} &bull; 
+              <strong>Budget:</strong> ${rfq.budgetRange} &bull; 
+              <strong>Status:</strong> ${rfq.status}
+            </div>
+          </div>
+
+          <h4 style="font-size: 1rem; color: var(--primary-900); font-weight: 700; margin-bottom: 1rem;">
+            Received Quotations (${quotes.length})
+          </h4>
+
+          ${quotes.length === 0 ? `
+            <div style="text-align: center; padding: 2.5rem 1rem; background: var(--bg-main); border-radius: var(--radius-md); color: var(--text-muted); font-size: 0.9rem;">
+              No supplier quotes submitted yet for this tender. Verified suppliers are reviewing the request.
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              ${quotes.map(q => `
+                <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div>
+                      <div style="font-weight: 700; font-size: 1.05rem; color: var(--primary-900);">
+                        ${q.supplierName}
+                        <span class="badge badge-verified" style="font-size: 0.72rem; margin-left: 0.35rem;">🛡️ Verified</span>
+                      </div>
+                      <div style="font-size: 0.82rem; color: var(--text-muted);">
+                        Contact: ${q.contactPerson || 'Sales Desk'} &bull; 📞 ${q.phone || 'N/A'}
+                      </div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size: 1.25rem; font-weight: 800; color: var(--emerald-600);">${q.price}</div>
+                      <span class="badge ${q.status === 'Awarded' ? 'badge-emerald' : 'badge-admissions'}">${q.status}</span>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.84rem; background: var(--bg-main); padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 0.75rem;">
+                    <div><strong>Delivery Time:</strong> ${q.deliveryDays} Business Days</div>
+                    <div><strong>Warranty:</strong> ${q.warrantyTerms || 'Standard 6 Months'}</div>
+                    ${q.paymentTerms ? `<div style="grid-column: span 2;"><strong>Payment Terms:</strong> ${q.paymentTerms}</div>` : ''}
+                  </div>
+
+                  ${q.notes ? `
+                    <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem;">
+                      "${q.notes}"
+                    </p>
+                  ` : ''}
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-light); padding-top: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem;">
+                      ${q.phone ? `
+                        <a href="https://wa.me/${q.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(q.supplierName)},%20we%20reviewed%20your%20quote%20on%20SkoolFinder%20for%20${encodeURIComponent(rfq.title)}." target="_blank" class="btn-card-wa" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                          💬 WhatsApp
+                        </a>
+                        <a href="tel:${q.phone.replace(/[^0-9+]/g, '')}" class="btn-card-view" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                          📞 Call
+                        </a>
+                      ` : ''}
+                    </div>
+
+                    ${q.status === 'Awarded' ? `
+                      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.85rem; color: var(--emerald-600); font-weight: 700;">🟢 Tender Awarded</span>
+                        <button class="btn-pill btn-gold btn-open-lpo-from-quote" data-quote-id="${q.id}" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                          📄 Official LPO Voucher
+                        </button>
+                      </div>
+                    ` : q.status === 'Declined' ? `
+                      <span style="font-size: 0.85rem; color: #dc2626; font-weight: 700;">🔴 Bid Declined</span>
+                    ` : `
+                      <div style="display: flex; gap: 0.4rem;">
+                        <button class="btn-pill btn-emerald btn-award-quote" data-quote-id="${q.id}" style="font-size: 0.82rem; padding: 0.4rem 0.85rem;">
+                          ✓ Accept & Award
+                        </button>
+                        <button class="btn-pill btn-outline btn-decline-quote" data-quote-id="${q.id}" style="font-size: 0.82rem; padding: 0.4rem 0.85rem; color: #dc2626; border-color: #fca5a5;">
+                          ✕ Decline Bid
+                        </button>
+                      </div>
+                    `}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-pill btn-outline" id="btn-close-quotes-modal">Close</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-quotes-modal').onclick = () => this.close();
+
+    // View LPO from quote
+    document.querySelectorAll('.btn-open-lpo-from-quote').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        try {
+          const res = await API.generateLPO(quoteId);
+          if (res && res.lpo) {
+            this.openLPOModal(res.lpo);
+          } else {
+            State.showToast('LPO not found', 'error');
+          }
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    // Award buttons
+    document.querySelectorAll('.btn-award-quote').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        try {
+          await API.updateQuoteStatus(quoteId, 'Awarded');
+          State.showToast(`🎉 Tender awarded! Official LPO generated, supplier and Super Admin notified.`, 'success');
+          this.close();
+          if (State.currentView === 'dashboard') App.navigate('dashboard', rfq.schoolId);
+          else if (State.currentView === 'suppliers') App.navigate('suppliers');
+          else if (State.currentView === 'admin') App.navigate('admin');
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+
+    // Decline buttons
+    document.querySelectorAll('.btn-decline-quote').forEach(btn => {
+      btn.onclick = async () => {
+        const quoteId = btn.dataset.quoteId;
+        const reason = prompt("Enter a brief reason for declining this bid (e.g. Budget exceeded, specs mismatch):", "Proposal did not meet current school budget or timeline parameters");
+        if (reason === null) return;
+        try {
+          await API.updateQuoteStatus(quoteId, 'Declined', reason);
+          State.showToast(`Bid declined. The supplier and Super Admin have been officially notified.`, 'info');
+          this.close();
+          if (State.currentView === 'dashboard') App.navigate('dashboard', rfq.schoolId);
+          else if (State.currentView === 'suppliers') App.navigate('suppliers');
+          else if (State.currentView === 'admin') App.navigate('admin');
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+  },
+
+  openLPOModal(lpo) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 780px;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); color: #fff;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">
+              Republic of Ghana • Official Procurement Voucher
+            </div>
+            <h3 class="modal-title" style="color: #fff; margin: 0.2rem 0 0 0;">
+              Local Purchase Order (LPO): ${lpo.lpoNumber}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #fff;">&times;</button>
+        </div>
+
+        <div class="modal-body" id="printable-lpo-area" style="padding: 1.75rem;">
+          <!-- School & Accreditation Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.25rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="font-size: 1.25rem; font-weight: 800; color: #1e3a8a;">${lpo.schoolName}</div>
+              <div style="font-size: 0.85rem; color: #475569;">📍 ${lpo.schoolAddress}</div>
+              <div style="font-size: 0.82rem; color: #64748b;">📞 ${lpo.schoolPhone} • ✉️ ${lpo.schoolEmail}</div>
+              <div style="margin-top: 0.4rem;">
+                <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700; font-size: 0.75rem;">
+                  🛡️ NaSIA Accreditation: ${lpo.nasiaLicense}
+                </span>
+              </div>
+            </div>
+            <div style="text-align: right; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0.75rem 1rem;">
+              <div style="font-size: 0.72rem; color: #64748b; font-weight: 700; text-transform: uppercase;">LPO Reference</div>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #0f172a; font-family: monospace;">${lpo.lpoNumber}</div>
+              <div style="font-size: 0.78rem; color: #64748b;">Date: ${new Date(lpo.createdAt).toLocaleDateString()}</div>
+              <div style="font-size: 0.78rem; font-weight: 700; color: #059669; margin-top: 0.2rem;">Status: ${lpo.paymentStatus}</div>
+            </div>
+          </div>
+
+          <!-- Supplier & Delivery Meta -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; font-size: 0.86rem;">
+            <div>
+              <div style="font-size: 0.72rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Awarded Vendor / Supplier</div>
+              <div style="font-weight: 800; color: #0f172a; font-size: 0.95rem;">${lpo.supplierName}</div>
+              <div style="color: #475569;">📞 ${lpo.supplierPhone}</div>
+              <div style="color: #475569;">✉️ ${lpo.supplierEmail}</div>
+              <div style="color: #64748b; font-size: 0.8rem;">📍 ${lpo.supplierAddress}</div>
+            </div>
+            <div>
+              <div style="font-size: 0.72rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-bottom: 0.25rem;">Delivery & Contract Terms</div>
+              <div><strong>Lead Time:</strong> ${lpo.deliveryLeadTime}</div>
+              <div><strong>Target Deadline:</strong> ${lpo.deliveryDeadline}</div>
+              <div><strong>Warranty Terms:</strong> ${lpo.warrantyTerms}</div>
+              <div><strong>Issuing Authority:</strong> ${lpo.issuedBy}</div>
+            </div>
+          </div>
+
+          <!-- Procurement Item Details -->
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+            <thead>
+              <tr style="background: #1e3a8a; color: #fff; text-align: left;">
+                <th style="padding: 0.75rem 1rem;">ITEM SPECIFICATION & SCOPE</th>
+                <th style="padding: 0.75rem 1rem;">CATEGORY</th>
+                <th style="padding: 0.75rem 1rem;">QUANTITY</th>
+                <th style="padding: 0.75rem 1rem; text-align: right;">TOTAL VALUE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background: #fff; border-bottom: 1px solid #e2e8f0;">
+                <td style="padding: 1rem;">
+                  <div style="font-weight: 800; color: #0f172a;">${lpo.tenderTitle}</div>
+                  <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">${lpo.specifications}</div>
+                </td>
+                <td style="padding: 1rem; color: #475569;">${lpo.category}</td>
+                <td style="padding: 1rem; font-weight: 600; color: #0f172a;">${lpo.quantity}</td>
+                <td style="padding: 1rem; text-align: right; font-weight: 800; font-size: 1.1rem; color: #059669;">
+                  ${lpo.totalAmountFormatted}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Milestone Escrow Payment Schedule -->
+          <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #0f172a;">
+                🏦 Paystack MoMo Escrow Milestone Schedule
+              </h4>
+              <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 700; font-size: 0.75rem;">
+                Protected Escrow
+              </span>
+            </div>
+            <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 1rem 0;">
+              Funds are held securely and released in stages upon bursary authorization via MTN MoMo, Telecel Cash, or Bank Transfer.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              ${lpo.milestones.map(m => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; background: ${m.status === 'Disbursed' ? '#ecfdf5' : '#f8fafc'}; border: 1px solid ${m.status === 'Disbursed' ? '#a7f3d0' : '#e2e8f0'}; border-radius: 8px; flex-wrap: wrap; gap: 0.75rem;">
+                  <div>
+                    <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">
+                      Milestone ${m.index}: ${m.name} (${m.percent}%)
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b;">
+                      ${m.status === 'Disbursed' ? `✓ Disbursed on ${new Date(m.disbursedAt).toLocaleDateString()} (Ref: ${m.transactionRef})` : 'Awaiting bursary authorization'}
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="font-weight: 800; color: ${m.status === 'Disbursed' ? '#059669' : '#0f172a'}; font-size: 1rem;">
+                      ${m.amountFormatted}
+                    </span>
+                    ${m.status === 'Disbursed' ? `
+                      <span class="badge badge-emerald" style="font-size: 0.75rem;">✓ Disbursed</span>
+                    ` : `
+                      <button class="btn-pill btn-gold btn-disburse-milestone" data-lpo-id="${lpo.id}" data-milestone-index="${m.index}" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                        <span>💰</span> Disburse Advance via MoMo
+                      </button>
+                    `}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Dual Legal Signature Blocks -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; border-top: 1px dashed #cbd5e1; padding-top: 1.25rem; font-size: 0.8rem; color: #475569;">
+            <div>
+              <div style="font-weight: 700; color: #1e3a8a; margin-bottom: 2rem;">FOR AND ON BEHALF OF SCHOOL:</div>
+              <div style="border-bottom: 1px solid #94a3b8; width: 80%; margin-bottom: 0.3rem;"></div>
+              <div>Authorized Signatory (Head of School / Bursar)</div>
+              <div style="color: #94a3b8; font-size: 0.75rem;">Official School Seal Affixed</div>
+            </div>
+            <div>
+              <div style="font-weight: 700; color: #059669; margin-bottom: 2rem;">ACCEPTED & CONFIRMED BY SUPPLIER:</div>
+              <div style="border-bottom: 1px solid #94a3b8; width: 80%; margin-bottom: 0.3rem;"></div>
+              <div>Managing Director / Operations Lead</div>
+              <div style="color: #94a3b8; font-size: 0.75rem;">Verified Vendor Stamp Affixed</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+          <button type="button" class="btn-pill btn-outline" id="btn-print-lpo">
+            <span>🖨️</span> Print / Save PDF
+          </button>
+          <button type="button" class="btn-pill btn-secondary" id="btn-close-lpo-modal">Close</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-lpo-modal').onclick = () => this.close();
+    document.getElementById('btn-print-lpo').onclick = () => window.print();
+
+    // Disburse milestone buttons
+    document.querySelectorAll('.btn-disburse-milestone').forEach(btn => {
+      btn.onclick = async () => {
+        const lpoId = btn.dataset.lpoId;
+        const milestoneIndex = btn.dataset.milestoneIndex;
+        if (!confirm(`Authorize Paystack Mobile Money release of Milestone ${milestoneIndex} to supplier?\n\nThis will trigger an SMS confirmation via Hubtel and official payment voucher via Resend.`)) return;
+
+        btn.disabled = true;
+        btn.innerText = 'Disbursing...';
+        try {
+          const res = await API.disburseLPOMilestone(lpoId, milestoneIndex, 'MTN Mobile Money');
+          State.showToast(`✓ Milestone ${milestoneIndex} payment successfully released! SMS & Email voucher dispatched.`, 'success');
+          this.openLPOModal(res.lpo);
+        } catch (err) {
+          btn.disabled = false;
+          btn.innerText = '💰 Disburse Advance via MoMo';
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
   },
 
   openApplyJobModal(job) {
@@ -3840,68 +4285,117 @@ const Modals = {
     const notice = options.notice || null;
 
     div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 520px; border-radius: var(--radius-xl); overflow: hidden;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.5rem 1.75rem;">
+      <div class="modal-dialog" style="max-width: 530px; border-radius: var(--radius-xl); overflow: hidden;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.4rem 1.65rem;">
           <div>
             <div style="font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">
-              🛡️ Secure Access & Role Verification
+              🛡️ Dual Secure Authentication (Clerk + Ghana Telco SMS)
             </div>
             <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Sign In to SkoolFinder</h3>
           </div>
           <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1;">&times;</button>
         </div>
 
-        <div class="modal-body" style="padding: 1.75rem;">
+        <div class="modal-body" style="padding: 1.5rem 1.65rem;">
           ${notice ? `
             <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.84rem; color: #1e40af; line-height: 1.5;">
               ${notice}
             </div>
           ` : ''}
 
-          <!-- 1-Click Fast Demo Role Login Bar -->
-          <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem;">
-            <div style="font-size: 0.75rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.6rem; display: flex; justify-content: space-between;">
-              <span>⚡ Fast Demo Role Logins (1-Click Test)</span>
-              <span style="color: #0284c7;">Auto-fill & Enter</span>
+          <!-- Dual Auth Tab Switcher -->
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1.35rem; background: #f1f5f9; padding: 0.35rem; border-radius: 12px;">
+            <button type="button" id="tab-login-email" style="flex: 1; border: none; padding: 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border-radius: 8px; cursor: pointer; background: #0a1128; color: #ffffff; transition: all 0.2s;">
+              ✉️ Email Sign In
+            </button>
+            <button type="button" id="tab-login-otp" style="flex: 1; border: none; padding: 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border-radius: 8px; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
+              📱 Ghana Phone SMS OTP
+            </button>
+          </div>
+
+          <!-- PANE 1: Standard Email & Password Auth -->
+          <div id="auth-pane-email">
+            <!-- 1-Click Fast Demo Role Login Bar -->
+            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+              <div style="font-size: 0.73rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
+                <span>⚡ 5-Portal Demo Access (1-Click Test)</span>
+                <span style="color: #0284c7;">Auto-fill & Enter</span>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem;">
+                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
+                  <span>👨‍👩‍👧</span> Parent (Nana Aba)
+                </button>
+                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
+                  <span>🧑‍🏫</span> Teacher (Emmanuel)
+                </button>
+                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="supplier@akiola.com.gh" data-pass="SupplierPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
+                  <span>📦</span> Supplier (Aki-Ola)
+                </button>
+                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="admin@gis.edu.gh" data-pass="AdminPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
+                  <span>🏫</span> School Admin (GIS)
+                </button>
+                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff; grid-column: span 2;">
+                  <span>🛡️</span> Super Admin / NaSIA Console
+                </button>
+              </div>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="admin@gis.edu.gh" data-pass="AdminPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
-                <span>🏫</span> GIS Head Admin
+
+            <form id="form-auth-login">
+              <div class="form-group" style="margin-bottom: 0.9rem;">
+                <label class="form-label" style="font-size: 0.82rem;">Email Address or Account Login *</label>
+                <input type="text" id="auth-login-input" class="form-input" placeholder="e.g. parent@gmail.com or admin@gis.edu.gh" required />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.82rem; margin: 0;">Password *</label>
+                  <button type="button" id="btn-toggle-pass-visibility" style="background: none; border: none; color: #0284c7; font-size: 0.78rem; cursor: pointer;">Show</button>
+                </div>
+                <input type="password" id="auth-password-input" class="form-input" placeholder="Enter your password" required />
+              </div>
+
+              <button type="submit" id="btn-submit-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
+                <span>🔑</span> Sign In with Email
               </button>
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
-                <span>👨‍👩‍👧</span> Parent (Nana Aba)
-              </button>
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
-                <span>👨‍🏫</span> Tutor (Emmanuel)
-              </button>
-              <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.78rem; padding: 0.45rem 0.5rem; justify-content: center; background: #fff;">
-                <span>🛡️</span> Super Admin
+            </form>
+          </div>
+
+          <!-- PANE 2: Ghana Mobile Phone SMS OTP (Hubtel Failover) -->
+          <div id="auth-pane-otp" style="display: none;">
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+              <div style="font-weight: 700; color: #166534; font-size: 0.85rem; margin-bottom: 0.25rem;">
+                🇬🇭 Instant Ghana Phone Login
+              </div>
+              <p style="font-size: 0.8rem; color: #15803d; margin: 0; line-height: 1.4;">
+                No password required. Enter your MTN, Telecel, or AT mobile number to receive a 6-digit verification code directly via SMS.
+              </p>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" style="font-size: 0.82rem;">Ghana Mobile Number *</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="tel" id="otp-phone-input" class="form-input" placeholder="e.g. 024 431 8900" style="flex: 1;" />
+                <button type="button" id="btn-send-otp" class="btn-pill btn-outline" style="white-space: nowrap; font-size: 0.82rem; font-weight: 700; padding: 0.6rem 0.9rem;">
+                  <span>📨</span> Send OTP
+                </button>
+              </div>
+              <div id="otp-send-status" style="font-size: 0.78rem; color: #64748b; margin-top: 0.4rem; display: none;"></div>
+            </div>
+
+            <div id="otp-verify-section" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.15rem; margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" style="font-size: 0.82rem;">Enter 6-Digit SMS Code *</label>
+                <input type="text" id="otp-code-input" class="form-input" placeholder="6-digit code" maxlength="6" style="font-size: 1.25rem; letter-spacing: 0.25em; text-align: center; font-weight: 800;" />
+              </div>
+              <button type="button" id="btn-verify-otp" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
+                <span>✅</span> Verify & Enter Parents Portal
               </button>
             </div>
           </div>
 
-          <form id="form-auth-login">
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" style="font-size: 0.82rem;">Email Address or Phone Number *</label>
-              <input type="text" id="auth-login-input" class="form-input" placeholder="e.g. admin@gis.edu.gh or +233244318900" required />
-            </div>
-
-            <div class="form-group" style="margin-bottom: 1.5rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                <label class="form-label" style="font-size: 0.82rem; margin: 0;">Password *</label>
-                <button type="button" id="btn-toggle-pass-visibility" style="background: none; border: none; color: #0284c7; font-size: 0.78rem; cursor: pointer;">Show</button>
-              </div>
-              <input type="password" id="auth-password-input" class="form-input" placeholder="Enter your account password" required />
-            </div>
-
-            <button type="submit" id="btn-submit-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
-              <span>🔑</span> Sign In to Account
-            </button>
-          </form>
-
           <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #64748b;">
             Don't have an account yet? 
-            <a href="#" id="link-goto-register" style="color: var(--primary-700); font-weight: 700; text-decoration: underline;">Create Account &rarr;</a>
+            <a href="#" id="link-goto-register" style="color: var(--primary-700); font-weight: 700; text-decoration: underline;">Register School / Account &rarr;</a>
           </div>
         </div>
       </div>
@@ -3910,6 +4404,30 @@ const Modals = {
     document.body.appendChild(div);
 
     document.getElementById('modal-close').onclick = () => this.close();
+
+    // Tab switching logic
+    const tabEmail = document.getElementById('tab-login-email');
+    const tabOtp = document.getElementById('tab-login-otp');
+    const paneEmail = document.getElementById('auth-pane-email');
+    const paneOtp = document.getElementById('auth-pane-otp');
+
+    tabEmail.onclick = () => {
+      tabEmail.style.background = '#0a1128';
+      tabEmail.style.color = '#ffffff';
+      tabOtp.style.background = 'transparent';
+      tabOtp.style.color = '#475569';
+      paneEmail.style.display = 'block';
+      paneOtp.style.display = 'none';
+    };
+
+    tabOtp.onclick = () => {
+      tabOtp.style.background = '#0a1128';
+      tabOtp.style.color = '#ffffff';
+      tabEmail.style.background = 'transparent';
+      tabEmail.style.color = '#475569';
+      paneEmail.style.display = 'none';
+      paneOtp.style.display = 'block';
+    };
 
     // Toggle password visibility
     const passInput = document.getElementById('auth-password-input');
@@ -3937,13 +4455,84 @@ const Modals = {
       };
     });
 
+    // Ghana Phone SMS OTP handlers
+    const sendOtpBtn = document.getElementById('btn-send-otp');
+    const phoneInput = document.getElementById('otp-phone-input');
+    const otpStatus = document.getElementById('otp-send-status');
+    const verifySection = document.getElementById('otp-verify-section');
+    const verifyOtpBtn = document.getElementById('btn-verify-otp');
+    const codeInput = document.getElementById('otp-code-input');
+
+    sendOtpBtn.onclick = async () => {
+      const phone = phoneInput.value.trim();
+      if (!phone) {
+        State.showToast('Please enter your Ghanaian mobile number', 'error');
+        return;
+      }
+      sendOtpBtn.disabled = true;
+      sendOtpBtn.innerText = 'Sending SMS...';
+
+      try {
+        const res = await API.sendOTP(phone);
+        phoneInput.disabled = true;
+        sendOtpBtn.innerText = 'Sent ✓';
+        otpStatus.style.display = 'block';
+        otpStatus.style.color = '#15803d';
+        otpStatus.innerHTML = `✓ Code dispatched to <strong>${res.phone}</strong> (${res.network}). ${res.debugCode ? `<span style="background: #fef08a; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #854d0e;">Code: ${res.debugCode}</span>` : ''}`;
+        verifySection.style.display = 'block';
+        if (res.debugCode) codeInput.value = res.debugCode;
+        codeInput.focus();
+        State.showToast(`SMS OTP sent to ${res.phone}`, 'success');
+      } catch (err) {
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.innerText = 'Send OTP';
+        State.showToast(err.message, 'error');
+      }
+    };
+
+    verifyOtpBtn.onclick = async () => {
+      const phone = phoneInput.value.trim();
+      const code = codeInput.value.trim();
+      if (!code || code.length < 6) {
+        State.showToast('Please enter the 6-digit code sent via SMS', 'error');
+        return;
+      }
+
+      verifyOtpBtn.disabled = true;
+      verifyOtpBtn.innerText = 'Verifying...';
+
+      try {
+        const res = await API.verifyOTP(phone, code);
+        State.setCurrentUser(res.user, res.token);
+        this.close();
+
+        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents();
+        }
+
+        State.showToast(`Welcome back, ${res.user.name}! Verified via Ghana SMS OTP.`, 'success');
+        if (options.onSuccess) {
+          options.onSuccess(res.user);
+        } else if (options.redirectView) {
+          App.navigate(options.redirectView, options.redirectParam || null);
+        } else {
+          App.navigate(State.getUserPortal());
+        }
+      } catch (err) {
+        verifyOtpBtn.disabled = false;
+        verifyOtpBtn.innerText = 'Verify & Enter Parents Portal';
+        State.showToast(err.message, 'error');
+      }
+    };
+
     // Goto register link
     document.getElementById('link-goto-register').onclick = (e) => {
       e.preventDefault();
       this.openRegisterModal(options);
     };
 
-    // Form submit
+    // Email Form submit
     document.getElementById('form-auth-login').onsubmit = async (e) => {
       e.preventDefault();
       const login = document.getElementById('auth-login-input').value.trim();
@@ -3964,23 +4553,31 @@ const Modals = {
           Navbar.attachEvents();
         }
 
-        State.showToast(`Welcome back, ${res.user.name} (${res.user.role === 'school_admin' ? res.user.schoolName : res.user.role})!`, 'success');
+        State.showToast(`Welcome back, ${res.user.name}! Accessing ${res.user.role.toUpperCase()} workspace.`, 'success');
 
         if (options.onSuccess) {
           options.onSuccess(res.user);
+        } else if (options.redirectView) {
+          App.navigate(options.redirectView, options.redirectParam || null);
         } else {
-          // Default role redirects
+          // Default role redirects to the 5 portals
           if (res.user.role === 'school_admin') {
-            App.navigate('dashboard', res.user.schoolId || 'sch-gis-accra');
+            App.navigate('schools', res.user.schoolId || 'sch-gis-accra');
           } else if (res.user.role === 'parent') {
-            App.navigate('parent-portal');
+            App.navigate('parents');
+          } else if (res.user.role === 'teacher') {
+            App.navigate('teachers');
+          } else if (res.user.role === 'supplier') {
+            App.navigate('suppliers');
+          } else if (res.user.role === 'super_admin') {
+            App.navigate('admin');
           } else {
             App.refreshCurrentView();
           }
         }
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>🔑</span> Sign In to Account';
+        submitBtn.innerHTML = '<span>🔑</span> Sign In with Email';
         State.showToast(err.message, 'error');
       }
     };
@@ -8770,7 +9367,605 @@ const Modals = {
         attachRoleEvents(role);
       };
     });
-  }
+  },
 
+  openSaaSSubscriptionModal(school = {}) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    
+    let currentCycle = 'monthly';
+    let selectedTier = 'growth';
+    const schoolName = school.name || 'Your School';
+    const schoolEmail = school.email || 'admin@school.edu.gh';
+    const schoolPhone = school.phone || '0244318900';
+
+    const pricing = {
+      starter: { name: 'SaaS Starter', monthly: 299, termly: 850, students: 'Up to 250 Students', seats: '1 Admin Seat', features: ['Admissions CRM & Lead Tracking', 'Digital Student IDs & Badges', 'Basic Directory Listing', 'Email Support'] },
+      growth: { name: 'SaaS Growth', monthly: 699, termly: 1999, students: 'Up to 800 Students', seats: '5 Admin Seats', badge: '⭐ Most Popular', features: ['Everything in Starter +', 'Automated Paystack MoMo Fee Collection', 'Teacher Hiring & Vacancy Board', 'Hubtel Parent SMS Broadcasts', 'Fee Defaulter Auto-Reminders'] },
+      enterprise: { name: 'SaaS Enterprise', monthly: 1499, termly: 4200, students: 'Unlimited Students', seats: 'Unlimited Seats', features: ['Everything in Growth +', 'NaSIA / GES Digital Report Cards', 'Dedicated Clerk Org Subdomain', 'Custom School MoMo Account Routing', '24/7 Dedicated Account Manager'] }
+    };
+
+    const renderModalContent = () => {
+      const activePrice = pricing[selectedTier][currentCycle];
+      return `
+      <div class="modal-dialog" style="max-width: 780px; width: 95%; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="background: var(--gradient-navy); color: #fff; padding: 1.5rem 1.75rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.5px;">Institutional SaaS Subscription</div>
+            <h3 class="modal-title" style="color: #fff; margin: 0.25rem 0 0 0; font-size: 1.35rem;">Lock In Your SkoolFinder Tier for ${schoolName}</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #fff; opacity: 0.8;">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.75rem;">
+          <!-- Billing Cycle Switch -->
+          <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1.75rem; background: var(--bg-surface); padding: 0.5rem; border-radius: var(--radius-pill); border: 1px solid var(--border-color); width: fit-content; margin-left: auto; margin-right: auto;">
+            <button type="button" id="btn-cycle-monthly" class="btn-pill ${currentCycle === 'monthly' ? 'btn-primary' : 'btn-outline'}" style="font-size: 0.85rem; padding: 0.4rem 1.25rem; font-weight: 700;">
+              Monthly Billing
+            </button>
+            <button type="button" id="btn-cycle-termly" class="btn-pill ${currentCycle === 'termly' ? 'btn-primary' : 'btn-outline'}" style="font-size: 0.85rem; padding: 0.4rem 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+              Termly (3 Months) <span style="background: #22c55e; color: #fff; font-size: 0.68rem; padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 800;">SAVE 15%</span>
+            </button>
+          </div>
+
+          <!-- 3 Plan Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+            ${Object.keys(pricing).map(tierKey => {
+              const plan = pricing[tierKey];
+              const isSelected = selectedTier === tierKey;
+              return `
+                <div class="tier-select-card" data-tier="${tierKey}" style="border: 2px solid ${isSelected ? 'var(--primary-600)' : 'var(--border-color)'}; background: ${isSelected ? 'var(--primary-50)' : '#ffffff'}; border-radius: var(--radius-lg); padding: 1.25rem 1rem; cursor: pointer; transition: all 0.2s; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
+                  ${plan.badge ? `<div style="position: absolute; top: -10px; right: 12px; background: #f59e0b; color: #0a1128; font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 999px; box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);">${plan.badge}</div>` : ''}
+                  <div>
+                    <div style="font-weight: 800; font-size: 1.05rem; color: var(--primary-900);">${plan.name}</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">${plan.students} • ${plan.seats}</div>
+                    <div style="margin: 0.9rem 0; font-family: var(--font-heading);">
+                      <span style="font-size: 1.6rem; font-weight: 800; color: ${isSelected ? 'var(--primary-700)' : '#0f172a'};">GH₵ ${plan[currentCycle]}</span>
+                      <span style="font-size: 0.78rem; color: var(--text-muted);">/${currentCycle === 'monthly' ? 'mo' : 'term'}</span>
+                    </div>
+                    <ul style="padding-left: 1.1rem; margin: 0; font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5;">
+                      ${plan.features.map(f => `<li style="margin-bottom: 0.3rem;">${f}</li>`).join('')}
+                    </ul>
+                  </div>
+                  <div style="margin-top: 1rem; text-align: center;">
+                    <span style="display: inline-block; width: 100%; padding: 0.45rem; border-radius: var(--radius-pill); font-size: 0.8rem; font-weight: 700; ${isSelected ? 'background: var(--primary-600); color: #fff;' : 'border: 1px solid var(--border-color); color: var(--text-muted);'}">
+                      ${isSelected ? '✓ Selected' : 'Select'}
+                    </span>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <!-- Payment Options & Checkout -->
+          <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem;">
+            <div style="font-weight: 800; font-size: 0.95rem; color: var(--primary-900); margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between;">
+              <span>Paystack Mobile Money & Card Checkout</span>
+              <span style="color: var(--primary-700); font-size: 0.82rem; font-weight: 600;">🔒 256-Bit SSL Encrypted</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.82rem;">MoMo / Billing Phone *</label>
+                <input type="tel" id="sub-phone" class="form-input" value="${schoolPhone}" placeholder="e.g. 024 431 8900" required />
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label class="form-label" style="font-size: 0.82rem;">Receipt Delivery Email *</label>
+                <input type="email" id="sub-email" class="form-input" value="${schoolEmail}" placeholder="admin@school.edu.gh" required />
+              </div>
+            </div>
+
+            <!-- Network Badges -->
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+              <span style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted);">Supported Channels:</span>
+              <span style="background: #fef08a; color: #854d0e; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;">🟡 MTN Mobile Money</span>
+              <span style="background: #fee2e2; color: #991b1b; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;">🔴 Telecel Cash</span>
+              <span style="background: #e0e7ff; color: #3730a3; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;">🔵 AT Money</span>
+              <span style="background: #f1f5f9; color: #475569; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px;">💳 Visa / Mastercard</span>
+            </div>
+
+            <button id="btn-pay-subscription" class="btn-pill btn-gold" style="width: 100%; padding: 0.9rem; font-size: 1rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+              <span>⚡</span> Confirm & Pay GH₵ ${activePrice} via Paystack
+            </button>
+          </div>
+        </div>
+      </div>
+      `;
+    };
+
+    div.innerHTML = renderModalContent();
+    document.body.appendChild(div);
+
+    const bindEvents = () => {
+      div.querySelector('#modal-close').onclick = () => this.close();
+      
+      div.querySelector('#btn-cycle-monthly').onclick = () => {
+        currentCycle = 'monthly';
+        div.innerHTML = renderModalContent();
+        bindEvents();
+      };
+
+      div.querySelector('#btn-cycle-termly').onclick = () => {
+        currentCycle = 'termly';
+        div.innerHTML = renderModalContent();
+        bindEvents();
+      };
+
+      div.querySelectorAll('.tier-select-card').forEach(card => {
+        card.onclick = () => {
+          selectedTier = card.dataset.tier;
+          div.innerHTML = renderModalContent();
+          bindEvents();
+        };
+      });
+
+      div.querySelector('#btn-pay-subscription').onclick = async () => {
+        const btn = div.querySelector('#btn-pay-subscription');
+        const phone = div.querySelector('#sub-phone').value.trim();
+        const email = div.querySelector('#sub-email').value.trim();
+
+        if (!phone || !email) {
+          State.showToast("Please enter both phone number and email", "error");
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = `<span>⏳</span> Connecting to Paystack MoMo Gateway...`;
+
+        try {
+          const initRes = await API.initializeSchoolSubscription(school.id, {
+            planTier: selectedTier,
+            billingCycle: currentCycle,
+            phone,
+            email
+          });
+
+          if (initRes.isSimulated) {
+            btn.innerHTML = `<span>📲</span> USSD Prompt Sent: Please approve GH₵ ${initRes.amountGHS} on ${phone}...`;
+            State.showToast(`MTN/Telecel Prompt Sent! Approving simulated payment...`, 'info');
+
+            setTimeout(async () => {
+              try {
+                const verifyRes = await API.verifySchoolSubscription(school.id, {
+                  reference: initRes.reference,
+                  planTier: pricing[selectedTier].name,
+                  billingCycle: currentCycle
+                });
+
+                this.close();
+                State.showToast(`🎉 Subscription Activated! ${schoolName} is now on ${pricing[selectedTier].name}.`, 'success');
+                if (window.DashboardView && typeof DashboardView.render === 'function') {
+                  DashboardView.render();
+                } else {
+                  App.navigate('schools');
+                }
+              } catch (vErr) {
+                State.showToast(vErr.message, 'error');
+                btn.disabled = false;
+                btn.innerHTML = `<span>⚡</span> Confirm & Pay GH₵ ${pricing[selectedTier][currentCycle]} via Paystack`;
+              }
+            }, 1800);
+          } else if (initRes.authorizationUrl) {
+            window.location.href = initRes.authorizationUrl;
+          }
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+          btn.innerHTML = `<span>⚡</span> Confirm & Pay GH₵ ${pricing[selectedTier][currentCycle]} via Paystack`;
+        }
+      };
+    };
+
+    bindEvents();
+  },
+
+  openLinkStudentModal() {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px; width: 95%;">
+        <div class="modal-header" style="background: var(--gradient-navy); color: #fff; padding: 1.5rem 1.75rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.5px;">Parent Portal Student Enrollment</div>
+            <h3 class="modal-title" style="color: #fff; margin: 0.25rem 0 0 0; font-size: 1.35rem;">Link Your Ward to Parent Portal</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #fff; opacity: 0.8;">&times;</button>
+        </div>
+
+        <form id="form-link-student" class="modal-body" style="padding: 1.75rem;">
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5;">
+            Enter the <strong>Student Index Number</strong> or <strong>Digital ID Code</strong> issued by your child's school. Once verified, academic terminal reports, MoMo fee bills, and bus transit passes will sync instantly to your portal.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-weight: 700;">Student Index Number / Digital ID *</label>
+            <input type="text" id="link-student-id" class="form-input" placeholder="e.g. GIS-2026-0842 or STU-2026-001" required style="font-family: monospace; font-size: 1rem; text-transform: uppercase;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-weight: 700;">Child / Ward Full Name *</label>
+            <input type="text" id="link-student-name" class="form-input" placeholder="e.g. Nana Kwame Mensah" required />
+          </div>
+
+          <!-- Quick Suggestions for Demo -->
+          <div style="margin-bottom: 1.5rem; background: var(--bg-surface); padding: 0.85rem; border-radius: var(--radius-md); border: 1px solid var(--border-light);">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">Quick Select Demo Student:</div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button type="button" class="btn-pill btn-outline demo-student-chip" data-id="GIS-2026-0842" data-name="Nana Kwame Mensah" style="font-size: 0.78rem; padding: 0.3rem 0.65rem;">
+                Nana Kwame (GIS-0842)
+              </button>
+              <button type="button" class="btn-pill btn-outline demo-student-chip" data-id="SOS-2026-012" data-name="Ama Serwaa Osei" style="font-size: 0.78rem; padding: 0.3rem 0.65rem;">
+                Ama Serwaa (SOS-012)
+              </button>
+              <button type="button" class="btn-pill btn-outline demo-student-chip" data-id="STU-2026-001" data-name="Kofi Mensah" style="font-size: 0.78rem; padding: 0.3rem 0.65rem;">
+                Kofi Mensah (STU-001)
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-link">Cancel</button>
+            <button type="submit" class="btn-pill btn-gold" id="btn-submit-link" style="font-weight: 800;">
+              <span>✓</span> Verify & Link Ward
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    div.querySelector('#modal-close').onclick = () => this.close();
+    div.querySelector('#btn-cancel-link').onclick = () => this.close();
+
+    div.querySelectorAll('.demo-student-chip').forEach(chip => {
+      chip.onclick = () => {
+        div.querySelector('#link-student-id').value = chip.dataset.id;
+        div.querySelector('#link-student-name').value = chip.dataset.name;
+      };
+    });
+
+    div.querySelector('#form-link-student').onsubmit = async (e) => {
+      e.preventDefault();
+      const studentIdOrCode = div.querySelector('#link-student-id').value.trim();
+      const studentName = div.querySelector('#link-student-name').value.trim();
+      const submitBtn = div.querySelector('#btn-submit-link');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>⏳</span> Verifying credentials...`;
+
+      try {
+        const res = await API.linkStudent({ studentIdOrCode, studentName });
+        this.close();
+        State.showToast(res.message || `Ward ${studentName} successfully linked!`, 'success');
+        if (window.App) {
+          App.navigate('parents');
+        }
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>✓</span> Verify & Link Ward`;
+      }
+    };
+  },
+
+  // Feature 4: Teacher NTC Verification & School Hiring Pipeline Modals
+  openVerifyNTCModal(app, onVerified = null) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    const defaultNtc = app.licenseNumber || 'NTC-ED-449102';
+
+    div.innerHTML = `
+      <div class="modal-card" style="max-width: 540px; width: 100%; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); background: #ffffff;">
+        <div style="background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: #ffffff; padding: 1.5rem; position: relative;">
+          <div style="font-size: 0.75rem; color: #a7f3d0; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+            🇬🇭 NATIONAL TEACHING COUNCIL (NTC) VERIFICATION
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; margin: 0.25rem 0 0.15rem 0; color: #ffffff;">
+            Verify Educator Licensure
+          </h2>
+          <div style="font-size: 0.82rem; color: rgba(255,255,255,0.85);">
+            ${app.teacherName} &nbsp;•&nbsp; ${app.jobTitle}
+          </div>
+          <button id="modal-close" style="color: #ffffff; position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-verify-ntc" style="padding: 1.5rem;">
+          <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.8rem; font-weight: 800; color: #166534; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛡️</span> Republic of Ghana Teacher Registry Check
+            </div>
+            <div style="font-size: 0.82rem; color: #15803d; line-height: 1.4;">
+              Validates license format, subject specialization, and disciplinary standing against the GES &amp; Ministry of Education database.
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">NTC License / Registration Number *</label>
+            <input type="text" id="input-ntc-number" class="form-input" value="${defaultNtc}" style="font-family: monospace; font-size: 1rem; font-weight: 700; text-transform: uppercase;" required />
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.35rem;">
+              Format: <code>NTC-ED-XXXXXX</code> or <code>NTC/LIC/GH/XXXXXX</code>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem; background: #f8fafc; padding: 0.85rem; border-radius: var(--radius-md); font-size: 0.82rem;">
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Qualification</span>
+              <strong style="color: var(--primary-900);">${app.qualification || 'B.Ed. Education'}</strong>
+            </div>
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: 0.72rem; text-transform: uppercase; font-weight: 700;">Experience</span>
+              <strong style="color: var(--primary-900);">${app.experienceYears || 5} Years Classroom</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-ntc">Cancel</button>
+            <button type="submit" class="btn-pill btn-emerald" id="btn-submit-ntc" style="font-weight: 800;">
+              <span>✓</span> Authenticate &amp; Award Gold Badge
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    div.querySelector('#modal-close').onclick = () => this.close();
+    div.querySelector('#btn-cancel-ntc').onclick = () => this.close();
+
+    div.querySelector('#form-verify-ntc').onsubmit = async (e) => {
+      e.preventDefault();
+      const ntc = div.querySelector('#input-ntc-number').value.trim();
+      const submitBtn = div.querySelector('#btn-submit-ntc');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>⏳</span> Authenticating with NTC Registry...`;
+
+      try {
+        await new Promise(r => setTimeout(r, 600));
+        const res = await API.verifyTeacherNTC(app.id, ntc);
+        this.close();
+        State.showToast(`NTC License ${ntc} authenticated! Gold Badge awarded.`, 'success');
+        if (onVerified) onVerified(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>✓</span> Authenticate &amp; Award Gold Badge`;
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openScheduleInterviewModal(app, onScheduled = null) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    const defaultDate = '2026-11-06';
+    const defaultTime = '10:30 AM';
+    const defaultLink = `https://meet.google.com/gis-recruitment-${Math.floor(100 + Math.random() * 900)}`;
+
+    div.innerHTML = `
+      <div class="modal-card" style="max-width: 580px; width: 100%; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); background: #ffffff;">
+        <div style="background: linear-gradient(135deg, var(--primary-900) 0%, #1e3a8a 100%); color: #ffffff; padding: 1.5rem; position: relative;">
+          <div style="font-size: 0.75rem; color: var(--gold-400); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+            📅 ACADEMIC STAFFING &amp; HIRING DESK
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; margin: 0.25rem 0 0.15rem 0; color: #ffffff;">
+            Schedule Educator Interview
+          </h2>
+          <div style="font-size: 0.82rem; color: rgba(255,255,255,0.85);">
+            Candidate: <strong>${app.teacherName}</strong> &nbsp;•&nbsp; ${app.jobTitle}
+          </div>
+          <button id="modal-close" style="color: #ffffff; position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-schedule-interview" style="padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Interview Date *</label>
+              <input type="date" id="int-date" class="form-input" value="${defaultDate}" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Interview Time *</label>
+              <input type="text" id="int-time" class="form-input" value="${defaultTime}" placeholder="e.g. 10:30 AM" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Venue / Location *</label>
+            <input type="text" id="int-venue" class="form-input" value="GIS Cantonments Campus (Executive Conference Room) &amp; Virtual Stream" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Virtual Google Meet Stream Link</label>
+            <input type="url" id="int-link" class="form-input" value="${defaultLink}" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Panel Interviewer / Department Head</label>
+            <input type="text" id="int-lead" class="form-input" value="Dr. Mary Ashun (Head of School)" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Candidate Brief &amp; Micro-teaching Demo Requirements</label>
+            <textarea id="int-notes" class="form-input" rows="2" style="resize: vertical;">Candidate to present a 15-minute micro-teaching demonstration on Cambridge Advanced syllabus.</textarea>
+          </div>
+
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.8rem; color: #1e40af;">
+            📲 <strong>Instant Hubtel SMS &amp; Resend Email Alert:</strong> Candidate will immediately receive the date, venue, and video call link on their phone (${app.teacherPhone}).
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-interview">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-submit-interview" style="font-weight: 800;">
+              <span>📅</span> Confirm &amp; Dispatch Alerts
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    div.querySelector('#modal-close').onclick = () => this.close();
+    div.querySelector('#btn-cancel-interview').onclick = () => this.close();
+
+    div.querySelector('#form-schedule-interview').onsubmit = async (e) => {
+      e.preventDefault();
+      const date = div.querySelector('#int-date').value;
+      const time = div.querySelector('#int-time').value.trim();
+      const venue = div.querySelector('#int-venue').value.trim();
+      const meetingLink = div.querySelector('#int-link').value.trim();
+      const interviewer = div.querySelector('#int-lead').value.trim();
+      const notes = div.querySelector('#int-notes').value.trim();
+      const submitBtn = div.querySelector('#btn-submit-interview');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>⏳</span> Dispatching SMS &amp; Email...`;
+
+      try {
+        const res = await API.scheduleTeacherInterview(app.id, {
+          date,
+          time,
+          venue,
+          meetingLink,
+          interviewer,
+          notes
+        });
+        this.close();
+        State.showToast(`Interview scheduled for ${app.teacherName}! Hubtel SMS &amp; Resend email sent.`, 'success');
+        if (onScheduled) onScheduled(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>📅</span> Confirm &amp; Dispatch Alerts`;
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openHireTeacherModal(app, onHired = null) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-card" style="max-width: 600px; width: 100%; border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-xl); background: #ffffff;">
+        <div style="background: linear-gradient(135deg, #064e3b 0%, #065f46 100%); color: #ffffff; padding: 1.5rem; position: relative;">
+          <div style="font-size: 0.75rem; color: #a7f3d0; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+            🤝 OFFICIAL LETTER OF APPOINTMENT
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; margin: 0.25rem 0 0.15rem 0; color: #ffffff;">
+            Hire Educator &amp; Issue Contract
+          </h2>
+          <div style="font-size: 0.82rem; color: rgba(255,255,255,0.85);">
+            ${app.schoolName} &nbsp;•&nbsp; Appointee: <strong>${app.teacherName}</strong>
+          </div>
+          <button id="modal-close" style="color: #ffffff; position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+        </div>
+
+        <form id="form-hire-teacher" style="padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+          <div style="background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Candidate Licensure</div>
+              <div style="font-weight: 800; color: #047857; font-size: 0.95rem;">
+                ${app.ntcVerified ? '🛡️ NTC Certified' : '⚠️ Registered NTC'} (${app.licenseNumber})
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Compliance</div>
+              <div style="font-size: 0.82rem; color: var(--primary-900); font-weight: 700;">NaSIA &amp; GES Approved</div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Official Designation / Role *</label>
+            <input type="text" id="hire-role" class="form-input" value="${app.jobTitle}" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Gross Monthly Salary (GH₵) *</label>
+              <input type="number" id="hire-salary" class="form-input" value="8500" min="2000" step="100" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Commencement Date *</label>
+              <input type="date" id="hire-date" class="form-input" value="2026-11-15" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Contract Type</label>
+              <select id="hire-type" class="form-select">
+                <option value="Full-Time Permanent">Full-Time Permanent</option>
+                <option value="Fixed 2-Year Contract">Fixed 2-Year Contract</option>
+                <option value="Part-Time Specialist">Part-Time Specialist</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Probation Period</label>
+              <select id="hire-probation" class="form-select">
+                <option value="3">3 Months</option>
+                <option value="6">6 Months</option>
+                <option value="0">No Probation</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: #166534;">
+            📜 <strong>Formal Appointment Dispatch:</strong> Submitting will mark the applicant as <strong>Hired</strong> in your school registry and immediately dispatch the official appointment letter via email and Hubtel SMS to ${app.teacherPhone}.
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-hire">Cancel</button>
+            <button type="submit" class="btn-pill btn-emerald" id="btn-submit-hire" style="font-weight: 800;">
+              <span>🤝</span> Issue Contract &amp; Offer Position
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    div.querySelector('#modal-close').onclick = () => this.close();
+    div.querySelector('#btn-cancel-hire').onclick = () => this.close();
+
+    div.querySelector('#form-hire-teacher').onsubmit = async (e) => {
+      e.preventDefault();
+      const role = div.querySelector('#hire-role').value.trim();
+      const salaryGHS = Number(div.querySelector('#hire-salary').value);
+      const commencementDate = div.querySelector('#hire-date').value;
+      const contractType = div.querySelector('#hire-type').value;
+      const probationMonths = div.querySelector('#hire-probation').value;
+      const submitBtn = div.querySelector('#btn-submit-hire');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span>⏳</span> Generating Formal Appointment...`;
+
+      try {
+        const res = await API.hireTeacher(app.id, {
+          role,
+          salaryGHS,
+          commencementDate,
+          contractType,
+          probationMonths
+        });
+        this.close();
+        State.showToast(`Congratulations! Contract offer issued to ${app.teacherName} (GH₵ ${salaryGHS.toLocaleString()}/mo).`, 'success');
+        if (onHired) onHired(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span>🤝</span> Issue Contract &amp; Offer Position`;
+        State.showToast(err.message, 'error');
+      }
+    };
+  }
 };
 

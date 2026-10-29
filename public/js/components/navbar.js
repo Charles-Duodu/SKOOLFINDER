@@ -19,68 +19,92 @@ const Navbar = {
             <span>SkoolFinder</span>
           </a>
 
-          <!-- Main Nav Links (Desktop) -->
+          <!-- Main Nav Links: Public Directory & 5 Dedicated Portals -->
           <ul class="nav-links">
+            <!-- Public School Discovery -->
             <li>
-              <a href="#" id="nav-link-schools" class="nav-link ${State.currentView === 'directory' ? 'active' : ''}">
-                Find Schools
+              <a href="#" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
+                <span>🏫</span> Find Schools
               </a>
             </li>
-            <li>
-              <a href="#" id="nav-link-suppliers" class="nav-link ${State.currentView === 'suppliers' ? 'active' : ''}">
-                Suppliers & RFQs
-              </a>
-            </li>
-            <li>
-              <a href="#" id="nav-link-jobs" class="nav-link ${State.currentView === 'jobs' ? 'active' : ''}">
-                Find Tutors & Jobs
-              </a>
-            </li>
-            <li>
-              <a href="#" id="nav-link-cssps" class="nav-link ${State.currentView === 'cssps' ? 'active' : ''}">
-                🎓 CSSPS Predictor
-              </a>
-            </li>
-            <li>
-              <a href="#" id="nav-link-resources" class="nav-link ${State.currentView === 'past-questions' ? 'active' : ''}">
-                📚 Past Questions
-              </a>
-            </li>
-            <li>
-              <a href="#" id="nav-link-parent" class="nav-link ${State.currentView === 'parent-portal' ? 'active' : ''}" style="color: var(--primary-700); font-weight: 700;">
-                👨‍👩‍👧 Parent Portal
-              </a>
-            </li>
-            <li>
-              <a href="#" id="nav-link-dashboard" class="nav-link ${State.currentView === 'dashboard' ? 'active' : ''}">
-                ${State.isAuthenticated() && State.isSchoolAdmin() ? '🏫 School Portal' : '🔒 School Portal'}
-              </a>
+
+            <!-- The 5 Dedicated SaaS Portals -->
+            <li class="nav-item-dropdown">
+              <button class="nav-dropdown-trigger" id="dropdown-portals-btn" aria-haspopup="true">
+                <span>Portals ▾</span>
+              </button>
+              <div class="nav-dropdown-panel" id="dropdown-portals-panel" style="min-width: 320px;">
+                <a href="/parents" id="nav-link-parents" class="dropdown-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                  <div class="dropdown-icon-box" style="background: #eff6ff;">👨‍👩‍👧</div>
+                  <div>
+                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span>Parents Portal</span>
+                      <span class="badge badge-admissions" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/parents</span>
+                    </div>
+                    <div class="dropdown-item-desc">Fees via MoMo, bus tracker, student ID & hire tutors</div>
+                  </div>
+                </a>
+
+                <a href="/teachers" id="nav-link-teachers" class="dropdown-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
+                  <div class="dropdown-icon-box" style="background: #ecfdf5;">🧑‍🏫</div>
+                  <div>
+                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span>Teachers Portal</span>
+                      <span class="badge badge-emerald" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/teachers</span>
+                    </div>
+                    <div class="dropdown-item-desc">Tutor marketplace, NTC vetting & school vacancies</div>
+                  </div>
+                </a>
+
+                <a href="/suppliers" id="nav-link-suppliers" class="dropdown-item ${State.currentView === 'suppliers' ? 'active' : ''}">
+                  <div class="dropdown-icon-box" style="background: #fffbeb;">📦</div>
+                  <div>
+                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span>Suppliers Portal</span>
+                      <span class="badge badge-gold" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/suppliers</span>
+                    </div>
+                    <div class="dropdown-item-desc">B2B procurement, school RFQ bidding & catalog</div>
+                  </div>
+                </a>
+
+                <a href="/schools" id="nav-link-schools" class="dropdown-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
+                  <div class="dropdown-icon-box" style="background: #f3e8ff;">🏫</div>
+                  <div>
+                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span>Schools Portal</span>
+                      <span class="badge" style="background: #8b5cf6; color: #fff; font-size: 0.65rem; padding: 0.1rem 0.4rem;">/schools</span>
+                    </div>
+                    <div class="dropdown-item-desc">School Management OS: Admissions, bursar & fleet</div>
+                  </div>
+                </a>
+
+                <div style="border-top: 1px solid var(--border-light); margin: 0.25rem 0;"></div>
+
+                <a href="/admin" id="nav-link-admin" class="dropdown-item ${State.currentView === 'admin' ? 'active' : ''}">
+                  <div class="dropdown-icon-box" style="background: #0f172a; color: #fff;">🛡️</div>
+                  <div>
+                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
+                      <span>Admin Console</span>
+                      <span class="badge" style="background: #0f172a; color: #93c5fd; font-size: 0.65rem; padding: 0.1rem 0.4rem;">/admin</span>
+                    </div>
+                    <div class="dropdown-item-desc">Platform control, NaSIA oversight & SaaS billing</div>
+                  </div>
+                </a>
+              </div>
             </li>
           </ul>
 
-          <!-- Nav Action Buttons -->
+          <!-- Nav Action Buttons: Clean & Uncluttered -->
           <div class="nav-actions">
-            <button id="btn-nav-tour" class="btn-pill nav-action-desktop" style="font-size: 0.8rem; padding: 0.45rem 0.85rem; background: linear-gradient(135deg, #059669 0%, #047857 100%); color: #ffffff; border: 1.5px solid #10b981; box-shadow: 0 2px 6px rgba(16,185,129,0.3); font-weight: 700;" title="Guided Role Tour (Parent, School, Supplier, Teacher)">
-              <span>🧭</span> Role Tour
-            </button>
-
-            <button id="btn-nav-akosua-ai" class="btn-pill nav-action-desktop" style="font-size: 0.8rem; padding: 0.45rem 0.85rem; background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border: 1.5px solid #f59e0b; box-shadow: 0 2px 6px rgba(245,158,11,0.25);" title="Ask Akosua AI Admissions Advisor">
-              <span>👩🏾‍💼</span> Akosua AI
-            </button>
-
-            <button id="btn-nav-compare" class="btn-pill btn-outline nav-action-desktop" style="position: relative;">
-              <span>⚖️</span>
-              <span>Compare</span>
-              ${State.comparisonList.length > 0 ? `
+            ${State.comparisonList.length > 0 ? `
+              <button id="btn-nav-compare" class="btn-pill btn-outline nav-action-desktop" title="Compare Selected Schools">
+                <span>⚖️</span>
+                <span>Compare</span>
                 <span class="comparison-counter-pill" style="font-size: 0.7rem; padding: 0.1rem 0.45rem;">
                   ${State.comparisonList.length}
                 </span>
-              ` : ''}
-            </button>
-
-            <button id="btn-nav-track" class="btn-pill btn-outline nav-action-desktop" style="font-size: 0.8rem; padding: 0.45rem 0.85rem;" title="Track Inquiries & Application Status">
-              <span>🔍</span> Track Status
-            </button>
+              </button>
+            ` : ''}
 
             ${State.isAuthenticated() ? `
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.4rem;">
@@ -92,16 +116,13 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-login" class="btn-pill btn-primary nav-action-desktop" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <button id="btn-nav-login" class="btn-pill btn-primary nav-action-desktop" style="font-size: 0.88rem; padding: 0.45rem 1.15rem;">
                 <span>🔑</span> Sign In
-              </button>
-              <button id="btn-nav-list-school" class="btn-pill btn-gold nav-action-desktop">
-                <span>➕</span> List Your School
               </button>
             `}
 
             <!-- Theme Toggle Button -->
-            <button id="btn-theme-toggle" class="theme-toggle-btn nav-action-desktop" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Dark Mode">
+            <button id="btn-theme-toggle" class="theme-toggle-btn" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Dark Mode">
               🌙
             </button>
 
@@ -121,62 +142,55 @@ const Navbar = {
               <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Scholastic Theme</span>
               <button id="mob-btn-theme-toggle" class="theme-toggle-btn" title="Toggle Dark Mode">🌙</button>
             </div>
-            ${State.isAuthenticated() ? `
-              <div style="background: #f8fafc; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-                <div>
-                  <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">${State.currentUser.name}</div>
-                  <div style="font-size: 0.78rem; color: #64748b;">${State.currentUser.email} • <strong>${State.currentUser.role}</strong></div>
-                </div>
-                <button id="mob-btn-logout" class="btn-pill btn-outline" style="font-size: 0.75rem; padding: 0.3rem 0.6rem;">Logout</button>
-              </div>
-            ` : `
-              <div style="margin-bottom: 0.75rem;">
+
+            <!-- Category 1: Public Discovery -->
+            <div class="mob-category-card">
+              <div class="mob-category-header">🔍 Public Discovery</div>
+              <a href="#" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
+                <span>🏫</span> Find Schools
+              </a>
+              ${State.comparisonList.length > 0 ? `
+                <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">
+                  <span>⚖️</span> Compare Schools (${State.comparisonList.length})
+                </a>
+              ` : ''}
+            </div>
+
+            <!-- Category 2: 5 Dedicated SaaS Portals -->
+            <div class="mob-category-card" style="border: 2px solid #3b82f6;">
+              <div class="mob-category-header" style="color: #1d4ed8; font-weight: 800;">🏛️ The 5 Portals</div>
+              <a href="/parents" id="mob-link-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parents Portal (/parents)
+              </a>
+              <a href="/teachers" id="mob-link-teachers" class="mobile-nav-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
+                <span>🧑‍🏫</span> Teachers Portal (/teachers)
+              </a>
+              <a href="/suppliers" id="mob-link-suppliers" class="mobile-nav-item ${State.currentView === 'suppliers' ? 'active' : ''}">
+                <span>📦</span> Suppliers Portal (/suppliers)
+              </a>
+              <a href="/schools" id="mob-link-schools" class="mobile-nav-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
+                <span>🏫</span> Schools Portal (/schools)
+              </a>
+              <a href="/admin" id="mob-link-admin" class="mobile-nav-item ${State.currentView === 'admin' ? 'active' : ''}">
+                <span>🛡️</span> Admin Console (/admin)
+              </a>
+            </div>
+
+            <!-- Bottom Guided Tour & Auth -->
+            <div style="margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <a href="#" id="mob-link-tour" class="btn-pill btn-outline" style="justify-content: center; border-color: #10b981; color: #047857; font-weight: 700;">
+                <span>🧭</span> Take 30s Guided Role Tour
+              </a>
+              ${State.isAuthenticated() ? `
+                <button id="mob-btn-logout" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.88rem;">
+                  <span>🚪</span> Logout (${State.currentUser.name.split(' ')[0]})
+                </button>
+              ` : `
                 <button id="mob-btn-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem;">
                   <span>🔑</span> Sign In to Account
                 </button>
-              </div>
-            `}
-
-            <a href="#" id="mob-link-schools" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
-              <span>🏫</span> Find Schools
-            </a>
-            <a href="#" id="mob-link-suppliers" class="mobile-nav-item ${State.currentView === 'suppliers' ? 'active' : ''}">
-              <span>📦</span> Suppliers & RFQs
-            </a>
-            <a href="#" id="mob-link-jobs" class="mobile-nav-item ${State.currentView === 'jobs' ? 'active' : ''}">
-              <span>👨‍🏫</span> Find Tutors & Jobs
-            </a>
-            <a href="#" id="mob-link-cssps" class="mobile-nav-item ${State.currentView === 'cssps' ? 'active' : ''}">
-              <span>🎓</span> CSSPS Placement Predictor
-            </a>
-            <a href="#" id="mob-link-resources" class="mobile-nav-item ${State.currentView === 'past-questions' ? 'active' : ''}">
-              <span>📚</span> Past Questions & Schemes
-            </a>
-            <a href="#" id="mob-link-parent" class="mobile-nav-item ${State.currentView === 'parent-portal' ? 'active' : ''}">
-              <span>👨‍👩‍👧</span> Parent & Student Portal
-            </a>
-            <a href="#" id="mob-link-dashboard" class="mobile-nav-item ${State.currentView === 'dashboard' ? 'active' : ''}">
-              <span>${State.isAuthenticated() && State.isSchoolAdmin() ? '🏫' : '🔒'}</span> School Admin Portal
-            </a>
-            <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">
-              <span>⚖️</span> Side-by-Side Compare ${State.comparisonList.length > 0 ? `(${State.comparisonList.length})` : ''}
-            </a>
-            <a href="#" id="mob-link-track" class="mobile-nav-item">
-              <span>🔍</span> Track Inquiries & Admissions
-            </a>
-            <a href="#" id="mob-link-tour" class="mobile-nav-item" style="color: #047857; font-weight: 700; background: #ecfdf5;">
-              <span>🧭</span> Guided Role Tour (Parent, School, Supplier, Teacher)
-            </a>
-            <a href="#" id="mob-link-akosua-ai" class="mobile-nav-item" style="color: #1d4ed8; font-weight: 700; background: #eff6ff;">
-              <span>👩🏾‍💼</span> Akosua AI Advisor (CSSPS & Admissions)
-            </a>
-            ${!State.isAuthenticated() ? `
-              <div style="padding-top: 0.75rem; margin-top: 0.5rem; border-top: 1px solid var(--border-light);">
-                <button id="mob-link-list-school" class="btn-pill btn-gold" style="width: 100%; justify-content: center;">
-                  <span>➕</span> List Your School
-                </button>
-              </div>
-            ` : ''}
+              `}
+            </div>
           </div>
         </div>
       </header>
@@ -192,63 +206,69 @@ const Navbar = {
     });
 
     // Desktop Nav Links
-    document.getElementById('nav-link-schools')?.addEventListener('click', (e) => {
+    document.getElementById('nav-link-directory')?.addEventListener('click', (e) => {
       e.preventDefault();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
       App.navigate('directory');
     });
 
-    document.getElementById('nav-link-suppliers')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('suppliers');
-    });
 
-    document.getElementById('nav-link-jobs')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('jobs');
-    });
 
-    document.getElementById('nav-link-cssps')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('cssps');
-    });
-
-    document.getElementById('nav-link-resources')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('past-questions');
-    });
-
-    document.getElementById('nav-link-parent')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('parent-portal');
-    });
-
-    const handleDashboardClick = (e) => {
-      e.preventDefault();
-      if (!State.isAuthenticated()) {
-        Modals.openLoginModal({
-          notice: "🔒 Access Restricted: The School Administration Portal is protected. Please sign in with verified school administrator credentials.",
-          onSuccess: (user) => {
-            if (user.role === 'school_admin') {
-              App.navigate('dashboard', user.schoolId || 'sch-gis-accra');
-            } else if (user.role === 'parent') {
-              App.navigate('parent-portal');
-            } else {
-              App.navigate('dashboard', 'sch-gis-accra');
-            }
-          }
-        });
-        return;
-      }
-      if (State.currentUser.role === 'parent') {
-        State.showToast("Signed in as Parent — opening your Parent Admissions Portal", "info");
-        App.navigate('parent-portal');
-        return;
-      }
-      App.navigate('dashboard', (State.currentUser.role === 'school_admin' && State.currentUser.schoolId) ? State.currentUser.schoolId : 'sch-gis-accra');
+    // 5 DEDICATED PORTALS NAVIGATION
+    const closeMobDrawer = () => {
+      this.isMobileMenuOpen = false;
+      const drawer = document.getElementById('mobile-nav-drawer');
+      if (drawer) drawer.classList.remove('open');
     };
 
-    document.getElementById('nav-link-dashboard')?.addEventListener('click', handleDashboardClick);
+    // Portal 1: Parents
+    const handleParentsNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('parents');
+    };
+    document.getElementById('nav-link-parents')?.addEventListener('click', handleParentsNav);
+    document.getElementById('nav-link-parent')?.addEventListener('click', handleParentsNav);
+    document.getElementById('mob-link-parents')?.addEventListener('click', handleParentsNav);
+    document.getElementById('mob-link-parent')?.addEventListener('click', handleParentsNav);
+
+    // Portal 2: Teachers
+    const handleTeachersNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('teachers');
+    };
+    document.getElementById('nav-link-teachers')?.addEventListener('click', handleTeachersNav);
+    document.getElementById('mob-link-teachers')?.addEventListener('click', handleTeachersNav);
+
+    // Portal 3: Suppliers
+    const handleSuppliersNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('suppliers');
+    };
+    document.getElementById('nav-link-suppliers')?.addEventListener('click', handleSuppliersNav);
+    document.getElementById('mob-link-suppliers')?.addEventListener('click', handleSuppliersNav);
+
+    // Portal 4: Schools
+    const handleSchoolsNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('schools', State.currentUser?.schoolId || 'sch-gis-accra');
+    };
+    document.getElementById('nav-link-schools')?.addEventListener('click', handleSchoolsNav);
+    document.getElementById('nav-link-dashboard')?.addEventListener('click', handleSchoolsNav);
+    document.getElementById('mob-link-schools')?.addEventListener('click', handleSchoolsNav);
+    document.getElementById('mob-link-dashboard')?.addEventListener('click', handleSchoolsNav);
+
+    // Portal 5: Super Admin
+    const handleAdminNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('admin');
+    };
+    document.getElementById('nav-link-admin')?.addEventListener('click', handleAdminNav);
+    document.getElementById('mob-link-admin')?.addEventListener('click', handleAdminNav);
 
     // Auth Action Buttons
     document.getElementById('btn-nav-login')?.addEventListener('click', () => {
@@ -364,63 +384,17 @@ const Navbar = {
       if (toggleBtn) toggleBtn.classList.remove('active');
     };
 
-    document.getElementById('mob-link-schools')?.addEventListener('click', (e) => {
+    document.getElementById('mob-link-directory')?.addEventListener('click', (e) => {
       e.preventDefault();
       closeMobile();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
       App.navigate('directory');
     });
 
-    document.getElementById('mob-link-suppliers')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      App.navigate('suppliers');
-    });
-
-    document.getElementById('mob-link-jobs')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      App.navigate('jobs');
-    });
-
-    document.getElementById('mob-link-cssps')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      App.navigate('cssps');
-    });
-
-    document.getElementById('mob-link-resources')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      App.navigate('past-questions');
-    });
-
-    document.getElementById('mob-link-parent')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      App.navigate('parent-portal');
-    });
-
-    document.getElementById('mob-link-dashboard')?.addEventListener('click', (e) => {
-      closeMobile();
-      handleDashboardClick(e);
-    });
-
     document.getElementById('mob-link-compare')?.addEventListener('click', (e) => {
       e.preventDefault();
       closeMobile();
       App.navigate('compare');
-    });
-
-    document.getElementById('mob-link-track')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      closeMobile();
-      Modals.openTrackInquiryModal();
-    });
-
-    document.getElementById('mob-link-list-school')?.addEventListener('click', () => {
-      closeMobile();
-      Modals.openListSchoolModal();
     });
   }
 };

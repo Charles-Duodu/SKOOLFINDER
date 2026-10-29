@@ -2230,6 +2230,19 @@ function getInitialUsers() {
       createdAt: "2026-02-05T10:15:00Z"
     },
     {
+      id: "usr-supplier-akiola",
+      name: "Mr. Kwabena Adjei",
+      companyName: "Aki-Ola & Sedco Publishing House",
+      email: "supplier@akiola.com.gh",
+      phone: "+233244889900",
+      role: "supplier",
+      title: "Chief Educational Procurement Officer",
+      password: "SupplierPass2026!",
+      verified: true,
+      avatar: "📦",
+      createdAt: "2026-02-10T12:00:00Z"
+    },
+    {
       id: "usr-super-admin",
       name: "SkoolFinder Systems Lead",
       email: "superadmin@skoolfinder.gh",
@@ -2468,6 +2481,75 @@ function getInitialSMSLogs() {
       deliveryTime: "2026-10-20T08:00:00Z",
       network: "National Unified",
       unitsUsed: 180
+    }
+  ];
+}
+
+function getInitialTeacherApplications() {
+  return [
+    {
+      id: "app-tch-2026-001",
+      schoolId: "sch-gis-accra",
+      schoolName: "Ghana International School (GIS)",
+      jobTitle: "Head of Cambridge Mathematics & STEM",
+      teacherId: "tch-1",
+      teacherName: "Mr. Emmanuel Addo",
+      teacherPhone: "+233 24 551 0987",
+      teacherEmail: "tutor@skoolfinder.com",
+      licenseNumber: "NTC-ED-449102",
+      ntcVerified: true,
+      qualification: "M.Sc. Applied Mathematics (UCC), B.Ed. Science Education",
+      experienceYears: 8,
+      status: "Interview Scheduled",
+      appliedDate: "2026-10-22",
+      coverNote: "Over 8 years preparing students for Cambridge IGCSE and A-Levels with a 98% pass rate. Eager to lead the STEM department at GIS.",
+      interviewDetails: {
+        date: "2026-11-06",
+        time: "10:30 AM",
+        venue: "GIS Cantonments Campus (Conference Room B) & Virtual Stream",
+        meetingLink: "https://meet.google.com/gis-stem-interview",
+        interviewer: "Dr. Mary Ashun (Head of School)",
+        notes: "Candidate to present a 15-minute micro-teaching demo on Cambridge A-Level Pure Mathematics 1."
+      },
+      contractDetails: null
+    },
+    {
+      id: "app-tch-2026-002",
+      schoolId: "sch-gis-accra",
+      schoolName: "Ghana International School (GIS)",
+      jobTitle: "Early Childhood Montessori Lead Teacher",
+      teacherId: "tch-2",
+      teacherName: "Auntie Akua Serwaa Boateng",
+      teacherPhone: "+233 50 332 1199",
+      teacherEmail: "akua.serwaa@montessoriedu.gh",
+      licenseNumber: "NTC-EY-881023",
+      ntcVerified: true,
+      qualification: "AMI Certified Montessori Diploma, B.A. Early Childhood Education (UEW)",
+      experienceYears: 6,
+      status: "Under Review",
+      appliedDate: "2026-10-25",
+      coverNote: "Specialist in phonics, penmanship, and sensorial Montessori apparatus with 6 years experience.",
+      interviewDetails: null,
+      contractDetails: null
+    },
+    {
+      id: "app-tch-2026-003",
+      schoolId: "sch-gis-accra",
+      schoolName: "Ghana International School (GIS)",
+      jobTitle: "Cambridge IGCSE & A-Level Physics Specialist",
+      teacherId: "tch-3",
+      teacherName: "Kofi Owusu-Ansah",
+      teacherPhone: "+233 24 400 1122",
+      teacherEmail: "kofi.owusu@physics.gh",
+      licenseNumber: "NTC-SC-209931",
+      ntcVerified: false,
+      qualification: "B.Sc. Physics (KNUST), Postgraduate Diploma in Education",
+      experienceYears: 5,
+      status: "Under Review",
+      appliedDate: "2026-10-26",
+      coverNote: "Passionate about lab experiments and hands-on physics demonstrations.",
+      interviewDetails: null,
+      contractDetails: null
     }
   ];
 }
@@ -4251,9 +4333,17 @@ class Database {
       };
       needsSave = true;
     }
+    const initialUsers = getInitialUsers();
     if (!this.data.users || this.data.users.length === 0) {
-      this.data.users = getInitialUsers();
+      this.data.users = initialUsers;
       needsSave = true;
+    } else {
+      for (const initUser of initialUsers) {
+        if (!this.data.users.some(u => u.id === initUser.id || u.email === initUser.email)) {
+          this.data.users.push(initUser);
+          needsSave = true;
+        }
+      }
     }
     if (!this.data.sessions) {
       this.data.sessions = [];
@@ -4440,11 +4530,32 @@ class Database {
     return newSup;
   }
 
-  getRFQs() {
-    return this.data.rfqs;
+  getRFQs(schoolId = null) {
+    if (!this.data.rfqs) this.data.rfqs = [];
+    if (!this.data.quotes) this.data.quotes = [];
+
+    let list = this.data.rfqs;
+    if (schoolId) {
+      list = list.filter(r => r.schoolId === schoolId || (r.schoolName && r.schoolName.toLowerCase() === schoolId.toLowerCase()));
+    }
+    return list.map(rfq => {
+      const quotes = this.data.quotes.filter(q => q.rfqId === rfq.id);
+      return {
+        ...rfq,
+        quotesReceived: quotes.length,
+        quotes
+      };
+    });
+  }
+
+  getQuotes(rfqId = null) {
+    if (!this.data.quotes) this.data.quotes = [];
+    if (!rfqId) return this.data.quotes;
+    return this.data.quotes.filter(q => q.rfqId === rfqId);
   }
 
   addRFQ(data) {
+    if (!this.data.rfqs) this.data.rfqs = [];
     const newRfq = {
       id: "rfq-" + Date.now(),
       status: "Open for Bids",
@@ -4458,6 +4569,7 @@ class Database {
   }
 
   submitQuote(quoteData) {
+    if (!this.data.quotes) this.data.quotes = [];
     const newQuote = {
       id: "quote-" + Date.now(),
       status: "Pending Review",
@@ -4473,6 +4585,203 @@ class Database {
     }
     this.save();
     return newQuote;
+  }
+
+  updateQuoteStatus(quoteId, status, reason = '') {
+    if (!this.data.quotes) this.data.quotes = [];
+    const quote = this.data.quotes.find(q => q.id === quoteId);
+    if (!quote) return null;
+    quote.status = status;
+    if (reason) quote.declineReason = reason;
+    quote.updatedAt = new Date().toISOString();
+
+    const rfq = (this.data.rfqs || []).find(r => r.id === quote.rfqId);
+    if (status === 'Awarded') {
+      if (rfq) {
+        rfq.status = 'Tender Awarded';
+        rfq.awardedQuoteId = quote.id;
+        rfq.awardedSupplier = quote.supplierName;
+        rfq.awardedPrice = quote.price;
+        rfq.awardedAt = new Date().toISOString();
+      }
+      try {
+        const lpo = this.generateLPO(quote.id);
+        quote.lpoId = lpo.id;
+        quote.lpoNumber = lpo.lpoNumber;
+      } catch (_) {}
+    } else if (status === 'Declined') {
+      if (rfq && rfq.awardedQuoteId === quote.id) {
+        rfq.status = 'Open for Bids';
+        delete rfq.awardedQuoteId;
+        delete rfq.awardedSupplier;
+        delete rfq.awardedPrice;
+      }
+    }
+    this.save();
+    return { quote, rfq };
+  }
+
+  generateLPO(quoteId) {
+    if (!this.data.purchaseOrders) this.data.purchaseOrders = [];
+    let lpo = this.data.purchaseOrders.find(p => p.quoteId === quoteId);
+    if (lpo) return lpo;
+
+    const quote = (this.data.quotes || []).find(q => q.id === quoteId);
+    if (!quote) throw new Error("Quotation not found");
+
+    const rfq = (this.data.rfqs || []).find(r => r.id === quote.rfqId);
+    const school = rfq ? (this.getSchoolById(rfq.schoolId) || (this.data.schools || []).find(s => s.name === rfq.schoolName)) : null;
+    const supplier = (this.data.suppliers || []).find(s => s.id === quote.supplierId || s.name === quote.supplierName);
+
+    const priceNum = parseFloat(String(quote.price || '0').replace(/[^0-9.]/g, '')) || 0;
+    const advanceAmount = Math.round(priceNum * 0.5);
+    const balanceAmount = priceNum - advanceAmount;
+
+    const lpoNumber = `LPO-GH-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const issueDate = new Date().toISOString();
+    const deliveryDeadline = rfq?.deadline || new Date(Date.now() + (parseInt(quote.deliveryDays, 10) || 14) * 86400000).toISOString().split('T')[0];
+
+    lpo = {
+      id: `lpo-${Date.now()}`,
+      lpoNumber,
+      quoteId: quote.id,
+      rfqId: rfq?.id,
+      schoolId: school?.id || rfq?.schoolId || 'sch-gis-accra',
+      schoolName: school?.name || rfq?.schoolName || 'Partner School Administration',
+      schoolAddress: school?.suburb ? `${school.suburb}, ${school.region || 'Greater Accra'}, Ghana` : 'Cantonments, Accra, Ghana',
+      schoolPhone: school?.phone || '+233 302 773 299',
+      schoolEmail: school?.email || 'bursary@gis.edu.gh',
+      nasiaLicense: school?.licenseNumber || "NaSIA-ACC-2026-REG",
+      supplierId: supplier?.id || quote.supplierId,
+      supplierName: quote.supplierName || supplier?.name || 'Verified Educational Supplier',
+      supplierPhone: quote.phone || supplier?.phone || '+233 24 400 0000',
+      supplierEmail: quote.email || supplier?.email || 'orders@supplier.com.gh',
+      supplierAddress: supplier?.address || (supplier?.suburb ? `${supplier.suburb}, Ghana` : 'Industrial Area, Accra'),
+      tenderTitle: rfq?.title || 'Educational Procurement Contract',
+      category: rfq?.category || 'Educational Supplies',
+      quantity: rfq?.quantity || '1 Complete Lot',
+      specifications: quote.notes || rfq?.description || 'Standard institutional specifications',
+      warrantyTerms: quote.warrantyTerms || 'Manufacturer standard warranty',
+      deliveryLeadTime: `${quote.deliveryDays || 14} Business Days`,
+      deliveryDeadline,
+      totalAmountGHS: priceNum,
+      totalAmountFormatted: quote.price || `GH₵ ${priceNum.toLocaleString()}`,
+      milestones: [
+        {
+          index: 1,
+          name: 'Mobilization & Production Advance',
+          percent: 50,
+          amountGHS: advanceAmount,
+          amountFormatted: `GH₵ ${advanceAmount.toLocaleString()}`,
+          status: 'Pending Disbursement',
+          disbursedAt: null,
+          transactionRef: null
+        },
+        {
+          index: 2,
+          name: 'Delivery Inspection & Final Acceptance',
+          percent: 50,
+          amountGHS: balanceAmount,
+          amountFormatted: `GH₵ ${balanceAmount.toLocaleString()}`,
+          status: 'Pending Delivery',
+          disbursedAt: null,
+          transactionRef: null
+        }
+      ],
+      paymentStatus: 'Issued',
+      createdAt: issueDate,
+      issuedBy: 'Bursary & Procurement Board',
+      status: 'Active'
+    };
+
+    this.data.purchaseOrders.unshift(lpo);
+    quote.lpoId = lpo.id;
+    quote.lpoNumber = lpo.lpoNumber;
+    if (rfq) {
+      rfq.lpoId = lpo.id;
+      rfq.lpoNumber = lpo.lpoNumber;
+    }
+    this.save();
+    return lpo;
+  }
+
+  getLPO(identifier) {
+    if (!this.data.purchaseOrders) this.data.purchaseOrders = [];
+    return this.data.purchaseOrders.find(p => p.id === identifier || p.quoteId === identifier || p.lpoNumber === identifier);
+  }
+
+  disburseLPOMilestone(lpoId, milestoneIndex, paymentDetails = {}) {
+    if (!this.data.purchaseOrders) this.data.purchaseOrders = [];
+    const lpo = this.data.purchaseOrders.find(p => p.id === lpoId);
+    if (!lpo) throw new Error("LPO not found");
+
+    const milestone = lpo.milestones.find(m => m.index === Number(milestoneIndex));
+    if (!milestone) throw new Error("Milestone not found");
+    if (milestone.status === 'Disbursed') throw new Error("Milestone already disbursed");
+
+    const now = new Date().toISOString();
+    const ref = `PAY-LPO-${Date.now().toString().slice(-6)}`;
+    milestone.status = 'Disbursed';
+    milestone.disbursedAt = now;
+    milestone.transactionRef = ref;
+    milestone.paymentMethod = paymentDetails.paymentMethod || 'Paystack MoMo Escrow';
+    milestone.disbursedBy = paymentDetails.disbursedBy || 'School Bursar';
+
+    const allDisbursed = lpo.milestones.every(m => m.status === 'Disbursed');
+    lpo.paymentStatus = allDisbursed ? 'Fully Settled' : 'Advance Disbursed';
+
+    this.save();
+    return { lpo, milestone };
+  }
+
+  addProcurementLog(eventData) {
+    if (!this.data.procurementAuditLogs) this.data.procurementAuditLogs = [];
+    const log = {
+      id: "plog-" + Date.now() + "-" + Math.floor(Math.random() * 1000),
+      timestamp: new Date().toISOString(),
+      ...eventData
+    };
+    this.data.procurementAuditLogs.unshift(log);
+    if (this.data.procurementAuditLogs.length > 200) {
+      this.data.procurementAuditLogs = this.data.procurementAuditLogs.slice(0, 200);
+    }
+    this.save();
+    return log;
+  }
+
+  getProcurementLogs() {
+    if (!this.data.procurementAuditLogs || this.data.procurementAuditLogs.length === 0) {
+      this.data.procurementAuditLogs = [
+        {
+          id: "plog-seed-1",
+          timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
+          stage: "quote_submitted",
+          stageLabel: "Quotation Submitted",
+          statusColor: "blue",
+          rfqId: "rfq-101",
+          rfqTitle: "Procurement of 150 Dual Student Desks & 10 Teacher Tables",
+          schoolName: "Spintex Royal Preparatory School",
+          supplierName: "Modern Class Furniture & Woodworks Ghana",
+          amount: "GH₵ 28,500",
+          summary: "Modern Class Furniture submitted quotation of GH₵ 28,500 (14 days lead time) for Spintex Royal Prep."
+        },
+        {
+          id: "plog-seed-2",
+          timestamp: new Date(Date.now() - 3600000 * 5).toISOString(),
+          stage: "rfq_published",
+          stageLabel: "Tender Published",
+          statusColor: "gold",
+          rfqId: "rfq-103",
+          rfqTitle: "Setup of 20 Modern All-in-One PCs for Primary ICT Lab",
+          schoolName: "The Roman Ridge School",
+          supplierName: "Open for Bids",
+          amount: "GH₵ 60,000 - 80,000",
+          summary: "The Roman Ridge School published tender for 20 All-in-One PCs in Airport Residential."
+        }
+      ];
+      this.save();
+    }
+    return this.data.procurementAuditLogs;
   }
 
   // Jobs
@@ -5855,6 +6164,163 @@ class Database {
     };
   }
 
+  // Teacher Applications, NTC Verification & School Hiring Pipeline (Feature 4)
+  getTeacherApplications(filters = {}) {
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+    let list = [...this.data.teacherApplications];
+
+    if (filters.schoolId && filters.schoolId !== 'All') {
+      list = list.filter(a => a.schoolId === filters.schoolId);
+    }
+    if (filters.teacherId) {
+      list = list.filter(a => a.teacherId === filters.teacherId);
+    }
+    if (filters.status && filters.status !== 'All') {
+      list = list.filter(a => a.status.toLowerCase() === filters.status.toLowerCase());
+    }
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      list = list.filter(a => 
+        a.teacherName.toLowerCase().includes(q) ||
+        a.jobTitle.toLowerCase().includes(q) ||
+        (a.licenseNumber && a.licenseNumber.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  }
+
+  getTeacherApplicationById(id) {
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+    return this.data.teacherApplications.find(a => a.id === id);
+  }
+
+  createTeacherApplication(data) {
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+    if (!data.schoolId) throw new Error("School ID is required");
+    if (!data.jobTitle) throw new Error("Job Title is required");
+    if (!data.teacherName) throw new Error("Teacher Full Name is required");
+
+    const school = this.data.schools.find(s => s.id === data.schoolId) || { name: "Accredited Partner School" };
+
+    const newApp = {
+      id: "app-tch-" + Date.now(),
+      schoolId: data.schoolId,
+      schoolName: school.name,
+      jobTitle: data.jobTitle,
+      teacherId: data.teacherId || "tch-" + Date.now(),
+      teacherName: data.teacherName.trim(),
+      teacherPhone: data.teacherPhone || "+233 24 551 0987",
+      teacherEmail: data.teacherEmail || "tutor@skoolfinder.com",
+      licenseNumber: data.licenseNumber || "NTC-ED-" + Math.floor(100000 + Math.random() * 900000),
+      ntcVerified: data.ntcVerified || false,
+      qualification: data.qualification || "B.Ed. Education",
+      experienceYears: Number(data.experienceYears) || 3,
+      status: "Under Review",
+      appliedDate: new Date().toISOString().split('T')[0],
+      coverNote: data.coverNote || "Eager to contribute to high educational standards at your institution.",
+      interviewDetails: null,
+      contractDetails: null
+    };
+
+    this.data.teacherApplications.unshift(newApp);
+    this.save();
+    return newApp;
+  }
+
+  verifyTeacherNTC(identifier, ntcNumber) {
+    if (!this.data.teachers) this.data.teachers = [];
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+
+    const ntc = (ntcNumber || '').trim().toUpperCase();
+    if (!ntc) throw new Error("NTC License Number is required");
+
+    // Match application if provided
+    let matchedApp = this.data.teacherApplications.find(a => a.id === identifier || a.teacherId === identifier || (a.licenseNumber && a.licenseNumber.toUpperCase() === ntc));
+    if (matchedApp) {
+      matchedApp.ntcVerified = true;
+      matchedApp.licenseNumber = ntc;
+      matchedApp.ntcVerifiedDate = new Date().toISOString();
+    }
+
+    // Match teacher profile
+    let matchedTeacher = this.data.teachers.find(t => t.id === identifier || (matchedApp && t.id === matchedApp.teacherId) || (t.licenseNumber && t.licenseNumber.toUpperCase() === ntc));
+    if (matchedTeacher) {
+      matchedTeacher.verified = true;
+      matchedTeacher.ntcVerified = true;
+      matchedTeacher.licenseNumber = ntc;
+      matchedTeacher.ratingBadge = "NTC Certified Master Educator";
+    }
+
+    this.save();
+    return {
+      success: true,
+      licenseNumber: ntc,
+      ntcVerified: true,
+      badge: "NTC Certified Master Educator",
+      verifiedAt: new Date().toISOString(),
+      application: matchedApp,
+      teacher: matchedTeacher
+    };
+  }
+
+  scheduleTeacherInterview(applicationId, interviewData) {
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+    const app = this.data.teacherApplications.find(a => a.id === applicationId);
+    if (!app) throw new Error("Teacher application not found");
+
+    if (!interviewData.date) throw new Error("Interview date is required");
+    if (!interviewData.time) throw new Error("Interview time is required");
+
+    app.status = "Interview Scheduled";
+    app.interviewDetails = {
+      date: interviewData.date,
+      time: interviewData.time,
+      venue: interviewData.venue || "Campus Administration Suite & Virtual Stream",
+      meetingLink: interviewData.meetingLink || "https://meet.google.com/skoolfinder-interview",
+      interviewer: interviewData.interviewer || "Head of School & Departmental Board",
+      notes: interviewData.notes || "Panel interview and subject demonstration",
+      scheduledAt: new Date().toISOString()
+    };
+
+    this.save();
+    return { success: true, application: app };
+  }
+
+  hireTeacher(applicationId, hireData) {
+    if (!this.data.teacherApplications) this.data.teacherApplications = getInitialTeacherApplications();
+    const app = this.data.teacherApplications.find(a => a.id === applicationId);
+    if (!app) throw new Error("Teacher application not found");
+
+    const salary = Number(hireData.salaryGHS) || 7500;
+    const role = hireData.role || app.jobTitle;
+
+    app.status = "Hired / Contract Offered";
+    app.contractDetails = {
+      id: "cnt-" + Date.now(),
+      role,
+      salaryGHS: salary,
+      commencementDate: hireData.commencementDate || "2026-11-15",
+      contractType: hireData.contractType || "Full-Time Permanent",
+      probationMonths: Number(hireData.probationMonths) || 3,
+      compliance: "NaSIA & GES Standard Educator Contract",
+      issuedAt: new Date().toISOString(),
+      status: "Offer Extended"
+    };
+
+    const teacher = (this.data.teachers || []).find(t => t.id === app.teacherId);
+    if (teacher) {
+      if (!teacher.contractHistory) teacher.contractHistory = [];
+      teacher.contractHistory.push({
+        schoolId: app.schoolId,
+        schoolName: app.schoolName,
+        role,
+        commencedAt: app.contractDetails.commencementDate
+      });
+    }
+
+    this.save();
+    return { success: true, application: app };
+  }
 
   // Automated SMS & WhatsApp Parent Communications (Feature 7)
   getSMSLogs(filters = {}) {
@@ -7416,6 +7882,377 @@ class Database {
       verifiedDocsCount: (this.data.verificationDocs || []).length + 8,
       regionsCovered: ["Greater Accra", "Ashanti", "Central", "Eastern"],
       totalLeadsLogged: this.data.leads.length + 185
+    };
+  }
+
+  // PORTAL METHODS: Tutor Bookings & Private Home Tuition
+  bookTutorSession(bookingData) {
+    if (!this.data.tutorBookings) this.data.tutorBookings = [];
+    const booking = {
+      id: "tbk-" + Date.now(),
+      teacherId: bookingData.teacherId,
+      teacherName: bookingData.teacherName || "Educator",
+      parentName: bookingData.parentName || "Parent",
+      parentEmail: bookingData.parentEmail || "",
+      parentPhone: bookingData.parentPhone || "",
+      studentName: bookingData.studentName || "Student",
+      studentGrade: bookingData.studentGrade || "JHS 2",
+      subject: bookingData.subject || "Mathematics",
+      curriculum: bookingData.curriculum || "GES Standards-based",
+      mode: bookingData.mode || "In-Person Home Tuition",
+      suburb: bookingData.suburb || "East Legon",
+      preferredDays: bookingData.preferredDays || "Weekdays 4:30 PM",
+      rateAgreedGHS: Number(bookingData.rateAgreedGHS) || 120,
+      status: "Confirmed", // 'Pending' | 'Confirmed' | 'Completed'
+      createdAt: new Date().toISOString()
+    };
+    this.data.tutorBookings.unshift(booking);
+    this.save();
+    return booking;
+  }
+
+  getTutorBookings(filters = {}) {
+    if (!this.data.tutorBookings) {
+      this.data.tutorBookings = [
+        {
+          id: "tbk-init-1",
+          teacherId: "tch-1",
+          teacherName: "Mr. Emmanuel Addo",
+          parentName: "Mrs. Nana Aba Mensah",
+          parentEmail: "parent@gmail.com",
+          parentPhone: "+233244987654",
+          studentName: "Kwame Mensah",
+          studentGrade: "JHS 1",
+          subject: "Physics & Core Mathematics",
+          curriculum: "Cambridge IGCSE & GES",
+          mode: "In-Person Home Tuition",
+          suburb: "East Legon",
+          preferredDays: "Tuesdays & Thursdays (4:30 PM)",
+          rateAgreedGHS: 120,
+          status: "Confirmed",
+          createdAt: "2026-02-15T10:00:00Z"
+        }
+      ];
+      this.save();
+    }
+    let list = [...this.data.tutorBookings];
+    if (filters.teacherId) {
+      list = list.filter(b => b.teacherId === filters.teacherId);
+    }
+    if (filters.parentEmail) {
+      const pEmail = filters.parentEmail.toLowerCase().trim();
+      list = list.filter(b => (b.parentEmail || '').toLowerCase().trim() === pEmail);
+    }
+    return list;
+  }
+
+  // PORTAL METHODS: Super Admin & Regulatory Console
+  getAdminOverview() {
+    const schools = this.data.schools || [];
+    const teachers = this.data.teachers || [];
+    const suppliers = this.data.suppliers || [];
+    const applications = this.data.admissionApplications || [];
+    const transactions = this.data.transactions || [];
+    const rfqs = this.data.rfqs || [];
+    const totalGMV = transactions.reduce((acc, t) => acc + (t.amount || 0), 0);
+
+    const verifiedSchools = schools.filter(s => s.verified).length;
+    const pendingSchools = schools.length - verifiedSchools;
+
+    const verifiedTeachers = teachers.filter(t => t.verified).length;
+    const pendingTeachers = teachers.length - verifiedTeachers;
+
+    const subscriptions = this.getSaaSSubscriptions();
+
+    return {
+      kpis: {
+        totalSchools: schools.length,
+        verifiedSchools,
+        pendingSchools,
+        totalTeachers: teachers.length,
+        verifiedTeachers,
+        pendingTeachers,
+        totalSuppliers: suppliers.length,
+        totalApplications: applications.length,
+        totalRFQs: rfqs.length,
+        awardedTendersCount: rfqs.filter(r => r.status === 'Tender Awarded').length,
+        totalQuotesSubmitted: (this.data.quotes || []).length,
+        totalTransactions: transactions.length,
+        totalGMV: Math.round(totalGMV),
+        activeSaaSSchools: subscriptions.filter(s => s.status === 'Active').length,
+        monthlyRecurringRevenueGHS: 48500
+      },
+      procurementLogs: this.getProcurementLogs(),
+      rfqsList: this.getRFQs(),
+      schoolsList: schools.map(s => ({
+        id: s.id,
+        name: s.name,
+        region: s.region,
+        suburb: s.suburb,
+        curriculum: s.curriculum,
+        verified: !!s.verified,
+        tuitionBase: s.tuitionBase,
+        nasiaLicense: "NaSIA-ACC-" + s.id.slice(-4).toUpperCase() + "-2026",
+        plan: s.subscriptionTier || (s.id.includes('gis') || s.id.includes('sos') ? 'Enterprise' : 'Pro')
+      })),
+      teachersList: teachers.map(t => ({
+        id: t.id,
+        fullName: t.fullName,
+        headline: t.headline,
+        region: t.region,
+        suburb: t.suburb,
+        subjects: t.subjects,
+        verified: !!t.verified,
+        ratingBadge: t.ratingBadge,
+        hourlyRate: t.hourlyRateGHS || 100,
+        ntcLicense: t.licenseNumber || "NTC/LIC/GH/" + Math.floor(100000 + Math.random() * 900000)
+      })),
+      suppliersList: suppliers.map(sup => ({
+        id: sup.id,
+        name: sup.name,
+        category: sup.category,
+        region: sup.region,
+        verified: !!sup.verified,
+        rating: sup.rating || 4.8
+      })),
+      telemetry: {
+        clerkAuth: { status: "Active (Ghana Dual Auth)", uptime: "99.99%", activeSessions: 142 },
+        supabaseDB: { status: "Connected (Neon Cloud PostgreSQL)", latencyMs: 14, poolUsage: "12/20" },
+        resendEmail: { status: "Operational (Transactional Engine)", sentLast24h: 384, deliveryRate: "99.4%" },
+        paystackMoMo: { status: "Live & Processing", channels: ["MTN MoMo", "Telecel Cash", "AT Money", "Cards"] },
+        hubtelSMS: { status: "Active (Ghana Gateway)", creditsBalance: 10550 }
+      }
+    };
+  }
+
+  setEntityVerification(entityId, entityType, verifiedStatus) {
+    let target = null;
+    if (entityType === 'school') {
+      target = (this.data.schools || []).find(s => s.id === entityId);
+      if (target) target.verified = !!verifiedStatus;
+    } else if (entityType === 'teacher') {
+      target = (this.data.teachers || []).find(t => t.id === entityId);
+      if (target) {
+        target.verified = !!verifiedStatus;
+        target.ratingBadge = verifiedStatus ? "NTC Certified Educator" : "Pending Verification";
+      }
+    } else if (entityType === 'supplier') {
+      target = (this.data.suppliers || []).find(s => s.id === entityId);
+      if (target) target.verified = !!verifiedStatus;
+    }
+    if (!target) throw new Error(`${entityType} with ID ${entityId} not found`);
+    this.save();
+    return { success: true, entityId, entityType, verified: !!verifiedStatus };
+  }
+
+  getSaaSSubscriptions() {
+    const plans = [
+      { schoolId: "sch-gis-accra", schoolName: "Ghana International School", plan: "Enterprise", termFeeGHS: 2200, status: "Active", renewal: "2026-09-01", seats: 850 },
+      { schoolId: "sch-sos-tema", schoolName: "SOS-Hermann Gmeiner Int College", plan: "Enterprise", termFeeGHS: 2200, status: "Active", renewal: "2026-09-01", seats: 600 },
+      { schoolId: "sch-morning-star-cantonments", schoolName: "Morning Star School", plan: "Pro", termFeeGHS: 950, status: "Active", renewal: "2026-08-15", seats: 450 },
+      { schoolId: "sch-roman-ridge-accra", schoolName: "The Roman Ridge School", plan: "Pro", termFeeGHS: 950, status: "Active", renewal: "2026-08-20", seats: 400 },
+      { schoolId: "sch-galaxy-international-accra", schoolName: "Galaxy International School", plan: "Enterprise", termFeeGHS: 2200, status: "Active", renewal: "2026-09-10", seats: 550 },
+      { schoolId: "sch-spintex-prep-accra", schoolName: "Spintex Royal Preparatory School", plan: "Starter", termFeeGHS: 450, status: "Active", renewal: "2026-07-30", seats: 280 }
+    ];
+    return plans;
+  }
+
+  registerSchoolForVetting(data) {
+    if (!this.data.schools) this.data.schools = [];
+    const slug = (data.name || 'school').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+    const newSchool = {
+      id: `sch-${slug}-${Date.now()}`,
+      name: data.name,
+      slug,
+      region: data.region || 'Greater Accra',
+      district: data.district || 'Accra Metropolitan',
+      suburb: data.suburb || 'East Legon',
+      curriculum: Array.isArray(data.curriculum) ? data.curriculum : [data.curriculum || 'Ghana GES / NaSIA'],
+      levels: Array.isArray(data.levels) ? data.levels : ['Primary', 'JHS'],
+      headOfSchool: data.contactPerson || data.headOfSchool || 'School Administrator',
+      email: data.email,
+      phone: data.phone,
+      whatsapp: data.whatsapp || data.phone,
+      verified: false,
+      claimed: true,
+      status: 'pending_vetting',
+      packageTier: data.packageTier || 'SaaS Starter',
+      licenseNumber: data.licenseNumber || `GES/GAR/${Math.floor(1000 + Math.random() * 9000)}`,
+      registeredAt: new Date().toISOString(),
+      trialStatus: 'unactivated',
+      tuitionBase: data.tuitionBase || 3500,
+      description: data.description || `${data.name} is an accredited educational institution in ${data.suburb}, ${data.region}.`
+    };
+
+    this.data.schools.push(newSchool);
+    this.save();
+    return newSchool;
+  }
+
+  getSchoolVettingQueue() {
+    return (this.data.schools || []).filter(s => s.status === 'pending_vetting' || s.verified === false);
+  }
+
+  approveSchoolVetting(schoolId, { trialDays = 14, notes, assignedTier }) {
+    const school = (this.data.schools || []).find(s => s.id === schoolId);
+    if (!school) throw new Error(`School with ID ${schoolId} not found`);
+
+    school.verified = true;
+    school.status = 'active_trial';
+    school.trialStatus = 'active';
+    school.trialStartsAt = new Date().toISOString();
+    school.trialEndsAt = new Date(Date.now() + trialDays * 86400000).toISOString();
+    school.packageTier = assignedTier || school.packageTier || 'SaaS Starter';
+    school.vettingNotes = notes || 'Verified with NaSIA/GES Registry';
+    school.vettedAt = new Date().toISOString();
+
+    this.save();
+    return school;
+  }
+
+  rejectSchoolVetting(schoolId, { reason }) {
+    const school = (this.data.schools || []).find(s => s.id === schoolId);
+    if (!school) throw new Error(`School with ID ${schoolId} not found`);
+
+    school.status = 'rejected';
+    school.verified = false;
+    school.rejectionReason = reason || 'Documentation failed verification';
+    school.rejectedAt = new Date().toISOString();
+
+    this.save();
+    return school;
+  }
+
+  findOrCreateParentByPhone(phone) {
+    if (!this.data.users) this.data.users = [];
+    let user = this.data.users.find(u => u.phone === phone && u.role === 'parent');
+    if (!user) {
+      user = {
+        id: `usr-parent-${Date.now()}`,
+        name: `Parent (+${phone.slice(-9)})`,
+        email: `${phone}@parent.skoolfinder.gh`,
+        phone: phone,
+        role: 'parent',
+        studentIds: ['STU-2026-001'],
+        createdAt: new Date().toISOString()
+      };
+      this.data.users.push(user);
+      this.save();
+    }
+    return user;
+  }
+
+  createSessionForUser(user) {
+    if (!this.data.sessions) this.data.sessions = [];
+    const token = 'sdtk_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 12);
+    const session = {
+      token,
+      userId: user.id,
+      role: user.role,
+      schoolId: user.schoolId || null,
+      createdAt: new Date().toISOString()
+    };
+    this.data.sessions.push(session);
+    this.save();
+    return { token, user: this.sanitizeUser(user) };
+  }
+
+  getSchoolById(schoolId) {
+    return (this.data.schools || []).find(s => s.id === schoolId || s.slug === schoolId);
+  }
+
+  upgradeSchoolSubscription(schoolId, { planTier, billingCycle = 'monthly', amountPaidGHS, reference, paymentMethod = 'mobile_money', transactionId }) {
+    const school = (this.data.schools || []).find(s => s.id === schoolId || s.slug === schoolId);
+    if (!school) throw new Error(`School with ID ${schoolId} not found`);
+
+    const daysToAdd = billingCycle === 'termly' ? 90 : 30;
+    const now = new Date();
+    
+    // If school currently has active trial or subscription, extend from existing end date, otherwise from now
+    const currentEnd = school.subscriptionExpiresAt ? new Date(school.subscriptionExpiresAt) : (school.trialEndsAt ? new Date(school.trialEndsAt) : now);
+    const startDate = (currentEnd > now) ? currentEnd : now;
+    const expiryDate = new Date(startDate.getTime() + daysToAdd * 86400000);
+
+    school.subscriptionStatus = 'active';
+    school.trialStatus = 'converted_to_paid';
+    school.packageTier = planTier || school.packageTier || 'SaaS Starter';
+    school.billingCycle = billingCycle;
+    school.subscriptionExpiresAt = expiryDate.toISOString();
+    school.lastPayment = {
+      amountGHS: Number(amountPaidGHS) || 299,
+      reference: reference || `SUB-REF-${Date.now()}`,
+      transactionId: transactionId || reference,
+      paidAt: now.toISOString(),
+      paymentMethod,
+      billingCycle
+    };
+
+    if (!this.data.subscriptions) this.data.subscriptions = [];
+    this.data.subscriptions.push({
+      id: `sub-${Date.now()}`,
+      schoolId: school.id,
+      schoolName: school.name,
+      planTier: school.packageTier,
+      billingCycle,
+      amountGHS: Number(amountPaidGHS) || 299,
+      reference: school.lastPayment.reference,
+      paidAt: now.toISOString(),
+      expiresAt: expiryDate.toISOString(),
+      paymentMethod
+    });
+
+    this.save();
+    return school;
+  }
+
+  linkStudentToParent(parentIdentifier, { studentIdOrCode, studentName }) {
+    if (!this.data.users) this.data.users = [];
+    const parent = this.data.users.find(u => u.id === parentIdentifier || u.phone === parentIdentifier || u.email === parentIdentifier);
+    if (!parent) throw new Error("Parent account not found");
+
+    const query = (studentIdOrCode || '').toUpperCase().trim();
+    const digitalIDs = this.data.studentDigitalIDs || [];
+    let matchedStudent = digitalIDs.find(s => 
+      s.studentId?.toUpperCase() === query || 
+      s.indexNumber?.toUpperCase() === query || 
+      s.qrVerificationCode?.toUpperCase() === query ||
+      (studentName && s.studentName?.toLowerCase().includes(studentName.toLowerCase().trim()))
+    );
+
+    if (!matchedStudent) {
+      const invoice = (this.data.invoices || []).find(i => i.studentId?.toUpperCase() === query || (studentName && i.studentName?.toLowerCase().includes(studentName.toLowerCase().trim())));
+      if (invoice) {
+        matchedStudent = {
+          studentId: invoice.studentId || query,
+          studentName: invoice.studentName,
+          schoolId: invoice.schoolId,
+          schoolName: (this.getSchoolById(invoice.schoolId) || {}).name || 'Accredited Institution',
+          gradeLevel: invoice.gradeLevel || 'Primary / JHS'
+        };
+      }
+    }
+
+    if (!matchedStudent) {
+      matchedStudent = {
+        studentId: query || `STU-${Date.now().toString().slice(-4)}`,
+        studentName: studentName || `Ward (${query})`,
+        schoolId: 'sch-gis-accra',
+        schoolName: 'Ghana International School (GIS)',
+        gradeLevel: 'JHS 1'
+      };
+    }
+
+    if (!parent.studentIds) parent.studentIds = [];
+    if (!parent.studentIds.includes(matchedStudent.studentId)) {
+      parent.studentIds.push(matchedStudent.studentId);
+    }
+
+    this.save();
+    return {
+      success: true,
+      student: matchedStudent,
+      parent: this.sanitizeUser(parent),
+      message: `Student ${matchedStudent.studentName} (${matchedStudent.studentId}) successfully linked to your parent portal!`
     };
   }
 }

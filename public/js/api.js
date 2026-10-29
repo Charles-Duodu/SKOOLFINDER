@@ -4,6 +4,205 @@
 const API = {
   baseUrl: '/api',
 
+  getAuthHeaders(customHeaders = {}) {
+    const headers = { ...customHeaders };
+    const token = typeof State !== 'undefined' && State.authToken ? State.authToken : localStorage.getItem('skoolfinder_token');
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+    return headers;
+  },
+
+  // PORTAL AUTHENTICATION
+  async login(login, password) {
+    const res = await fetch(`${this.baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ login, password })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Login failed");
+    return result;
+  },
+
+  async register(userData) {
+    const res = await fetch(`${this.baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Registration failed");
+    return result;
+  },
+
+  async logout() {
+    try {
+      await fetch(`${this.baseUrl}/auth/logout`, {
+        method: 'POST',
+        headers: this.getAuthHeaders()
+      });
+    } catch (e) {}
+    return { success: true };
+  },
+
+  async getMe() {
+    const res = await fetch(`${this.baseUrl}/auth/me`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Unauthorized");
+    return res.json();
+  },
+
+  // --- DUAL AUTH: GHANA PHONE SMS OTP (HUBTEL GATEWAY) ---
+  async sendOTP(phone, purpose = 'login') {
+    const res = await fetch(`${this.baseUrl}/auth/otp/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, purpose })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to send SMS OTP");
+    return result;
+  },
+
+  async verifyOTP(phone, code) {
+    const res = await fetch(`${this.baseUrl}/auth/otp/verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, code })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Invalid OTP code");
+    return result;
+  },
+
+  async linkStudent(data) {
+    const res = await fetch(`${this.baseUrl}/parents/link-student`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to link student");
+    return result;
+  },
+
+  // --- SCHOOL ONBOARDING & ADMIN VETTING PIPELINE ---
+  async registerSchoolForVetting(data) {
+    const res = await fetch(`${this.baseUrl}/schools/register-vetting`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "School registration failed");
+    return result;
+  },
+
+  async getVettingQueue() {
+    const res = await fetch(`${this.baseUrl}/admin/vetting/schools`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load vetting queue");
+    return res.json();
+  },
+
+  async approveSchoolVetting(schoolId, options = {}) {
+    const res = await fetch(`${this.baseUrl}/admin/vetting/schools/${schoolId}/approve`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(options)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to approve school vetting");
+    return result;
+  },
+
+  async rejectSchoolVetting(schoolId, options = {}) {
+    const res = await fetch(`${this.baseUrl}/admin/vetting/schools/${schoolId}/reject`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(options)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to reject school");
+    return result;
+  },
+
+  async getSaaSStatus() {
+    const res = await fetch(`${this.baseUrl}/saas/status`);
+    if (!res.ok) throw new Error("Failed to load SaaS telemetry");
+    return res.json();
+  },
+
+  async initializeSchoolSubscription(schoolId, data = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/subscribe/initialize`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to initialize subscription checkout");
+    return result;
+  },
+
+  async verifySchoolSubscription(schoolId, data = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/subscribe/verify`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to verify subscription payment");
+    return result;
+  },
+
+  // PORTAL 2: TUTOR BOOKINGS
+  async bookTutor(bookingData) {
+    const res = await fetch(`${this.baseUrl}/teachers/book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to book tutor");
+    return result;
+  },
+
+  async getTutorBookings(filters = {}) {
+    const query = new URLSearchParams(filters);
+    const res = await fetch(`${this.baseUrl}/teachers/bookings?${query.toString()}`);
+    return res.json();
+  },
+
+  // PORTAL 5: SUPER ADMIN & REGULATORY DESK
+  async getAdminOverview() {
+    const res = await fetch(`${this.baseUrl}/admin/overview`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load admin overview");
+    return res.json();
+  },
+
+  async verifyEntity(entityId, entityType, verified) {
+    const res = await fetch(`${this.baseUrl}/admin/verify`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ entityId, entityType, verified })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update verification");
+    return result;
+  },
+
+  async getAdminSubscriptions() {
+    const res = await fetch(`${this.baseUrl}/admin/subscriptions`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
   async getStats() {
     const res = await fetch(`${this.baseUrl}/stats`);
     return res.json();
@@ -74,8 +273,19 @@ const API = {
     return res.json();
   },
 
-  async getRFQs() {
-    const res = await fetch(`${this.baseUrl}/rfqs`);
+  async getRFQs(schoolId = null) {
+    const q = schoolId ? `?schoolId=${encodeURIComponent(schoolId)}` : '';
+    const res = await fetch(`${this.baseUrl}/rfqs${q}`);
+    return res.json();
+  },
+
+  async getRFQById(id) {
+    const res = await fetch(`${this.baseUrl}/rfqs/${id}`);
+    return res.json();
+  },
+
+  async getRFQQuotes(rfqId) {
+    const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/quotes`);
     return res.json();
   },
 
@@ -93,6 +303,42 @@ const API = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(quoteData)
+    });
+    return res.json();
+  },
+
+  async updateQuoteStatus(quoteId, status, reason = '') {
+    const res = await fetch(`${this.baseUrl}/quotes/${quoteId}/status`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, reason })
+    });
+    return res.json();
+  },
+
+  async getProcurementLogs() {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/logs`);
+    return res.json();
+  },
+
+  async generateLPO(quoteId) {
+    const res = await fetch(`${this.baseUrl}/quotes/${quoteId}/lpo`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return res.json();
+  },
+
+  async getLPO(lpoIdOrQuoteId) {
+    const res = await fetch(`${this.baseUrl}/lpos/${lpoIdOrQuoteId}`);
+    return res.json();
+  },
+
+  async disburseLPOMilestone(lpoId, milestoneIndex, paymentMethod = 'Paystack MoMo Escrow') {
+    const res = await fetch(`${this.baseUrl}/lpos/${lpoId}/disburse`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ milestoneIndex, paymentMethod })
     });
     return res.json();
   },
@@ -562,6 +808,48 @@ const API = {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || "Failed to process payment");
+    return data;
+  },
+
+  // Feature 4: Teacher NTC Verification & School Hiring Pipeline
+  async getTeacherApplications(schoolId = 'sch-gis-accra') {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/teacher-applications`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load teacher applications");
+    return res.json();
+  },
+
+  async verifyTeacherNTC(teacherId, licenseNumber) {
+    const res = await fetch(`${this.baseUrl}/teachers/${teacherId}/verify-ntc`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ licenseNumber })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to verify NTC credentials");
+    return data;
+  },
+
+  async scheduleTeacherInterview(applicationId, interviewData) {
+    const res = await fetch(`${this.baseUrl}/teacher-applications/${applicationId}/interview`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(interviewData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to schedule interview");
+    return data;
+  },
+
+  async hireTeacher(applicationId, hireData) {
+    const res = await fetch(`${this.baseUrl}/teacher-applications/${applicationId}/hire`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(hireData)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to issue appointment contract");
     return data;
   },
 

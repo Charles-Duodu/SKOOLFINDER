@@ -15,14 +15,14 @@ const SuppliersView = {
           <!-- Page Header -->
           <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
             <div>
-              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
-                <a href="#" class="breadcrumb-home" style="color: var(--primary-600); font-weight: 600;">Home</a> / B2B Procurement Hub
+              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #fef3c7; border: 1px solid #fde68a; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #92400e; margin-bottom: 0.75rem;">
+                <span>📦</span> SkoolFinder Market • B2B Procurement Portal (/suppliers)
               </div>
-              <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900);">
-                Educational Suppliers & School RFQs
+              <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900); margin: 0 0 0.5rem 0;">
+                Educational Suppliers & School RFQ Tenders
               </h1>
-              <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 650px;">
-                Connecting schools in Greater Accra and Kumasi with verified bulk food suppliers, furniture fabricators, textbook distributors, and EdTech partners.
+              <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 680px; margin: 0;">
+                Connecting schools in Greater Accra and Kumasi with verified bulk food suppliers, furniture fabricators, textbook publishers (Aki-Ola, Cambridge), and EdTech partners.
               </p>
             </div>
 
@@ -95,9 +95,14 @@ const SuppliersView = {
                         <span style="color: var(--emerald-600); font-weight: 700;">${r.quotesReceived || 0} quotes received</span>
                       </div>
 
-                      <button class="btn-pill btn-gold btn-submit-bid" data-rfq-id="${r.id}">
-                        Submit Quotation Bid &rarr;
-                      </button>
+                      <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <button class="btn-pill btn-outline btn-view-quotes" data-rfq-id="${r.id}" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
+                          📋 View Quotes (${r.quotesReceived || 0})
+                        </button>
+                        <button class="btn-pill btn-gold btn-submit-bid" data-rfq-id="${r.id}">
+                          Submit Quotation Bid &rarr;
+                        </button>
+                      </div>
                     </div>
                   </div>
                 `).join('')}
@@ -200,6 +205,16 @@ const SuppliersView = {
         const rfqs = await API.getRFQs();
         const rfq = rfqs.find(r => r.id === rfqId);
         if (rfq) Modals.openSubmitQuoteModal(rfq);
+      };
+    });
+
+    // View Quotes buttons
+    document.querySelectorAll('.btn-view-quotes').forEach(btn => {
+      btn.onclick = async () => {
+        const rfqId = btn.dataset.rfqId;
+        const rfqs = await API.getRFQs();
+        const rfq = rfqs.find(r => r.id === rfqId);
+        if (rfq) Modals.openRFQQuotesModal(rfq);
       };
     });
 

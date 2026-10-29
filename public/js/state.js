@@ -89,8 +89,24 @@ const State = {
     return !!(this.currentUser && this.currentUser.role === 'teacher');
   },
 
+  isSupplier() {
+    return !!(this.currentUser && this.currentUser.role === 'supplier');
+  },
+
   isSuperAdmin() {
     return !!(this.currentUser && this.currentUser.role === 'super_admin');
+  },
+
+  getUserPortal() {
+    if (!this.currentUser) return 'home';
+    switch (this.currentUser.role) {
+      case 'parent': return 'parents';
+      case 'teacher': return 'teachers';
+      case 'supplier': return 'suppliers';
+      case 'school_admin': return 'schools';
+      case 'super_admin': return 'admin';
+      default: return 'home';
+    }
   },
 
   currentRole: 'parent', // 'parent' | 'school' | 'supplier' | 'teacher'

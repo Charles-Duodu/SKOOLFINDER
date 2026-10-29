@@ -1,7 +1,7 @@
 /**
  * SkoolFinder - Progressive Web App (PWA) Service Worker
  */
-const CACHE_NAME = 'skoolfinder-v12';
+const CACHE_NAME = 'skoolfinder-v25';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();

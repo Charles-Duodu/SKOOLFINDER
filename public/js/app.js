@@ -9,13 +9,18 @@ const App = {
     this.debounceTimer = setTimeout(func, delay);
   },
 
-  async navigate(viewName, param = null, updateHash = true) {
+  async navigate(viewName, param = null, updateUrl = true) {
+    // Normalization & Aliases for the 5 Portals
+    if (viewName === 'parent-portal') viewName = 'parents';
+    if (viewName === 'jobs') viewName = 'teachers';
+    if (viewName === 'dashboard') viewName = 'schools';
+
     // Role-based Route Guarding
-    if (viewName === 'dashboard') {
+    if (viewName === 'schools') {
       if (!State.isAuthenticated()) {
         Modals.openLoginModal({
           notice: "🔒 Please sign in with your School Administrator credentials to access the confidential management portal.",
-          redirectView: 'dashboard',
+          redirectView: 'schools',
           redirectParam: param || 'sch-gis-accra'
         });
         if (State.currentView === 'home') return;
@@ -23,19 +28,28 @@ const App = {
         param = null;
       } else if (State.isParent()) {
         State.showToast("Redirected: Parent accounts access the Unified Parent Portal", "info");
-        viewName = 'parent-portal';
+        viewName = 'parents';
         param = null;
       } else if (State.isSchoolAdmin()) {
-        // Enforce assigned school if regular school admin
         if (!State.isSuperAdmin() && State.currentUser.schoolId) {
           param = State.currentUser.schoolId;
         }
       }
-    } else if (viewName === 'parent-portal') {
+    } else if (viewName === 'admin') {
+      if (!State.isAuthenticated() || !State.isSuperAdmin()) {
+        Modals.openLoginModal({
+          notice: "🛡️ Access Restricted: SkoolFinder HQ & Regulatory Console requires Super Administrator credentials.",
+          redirectView: 'admin'
+        });
+        if (State.currentView === 'home') return;
+        viewName = 'home';
+        param = null;
+      }
+    } else if (viewName === 'parents') {
       if (!State.isAuthenticated()) {
         Modals.openLoginModal({
-          notice: "👨‍👩‍👧 Please sign in to view your parent admission applications, tour bookings, and tracking passes.",
-          redirectView: 'parent-portal'
+          notice: "👨‍👩‍👧 Please sign in to view your parent admission applications, tuition fees, bus tracking, and hired tutors.",
+          redirectView: 'parents'
         });
         if (State.currentView === 'home') return;
         viewName = 'home';
@@ -46,10 +60,19 @@ const App = {
     State.currentView = viewName;
     if (param) State.currentSchoolId = param;
 
-    if (updateHash) {
+    if (updateUrl) {
+      const isPortal = ['parents', 'teachers', 'suppliers', 'schools', 'admin'].includes(viewName);
+      const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
-      if (window.location.hash !== targetHash) {
-        window.history.pushState(null, '', targetHash);
+
+      if (isPortal) {
+        if (window.location.pathname !== targetPath) {
+          window.history.pushState({ view: viewName, param }, '', targetPath);
+        }
+      } else {
+        if (window.location.hash !== targetHash) {
+          window.history.pushState({ view: viewName, param }, '', targetHash);
+        }
       }
     }
 
@@ -65,7 +88,7 @@ const App = {
       <div style="min-height: 50vh; display: flex; align-items: center; justify-content: center; padding: 4rem;">
         <div style="text-align: center;">
           <div style="font-size: 2rem; animation: pulse-dot 1s infinite;">🇬🇭</div>
-          <div style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-top: 0.5rem;">Loading SkoolFinder...</div>
+          <div style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600; margin-top: 0.5rem;">Loading SkoolFinder Portal...</div>
         </div>
       </div>
     `;
@@ -88,18 +111,26 @@ const App = {
         content = CompareView.render();
         mainRoot.innerHTML = content;
         CompareView.attachEvents();
+      } else if (viewName === 'parents') {
+        content = await ParentPortalView.render();
+        mainRoot.innerHTML = content;
+        ParentPortalView.attachEvents();
+      } else if (viewName === 'teachers') {
+        content = await TeachersView.render();
+        mainRoot.innerHTML = content;
+        TeachersView.attachEvents();
       } else if (viewName === 'suppliers') {
         content = await SuppliersView.render();
         mainRoot.innerHTML = content;
         SuppliersView.attachEvents();
-      } else if (viewName === 'jobs') {
-        content = await JobsView.render();
-        mainRoot.innerHTML = content;
-        JobsView.attachEvents();
-      } else if (viewName === 'dashboard') {
+      } else if (viewName === 'schools') {
         content = await DashboardView.render(State.currentSchoolId || 'sch-gis-accra');
         mainRoot.innerHTML = content;
         DashboardView.attachEvents(State.currentSchoolId || 'sch-gis-accra');
+      } else if (viewName === 'admin') {
+        content = await AdminView.render();
+        mainRoot.innerHTML = content;
+        AdminView.attachEvents();
       } else if (viewName === 'cssps') {
         content = await CSSPSView.render();
         mainRoot.innerHTML = content;
@@ -108,10 +139,6 @@ const App = {
         content = await ResourcesView.render();
         mainRoot.innerHTML = content;
         ResourcesView.attachEvents();
-      } else if (viewName === 'parent-portal') {
-        content = await ParentPortalView.render();
-        mainRoot.innerHTML = content;
-        ParentPortalView.attachEvents();
       }
 
       // Render Footer
@@ -134,27 +161,55 @@ const App = {
   },
 
   refreshCurrentView() {
-    this.navigate(State.currentView, State.currentSchoolId);
+    this.navigate(State.currentView, State.currentSchoolId, false);
   },
 
   init() {
-    const handleHash = () => {
+    const resolveRoute = () => {
+      // 1. Check path-based route (/parents, /teachers, /suppliers, /schools, /admin)
+      const pathParts = window.location.pathname.replace(/^\//, '').split('/');
+      const rootPath = pathParts[0];
+      const portalParam = pathParts[1] || null;
+
+      const portalMap = {
+        'parents': 'parents',
+        'teachers': 'teachers',
+        'suppliers': 'suppliers',
+        'schools': 'schools',
+        'admin': 'admin',
+        'parent-portal': 'parents',
+        'jobs': 'teachers',
+        'dashboard': 'schools'
+      };
+
+      if (portalMap[rootPath]) {
+        this.navigate(portalMap[rootPath], portalParam, false);
+        return;
+      }
+
+      // 2. Check hash-based route (#/directory, #/cssps, etc.)
       const rawHash = window.location.hash.replace(/^#\/?/, '');
       if (rawHash) {
         const parts = rawHash.split('/');
         const view = parts[0];
         const param = parts[1] || null;
-        const validViews = ['home', 'directory', 'school-detail', 'compare', 'suppliers', 'jobs', 'dashboard', 'cssps', 'past-questions', 'resources', 'parent-portal'];
+        if (portalMap[view]) {
+          this.navigate(portalMap[view], param, false);
+          return;
+        }
+        const validViews = ['home', 'directory', 'school-detail', 'compare', 'cssps', 'past-questions', 'resources'];
         if (validViews.includes(view)) {
           this.navigate(view, param, false);
           return;
         }
       }
+
       this.navigate('home', null, false);
     };
 
-    window.addEventListener('hashchange', () => handleHash());
-    handleHash();
+    window.addEventListener('popstate', () => resolveRoute());
+    window.addEventListener('hashchange', () => resolveRoute());
+    resolveRoute();
 
     // FEATURE 15: Initialize AI Admissions Chatbot
     if (typeof AIChatbot !== 'undefined') {

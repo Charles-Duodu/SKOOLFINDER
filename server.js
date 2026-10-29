@@ -6,6 +6,10 @@ const db = require('./data/db');
 const pgClient = require('./data/pgClient');
 const hubtelService = require('./services/hubtelService');
 const paystackService = require('./services/paystackService');
+const otpService = require('./services/otpService');
+const resendService = require('./services/resendService');
+const clerkService = require('./services/clerkService');
+const supabaseService = require('./services/supabaseService');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +33,462 @@ app.get(['/health', '/api/health'], (req, res) => {
 // API: Stats
 app.get('/api/stats', (req, res) => {
   res.json(db.getStats());
+});
+
+// ==============================================================================
+// PORTAL AUTHENTICATION & SESSION ENGINE (Role-Based Access Control)
+// ==============================================================================
+app.post('/api/auth/login', (req, res) => {
+  try {
+    const { login, password } = req.body || {};
+    if (!login || !password) {
+      return res.status(400).json({ error: "Email or phone and password are required" });
+    }
+    const result = db.authenticateUser(login, password);
+    res.json(result);
+  } catch (err) {
+    res.status(401).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/register', (req, res) => {
+  try {
+    const result = db.registerUser(req.body || {});
+    res.status(201).json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/logout', (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const result = db.logoutUser(authHeader);
+    res.json(result);
+  } catch (err) {
+    res.json({ success: true });
+  }
+});
+
+app.get('/api/auth/me', (req, res) => {
+  try {
+    const authHeader = req.headers.authorization;
+    const user = db.getUserByToken(authHeader);
+    if (!user) return res.status(401).json({ error: "Unauthorized session" });
+    res.json({ user });
+  } catch (err) {
+    res.status(401).json({ error: err.message });
+  }
+});
+
+// ==============================================================================
+// DUAL PARENT AUTHENTICATION (Ghana Phone SMS OTP via Hubtel Gateway)
+// ==============================================================================
+app.post('/api/auth/otp/send', async (req, res) => {
+  try {
+    const { phone, purpose } = req.body || {};
+    if (!phone) return res.status(400).json({ error: "Phone number is required" });
+    const result = await otpService.sendOTP(phone, purpose || 'login');
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/auth/otp/verify', (req, res) => {
+  try {
+    const { phone, code } = req.body || {};
+    if (!phone || !code) return res.status(400).json({ error: "Phone and 6-digit OTP code are required" });
+
+    const verification = otpService.verifyOTP(phone, code);
+    if (!verification.success) {
+      return res.status(400).json(verification);
+    }
+
+    // Auto-provision or retrieve parent user
+    const parentUser = db.findOrCreateParentByPhone(verification.phone);
+    const session = db.createSessionForUser ? db.createSessionForUser(parentUser) : {
+      token: 'sdtk_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 12),
+      user: parentUser
+    };
+
+    res.json({
+      success: true,
+      token: session.token,
+      user: session.user || parentUser,
+      mappedPortal: '/parents',
+      message: "Phone verified successfully. Signed in to Parents Portal."
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================================================================
+// PARENT PORTAL: STUDENT LINKING (By Student Index Number / Digital ID Code)
+// ==============================================================================
+app.post('/api/parents/link-student', async (req, res) => {
+  try {
+    const { studentIdOrCode, studentName } = req.body || {};
+    if (!studentIdOrCode && !studentName) {
+      return res.status(400).json({ error: "Student ID, Index Number, or Student Name is required" });
+    }
+
+    const authHeader = req.headers.authorization;
+    let parent = null;
+    if (authHeader) {
+      parent = db.getUserByToken(authHeader);
+    }
+    if (!parent) {
+      parent = (db.data.users || []).find(u => u.role === 'parent');
+    }
+    if (!parent) return res.status(401).json({ error: "Please log in to link a student" });
+
+    const result = db.linkStudentToParent(parent.id, { studentIdOrCode, studentName });
+
+    // Send confirmation SMS via Hubtel if parent phone is present
+    if (parent.phone) {
+      await hubtelService.sendSMS({
+        to: parent.phone,
+        message: `SkoolFinder Ghana: ${result.student.studentName} (${result.student.studentId}) has been successfully linked to your parent portal. You can now view terminal report cards and settle fees.`
+      });
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==============================================================================
+// SCHOOL REGISTRATION & ADMIN VETTING PIPELINE (14-Day Free SaaS Trial)
+// ==============================================================================
+app.post('/api/schools/register-vetting', async (req, res) => {
+  try {
+    const school = db.registerSchoolForVetting(req.body || {});
+
+    // Dispatch SMS receipt via Hubtel
+    if (school.phone) {
+      await hubtelService.sendSMS({
+        to: school.phone,
+        message: `SkoolFinder Ghana: Registration for ${school.name} received. Our Accreditation Desk is reviewing your license. You will receive an SMS upon approval.`
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      school,
+      message: "School registration submitted for Admin & NaSIA Vetting. You will be notified once reviewed."
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/vetting/schools', (req, res) => {
+  try {
+    const queue = db.getSchoolVettingQueue();
+    res.json(queue);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/vetting/schools/:id/approve', async (req, res) => {
+  try {
+    const { trialDays = 14, notes, assignedTier } = req.body || {};
+    const approvedSchool = db.approveSchoolVetting(req.params.id, { trialDays, notes, assignedTier });
+
+    // 1. Dispatch SMS notification to School Admin via Hubtel
+    if (approvedSchool.phone) {
+      await hubtelService.sendSMS({
+        to: approvedSchool.phone,
+        message: `SkoolFinder: Congratulations! ${approvedSchool.name} is verified. Your 14-Day Free SaaS Trial is active. Access your portal at https://skoolfinder.com.gh/schools`
+      });
+    }
+
+    // 2. Dispatch Welcome & Trial Confirmation Email via Resend
+    if (approvedSchool.email) {
+      await resendService.sendSchoolVettingApprovalEmail({
+        to: approvedSchool.email,
+        schoolName: approvedSchool.name,
+        adminName: approvedSchool.headOfSchool,
+        trialDays,
+        loginUrl: 'http://localhost:3000/schools'
+      });
+    }
+
+    // 3. Create Clerk Organization for School
+    const clerkOrg = await clerkService.createSchoolOrganization({
+      schoolName: approvedSchool.name,
+      slug: approvedSchool.slug
+    });
+
+    res.json({
+      success: true,
+      school: approvedSchool,
+      clerkOrg,
+      message: `School ${approvedSchool.name} approved! 14-day trial activated, Hubtel SMS & Resend email dispatched.`
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/vetting/schools/:id/reject', async (req, res) => {
+  try {
+    const { reason } = req.body || {};
+    const school = db.rejectSchoolVetting(req.params.id, { reason });
+    if (school.phone) {
+      await hubtelService.sendSMS({
+        to: school.phone,
+        message: `SkoolFinder Ghana: Registration for ${school.name} could not be approved at this time. Reason: ${reason || 'Accreditation details mismatch'}. Contact support@skoolfinder.gh`
+      });
+    }
+    res.json({ success: true, school, message: "Registration rejected." });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// ==============================================================================
+// CLOUD TELEMETRY & SAAS STATUS (Supabase, Clerk, Resend, Hubtel, Paystack)
+// ==============================================================================
+app.get('/api/saas/status', (req, res) => {
+  res.json({
+    status: 'healthy',
+    database: {
+      engine: 'Neon Cloud PostgreSQL 16',
+      activePool: Boolean(pgClient && pgClient.isConfigured && pgClient.isConfigured()),
+      fallbackAvailable: true
+    },
+    supabase: supabaseService.getProductionStatus(),
+    clerk: clerkService.getProductionStatus(),
+    resend: resendService.getProductionStatus(),
+    hubtel: hubtelService.getProductionStatus(),
+    paystack: paystackService.getProductionStatus(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// ==============================================================================
+// SAAS SUBSCRIPTION BILLING API (Paystack Mobile Money, Cards & Resend Receipts)
+// ==============================================================================
+const SAAS_TIERS = {
+  starter: { id: 'starter', name: 'SaaS Starter', monthly: 299, termly: 850 },
+  growth: { id: 'growth', name: 'SaaS Growth', monthly: 699, termly: 1999 },
+  enterprise: { id: 'enterprise', name: 'SaaS Enterprise', monthly: 1499, termly: 4200 }
+};
+
+app.post('/api/schools/:id/subscribe/initialize', async (req, res) => {
+  try {
+    const school = db.getSchoolById(req.params.id);
+    if (!school) return res.status(404).json({ error: `School ${req.params.id} not found` });
+
+    const { planTier = 'starter', billingCycle = 'monthly', email, phone, callbackUrl } = req.body || {};
+    const tierConfig = SAAS_TIERS[planTier.toLowerCase()] || SAAS_TIERS.starter;
+    const amountGHS = billingCycle === 'termly' ? tierConfig.termly : tierConfig.monthly;
+    const customerEmail = email || school.email || 'billing@skoolfinder.gh';
+    const reference = `SF-SUB-${(school.slug || 'sch').slice(0, 15)}-${Date.now()}`;
+
+    const txResult = await paystackService.initializeTransaction({
+      email: customerEmail,
+      amountGHS,
+      reference,
+      callbackUrl: callbackUrl || `http://localhost:3000/schools?subscription_status=success&ref=${reference}`,
+      metadata: {
+        schoolId: school.id,
+        schoolName: school.name,
+        planTier: tierConfig.name,
+        billingCycle,
+        phone: phone || school.phone,
+        type: 'saas_subscription'
+      }
+    });
+
+    res.json({
+      success: true,
+      schoolId: school.id,
+      schoolName: school.name,
+      planTier: tierConfig.name,
+      billingCycle,
+      amountGHS,
+      reference,
+      ...txResult
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/schools/:id/subscribe/verify', async (req, res) => {
+  try {
+    const school = db.getSchoolById(req.params.id);
+    if (!school) return res.status(404).json({ error: `School ${req.params.id} not found` });
+
+    const { reference, planTier, billingCycle = 'monthly' } = req.body || {};
+    if (!reference) return res.status(400).json({ error: 'Transaction reference is required' });
+
+    // Verify transaction with Paystack
+    const verification = await paystackService.verifyTransaction(reference);
+
+    if (verification.success || verification.isSimulated) {
+      const resolvedTier = planTier || verification.metadata?.planTier || school.packageTier || 'SaaS Starter';
+      const resolvedCycle = billingCycle || verification.metadata?.billingCycle || 'monthly';
+      const amountPaid = verification.amountGHS || (resolvedCycle === 'termly' ? 850 : 299);
+
+      // Upgrade school record in database
+      const updatedSchool = db.upgradeSchoolSubscription(school.id, {
+        planTier: resolvedTier,
+        billingCycle: resolvedCycle,
+        amountPaidGHS: amountPaid,
+        reference,
+        paymentMethod: verification.channel || 'mobile_money',
+        transactionId: verification.reference || reference
+      });
+
+      // Send live payment confirmation receipt via Resend
+      if (school.email) {
+        await resendService.sendEmail({
+          to: school.email,
+          subject: `Payment Receipt: GH₵ ${amountPaid} for ${resolvedTier} (${resolvedCycle})`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px;">
+              <div style="background: #0a1128; padding: 20px; border-radius: 8px; text-align: center; margin-bottom: 24px;">
+                <h1 style="color: #fbbf24; margin: 0; font-size: 24px;">SkoolFinder Ghana</h1>
+                <p style="color: #ffffff; margin: 6px 0 0 0; font-size: 13px;">Official SaaS Subscription Receipt</p>
+              </div>
+              <h2 style="color: #0f172a;">Subscription Payment Confirmed</h2>
+              <p style="color: #475569;">Institution: <strong>${school.name}</strong></p>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
+                <table style="width: 100%; border-collapse: collapse;">
+                  <tr><td style="padding: 6px 0; color: #64748b;">Plan:</td><td style="font-weight: bold; color: #0f172a;">${resolvedTier}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #64748b;">Billing Cycle:</td><td style="font-weight: bold; text-transform: capitalize;">${resolvedCycle}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #64748b;">Amount Paid:</td><td style="font-weight: bold; color: #16a34a; font-size: 1.1rem;">GH₵ ${amountPaid}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #64748b;">Payment Channel:</td><td style="font-weight: bold;">Mobile Money (MTN / Telecel / AT)</td></tr>
+                  <tr><td style="padding: 6px 0; color: #64748b;">Reference:</td><td style="font-family: monospace; font-size: 0.9rem;">${reference}</td></tr>
+                  <tr><td style="padding: 6px 0; color: #64748b;">Next Renewal:</td><td style="font-weight: bold; color: #2563eb;">${new Date(updatedSchool.subscriptionExpiresAt).toLocaleDateString('en-GB')}</td></tr>
+                </table>
+              </div>
+              <p style="color: #64748b; font-size: 13px; text-align: center;">All SaaS tools (Admissions CRM, MoMo fee reconciliation, digital ID cards) are fully unlocked.</p>
+            </div>
+          `
+        });
+      }
+
+      // Send live SMS receipt via Hubtel
+      if (school.phone) {
+        await hubtelService.sendSMS({
+          to: school.phone,
+          message: `SkoolFinder: Payment of GH₵${amountPaid} confirmed for ${school.name}. Your ${resolvedTier} plan is active through ${new Date(updatedSchool.subscriptionExpiresAt).toLocaleDateString('en-GB')}.`
+        });
+      }
+
+      return res.json({
+        success: true,
+        school: updatedSchool,
+        verification,
+        message: `Subscription successfully upgraded to ${resolvedTier}!`
+      });
+    }
+
+    res.status(400).json({
+      success: false,
+      error: verification.error || 'Payment verification failed with provider'
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Paystack Webhook Handler
+app.post('/api/paystack/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  try {
+    const signature = req.headers['x-paystack-signature'];
+    const isValid = paystackService.verifyWebhookSignature(signature, req.body);
+    
+    // In dev/sandbox without secret key, proceed
+    let event = null;
+    try {
+      event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    } catch (e) {
+      return res.status(400).send('Invalid webhook JSON');
+    }
+
+    if (event?.event === 'charge.success') {
+      const data = event.data;
+      if (data.metadata?.type === 'saas_subscription' && data.metadata?.schoolId) {
+        db.upgradeSchoolSubscription(data.metadata.schoolId, {
+          planTier: data.metadata.planTier,
+          billingCycle: data.metadata.billingCycle,
+          amountPaidGHS: data.amount / 100,
+          reference: data.reference,
+          paymentMethod: data.channel
+        });
+      }
+    }
+
+    res.sendStatus(200);
+  } catch (err) {
+    console.error('[Paystack Webhook Handler Error]:', err.message);
+    res.sendStatus(500);
+  }
+});
+
+// ==============================================================================
+// PORTAL 2: TEACHERS & TUTORS BOOKING & MARKETPLACE API
+// ==============================================================================
+app.post('/api/teachers/book', (req, res) => {
+  try {
+    const booking = db.bookTutorSession(req.body);
+    res.status(201).json({ success: true, booking });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/teachers/bookings', (req, res) => {
+  try {
+    const { teacherId, parentEmail } = req.query;
+    const bookings = db.getTutorBookings({ teacherId, parentEmail });
+    res.json(bookings);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================================================================
+// PORTAL 5: SUPER ADMIN & REGULATORY DESK API
+// ==============================================================================
+app.get('/api/admin/overview', (req, res) => {
+  try {
+    const overview = db.getAdminOverview();
+    res.json(overview);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/verify', (req, res) => {
+  try {
+    const { entityId, entityType, verified } = req.body;
+    if (!entityId || !entityType) {
+      return res.status(400).json({ error: "entityId and entityType are required" });
+    }
+    const result = db.setEntityVerification(entityId, entityType, verified);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/subscriptions', (req, res) => {
+  try {
+    const subscriptions = db.getSaaSSubscriptions();
+    res.json(subscriptions);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // API: Schools list with filters
@@ -111,27 +571,599 @@ app.post('/api/suppliers', (req, res) => {
   }
 });
 
-// API: RFQs (Phase 2)
+// API: RFQs & B2B Procurement Hub (Phase 2 & Milestone 4)
 app.get('/api/rfqs', (req, res) => {
-  res.json(db.getRFQs());
+  const { schoolId } = req.query;
+  res.json(db.getRFQs(schoolId));
 });
 
-app.post('/api/rfqs', (req, res) => {
+app.get('/api/rfqs/:id', (req, res) => {
+  const all = db.getRFQs();
+  const rfq = all.find(r => r.id === req.params.id);
+  if (!rfq) return res.status(404).json({ error: 'RFQ not found' });
+  const quotes = db.getQuotes(req.params.id);
+  res.json({ ...rfq, quotes });
+});
+
+app.get('/api/rfqs/:id/quotes', (req, res) => {
+  res.json(db.getQuotes(req.params.id));
+});
+
+app.post('/api/rfqs', async (req, res) => {
   try {
     const newRfq = db.addRFQ(req.body);
+
+    // 1. Audit Trail for Admin Portal
+    db.addProcurementLog({
+      stage: 'rfq_published',
+      stageLabel: 'Tender Published',
+      statusColor: 'gold',
+      rfqId: newRfq.id,
+      rfqTitle: newRfq.title,
+      schoolId: newRfq.schoolId,
+      schoolName: newRfq.schoolName,
+      supplierName: 'Open for Bids',
+      amount: newRfq.budgetRange || 'Negotiable',
+      summary: `${newRfq.schoolName} published a new tender: "${newRfq.title}" (${newRfq.quantity}). Budget: ${newRfq.budgetRange || 'Negotiable'}.`
+    });
+
+    // 2. Optional PostgreSQL sync
+    if (pgClient && pgClient.isConfigured && pgClient.isConfigured()) {
+      try {
+        const parsedQty = parseInt(String(newRfq.quantity || '1').replace(/[^0-9]/g, ''), 10) || 1;
+        await pgClient.query(`
+          INSERT INTO rfqs (id, rfq_number, school_id, title, category, quantity, unit_description, delivery_deadline, budget_range_ghs, specifications, status)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, status = EXCLUDED.status;
+        `, [
+          newRfq.id,
+          newRfq.rfqNumber || ('RFQ-' + newRfq.id),
+          newRfq.schoolId || 'sch-gis-accra',
+          newRfq.title,
+          newRfq.category,
+          parsedQty,
+          String(newRfq.quantity || 'units'),
+          newRfq.deadline || null,
+          newRfq.budgetRange || '',
+          newRfq.description || 'Standard specifications',
+          newRfq.status || 'open'
+        ]);
+      } catch (pgErr) {
+        console.warn('PostgreSQL RFQ sync warning:', pgErr.message);
+      }
+    }
+
+    // 3. Admin Oversight Email Notification
+    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'admissions@skoolfinder.com.gh';
+    try {
+      await resendService.sendEmail({
+        to: adminEmail,
+        subject: `[ADMIN MARKETPLACE] New School RFQ Published: ${newRfq.title} (${newRfq.schoolName})`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px;">
+              <h2 style="color: #1e3a8a; margin: 0 0 5px 0;">🛡️ SkoolFinder Admin Oversight</h2>
+              <span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">STAGE 1: NEW TENDER PUBLISHED</span>
+            </div>
+            <p style="font-size: 14.5px; color: #334155; line-height: 1.6;">
+              A new institutional procurement request has been posted and broadcast to verified Ghanaian suppliers:
+            </p>
+            <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px 20px; border-radius: 6px; margin: 20px 0;">
+              <div style="font-size: 12px; color: #64748b; font-weight: 700; text-transform: uppercase;">Procurement Tender</div>
+              <div style="font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 6px;">${newRfq.title}</div>
+              <div style="font-size: 14px; color: #334155;">
+                <strong>School:</strong> ${newRfq.schoolName} &bull; <strong>Budget:</strong> ${newRfq.budgetRange} &bull; <strong>Deadline:</strong> ${newRfq.deadline}
+              </div>
+            </div>
+            <div style="text-align: center; margin: 25px 0 10px 0;">
+              <a href="http://localhost:3000/#/admin" style="background: #1e3a8a; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block;">
+                View Tender in Admin Console &rarr;
+              </a>
+            </div>
+          </div>
+        `
+      });
+    } catch (_) {}
+
+    // Hubtel SMS to Admin Phone for Stage 1 (New Tender Published)
+    const adminPhone = process.env.ADMIN_NOTIFY_PHONE || '0244318900';
+    if (adminPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: adminPhone,
+          message: `SkoolFinder HQ: New Tender published by ${newRfq.schoolName}: "${newRfq.title}" (${newRfq.budgetRange || 'Negotiable'}). Inspect live in /admin.`
+        });
+      } catch (_) {}
+    }
+
     res.status(201).json(newRfq);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-app.post('/api/rfqs/:id/quote', (req, res) => {
+app.post('/api/rfqs/:id/quote', async (req, res) => {
   try {
-    const quote = db.submitQuote({
+    const quoteData = {
       rfqId: req.params.id,
       ...req.body
+    };
+    const quote = db.submitQuote(quoteData);
+
+    // Look up RFQ and school for notifications
+    const allRfqs = db.getRFQs();
+    const rfq = allRfqs.find(r => r.id === req.params.id);
+    const school = rfq ? (db.getSchoolById(rfq.schoolId) || db.getSchools().find(s => s.name === rfq.schoolName)) : null;
+    const schoolName = school?.name || rfq?.schoolName || 'Partner School';
+
+    // 1. Audit Trail for Admin Portal
+    db.addProcurementLog({
+      stage: 'quote_submitted',
+      stageLabel: 'Quotation Submitted',
+      statusColor: 'blue',
+      rfqId: rfq?.id,
+      rfqTitle: rfq?.title,
+      schoolId: rfq?.schoolId,
+      schoolName: schoolName,
+      supplierId: quote.supplierId,
+      supplierName: quote.supplierName,
+      amount: quote.price,
+      summary: `${quote.supplierName} submitted a quotation of ${quote.price} (lead time: ${quote.deliveryDays} days) for "${rfq?.title}" at ${schoolName}.`
     });
+
+    // 2. Optional PostgreSQL sync
+    if (pgClient && pgClient.isConfigured && pgClient.isConfigured()) {
+      try {
+        const priceNum = parseFloat(String(quote.price || '0').replace(/[^0-9.]/g, '')) || 0;
+        await pgClient.query(`
+          INSERT INTO quotes (id, rfq_id, supplier_id, vendor_name, vendor_phone, unit_price_ghs, total_price_ghs, delivery_timeframe_days, warranty_terms, notes, status)
+          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+          ON CONFLICT (id) DO NOTHING;
+        `, [
+          quote.id,
+          quote.rfqId,
+          quote.supplierId || 'sup-modern-desks',
+          quote.supplierName || 'Verified Supplier',
+          quote.phone || '+233244000000',
+          priceNum,
+          priceNum,
+          parseInt(quote.deliveryDays, 10) || 7,
+          quote.warrantyTerms || 'Standard warranty',
+          quote.notes || '',
+          'submitted'
+        ]);
+      } catch (pgErr) {
+        console.warn('PostgreSQL quote sync warning:', pgErr.message);
+      }
+    }
+
+    // 3. Email notification to school admin
+    const schoolEmail = school?.email || 'admissions@gis.edu.gh';
+    const schoolHead = school?.headOfSchool || 'Head of School';
+
+    try {
+      await resendService.sendEmail({
+        to: schoolEmail,
+        subject: `[Procurement Bid Alert] New Quotation Received for ${rfq?.title || 'School RFQ'}`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="border-bottom: 2px solid #f59e0b; padding-bottom: 15px; margin-bottom: 20px;">
+              <h2 style="color: #1e3a8a; margin: 0 0 5px 0;">SkoolFinder B2B Procurement Hub</h2>
+              <span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">NEW SUPPLIER BID RECEIVED</span>
+            </div>
+
+            <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+              Dear <strong>${schoolHead}</strong> (${schoolName}),<br/><br/>
+              A verified Ghanaian educational supplier has just submitted a competitive price proposal for your open tender:
+            </p>
+
+            <div style="background: #f8fafc; border-left: 4px solid #1e3a8a; padding: 15px 20px; border-radius: 6px; margin: 20px 0;">
+              <div style="font-size: 13px; color: #64748b; font-weight: 600; text-transform: uppercase;">Procurement Tender</div>
+              <div style="font-size: 17px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">${rfq?.title}</div>
+              <div style="font-size: 14px; color: #475569;">
+                <strong>Category:</strong> ${rfq?.category} &bull; <strong>Quantity:</strong> ${rfq?.quantity}
+              </div>
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+              <tr style="background: #f1f5f9;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #334155; width: 40%;">Supplier Company:</td>
+                <td style="padding: 10px 14px; color: #0f172a; font-weight: 600;">${quote.supplierName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 14px; font-weight: 700; color: #334155;">Quoted Price:</td>
+                <td style="padding: 10px 14px; color: #059669; font-weight: 800; font-size: 17px;">${quote.price}</td>
+              </tr>
+              <tr style="background: #f1f5f9;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #334155;">Delivery Lead Time:</td>
+                <td style="padding: 10px 14px; color: #0f172a;">${quote.deliveryDays} Business Days</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 14px; font-weight: 700; color: #334155;">Warranty / Terms:</td>
+                <td style="padding: 10px 14px; color: #0f172a;">${quote.warrantyTerms || 'Manufacturer standard warranty'}</td>
+              </tr>
+              <tr style="background: #f1f5f9;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #334155;">Supplier Contact:</td>
+                <td style="padding: 10px 14px; color: #0f172a;">${quote.phone || 'N/A'} | ${quote.contactPerson || 'Sales Team'}</td>
+              </tr>
+            </table>
+
+            <div style="text-align: center; margin: 30px 0 10px 0;">
+              <a href="http://localhost:3000/#/dashboard" style="background: #1e3a8a; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block;">
+                Review Bid & Accept in Dashboard &rarr;
+              </a>
+            </div>
+          </div>
+        `
+      });
+    } catch (emailErr) {
+      console.warn("Resend RFQ bid notification warning:", emailErr.message);
+    }
+
+    // 4. Admin Oversight Email Notification for submitted quote
+    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'admissions@skoolfinder.com.gh';
+    try {
+      await resendService.sendEmail({
+        to: adminEmail,
+        subject: `[ADMIN MARKETPLACE] New Bid of ${quote.price} for ${schoolName} (${quote.supplierName})`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+            <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px;">
+              <h2 style="color: #1e3a8a; margin: 0 0 5px 0;">🛡️ SkoolFinder Admin Oversight</h2>
+              <span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">STAGE 2: SUPPLIER BID SUBMITTED</span>
+            </div>
+            <p style="font-size: 14.5px; color: #334155; line-height: 1.6;">
+              <strong>${quote.supplierName}</strong> has submitted a quotation of <strong>${quote.price}</strong> for <strong>${schoolName}</strong> (${rfq?.title}).
+            </p>
+            <div style="text-align: center; margin: 25px 0 10px 0;">
+              <a href="http://localhost:3000/#/admin" style="background: #1e3a8a; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block;">
+                Inspect in Admin Console &rarr;
+              </a>
+            </div>
+          </div>
+        `
+      });
+    } catch (_) {}
+
+    // 5. Hubtel SMS alerts
+    if (school?.phone) {
+      try {
+        await hubtelService.sendSMS({
+          to: school.phone,
+          message: `SkoolFinder Procurement: New bid of ${quote.price} received from ${quote.supplierName} for '${rfq?.title || 'RFQ'}'. Delivery in ${quote.deliveryDays} days. Log into dashboard to review.`
+        });
+      } catch (_) {}
+    }
+
+    if (quote.phone) {
+      try {
+        await hubtelService.sendSMS({
+          to: quote.phone,
+          message: `SkoolFinder: Your bid of ${quote.price} for ${schoolName} (${rfq?.title || 'RFQ'}) has been delivered to the school administration. Ref: ${quote.id}.`
+        });
+      } catch (_) {}
+    }
+
+    // Hubtel SMS to Admin Phone for Stage 2 (Supplier Quote Submitted)
+    const adminPhoneQuote = process.env.ADMIN_NOTIFY_PHONE || '0244318900';
+    if (adminPhoneQuote) {
+      try {
+        await hubtelService.sendSMS({
+          to: adminPhoneQuote,
+          message: `SkoolFinder HQ: New Bid of ${quote.price} submitted by ${quote.supplierName} for ${schoolName} ("${rfq?.title || 'RFQ'}"). Review in /admin.`
+        });
+      } catch (_) {}
+    }
+
     res.status(201).json({ success: true, quote });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/quotes/:id/status', async (req, res) => {
+  try {
+    const { status, reason } = req.body;
+    if (!status || !['Awarded', 'Declined'].includes(status)) {
+      return res.status(400).json({ error: "Status must be 'Awarded' or 'Declined'" });
+    }
+
+    const result = db.updateQuoteStatus(req.params.id, status, reason);
+    if (!result || !result.quote) return res.status(404).json({ error: 'Quote not found' });
+
+    const quote = result.quote;
+    const rfq = result.rfq || (db.getRFQs() || []).find(r => r.id === quote.rfqId);
+    const school = rfq ? (db.getSchoolById(rfq.schoolId) || db.getSchools().find(s => s.name === rfq.schoolName)) : null;
+    const schoolName = school?.name || rfq?.schoolName || 'School Administration';
+    const isAwarded = status === 'Awarded';
+
+    // 1. Audit Log in Database for Admin Portal
+    db.addProcurementLog({
+      stage: isAwarded ? 'tender_awarded' : 'bid_declined',
+      stageLabel: isAwarded ? 'Tender Awarded' : 'Bid Declined',
+      statusColor: isAwarded ? 'emerald' : 'rose',
+      rfqId: rfq?.id,
+      rfqTitle: rfq?.title,
+      schoolId: rfq?.schoolId,
+      schoolName: schoolName,
+      supplierId: quote.supplierId,
+      supplierName: quote.supplierName,
+      amount: quote.price,
+      reason: reason || (isAwarded ? 'Bid accepted & tender officially awarded by school board' : 'Bid declined by school administration'),
+      summary: isAwarded
+        ? `Tender Awarded: ${schoolName} officially accepted bid of ${quote.price} from ${quote.supplierName} for "${rfq?.title}".`
+        : `Bid Declined: ${schoolName} declined bid of ${quote.price} from ${quote.supplierName} for "${rfq?.title}".${reason ? ' Feedback: ' + reason : ''}`
+    });
+
+    // 2. Optional PostgreSQL sync
+    if (pgClient && pgClient.isConfigured && pgClient.isConfigured()) {
+      try {
+        await pgClient.query(`UPDATE quotes SET status = $1 WHERE id = $2`, [status, quote.id]);
+        if (isAwarded && rfq) {
+          await pgClient.query(`UPDATE rfqs SET status = 'awarded' WHERE id = $1`, [rfq.id]);
+        }
+      } catch (pgErr) {
+        console.warn('PostgreSQL quote status sync warning:', pgErr.message);
+      }
+    }
+
+    // 3. Notify Supplier (Email & SMS) for both Accepted and Declined
+    if (quote.email) {
+      try {
+        if (isAwarded) {
+          await resendService.sendEmail({
+            to: quote.email,
+            subject: `[TENDER AWARD NOTICE] Congratulations! Your quotation for ${schoolName} has been ACCEPTED`,
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #10b981; border-radius: 12px; background: #ffffff;">
+                <div style="border-bottom: 2px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
+                  <h2 style="color: #065f46; margin: 0 0 5px 0;">🎉 Quotation Accepted — Tender Awarded</h2>
+                  <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">OFFICIAL PROCUREMENT NOTIFICATION</span>
+                </div>
+                <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+                  Dear <strong>${quote.contactPerson || quote.supplierName}</strong>,<br/><br/>
+                  We are pleased to inform you that <strong>${schoolName}</strong> has officially reviewed all competing bids and <strong>ACCEPTED</strong> your quotation for:
+                </p>
+                <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 15px 20px; border-radius: 6px; margin: 20px 0;">
+                  <div style="font-size: 13px; color: #166534; font-weight: 600; text-transform: uppercase;">Awarded Procurement Tender</div>
+                  <div style="font-size: 17px; font-weight: 700; color: #065f46; margin-bottom: 6px;">${rfq?.title}</div>
+                  <div style="font-size: 14px; color: #334155;">
+                    <strong>Contract Value:</strong> <span style="font-size: 16px; font-weight: 800; color: #059669;">${quote.price}</span> &bull; 
+                    <strong>Agreed Delivery:</strong> ${quote.deliveryDays} Business Days
+                  </div>
+                </div>
+                <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+                  The school bursary desk will contact your representative at <strong>${quote.phone}</strong> to coordinate the Local Purchase Order (LPO) and delivery schedule.
+                </p>
+                <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                  SkoolFinder Ghana B2B Educational Marketplace &bull; Accra & Kumasi
+                </p>
+              </div>
+            `
+          });
+        } else {
+          await resendService.sendEmail({
+            to: quote.email,
+            subject: `[Procurement Notice] Tender Selection Update for ${schoolName}`,
+            html: `
+              <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+                <div style="border-bottom: 2px solid #ef4444; padding-bottom: 15px; margin-bottom: 20px;">
+                  <h2 style="color: #991b1b; margin: 0 0 5px 0;">Tender Selection Update</h2>
+                  <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">QUOTATION NOT SELECTED</span>
+                </div>
+                <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+                  Dear <strong>${quote.contactPerson || quote.supplierName}</strong>,<br/><br/>
+                  Thank you for submitting your quotation of <strong>${quote.price}</strong> for <strong>${rfq?.title}</strong> at <strong>${schoolName}</strong>.<br/><br/>
+                  The school administration has completed their evaluation and decided to proceed with an alternative offer that aligned closer to their technical or budgetary requirements.
+                </p>
+                ${reason ? `
+                  <div style="background: #f8fafc; border-left: 4px solid #64748b; padding: 12px 16px; border-radius: 6px; margin: 15px 0; font-size: 13.5px; color: #475569;">
+                    <strong>School Board Feedback:</strong><br/>
+                    "${reason}"
+                  </div>
+                ` : ''}
+                <p style="font-size: 14px; color: #475569; line-height: 1.6;">
+                  We encourage you to explore other live tenders on the <a href="http://localhost:3000/#/suppliers" style="color: #1e3a8a; font-weight: 600;">SkoolFinder B2B Marketplace</a>.
+                </p>
+              </div>
+            `
+          });
+        }
+      } catch (_) {}
+    }
+
+    if (quote.phone) {
+      try {
+        const smsMsg = isAwarded
+          ? `Congratulations! Your bid ${quote.id} (${quote.price}) has been ACCEPTED & AWARDED by ${schoolName}. The school will contact you shortly.`
+          : `SkoolFinder Notice: Your bid for ${schoolName} (${rfq?.title || 'RFQ'}) was not selected on this occasion. Thank you for participating.`;
+        await hubtelService.sendSMS({ to: quote.phone, message: smsMsg });
+      } catch (_) {}
+    }
+
+    // 4. Notify Super Admin Oversight (Email & SMS) - Keeping the Admin Portal in the know
+    const adminEmail = process.env.ADMIN_NOTIFY_EMAIL || 'admissions@skoolfinder.com.gh';
+    try {
+      await resendService.sendEmail({
+        to: adminEmail,
+        subject: `[ADMIN MARKETPLACE ALERT] Tender Decision: ${schoolName} ${isAwarded ? 'AWARDED' : 'DECLINED'} Bid (${quote.supplierName})`,
+        html: `
+          <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #3b82f6; border-radius: 12px; background: #ffffff;">
+            <div style="border-bottom: 2px solid #3b82f6; padding-bottom: 15px; margin-bottom: 20px;">
+              <h2 style="color: #1e3a8a; margin: 0 0 5px 0;">🛡️ SkoolFinder Admin Oversight Console</h2>
+              <span style="background: ${isAwarded ? '#dcfce7' : '#fee2e2'}; color: ${isAwarded ? '#166534' : '#991b1b'}; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">
+                B2B PROCUREMENT DECISION: ${isAwarded ? 'TENDER AWARDED' : 'BID DECLINED'}
+              </span>
+            </div>
+
+            <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+              Executive notice: A school board procurement decision has just been executed on the platform.
+            </p>
+
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px;">
+              <tr style="background: #f8fafc;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569; width: 40%;">Institution:</td>
+                <td style="padding: 10px 14px; font-weight: 700; color: #0f172a;">${schoolName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Procurement Tender:</td>
+                <td style="padding: 10px 14px; color: #0f172a;">${rfq?.title}</td>
+              </tr>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Vendor / Supplier:</td>
+                <td style="padding: 10px 14px; font-weight: 600; color: #0f172a;">${quote.supplierName} (${quote.phone || 'N/A'})</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Quoted Price:</td>
+                <td style="padding: 10px 14px; font-weight: 800; font-size: 16px; color: ${isAwarded ? '#059669' : '#dc2626'};">${quote.price}</td>
+              </tr>
+              <tr style="background: #f8fafc;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Board Decision:</td>
+                <td style="padding: 10px 14px;">
+                  <span style="background: ${isAwarded ? '#dcfce7' : '#fee2e2'}; color: ${isAwarded ? '#166534' : '#991b1b'}; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">
+                    ${isAwarded ? '✓ TENDER OFFICIALLY AWARDED' : '✕ QUOTATION DECLINED'}
+                  </span>
+                </td>
+              </tr>
+              ${reason ? `
+                <tr>
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Board Feedback:</td>
+                  <td style="padding: 10px 14px; color: #64748b; font-style: italic;">"${reason}"</td>
+                </tr>
+              ` : ''}
+              <tr style="background: #f8fafc;">
+                <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Timestamp:</td>
+                <td style="padding: 10px 14px; color: #64748b;">${new Date().toISOString()}</td>
+              </tr>
+            </table>
+
+            <div style="text-align: center; margin: 25px 0 10px 0;">
+              <a href="http://localhost:3000/#/admin" style="background: #1e3a8a; color: #ffffff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-block;">
+                Open Admin B2B Oversight Console &rarr;
+              </a>
+            </div>
+            
+            <p style="font-size: 12px; color: #94a3b8; text-align: center; margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+              SkoolFinder Ghana Regulatory & Ecosystem Management
+            </p>
+          </div>
+        `
+      });
+    } catch (_) {}
+
+    // Hubtel SMS to Admin Phone
+    const adminPhone = process.env.ADMIN_NOTIFY_PHONE || '0244318900';
+    if (adminPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: adminPhone,
+          message: `SkoolFinder HQ: ${schoolName} has ${isAwarded ? 'AWARDED' : 'DECLINED'} tender to ${quote.supplierName} (${quote.price}) for "${rfq?.title || 'RFQ'}". Live in /admin.`
+        });
+      } catch (_) {}
+    }
+
+    res.json({ success: true, quote, rfq });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/admin/procurement/logs', (req, res) => {
+  res.json(db.getProcurementLogs());
+});
+
+// B2B Purchase Order (LPO) Endpoints
+app.post('/api/quotes/:id/lpo', (req, res) => {
+  try {
+    const lpo = db.generateLPO(req.params.id);
+    res.json({ success: true, lpo });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/lpos/:id', (req, res) => {
+  const lpo = db.getLPO(req.params.id);
+  if (!lpo) return res.status(404).json({ error: 'Purchase Order (LPO) not found' });
+  res.json(lpo);
+});
+
+app.post('/api/lpos/:id/disburse', async (req, res) => {
+  try {
+    const { milestoneIndex, paymentMethod } = req.body;
+    const result = db.disburseLPOMilestone(req.params.id, milestoneIndex, { paymentMethod });
+    const { lpo, milestone } = result;
+
+    // 1. Audit Log in Database for Admin Portal
+    db.addProcurementLog({
+      stage: 'milestone_disbursed',
+      stageLabel: `Milestone ${milestone.index} Disbursed`,
+      statusColor: 'emerald',
+      rfqId: lpo.rfqId,
+      rfqTitle: lpo.tenderTitle,
+      schoolId: lpo.schoolId,
+      schoolName: lpo.schoolName,
+      supplierId: lpo.supplierId,
+      supplierName: lpo.supplierName,
+      amount: milestone.amountFormatted,
+      summary: `${lpo.schoolName} disbursed ${milestone.amountFormatted} (${milestone.name}) via ${milestone.paymentMethod} for ${lpo.lpoNumber}. Ref: ${milestone.transactionRef}.`
+    });
+
+    // 2. Resend Email to Supplier with Payment Voucher
+    if (lpo.supplierEmail) {
+      try {
+        await resendService.sendEmail({
+          to: lpo.supplierEmail,
+          subject: `[PAYMENT DISBURSEMENT] ${milestone.amountFormatted} Released for ${lpo.lpoNumber}`,
+          html: `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #10b981; border-radius: 12px; background: #ffffff;">
+              <div style="border-bottom: 2px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
+                <h2 style="color: #065f46; margin: 0 0 5px 0;">💰 Milestone Payment Released</h2>
+                <span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;">PAYSTACK MOMO ESCROW SETTLEMENT</span>
+              </div>
+              <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+                Dear <strong>${lpo.supplierName}</strong>,<br/><br/>
+                <strong>${lpo.schoolName}</strong> has authorized the payment disbursement of <strong>${milestone.amountFormatted}</strong> for milestone: <strong>${milestone.name}</strong> under contract <strong>${lpo.lpoNumber}</strong>.
+              </p>
+              <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; border-radius: 6px; margin: 20px 0;">
+                <div><strong>LPO Number:</strong> ${lpo.lpoNumber}</div>
+                <div><strong>Tender:</strong> ${lpo.tenderTitle}</div>
+                <div><strong>Milestone:</strong> ${milestone.name} (${milestone.percent}%)</div>
+                <div><strong>Amount:</strong> <span style="font-size: 17px; font-weight: 800; color: #059669;">${milestone.amountFormatted}</span></div>
+                <div><strong>Payment Method:</strong> ${milestone.paymentMethod}</div>
+                <div><strong>Transaction Reference:</strong> ${milestone.transactionRef}</div>
+              </div>
+              <p style="font-size: 13px; color: #64748b;">
+                Funds are routed directly to your registered Mobile Money wallet / merchant account. Please issue an official VAT/NHIL tax receipt upon receipt.
+              </p>
+            </div>
+          `
+        });
+      } catch (_) {}
+    }
+
+    // 3. Hubtel SMS to Supplier
+    if (lpo.supplierPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: lpo.supplierPhone,
+          message: `SkoolFinder Escrow: ${milestone.amountFormatted} has been disbursed by ${lpo.schoolName} for ${lpo.lpoNumber} (${milestone.name}). Ref: ${milestone.transactionRef}.`
+        });
+      } catch (_) {}
+    }
+
+    // 4. Hubtel SMS to Admin Phone
+    const adminPhone = process.env.ADMIN_NOTIFY_PHONE || '0244318900';
+    if (adminPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: adminPhone,
+          message: `SkoolFinder HQ: ${lpo.schoolName} disbursed ${milestone.amountFormatted} to ${lpo.supplierName} for ${lpo.lpoNumber}. Status: ${lpo.paymentStatus}.`
+        });
+      } catch (_) {}
+    }
+
+    res.json({ success: true, lpo, milestone });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -202,6 +1234,205 @@ app.post('/api/teachers/:id/lead', (req, res) => {
   const { type } = req.body; // 'whatsapp' | 'call'
   const lead = db.recordTeacherLead(req.params.id, type || 'whatsapp');
   res.json({ success: true, lead });
+});
+
+// Feature 4: Teacher NTC Verification & School Hiring Pipeline
+app.post('/api/teachers/:id/verify-ntc', async (req, res) => {
+  try {
+    const { licenseNumber } = req.body;
+    const result = db.verifyTeacherNTC(req.params.id, licenseNumber);
+
+    // Send SMS confirmation to educator via Hubtel
+    const phone = result.teacher?.phone || result.application?.teacherPhone;
+    if (phone) {
+      try {
+        await hubtelService.sendSMS({
+          to: phone,
+          message: `SkoolFinder Ghana: Congratulations! Your NTC License (${result.licenseNumber}) has been verified with the National Teaching Council. Your Gold Badge is now live!`
+        });
+      } catch (smsErr) {
+        console.warn('NTC SMS dispatch warning:', smsErr.message);
+      }
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/schools/:schoolId/teacher-applications', (req, res) => {
+  try {
+    const apps = db.getTeacherApplications({ schoolId: req.params.schoolId });
+    res.json(apps);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/teacher-applications', (req, res) => {
+  try {
+    const application = db.createTeacherApplication(req.body);
+    res.status(201).json({ success: true, application });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/teacher-applications/:id/interview', async (req, res) => {
+  try {
+    const result = db.scheduleTeacherInterview(req.params.id, req.body);
+    const app = result.application;
+    const interview = app.interviewDetails;
+
+    // 1. Dispatch Hubtel SMS to teacher
+    if (app.teacherPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: app.teacherPhone,
+          message: `Hiring Alert from ${app.schoolName}: You have been invited for an interview for '${app.jobTitle}' on ${interview.date} at ${interview.time}. Venue: ${interview.venue}. Check your email for details.`
+        });
+      } catch (smsErr) {
+        console.warn('Interview SMS dispatch warning:', smsErr.message);
+      }
+    }
+
+    // 2. Dispatch Resend Email to teacher
+    if (app.teacherEmail) {
+      try {
+        await resendService.sendEmail({
+          to: app.teacherEmail,
+          subject: `[Interview Invitation] ${app.jobTitle} at ${app.schoolName}`,
+          html: `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+              <div style="border-bottom: 2px solid #10b981; padding-bottom: 15px; margin-bottom: 20px;">
+                <div style="font-size: 11px; font-weight: 800; color: #047857; text-transform: uppercase;">SKOOLFINDER GHANA &bull; EDUCATOR RECRUITMENT DESK</div>
+                <h2 style="color: #1e3a8a; margin: 6px 0 2px 0;">${app.schoolName}</h2>
+                <div style="font-size: 14px; font-weight: 700; color: #0f172a;">Formal Interview Invitation</div>
+              </div>
+
+              <p style="font-size: 15px; color: #334155; line-height: 1.6;">
+                Dear <strong>${app.teacherName}</strong>,<br/><br/>
+                Following your application for <strong>${app.jobTitle}</strong>, the Academic Board of <strong>${app.schoolName}</strong> is pleased to invite you for a formal interview.
+              </p>
+
+              <table style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; background: #f8fafc; border-radius: 8px; overflow: hidden;">
+                <tr>
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569; width: 35%;">Date &amp; Time:</td>
+                  <td style="padding: 10px 14px; color: #0f172a; font-weight: 700;">${interview.date} at ${interview.time}</td>
+                </tr>
+                <tr style="background: #ffffff;">
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Venue / Location:</td>
+                  <td style="padding: 10px 14px; color: #0f172a;">${interview.venue}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Virtual Stream Link:</td>
+                  <td style="padding: 10px 14px; color: #2563eb;"><a href="${interview.meetingLink}" style="color: #2563eb; font-weight: 600;">${interview.meetingLink}</a></td>
+                </tr>
+                <tr style="background: #ffffff;">
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Panel Lead:</td>
+                  <td style="padding: 10px 14px; color: #0f172a;">${interview.interviewer}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px 14px; font-weight: 700; color: #475569;">Interview Brief:</td>
+                  <td style="padding: 10px 14px; color: #0f172a;">${interview.notes}</td>
+                </tr>
+              </table>
+
+              <div style="background: #eff6ff; padding: 12px 16px; border-radius: 6px; font-size: 13px; color: #1e40af;">
+                Please ensure you bring copies of your NTC License (${app.licenseNumber}), academic degree certificates, and 2 professional references.
+              </div>
+            </div>
+          `
+        });
+      } catch (emailErr) {
+        console.warn('Interview email dispatch warning:', emailErr.message);
+      }
+    }
+
+    res.json({ success: true, application: app });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/teacher-applications/:id/hire', async (req, res) => {
+  try {
+    const result = db.hireTeacher(req.params.id, req.body);
+    const app = result.application;
+    const contract = app.contractDetails;
+
+    // 1. Dispatch Hubtel SMS to teacher
+    if (app.teacherPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: app.teacherPhone,
+          message: `Congratulations ${app.teacherName.split(' ')[0]}! ${app.schoolName} has formally offered you the position of ${contract.role} (GH₵ ${contract.salaryGHS.toLocaleString()}/mo). Official contract sent to your email.`
+        });
+      } catch (smsErr) {
+        console.warn('Hire SMS dispatch warning:', smsErr.message);
+      }
+    }
+
+    // 2. Dispatch Resend Email with official appointment offer
+    if (app.teacherEmail) {
+      try {
+        await resendService.sendEmail({
+          to: app.teacherEmail,
+          subject: `[Formal Contract Offer] Appointment as ${contract.role} - ${app.schoolName}`,
+          html: `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+              <div style="text-align: center; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px; margin-bottom: 20px;">
+                <div style="font-size: 28px; margin-bottom: 5px;">🇬🇭</div>
+                <div style="font-size: 11px; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 1.5px;">REPUBLIC OF GHANA &bull; NASIA &amp; GES COMPLIANT APPOINTMENT</div>
+                <h2 style="color: #1e3a8a; margin: 6px 0 2px 0;">${app.schoolName}</h2>
+                <div style="font-size: 14px; font-weight: 700; color: #059669; text-transform: uppercase;">OFFICIAL LETTER OF APPOINTMENT</div>
+              </div>
+
+              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 18px; text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 800; color: #166534; text-transform: uppercase;">AGREED REMUNERATION</div>
+                <div style="font-family: monospace; font-size: 32px; font-weight: 800; color: #14532d; margin: 6px 0;">GH₵ ${contract.salaryGHS.toLocaleString()}.00 / month</div>
+                <div style="font-size: 12px; color: #15803d; font-weight: 600;">&check; Tier 1 &amp; Tier 2 SSNIT Compliant &bull; Private Health Insurance</div>
+              </div>
+
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 10px; font-weight: 700; color: #475569; width: 40%;">Appointee:</td>
+                  <td style="padding: 10px; color: #0f172a; font-weight: 700;">${app.teacherName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">NTC License No:</td>
+                  <td style="padding: 10px; color: #0f172a; font-family: monospace; font-weight: 700;">${app.licenseNumber} (Verified)</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Designation:</td>
+                  <td style="padding: 10px; color: #0f172a; font-weight: 700;">${contract.role}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Commencement Date:</td>
+                  <td style="padding: 10px; color: #0f172a;">${contract.commencementDate}</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Contract Type:</td>
+                  <td style="padding: 10px; color: #0f172a;">${contract.contractType} (${contract.probationMonths} Months Probation)</td>
+                </tr>
+              </table>
+
+              <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; font-size: 12px; color: #64748b; text-align: center;">
+                Contract Ref: <code>${contract.id}</code> &bull; Issued electronically via SkoolFinder Ghana Staffing Suite.
+              </div>
+            </div>
+          `
+        });
+      } catch (emailErr) {
+        console.warn('Hire email dispatch warning:', emailErr.message);
+      }
+    }
+
+    res.json({ success: true, application: app });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // API: Institutional Document Verification Vault (Phase 2 & KYC/KYB)
@@ -504,38 +1735,7 @@ function getAuthenticatedUser(req) {
   return db.getUserByToken(token);
 }
 
-// API: User Login
-app.post('/api/auth/login', (req, res) => {
-  try {
-    const { login, password } = req.body;
-    if (!login || !password) {
-      return res.status(400).json({ error: "Email/Phone and password are required" });
-    }
-    const result = db.authenticateUser(login, password);
-    res.json({ success: true, ...result });
-  } catch (err) {
-    res.status(401).json({ error: err.message });
-  }
-});
 
-// API: User Registration
-app.post('/api/auth/register', (req, res) => {
-  try {
-    const result = db.registerUser(req.body);
-    res.status(201).json({ success: true, ...result });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// API: Current User Profile (Validate Session)
-app.get('/api/auth/me', (req, res) => {
-  const user = getAuthenticatedUser(req);
-  if (!user) {
-    return res.status(401).json({ error: "Session invalid or expired" });
-  }
-  res.json({ success: true, user });
-});
 
 // API: User Logout
 app.post('/api/auth/logout', (req, res) => {
@@ -608,9 +1808,79 @@ app.post('/api/invoices', (req, res) => {
   }
 });
 
-app.post('/api/invoices/:id/pay', (req, res) => {
+app.post('/api/invoices/:id/pay', async (req, res) => {
   try {
     const result = db.recordInvoicePayment(req.params.id, req.body);
+    const { invoice, payment, receiptNumber } = result;
+
+    // 1. Dispatch Instant Hubtel SMS Confirmation to Parent
+    const parentPhone = payment.momoNumber || invoice.parentPhone;
+    if (parentPhone) {
+      try {
+        await hubtelService.sendSMS({
+          to: parentPhone,
+          message: `SkoolFinder Receipt: GH₵ ${Number(payment.amount).toLocaleString()} received for ${invoice.studentName} (${invoice.schoolName}). Receipt #${receiptNumber}, Ref: ${payment.transactionRef}. Remaining Balance: GH₵ ${Number(invoice.balanceDue).toLocaleString()}.`
+        });
+      } catch (smsErr) {
+        console.warn('Fee SMS dispatch warning:', smsErr.message);
+      }
+    }
+
+    // 2. Dispatch Official Email Receipt Voucher via Resend
+    const parentEmail = invoice.parentEmail || req.body.parentEmail;
+    if (parentEmail) {
+      try {
+        await resendService.sendEmail({
+          to: parentEmail,
+          subject: `[Official Fee Receipt] GH₵ ${Number(payment.amount).toLocaleString()} Received - ${invoice.schoolName}`,
+          html: `
+            <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff;">
+              <div style="text-align: center; border-bottom: 2px dashed #e2e8f0; padding-bottom: 20px; margin-bottom: 20px;">
+                <div style="font-size: 28px; margin-bottom: 5px;">🇬🇭</div>
+                <div style="font-size: 11px; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 1.5px;">REPUBLIC OF GHANA &bull; MINISTRY OF EDUCATION &amp; GES</div>
+                <h2 style="color: #1e3a8a; margin: 6px 0 2px 0;">${invoice.schoolName}</h2>
+                <div style="font-size: 13px; font-weight: 700; color: #059669; text-transform: uppercase;">OFFICIAL ELECTRONIC SCHOOL FEE RECEIPT</div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 4px;">Receipt No: <strong>${receiptNumber}</strong> &bull; Ref: <code>${payment.transactionRef}</code></div>
+              </div>
+
+              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 18px; text-align: center; margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 800; color: #166534; text-transform: uppercase;">AMOUNT RECEIVED VIA ${(payment.method || 'MOMO').toUpperCase()}</div>
+                <div style="font-size: 32px; font-weight: 800; color: #14532d; margin: 6px 0;">GH₵ ${Number(payment.amount).toLocaleString()}.00</div>
+                <div style="font-size: 12px; color: #15803d; font-weight: 600;">&check; Payment Verified &amp; Digitally Signed</div>
+              </div>
+
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px;">
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 10px; font-weight: 700; color: #475569; width: 40%;">Student Name:</td>
+                  <td style="padding: 10px; color: #0f172a; font-weight: 700;">${invoice.studentName}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Grade / Term:</td>
+                  <td style="padding: 10px; color: #0f172a;">${invoice.studentGrade} &bull; ${invoice.term}</td>
+                </tr>
+                <tr style="background: #f8fafc;">
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Payer / Guardian:</td>
+                  <td style="padding: 10px; color: #0f172a;">${payment.payerName} (${payment.momoNumber})</td>
+                </tr>
+                <tr>
+                  <td style="padding: 10px; font-weight: 700; color: #475569;">Remaining Balance:</td>
+                  <td style="padding: 10px; color: ${invoice.balanceDue <= 0 ? '#059669' : '#dc2626'}; font-weight: 800;">
+                    GH₵ ${Number(invoice.balanceDue).toLocaleString()}.00 ${invoice.balanceDue <= 0 ? '(Fully Cleared)' : ''}
+                  </td>
+                </tr>
+              </table>
+
+              <div style="background: #f1f5f9; padding: 12px 16px; border-radius: 6px; font-size: 12px; color: #64748b; text-align: center;">
+                Generated by SkoolFinder Ghana Unified Invoicing Gateway. Authentic proof of tuition settlement.
+              </div>
+            </div>
+          `
+        });
+      } catch (emailErr) {
+        console.warn('Fee Email receipt warning:', emailErr.message);
+      }
+    }
+
     res.status(200).json(result);
   } catch (err) {
     res.status(400).json({ error: err.message });

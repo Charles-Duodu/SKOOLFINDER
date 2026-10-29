@@ -527,6 +527,226 @@
       "busFee": 850,
       "lunchFee": 800,
       "boardingFee": 0
+    },
+    {
+      "id": "sch-achimota-preparatory-junior-high-1793171959920",
+      "name": "Achimota Preparatory & Junior High",
+      "slug": "achimota-preparatory-junior-high",
+      "region": "Greater Accra",
+      "district": "Okaikwei North",
+      "suburb": "Achimota",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge Primary"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Rev. Kwame Osei",
+      "email": "admin@achimotaprep.edu.gh",
+      "phone": "0554129988",
+      "whatsapp": "0554129988",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Growth",
+      "licenseNumber": "GES/GAR/ACH/2026/044",
+      "registeredAt": "2026-10-28T07:19:19.920Z",
+      "trialStatus": "converted_to_paid",
+      "tuitionBase": 3500,
+      "description": "Achimota Preparatory & Junior High is an accredited educational institution in Achimota, Greater Accra.",
+      "trialStartsAt": "2026-10-28T07:19:19.932Z",
+      "trialEndsAt": "2026-11-11T07:19:19.932Z",
+      "vettingNotes": "NaSIA and GES Accreditation verified. License valid until 2028.",
+      "vettedAt": "2026-10-28T07:19:19.932Z",
+      "subscriptionStatus": "active",
+      "billingCycle": "termly",
+      "subscriptionExpiresAt": "2027-02-09T07:19:19.932Z",
+      "lastPayment": {
+        "amountGHS": 1500,
+        "reference": "SF-SUB-achimota-prepar-1793229670008",
+        "transactionId": "SF-SUB-achimota-prepar-1793229670008",
+        "paidAt": "2026-10-28T23:21:11.833Z",
+        "paymentMethod": "mobile_money",
+        "billingCycle": "termly"
+      }
+    },
+    {
+      "id": "sch-legacy-girls-college-akuse-1793174006653",
+      "name": "Legacy Girls' College, Akuse",
+      "slug": "legacy-girls-college-akuse",
+      "region": "Eastern",
+      "district": "Lower Manya Krobo",
+      "suburb": "Akuse",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge IGCSE"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Dr. Ellen Hagan",
+      "email": "admissions@legacygirls.edu.gh",
+      "phone": "0244123456",
+      "whatsapp": "0244123456",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Enterprise",
+      "licenseNumber": "GES/ER/LEG/2026/092",
+      "registeredAt": "2026-10-28T07:53:26.653Z",
+      "trialStatus": "active",
+      "tuitionBase": 3500,
+      "description": "Legacy Girls' College, Akuse is an accredited educational institution in Akuse, Eastern.",
+      "trialStartsAt": "2026-10-28T07:57:09.317Z",
+      "trialEndsAt": "2026-11-11T07:57:09.317Z",
+      "vettingNotes": "Verified with NaSIA/GES Registry",
+      "vettedAt": "2026-10-28T07:57:09.317Z"
+    },
+    {
+      "id": "sch-achimota-preparatory-junior-high-1793228032103",
+      "name": "Achimota Preparatory & Junior High",
+      "slug": "achimota-preparatory-junior-high",
+      "region": "Greater Accra",
+      "district": "Okaikwei North",
+      "suburb": "Achimota",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge Primary"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Rev. Kwame Osei",
+      "email": "admin@achimotaprep.edu.gh",
+      "phone": "0554129988",
+      "whatsapp": "0554129988",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Starter",
+      "licenseNumber": "GES/GAR/ACH/2026/044",
+      "registeredAt": "2026-10-28T22:53:52.103Z",
+      "trialStatus": "active",
+      "tuitionBase": 3500,
+      "description": "Achimota Preparatory & Junior High is an accredited educational institution in Achimota, Greater Accra.",
+      "trialStartsAt": "2026-10-28T22:53:52.113Z",
+      "trialEndsAt": "2026-11-11T22:53:52.113Z",
+      "vettingNotes": "NaSIA and GES Accreditation verified. License valid until 2028.",
+      "vettedAt": "2026-10-28T22:53:52.113Z"
+    },
+    {
+      "id": "sch-achimota-preparatory-junior-high-1793228088665",
+      "name": "Achimota Preparatory & Junior High",
+      "slug": "achimota-preparatory-junior-high",
+      "region": "Greater Accra",
+      "district": "Okaikwei North",
+      "suburb": "Achimota",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge Primary"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Rev. Kwame Osei",
+      "email": "admin@achimotaprep.edu.gh",
+      "phone": "0554129988",
+      "whatsapp": "0554129988",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Starter",
+      "licenseNumber": "GES/GAR/ACH/2026/044",
+      "registeredAt": "2026-10-28T22:54:48.665Z",
+      "trialStatus": "active",
+      "tuitionBase": 3500,
+      "description": "Achimota Preparatory & Junior High is an accredited educational institution in Achimota, Greater Accra.",
+      "trialStartsAt": "2026-10-28T22:54:48.675Z",
+      "trialEndsAt": "2026-11-11T22:54:48.675Z",
+      "vettingNotes": "NaSIA and GES Accreditation verified. License valid until 2028.",
+      "vettedAt": "2026-10-28T22:54:48.675Z"
+    },
+    {
+      "id": "sch-ridge-church-international-school-1793229256678",
+      "name": "Ridge Church International School",
+      "slug": "ridge-church-international-school",
+      "region": "Greater Accra",
+      "district": "Accra Metropolitan",
+      "suburb": "Ridge",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge Primary"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Dr. Kwesi Appiah",
+      "email": "billing@ridgechurchschool.edu.gh",
+      "phone": "0244112233",
+      "whatsapp": "0244112233",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Growth",
+      "licenseNumber": "GES/GAR/RDG/2026/099",
+      "registeredAt": "2026-10-28T23:14:16.678Z",
+      "trialStatus": "converted_to_paid",
+      "tuitionBase": 3500,
+      "description": "Ridge Church International School is an accredited educational institution in Ridge, Greater Accra.",
+      "trialStartsAt": "2026-10-28T23:14:16.689Z",
+      "trialEndsAt": "2026-11-11T23:14:16.689Z",
+      "vettingNotes": "Accreditation verified by NaSIA Director General",
+      "vettedAt": "2026-10-28T23:14:16.689Z",
+      "subscriptionStatus": "active",
+      "billingCycle": "monthly",
+      "subscriptionExpiresAt": "2026-12-11T23:14:16.689Z",
+      "lastPayment": {
+        "amountGHS": 1500,
+        "reference": "SF-SUB-ridge-church-in-1793229258598",
+        "transactionId": "SF-SUB-ridge-church-in-1793229258598",
+        "paidAt": "2026-10-28T23:14:18.603Z",
+        "paymentMethod": "mobile_money",
+        "billingCycle": "monthly"
+      }
+    },
+    {
+      "id": "sch-achimota-preparatory-junior-high-1793233948085",
+      "name": "Achimota Preparatory & Junior High",
+      "slug": "achimota-preparatory-junior-high",
+      "region": "Greater Accra",
+      "district": "Okaikwei North",
+      "suburb": "Achimota",
+      "curriculum": [
+        "Ghana GES / NaSIA",
+        "Cambridge Primary"
+      ],
+      "levels": [
+        "Primary",
+        "JHS"
+      ],
+      "headOfSchool": "Rev. Kwame Osei",
+      "email": "admin@achimotaprep.edu.gh",
+      "phone": "0554129988",
+      "whatsapp": "0554129988",
+      "verified": true,
+      "claimed": true,
+      "status": "active_trial",
+      "packageTier": "SaaS Starter",
+      "licenseNumber": "GES/GAR/ACH/2026/044",
+      "registeredAt": "2026-10-29T00:32:28.085Z",
+      "trialStatus": "active",
+      "tuitionBase": 3500,
+      "description": "Achimota Preparatory & Junior High is an accredited educational institution in Achimota, Greater Accra.",
+      "trialStartsAt": "2026-10-29T00:32:28.104Z",
+      "trialEndsAt": "2026-11-12T00:32:28.104Z",
+      "vettingNotes": "NaSIA and GES Accreditation verified. License valid until 2028.",
+      "vettedAt": "2026-10-29T00:32:28.104Z"
     }
   ],
   "suppliers": [
@@ -695,6 +915,103 @@
   ],
   "rfqs": [
     {
+      "id": "rfq-1793312623240",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-29T22:23:43.240Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "budgetRange": "GH₵ 15,000 - 20,000",
+      "deadline": "2026-11-30",
+      "description": "Procurement for new Chemistry laboratory wing.",
+      "awardedQuoteId": "quote-1793312625126",
+      "awardedSupplier": "LabEquip West Africa Ltd",
+      "awardedPrice": "GH₵ 17,500",
+      "awardedAt": "2026-10-29T22:23:45.677Z",
+      "lpoId": "lpo-1793312625677",
+      "lpoNumber": "LPO-GH-2026-7119"
+    },
+    {
+      "id": "rfq-1793312422847",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-29T22:20:22.847Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "budgetRange": "GH₵ 15,000 - 20,000",
+      "deadline": "2026-11-30",
+      "description": "Procurement for new Chemistry laboratory wing.",
+      "awardedQuoteId": "quote-1793312424478",
+      "awardedSupplier": "LabEquip West Africa Ltd",
+      "awardedPrice": "GH₵ 17,500",
+      "awardedAt": "2026-10-29T22:20:25.084Z",
+      "lpoId": "lpo-1793312425085",
+      "lpoNumber": "LPO-GH-2026-7187"
+    },
+    {
+      "id": "rfq-1793312334057",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-29T22:18:54.057Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "budgetRange": "GH₵ 15,000 - 20,000",
+      "deadline": "2026-11-30",
+      "description": "Procurement for new Chemistry laboratory wing.",
+      "awardedQuoteId": "quote-1793312337222",
+      "awardedSupplier": "LabEquip West Africa Ltd",
+      "awardedPrice": "GH₵ 17,500",
+      "awardedAt": "2026-10-29T22:18:57.822Z",
+      "lpoId": "lpo-1793312337822",
+      "lpoNumber": "LPO-GH-2026-4188"
+    },
+    {
+      "id": "rfq-1793235979774",
+      "status": "Tender Awarded",
+      "quotesReceived": 2,
+      "createdAt": "2026-10-29T01:06:19.774Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "50 interactive screens (65-inch 4K)",
+      "budgetRange": "GH₵ 120,000 - 150,000",
+      "deadline": "2026-11-20",
+      "description": "Procurement for new high school STEM building. Includes installation, wall mounting, and 2-year maintenance SLA.",
+      "awardedQuoteId": "quote-1793235981895",
+      "awardedSupplier": "SmartClass AV & IT Solutions Accra",
+      "awardedPrice": "GH₵ 135,000",
+      "awardedAt": "2026-10-29T01:06:24.205Z",
+      "lpoId": "lpo-1793264833307",
+      "lpoNumber": "LPO-GH-2026-3782"
+    },
+    {
+      "id": "rfq-1793232976066",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-29T00:16:16.066Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "category": "Science & Lab Equipment",
+      "title": "Supply of 30 Binocular Compound Microscopes & Lab Starter Consumables",
+      "quantity": "30 Compound Microscopes + 200 Specimen Slides",
+      "budgetRange": "GH₵ 45,000 - 60,000",
+      "region": "Greater Accra",
+      "deadline": "2026-11-30",
+      "description": "Expanding Cambridge IGCSE Biology & Chemistry laboratory. Need certified anti-fungal coated microscopes with LED illumination and 2-year warranty.",
+      "awardedQuoteId": "quote-1793232981938",
+      "awardedSupplier": "EduTech West Africa Innovations"
+    },
+    {
       "id": "rfq-101",
       "schoolName": "Spintex Royal Preparatory School",
       "schoolId": "sch-spintex-prep-accra",
@@ -748,6 +1065,113 @@
       "notes": "Heavy gauge electro-plated steel frame with seasoned Odum hardwood top. Sample can be delivered to Spintex within 48 hours for your board's inspection.",
       "status": "Pending Review",
       "createdAt": "2026-10-22"
+    },
+    {
+      "id": "quote-1793232981938",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T00:16:21.938Z",
+      "rfqId": "rfq-1793232976066",
+      "supplierId": "sup-edutech-wa",
+      "supplierName": "EduTech West Africa Innovations",
+      "contactPerson": "Kwame Osei Boateng",
+      "phone": "+233244987654",
+      "email": "sales@edutech-wa.com",
+      "price": "GH₵ 48,500",
+      "deliveryDays": 12,
+      "warrantyTerms": "24 Months Onsite Replacement Warranty & Calibration",
+      "paymentTerms": "50% Mobilization upon LPO, 50% on Inspection",
+      "notes": "Premium German precision optics with built-in rechargeable battery backup for power stability in Accra.",
+      "updatedAt": "2026-10-29T00:16:22.527Z"
+    },
+    {
+      "id": "quote-1793235981895",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T01:06:21.895Z",
+      "rfqId": "rfq-1793235979774",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "price": "GH₵ 135,000",
+      "deliveryDays": 10,
+      "warrantyTerms": "3 Years Full Replacement Warranty & On-site SLA",
+      "phone": "+233244112233",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Derrick Osei",
+      "notes": "Includes free training for 20 STEM teachers and wall brackets.",
+      "declineReason": "Best commercial and technical SLA with 3-year warranty and fastest delivery timeline.",
+      "updatedAt": "2026-10-29T01:06:24.205Z",
+      "lpoId": "lpo-1793264833307",
+      "lpoNumber": "LPO-GH-2026-3782"
+    },
+    {
+      "id": "quote-1793235982657",
+      "status": "Declined",
+      "createdAt": "2026-10-29T01:06:22.657Z",
+      "rfqId": "rfq-1793235979774",
+      "supplierId": "sup-gadgets-gh",
+      "supplierName": "EduGadgets West Africa Ltd",
+      "price": "GH₵ 148,000",
+      "deliveryDays": 25,
+      "warrantyTerms": "1 Year Standard Manufacturer Warranty",
+      "phone": "+233201998877",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Ms. Bernice Arthur",
+      "notes": "Imported directly from Shenzhen, delivery via Tema port.",
+      "declineReason": "Delivery timeframe of 25 business days exceeded our academic term opening deadline.",
+      "updatedAt": "2026-10-29T01:06:25.844Z"
+    },
+    {
+      "id": "quote-1793312337222",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T22:18:57.222Z",
+      "rfqId": "rfq-1793312334057",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "price": "GH₵ 17,500",
+      "deliveryDays": 5,
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "phone": "+233244889900",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Frank Mensah",
+      "declineReason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "updatedAt": "2026-10-29T22:18:57.822Z",
+      "lpoId": "lpo-1793312337822",
+      "lpoNumber": "LPO-GH-2026-4188"
+    },
+    {
+      "id": "quote-1793312424478",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T22:20:24.478Z",
+      "rfqId": "rfq-1793312422847",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "price": "GH₵ 17,500",
+      "deliveryDays": 5,
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "phone": "+233244889900",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Frank Mensah",
+      "declineReason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "updatedAt": "2026-10-29T22:20:25.084Z",
+      "lpoId": "lpo-1793312425085",
+      "lpoNumber": "LPO-GH-2026-7187"
+    },
+    {
+      "id": "quote-1793312625126",
+      "status": "Awarded",
+      "createdAt": "2026-10-29T22:23:45.126Z",
+      "rfqId": "rfq-1793312623240",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "price": "GH₵ 17,500",
+      "deliveryDays": 5,
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "phone": "+233244889900",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Frank Mensah",
+      "declineReason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "updatedAt": "2026-10-29T22:23:45.677Z",
+      "lpoId": "lpo-1793312625677",
+      "lpoNumber": "LPO-GH-2026-7119"
     }
   ],
   "jobs": [
@@ -905,7 +1329,15 @@
       "whatsapp": "+233 24 551 0987",
       "email": "samuel.appiah@educators.gh",
       "bio": "Over 8 years preparing students for Cambridge IGCSE, AS/A-Levels, and WASSCE with a 98% Grade A/A* pass rate. Specializes in transforming struggling students into confident mathematical thinkers.",
-      "gender": "Male"
+      "gender": "Male",
+      "contractHistory": [
+        {
+          "schoolId": "sch-gis-accra",
+          "schoolName": "Ghana International School (GIS)",
+          "role": "Head of Cambridge Mathematics & STEM",
+          "commencedAt": "2026-11-15"
+        }
+      ]
     },
     {
       "id": "tch-2",
@@ -974,13 +1406,14 @@
       ],
       "verified": true,
       "licenseNumber": "NTC-SC-209931",
-      "ratingBadge": "GES Senior Master",
+      "ratingBadge": "NTC Certified Master Educator",
       "subscriptionTier": "Standard",
       "phone": "+233 32 201 4455",
       "whatsapp": "+233 24 991 3322",
       "email": "kofi.owusu@sciencedirect.gh",
       "bio": "Renowned BECE and WASSCE science coach in Kumasi. 10 years of consistent Grade 1 results with practical experiment-based teaching methods.",
-      "gender": "Male"
+      "gender": "Male",
+      "ntcVerified": true
     },
     {
       "id": "tch-4",
@@ -2366,6 +2799,174 @@
       "schoolId": "sch-gis-accra",
       "type": "admission_application",
       "timestamp": "2026-10-26T21:34:06.187Z"
+    },
+    {
+      "id": "lead-1793116530414",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-27T15:55:30.414Z"
+    },
+    {
+      "id": "lead-1793116530435",
+      "schoolId": "sch-gis-accra",
+      "type": "whatsapp_reveal",
+      "timestamp": "2026-10-27T15:55:30.435Z"
+    },
+    {
+      "id": "lead-1793116530464",
+      "schoolId": "sch-gis-accra",
+      "type": "admission_application",
+      "timestamp": "2026-10-27T15:55:30.464Z"
+    },
+    {
+      "id": "lead-1793174248386",
+      "schoolId": "sch-legacy-girls-college-akuse-1793174006653",
+      "type": "view",
+      "timestamp": "2026-10-28T07:57:28.386Z"
+    },
+    {
+      "id": "lead-1793228983690",
+      "schoolId": "sch-morning-star-cantonments",
+      "type": "view",
+      "timestamp": "2026-10-28T23:09:43.690Z"
+    },
+    {
+      "id": "lead-1793229099173",
+      "schoolId": "sch-morning-star-cantonments",
+      "type": "view",
+      "timestamp": "2026-10-28T23:11:39.173Z"
+    },
+    {
+      "id": "lead-1793229186567",
+      "schoolId": "sch-morning-star-cantonments",
+      "type": "view",
+      "timestamp": "2026-10-28T23:13:06.567Z"
+    },
+    {
+      "id": "lead-1793229239889",
+      "schoolId": "sch-morning-star-cantonments",
+      "type": "view",
+      "timestamp": "2026-10-28T23:13:59.889Z"
+    },
+    {
+      "id": "lead-1793229270736",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-28T23:14:30.736Z"
+    },
+    {
+      "id": "lead-1793229330284",
+      "schoolId": "sch-morning-star-cantonments",
+      "type": "view",
+      "timestamp": "2026-10-28T23:15:30.284Z"
+    },
+    {
+      "id": "lead-1793229338431",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:15:38.431Z"
+    },
+    {
+      "id": "lead-1793229448657",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-28T23:17:28.657Z"
+    },
+    {
+      "id": "lead-1793229627378",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:20:27.378Z"
+    },
+    {
+      "id": "lead-1793229633670",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:20:33.670Z"
+    },
+    {
+      "id": "lead-1793229646043",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:20:46.043Z"
+    },
+    {
+      "id": "lead-1793229656793",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:20:56.793Z"
+    },
+    {
+      "id": "lead-1793229672644",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "type": "view",
+      "timestamp": "2026-10-28T23:21:12.644Z"
+    },
+    {
+      "id": "lead-1793233896548",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:31:36.548Z"
+    },
+    {
+      "id": "lead-1793233896598",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:31:36.598Z"
+    },
+    {
+      "id": "lead-1793233942388",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:32:22.388Z"
+    },
+    {
+      "id": "lead-1793234128764",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:35:28.764Z"
+    },
+    {
+      "id": "lead-1793234273770",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:37:53.770Z"
+    },
+    {
+      "id": "lead-1793234291157",
+      "schoolId": "sch-roman-ridge-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T00:38:11.157Z"
+    },
+    {
+      "id": "lead-1793235996916",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T01:06:36.916Z"
+    },
+    {
+      "id": "lead-1793264869029",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T09:07:49.029Z"
+    },
+    {
+      "id": "lead-1793264869050",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T09:07:49.050Z"
+    },
+    {
+      "id": "lead-1793264875710",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T09:07:55.710Z"
+    },
+    {
+      "id": "lead-1793271181874",
+      "schoolId": "sch-gis-accra",
+      "type": "view",
+      "timestamp": "2026-10-29T10:53:01.874Z"
     }
   ],
   "claims": [],
@@ -2383,6 +2984,39 @@
     }
   ],
   "transactions": [
+    {
+      "id": "tx-1793266913472",
+      "type": "school_fee",
+      "serviceName": "Term School Fee: Kwame Mensah (Term 1 - 2026/2027 Academic Year)",
+      "targetId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "amount": 2500,
+      "currency": "GHS",
+      "payerName": "Mrs. Nana Aba Mensah",
+      "payerPhone": "0244987654",
+      "paymentMethod": "MTN Mobile Money",
+      "status": "success",
+      "reference": "GH-MM-32079746",
+      "createdAt": "2026-10-29T09:41:53.472Z",
+      "receiptNumber": "GIS-REC-2026-865"
+    },
+    {
+      "id": "tx-1793116530476",
+      "reference": "SD-PAY-SOY1-3002",
+      "amount": 350,
+      "currency": "GHS",
+      "purpose": "subscription",
+      "payerName": "Dr. Kwame Addo",
+      "payerPhone": "+233 24 412 3456",
+      "network": "MTN Mobile Money",
+      "targetId": "sch-gis-accra",
+      "targetTitle": "SkoolFinder Service",
+      "status": "success",
+      "timestamp": "2026-10-27T15:55:30.476Z",
+      "receiptNumber": "SD-REC-16530486",
+      "completedAt": "2026-10-27T15:55:30.486Z",
+      "authCode": "123456"
+    },
     {
       "id": "tx-1793050446203",
       "reference": "SD-PAY-LEC5-5635",
@@ -2887,6 +3521,58 @@
     }
   ],
   "admissionApplications": [
+    {
+      "id": "app-1793116530464",
+      "applicationNumber": "SD-ADM-2026-5614",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "termApplied": "Term 1 (September 2026)",
+      "gradeApplying": "Primary 1",
+      "curriculum": "Cambridge Primary",
+      "status": "Received",
+      "entranceExamDate": "Pending Review by Admissions Desk",
+      "createdAt": "2026-10-27T15:55:30.464Z",
+      "student": {
+        "fullName": "Kofi Mensah Addo",
+        "gender": "Male",
+        "dateOfBirth": "2018-01-01",
+        "nationality": "Ghanaian",
+        "religiousAffiliation": "Christian",
+        "bloodGroup": "O+",
+        "allergies": "None declared",
+        "emergencyContact": "+233 24 412 3456"
+      },
+      "previousSchool": {
+        "schoolName": "First time school entry",
+        "lastClassPassed": "Kindergarten",
+        "reasonForTransfer": "Enrollment progression"
+      },
+      "parentGuardian": {
+        "primaryGuardianName": "Dr. Kwame Addo",
+        "relationship": "Parent / Guardian",
+        "occupation": "Professional",
+        "residentialAddress": "Cantonments",
+        "phone": "+233 24 412 3456",
+        "whatsapp": "+233 24 412 3456",
+        "email": "kwame.addo@example.gh",
+        "secondaryContactName": "",
+        "secondaryPhone": ""
+      },
+      "documentsSubmitted": [
+        {
+          "docType": "Birth Certificate",
+          "fileName": "birth_cert_kofi_mensah_addo.pdf",
+          "verified": true
+        },
+        {
+          "docType": "Immunization Card",
+          "fileName": "immunization_record.pdf",
+          "verified": true
+        }
+      ],
+      "adminNotes": "Submitted via SkoolFinder Digital Admissions Portal.",
+      "decisionDate": null
+    },
     {
       "id": "app-1793050446187",
       "applicationNumber": "SD-ADM-2026-8433",
@@ -4719,7 +5405,71 @@
       "password": "SuperSecure2026!",
       "verified": true,
       "avatar": "🛡️",
-      "createdAt": "2026-01-01T00:00:00Z"
+      "createdAt": "2026-01-01T00:00:00Z",
+      "studentIds": [
+        "Kwame Mensah"
+      ]
+    },
+    {
+      "id": "usr-supplier-akiola",
+      "name": "Mr. Kwabena Adjei",
+      "companyName": "Aki-Ola & Sedco Publishing House",
+      "email": "supplier@akiola.com.gh",
+      "phone": "+233244889900",
+      "role": "supplier",
+      "title": "Chief Educational Procurement Officer",
+      "password": "SupplierPass2026!",
+      "verified": true,
+      "avatar": "📦",
+      "createdAt": "2026-02-10T12:00:00Z"
+    },
+    {
+      "id": "usr-parent-1793171959906",
+      "name": "Parent (+244318900)",
+      "email": "233244318900@parent.skoolfinder.gh",
+      "phone": "233244318900",
+      "role": "parent",
+      "studentIds": [
+        "STU-2026-001"
+      ],
+      "createdAt": "2026-10-28T07:19:19.906Z"
+    },
+    {
+      "id": "usr-1793228983639",
+      "name": "Charles Duodu",
+      "email": "omotade.duodu@gmail.com",
+      "phone": "+447572000174",
+      "role": "school_admin",
+      "schoolId": "sch-morning-star-cantonments",
+      "schoolName": "Morning Star School",
+      "title": "School Administrator",
+      "password": "Omotade.kofi7",
+      "verified": true,
+      "avatar": "🏫",
+      "createdAt": "2026-10-28T23:09:43.639Z"
+    },
+    {
+      "id": "usr-parent-1793231211667",
+      "name": "Parent (+244129845)",
+      "email": "233244129845@parent.skoolfinder.gh",
+      "phone": "233244129845",
+      "role": "parent",
+      "studentIds": [
+        "STU-2026-001",
+        "Kwame Mensah"
+      ],
+      "createdAt": "2026-10-28T23:46:51.667Z"
+    },
+    {
+      "id": "usr-parent-1793312334033",
+      "name": "Parent (+244123456)",
+      "email": "233244123456@parent.skoolfinder.gh",
+      "phone": "233244123456",
+      "role": "parent",
+      "studentIds": [
+        "STU-2026-001"
+      ],
+      "createdAt": "2026-10-29T22:18:54.033Z"
     }
   ],
   "sessions": [
@@ -4771,6 +5521,741 @@
       "role": "school_admin",
       "schoolId": "sch-gis-accra",
       "createdAt": "2026-10-24T23:29:01.255Z"
+    },
+    {
+      "token": "sdtk_mvr6b2y3inv769v8s6",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:04:04.011Z"
+    },
+    {
+      "token": "sdtk_mvr6b2ymcalry9n4b5",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:04:04.030Z"
+    },
+    {
+      "token": "sdtk_mvr6biidw92aloqk8m",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:04:24.181Z"
+    },
+    {
+      "token": "sdtk_mvr6biiqou3vcedhqt",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:04:24.194Z"
+    },
+    {
+      "token": "sdtk_mvr6ewswzlvm5iyfp8",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:07:02.672Z"
+    },
+    {
+      "token": "sdtk_mvr72z5z0bfuuiq3gl",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:25:45.479Z"
+    },
+    {
+      "token": "sdtk_mvr72z6g3pxhhtddp0",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:25:45.496Z"
+    },
+    {
+      "token": "sdtk_mvr72z76r5tg2npsln",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:25:45.522Z"
+    },
+    {
+      "token": "sdtk_mvr72z7fc7elegynk4",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:25:45.531Z"
+    },
+    {
+      "token": "sdtk_mvr72z7ocyg8zfudb5",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:25:45.540Z"
+    },
+    {
+      "token": "sdtk_mvr73nxe6fm1s9jo04",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:17.570Z"
+    },
+    {
+      "token": "sdtk_mvr73nxpqbz0u4z1p2",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:17.581Z"
+    },
+    {
+      "token": "sdtk_mvr73nxw28o68mlxwk",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:17.588Z"
+    },
+    {
+      "token": "sdtk_mvr73ny8376bokh76r",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:26:17.600Z"
+    },
+    {
+      "token": "sdtk_mvr73nyfw4vmfuj5jd",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:17.607Z"
+    },
+    {
+      "token": "sdtk_mvr7485qvwr9268xn",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:43.790Z"
+    },
+    {
+      "token": "sdtk_mvr7485w3wqsn25tk9",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:43.796Z"
+    },
+    {
+      "token": "sdtk_mvr74867m824y7cm2v",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:43.807Z"
+    },
+    {
+      "token": "sdtk_mvr7486b468cptvr5w",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:26:43.812Z"
+    },
+    {
+      "token": "sdtk_mvr7486oinyb0no4nr",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:26:43.824Z"
+    },
+    {
+      "token": "sdtk_mvr7l060s27acvefvq",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:39:46.584Z"
+    },
+    {
+      "token": "sdtk_mvr7l064hzt307vdou",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:39:46.588Z"
+    },
+    {
+      "token": "sdtk_mvr7l06aj93dybgcmy",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:39:46.594Z"
+    },
+    {
+      "token": "sdtk_mvr7l06fgqxtu0yxoq",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:39:46.599Z"
+    },
+    {
+      "token": "sdtk_mvr7l06mpsk5rbz09u",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:39:46.606Z"
+    },
+    {
+      "token": "sdtk_mvr7upai840mjssegz",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:47:19.050Z"
+    },
+    {
+      "token": "sdtk_mvr7upan0858goqnbg",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:47:19.055Z"
+    },
+    {
+      "token": "sdtk_mvr7upaz3aql00bhwm",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:47:19.067Z"
+    },
+    {
+      "token": "sdtk_mvr7upb4207bym0su1",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:47:19.072Z"
+    },
+    {
+      "token": "sdtk_mvr7upbgay2z3w3mw7",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:47:19.084Z"
+    },
+    {
+      "token": "sdtk_mvr89qyilyk9hndn52",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:59:01.050Z"
+    },
+    {
+      "token": "sdtk_mvr89qysx8vnc85o0n",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:59:01.060Z"
+    },
+    {
+      "token": "sdtk_mvr89qyyaxq1rjge7b",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:59:01.066Z"
+    },
+    {
+      "token": "sdtk_mvr89qzbhxqno5ak9e",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T21:59:01.079Z"
+    },
+    {
+      "token": "sdtk_mvr89qzk7r9xfgpqty",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T21:59:01.088Z"
+    },
+    {
+      "token": "sdtk_mvr8jmfs4arvnq1zlx",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:06:41.752Z"
+    },
+    {
+      "token": "sdtk_mvr8jmfzeqg2tmmrvn",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:06:41.759Z"
+    },
+    {
+      "token": "sdtk_mvr8jmgad2153b5fav",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:06:41.770Z"
+    },
+    {
+      "token": "sdtk_mvr8jmgid28mn7kp5u",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T22:06:41.778Z"
+    },
+    {
+      "token": "sdtk_mvr8jmgtxpt38tr9c3",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:06:41.789Z"
+    },
+    {
+      "token": "sdtk_mvr8pgfc7va5f8ynij",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:11:13.896Z"
+    },
+    {
+      "token": "sdtk_mvr8pgfhrdezj5vbfr",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:11:13.901Z"
+    },
+    {
+      "token": "sdtk_mvr8pgfrgsj5ka7ny6",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:11:13.911Z"
+    },
+    {
+      "token": "sdtk_mvr8pgfw2yhll044qi",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T22:11:13.916Z"
+    },
+    {
+      "token": "sdtk_mvr8pgg6aujf3kyh8y",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:11:13.926Z"
+    },
+    {
+      "token": "sdtk_mvr9413duhr2iisw8y",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:22:33.865Z"
+    },
+    {
+      "token": "sdtk_mvr9413mqa83fi8m4s",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:22:33.874Z"
+    },
+    {
+      "token": "sdtk_mvr9413uqy12oykix6",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:22:33.882Z"
+    },
+    {
+      "token": "sdtk_mvr94144fqi4yhjtb9",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-27T22:22:33.892Z"
+    },
+    {
+      "token": "sdtk_mvr9414d4ipatcbfku",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-27T22:22:33.901Z"
+    },
+    {
+      "token": "sdtk_mvrsabfr74ovfrwd7c",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:19:19.911Z"
+    },
+    {
+      "token": "sdtk_mvrsq5zkswxbam926n",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:31:39.344Z"
+    },
+    {
+      "token": "sdtk_mvrsskuechyg84691l",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:33:31.910Z"
+    },
+    {
+      "token": "sdtk_mvrsty7dhv8okdlyra",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:34:35.881Z"
+    },
+    {
+      "token": "sdtk_mvrto2vk996r0iau9z",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:58:01.616Z"
+    },
+    {
+      "token": "sdtk_mvrto2vpd9pdhmzi0s",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:58:01.622Z"
+    },
+    {
+      "token": "sdtk_mvrto2vxr8iutzkzxj",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:58:01.629Z"
+    },
+    {
+      "token": "sdtk_mvrto2w5ns7seckpoc",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-28T07:58:01.637Z"
+    },
+    {
+      "token": "sdtk_mvrto2wbxzm5igwir6",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-28T07:58:01.643Z"
+    },
+    {
+      "token": "sdtk_mvspo50fk6q1hjx9zv",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T22:53:52.095Z"
+    },
+    {
+      "token": "sdtk_mvsppcnkbgk26mbuuj",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T22:54:48.656Z"
+    },
+    {
+      "token": "sdtk_mvsrkadzz7wdc0c8l3",
+      "userId": "usr-parent-1793231211667",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-28T23:46:51.671Z"
+    },
+    {
+      "token": "sdtk_mvst6tip8rvfxa3409",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T00:32:22.513Z"
+    },
+    {
+      "token": "sdtk_mvst6tj1246cseiify",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T00:32:22.525Z"
+    },
+    {
+      "token": "sdtk_mvst6tjfzsms6yzen7",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T00:32:22.539Z"
+    },
+    {
+      "token": "sdtk_mvst6tjqo9dkpnqqk2",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T00:32:22.550Z"
+    },
+    {
+      "token": "sdtk_mvst6tk0it7z2yx996",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T00:32:22.560Z"
+    },
+    {
+      "token": "sdtk_mvst6xt2n41vpnwi2s",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T00:32:28.070Z"
+    },
+    {
+      "token": "sdtk_mvtbr1ojsw2vu1lvei",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:11:59.299Z"
+    },
+    {
+      "token": "sdtk_mvtbr1ow0h3gyxrtpi",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:11:59.312Z"
+    },
+    {
+      "token": "sdtk_mvtbr1p4mx5l1cy2ht",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:11:59.320Z"
+    },
+    {
+      "token": "sdtk_mvtbr1pephjp0qvr7z",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T09:11:59.330Z"
+    },
+    {
+      "token": "sdtk_mvtbr1pmnqjsgvoadi",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:11:59.338Z"
+    },
+    {
+      "token": "sdtk_mvtbsc4q0g66gnj02k",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:12:59.498Z"
+    },
+    {
+      "token": "sdtk_mvtbsc55ybib1whse",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:12:59.513Z"
+    },
+    {
+      "token": "sdtk_mvtbsc5fpvepim00b0",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:12:59.523Z"
+    },
+    {
+      "token": "sdtk_mvtbsc5mh54pitsfx0",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T09:12:59.530Z"
+    },
+    {
+      "token": "sdtk_mvtbsc5vqwz2v6gsb8",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:12:59.539Z"
+    },
+    {
+      "token": "sdtk_mvtbsc6605zo0hnzh7",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:12:59.550Z"
+    },
+    {
+      "token": "sdtk_mvtc8ikw6pnag70wml",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:25:34.352Z"
+    },
+    {
+      "token": "sdtk_mvtc8ila9eamiq8n1y",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:25:34.366Z"
+    },
+    {
+      "token": "sdtk_mvtc8ili2bfan4bw8l",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:25:34.374Z"
+    },
+    {
+      "token": "sdtk_mvtc8ilq0myltw9t44",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T09:25:34.382Z"
+    },
+    {
+      "token": "sdtk_mvtc8ilwym9vahuh8i",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:25:34.388Z"
+    },
+    {
+      "token": "sdtk_mvtc8im715yr5ll8hg",
+      "userId": "usr-parent-1793171959906",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:25:34.399Z"
+    },
+    {
+      "token": "sdtk_mvtc9crvvt4t8rgbbl",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T09:26:13.483Z"
+    },
+    {
+      "token": "sdtk_mvtfczkn80ut96wl7c",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T10:53:01.847Z"
+    },
+    {
+      "token": "sdtk_mvu3q6mfccxp4h653o",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:15:08.295Z"
+    },
+    {
+      "token": "sdtk_mvu3q6mkvyzncp4e8r",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:15:08.300Z"
+    },
+    {
+      "token": "sdtk_mvu3q6mrrxi9gu7sa5",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:15:08.307Z"
+    },
+    {
+      "token": "sdtk_mvu3q6mv3o1yvltg4w",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T22:15:08.311Z"
+    },
+    {
+      "token": "sdtk_mvu3q6myuu0s5mmzkv",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:15:08.314Z"
+    },
+    {
+      "token": "sdtk_mvu3v0t1yvfkhz0fq9",
+      "userId": "usr-parent-1793312334033",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:18:54.037Z"
+    },
+    {
+      "token": "sdtk_mvu3wxasj01curh09l",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:20:22.804Z"
+    },
+    {
+      "token": "sdtk_mvu3wxaz2vajys4o5p",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:20:22.811Z"
+    },
+    {
+      "token": "sdtk_mvu3wxb8lye1ci7xvz",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:20:22.820Z"
+    },
+    {
+      "token": "sdtk_mvu3wxbbybcr8zicad",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T22:20:22.823Z"
+    },
+    {
+      "token": "sdtk_mvu3wxbg3afelx4u03",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:20:22.828Z"
+    },
+    {
+      "token": "sdtk_mvu3wxbm2udtyy4ui1",
+      "userId": "usr-parent-1793312334033",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:20:22.834Z"
+    },
+    {
+      "token": "sdtk_mvu417x37zans5u8ub",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:23:43.191Z"
+    },
+    {
+      "token": "sdtk_mvu417xc7s6xlbm0dp",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:23:43.200Z"
+    },
+    {
+      "token": "sdtk_mvu417xjvccbajm2uu",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:23:43.207Z"
+    },
+    {
+      "token": "sdtk_mvu417xohguu4u53gd",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-29T22:23:43.212Z"
+    },
+    {
+      "token": "sdtk_mvu417xtm1hiwsm888",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:23:43.217Z"
+    },
+    {
+      "token": "sdtk_mvu417xzfo0kjgum07",
+      "userId": "usr-parent-1793312334033",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-29T22:23:43.223Z"
     }
   ],
   "bookmarks": {
@@ -4818,8 +6303,8 @@
         }
       ],
       "totalAmount": 11900,
-      "amountPaid": 8900,
-      "balanceDue": 3000,
+      "amountPaid": 11400,
+      "balanceDue": 500,
       "paymentHistory": [
         {
           "id": "pay-momo-8491",
@@ -4853,6 +6338,17 @@
           "receiptNumber": "GIS-REC-2026-496",
           "payerName": "Mrs. Nana Aba Mensah",
           "notes": "Term Fee MoMo Payment"
+        },
+        {
+          "id": "pay-1793266913472",
+          "amount": 2500,
+          "method": "MTN Mobile Money",
+          "momoNumber": "0244987654",
+          "transactionRef": "GH-MM-32079746",
+          "date": "2026-10-29T09:41:53.472Z",
+          "receiptNumber": "GIS-REC-2026-865",
+          "payerName": "Mrs. Nana Aba Mensah",
+          "notes": "Term 1 Installment Fee via MTN MoMo"
         }
       ]
     },
@@ -7469,6 +8965,846 @@
       "verificationHash": "GH-GIS-SECURE-1044-VERIFIED",
       "status": "ACTIVE",
       "accreditation": "NaSIA Accredited • Cambridge Assessment International Education (CIE)"
+    }
+  ],
+  "tutorBookings": [
+    {
+      "id": "tbk-1793312623236",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mr. Kojo Baffoe",
+      "parentEmail": "",
+      "parentPhone": "+233244001122",
+      "studentName": "Yaw Baffoe",
+      "studentGrade": "JHS 2",
+      "subject": "Elective Physics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T22:23:43.236Z"
+    },
+    {
+      "id": "tbk-1793312422843",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mr. Kojo Baffoe",
+      "parentEmail": "",
+      "parentPhone": "+233244001122",
+      "studentName": "Yaw Baffoe",
+      "studentGrade": "JHS 2",
+      "subject": "Elective Physics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T22:20:22.843Z"
+    },
+    {
+      "id": "tbk-1793312334053",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mr. Kojo Baffoe",
+      "parentEmail": "",
+      "parentPhone": "+233244001122",
+      "studentName": "Yaw Baffoe",
+      "studentGrade": "JHS 2",
+      "subject": "Elective Physics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T22:18:54.053Z"
+    },
+    {
+      "id": "tbk-1793312108316",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Vivian Arthur",
+      "parentEmail": "",
+      "parentPhone": "+233241023345",
+      "studentName": "Naa Arthur",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "Cantonments",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 140,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T22:15:08.316Z"
+    },
+    {
+      "id": "tbk-1793233942572",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-29T00:32:22.572Z"
+    },
+    {
+      "id": "tbk-1793174281651",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-28T07:58:01.651Z"
+    },
+    {
+      "id": "tbk-1793139753910",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T22:22:33.910Z"
+    },
+    {
+      "id": "tbk-1793139073932",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T22:11:13.932Z"
+    },
+    {
+      "id": "tbk-1793138801800",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T22:06:41.800Z"
+    },
+    {
+      "id": "tbk-1793138341098",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:59:01.098Z"
+    },
+    {
+      "id": "tbk-1793137639092",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:47:19.092Z"
+    },
+    {
+      "id": "tbk-1793137186610",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:39:46.610Z"
+    },
+    {
+      "id": "tbk-1793136403830",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:26:43.830Z"
+    },
+    {
+      "id": "tbk-1793136377617",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:26:17.617Z"
+    },
+    {
+      "id": "tbk-1793136345548",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mrs. Nana Aba Mensah",
+      "parentEmail": "",
+      "parentPhone": "+233244987654",
+      "studentName": "Kwame Mensah",
+      "studentGrade": "JHS 2",
+      "subject": "Core Mathematics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-27T21:25:45.548Z"
+    }
+  ],
+  "subscriptions": [
+    {
+      "id": "sub-1793229258603",
+      "schoolId": "sch-ridge-church-international-school-1793229256678",
+      "schoolName": "Ridge Church International School",
+      "planTier": "SaaS Growth",
+      "billingCycle": "monthly",
+      "amountGHS": 1500,
+      "reference": "SF-SUB-ridge-church-in-1793229258598",
+      "paidAt": "2026-10-28T23:14:18.603Z",
+      "expiresAt": "2026-12-11T23:14:16.689Z",
+      "paymentMethod": "mobile_money"
+    },
+    {
+      "id": "sub-1793229671833",
+      "schoolId": "sch-achimota-preparatory-junior-high-1793171959920",
+      "schoolName": "Achimota Preparatory & Junior High",
+      "planTier": "SaaS Growth",
+      "billingCycle": "termly",
+      "amountGHS": 1500,
+      "reference": "SF-SUB-achimota-prepar-1793229670008",
+      "paidAt": "2026-10-28T23:21:11.833Z",
+      "expiresAt": "2027-02-09T07:19:19.932Z",
+      "paymentMethod": "mobile_money"
+    }
+  ],
+  "procurementAuditLogs": [
+    {
+      "id": "plog-1793312625700-302",
+      "timestamp": "2026-10-29T22:23:45.700Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793312623240",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "reason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 17,500 from LabEquip West Africa Ltd for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\"."
+    },
+    {
+      "id": "plog-1793312625132-410",
+      "timestamp": "2026-10-29T22:23:45.132Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793312623240",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "summary": "LabEquip West Africa Ltd submitted a quotation of GH₵ 17,500 (lead time: 5 days) for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793312623243-257",
+      "timestamp": "2026-10-29T22:23:43.243Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793312623240",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 15,000 - 20,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" (200 Sets). Budget: GH₵ 15,000 - 20,000."
+    },
+    {
+      "id": "plog-1793312425146-831",
+      "timestamp": "2026-10-29T22:20:25.146Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793312422847",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "reason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 17,500 from LabEquip West Africa Ltd for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\"."
+    },
+    {
+      "id": "plog-1793312424487-86",
+      "timestamp": "2026-10-29T22:20:24.487Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793312422847",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "summary": "LabEquip West Africa Ltd submitted a quotation of GH₵ 17,500 (lead time: 5 days) for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793312422850-675",
+      "timestamp": "2026-10-29T22:20:22.850Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793312422847",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 15,000 - 20,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" (200 Sets). Budget: GH₵ 15,000 - 20,000."
+    },
+    {
+      "id": "plog-1793312337853-65",
+      "timestamp": "2026-10-29T22:18:57.853Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793312334057",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "reason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 17,500 from LabEquip West Africa Ltd for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\"."
+    },
+    {
+      "id": "plog-1793312337229-70",
+      "timestamp": "2026-10-29T22:18:57.229Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793312334057",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "summary": "LabEquip West Africa Ltd submitted a quotation of GH₵ 17,500 (lead time: 5 days) for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793312334060-932",
+      "timestamp": "2026-10-29T22:18:54.060Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793312334057",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 15,000 - 20,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" (200 Sets). Budget: GH₵ 15,000 - 20,000."
+    },
+    {
+      "id": "plog-1793265889859-640",
+      "timestamp": "2026-10-29T09:24:49.860Z",
+      "stage": "milestone_disbursed",
+      "stageLabel": "Milestone 2 Disbursed",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "amount": "GH₵ 67,500",
+      "summary": "Ghana International School (GIS) disbursed GH₵ 67,500 (Delivery Inspection & Final Acceptance) via MTN Mobile Money Escrow for LPO-GH-2026-3782. Ref: PAY-LPO-889850."
+    },
+    {
+      "id": "plog-1793264833392-599",
+      "timestamp": "2026-10-29T09:07:13.392Z",
+      "stage": "milestone_disbursed",
+      "stageLabel": "Milestone 1 Disbursed",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "amount": "GH₵ 67,500",
+      "summary": "Ghana International School (GIS) disbursed GH₵ 67,500 (Mobilization & Production Advance) via MTN Mobile Money Escrow for LPO-GH-2026-3782. Ref: PAY-LPO-833386."
+    },
+    {
+      "id": "plog-1793235985853-405",
+      "timestamp": "2026-10-29T01:06:25.854Z",
+      "stage": "bid_declined",
+      "stageLabel": "Bid Declined",
+      "statusColor": "rose",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-gadgets-gh",
+      "supplierName": "EduGadgets West Africa Ltd",
+      "amount": "GH₵ 148,000",
+      "reason": "Delivery timeframe of 25 business days exceeded our academic term opening deadline.",
+      "summary": "Bid Declined: Ghana International School (GIS) declined bid of GH₵ 148,000 from EduGadgets West Africa Ltd for \"Procurement of 50 Interactive Smart Displays & Audio Systems\". Feedback: Delivery timeframe of 25 business days exceeded our academic term opening deadline."
+    },
+    {
+      "id": "plog-1793235984212-986",
+      "timestamp": "2026-10-29T01:06:24.212Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "amount": "GH₵ 135,000",
+      "reason": "Best commercial and technical SLA with 3-year warranty and fastest delivery timeline.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 135,000 from SmartClass AV & IT Solutions Accra for \"Procurement of 50 Interactive Smart Displays & Audio Systems\"."
+    },
+    {
+      "id": "plog-1793235982665-658",
+      "timestamp": "2026-10-29T01:06:22.665Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-gadgets-gh",
+      "supplierName": "EduGadgets West Africa Ltd",
+      "amount": "GH₵ 148,000",
+      "summary": "EduGadgets West Africa Ltd submitted a quotation of GH₵ 148,000 (lead time: 25 days) for \"Procurement of 50 Interactive Smart Displays & Audio Systems\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793235981901-30",
+      "timestamp": "2026-10-29T01:06:21.901Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "amount": "GH₵ 135,000",
+      "summary": "SmartClass AV & IT Solutions Accra submitted a quotation of GH₵ 135,000 (lead time: 10 days) for \"Procurement of 50 Interactive Smart Displays & Audio Systems\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793235979781-65",
+      "timestamp": "2026-10-29T01:06:19.781Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793235979774",
+      "rfqTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 120,000 - 150,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Procurement of 50 Interactive Smart Displays & Audio Systems\" (50 interactive screens (65-inch 4K)). Budget: GH₵ 120,000 - 150,000."
+    }
+  ],
+  "purchaseOrders": [
+    {
+      "id": "lpo-1793312625677",
+      "lpoNumber": "LPO-GH-2026-7119",
+      "quoteId": "quote-1793312625126",
+      "rfqId": "rfq-1793312623240",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "supplierPhone": "+233244889900",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "specifications": "Procurement for new Chemistry laboratory wing.",
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "deliveryLeadTime": "5 Business Days",
+      "deliveryDeadline": "2026-11-30",
+      "totalAmountGHS": 17500,
+      "totalAmountFormatted": "GH₵ 17,500",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Disbursement",
+          "disbursedAt": null,
+          "transactionRef": null
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Delivery",
+          "disbursedAt": null,
+          "transactionRef": null
+        }
+      ],
+      "paymentStatus": "Issued",
+      "createdAt": "2026-10-29T22:23:45.677Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    },
+    {
+      "id": "lpo-1793312425085",
+      "lpoNumber": "LPO-GH-2026-7187",
+      "quoteId": "quote-1793312424478",
+      "rfqId": "rfq-1793312422847",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "supplierPhone": "+233244889900",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "specifications": "Procurement for new Chemistry laboratory wing.",
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "deliveryLeadTime": "5 Business Days",
+      "deliveryDeadline": "2026-11-30",
+      "totalAmountGHS": 17500,
+      "totalAmountFormatted": "GH₵ 17,500",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Disbursement",
+          "disbursedAt": null,
+          "transactionRef": null
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Delivery",
+          "disbursedAt": null,
+          "transactionRef": null
+        }
+      ],
+      "paymentStatus": "Issued",
+      "createdAt": "2026-10-29T22:20:25.085Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    },
+    {
+      "id": "lpo-1793312337822",
+      "lpoNumber": "LPO-GH-2026-4188",
+      "quoteId": "quote-1793312337222",
+      "rfqId": "rfq-1793312334057",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "supplierPhone": "+233244889900",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "specifications": "Procurement for new Chemistry laboratory wing.",
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "deliveryLeadTime": "5 Business Days",
+      "deliveryDeadline": "2026-11-30",
+      "totalAmountGHS": 17500,
+      "totalAmountFormatted": "GH₵ 17,500",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Disbursement",
+          "disbursedAt": null,
+          "transactionRef": null
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Delivery",
+          "disbursedAt": null,
+          "transactionRef": null
+        }
+      ],
+      "paymentStatus": "Issued",
+      "createdAt": "2026-10-29T22:18:57.822Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    },
+    {
+      "id": "lpo-1793264833307",
+      "lpoNumber": "LPO-GH-2026-3782",
+      "quoteId": "quote-1793235981895",
+      "rfqId": "rfq-1793235979774",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-modern-tech",
+      "supplierName": "SmartClass AV & IT Solutions Accra",
+      "supplierPhone": "+233244112233",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Procurement of 50 Interactive Smart Displays & Audio Systems",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "50 interactive screens (65-inch 4K)",
+      "specifications": "Includes free training for 20 STEM teachers and wall brackets.",
+      "warrantyTerms": "3 Years Full Replacement Warranty & On-site SLA",
+      "deliveryLeadTime": "10 Business Days",
+      "deliveryDeadline": "2026-11-20",
+      "totalAmountGHS": 135000,
+      "totalAmountFormatted": "GH₵ 135,000",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 67500,
+          "amountFormatted": "GH₵ 67,500",
+          "status": "Disbursed",
+          "disbursedAt": "2026-10-29T09:07:13.386Z",
+          "transactionRef": "PAY-LPO-833386",
+          "paymentMethod": "MTN Mobile Money Escrow",
+          "disbursedBy": "School Bursar"
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 67500,
+          "amountFormatted": "GH₵ 67,500",
+          "status": "Disbursed",
+          "disbursedAt": "2026-10-29T09:24:49.850Z",
+          "transactionRef": "PAY-LPO-889850",
+          "paymentMethod": "MTN Mobile Money Escrow",
+          "disbursedBy": "School Bursar"
+        }
+      ],
+      "paymentStatus": "Fully Settled",
+      "createdAt": "2026-10-29T09:07:13.307Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    }
+  ],
+  "teacherApplications": [
+    {
+      "id": "app-tch-2026-001",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "jobTitle": "Head of Cambridge Mathematics & STEM",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "teacherPhone": "+233 24 551 0987",
+      "teacherEmail": "tutor@skoolfinder.com",
+      "licenseNumber": "NTC-ED-449102",
+      "ntcVerified": true,
+      "qualification": "M.Sc. Applied Mathematics (UCC), B.Ed. Science Education",
+      "experienceYears": 8,
+      "status": "Hired / Contract Offered",
+      "appliedDate": "2026-10-22",
+      "coverNote": "Over 8 years preparing students for Cambridge IGCSE and A-Levels with a 98% pass rate. Eager to lead the STEM department at GIS.",
+      "interviewDetails": {
+        "date": "2026-11-06",
+        "time": "10:30 AM",
+        "venue": "GIS Cantonments Campus (Conference Room B) & Virtual Stream",
+        "meetingLink": "https://meet.google.com/gis-stem-interview",
+        "interviewer": "Dr. Mary Ashun (Head of School)",
+        "notes": "Candidate to present a 15-minute micro-teaching demo on Cambridge A-Level Pure Mathematics 1."
+      },
+      "contractDetails": {
+        "id": "cnt-1793271126277",
+        "role": "Head of Cambridge Mathematics & STEM",
+        "salaryGHS": 8500,
+        "commencementDate": "2026-11-15",
+        "contractType": "Full-Time Permanent (3-Year Renewable)",
+        "probationMonths": 3,
+        "compliance": "NaSIA & GES Standard Educator Contract",
+        "issuedAt": "2026-10-29T10:52:06.277Z",
+        "status": "Offer Extended"
+      }
+    },
+    {
+      "id": "app-tch-2026-002",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "jobTitle": "Early Childhood Montessori Lead Teacher",
+      "teacherId": "tch-2",
+      "teacherName": "Auntie Akua Serwaa Boateng",
+      "teacherPhone": "+233 50 332 1199",
+      "teacherEmail": "akua.serwaa@montessoriedu.gh",
+      "licenseNumber": "NTC-EY-881023",
+      "ntcVerified": true,
+      "qualification": "AMI Certified Montessori Diploma, B.A. Early Childhood Education (UEW)",
+      "experienceYears": 6,
+      "status": "Interview Scheduled",
+      "appliedDate": "2026-10-25",
+      "coverNote": "Specialist in phonics, penmanship, and sensorial Montessori apparatus with 6 years experience.",
+      "interviewDetails": {
+        "date": "2026-11-10",
+        "time": "11:00 AM",
+        "venue": "GIS Cantonments Campus (Early Years Boardroom) & Google Meet Stream",
+        "meetingLink": "https://meet.google.com/gis-early-years-interview",
+        "interviewer": "Dr. Mary Ashun (Head of School) & Early Years Coordinator",
+        "notes": "Candidate to present a 15-minute micro-teaching demo using Jolly Phonics apparatus.",
+        "scheduledAt": "2026-10-29T10:52:05.971Z"
+      },
+      "contractDetails": null
+    },
+    {
+      "id": "app-tch-2026-003",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "jobTitle": "Cambridge IGCSE & A-Level Physics Specialist",
+      "teacherId": "tch-3",
+      "teacherName": "Kofi Owusu-Ansah",
+      "teacherPhone": "+233 24 400 1122",
+      "teacherEmail": "kofi.owusu@physics.gh",
+      "licenseNumber": "NTC-SC-209931",
+      "ntcVerified": true,
+      "qualification": "B.Sc. Physics (KNUST), Postgraduate Diploma in Education",
+      "experienceYears": 5,
+      "status": "Under Review",
+      "appliedDate": "2026-10-26",
+      "coverNote": "Passionate about lab experiments and hands-on physics demonstrations.",
+      "interviewDetails": null,
+      "contractDetails": null,
+      "ntcVerifiedDate": "2026-10-29T10:52:05.962Z"
     }
   ]
 }

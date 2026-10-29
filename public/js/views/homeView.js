@@ -8,25 +8,31 @@ const HomeView = {
     const topFeatured = featuredSchools.filter(s => s.featured).slice(0, 3);
 
     return `
-      <!-- Hero Section -->
+      <!-- Hero Section with 4-Image Crossfade Slideshow -->
       <section class="hero-section">
+        <!-- 4-Image Transition Background -->
+        <div class="hero-slideshow" id="hero-slideshow">
+          <div class="hero-slide active" style="background-image: url('/assets/images/campus_hero.jpg');"></div>
+          <div class="hero-slide" style="background-image: url('/assets/images/science_lab.jpg');"></div>
+          <div class="hero-slide" style="background-image: url('/assets/images/montessori_class.jpg');"></div>
+          <div class="hero-slide" style="background-image: url('/assets/images/sports_complex.jpg');"></div>
+        </div>
+
+        <!-- Lighter Glassmorphic Navy Overlay -->
+        <div class="hero-bg-overlay"></div>
         <div class="hero-ambient-glow-1"></div>
         <div class="hero-ambient-glow-2"></div>
-        <div class="hero-bg-overlay"></div>
 
-        <!-- Floating Live Platform Activity Chips -->
-        <div class="hero-floating-chip hero-floating-chip-left">
-          <span class="radar-pulse-core" style="display:inline-block; margin-right:4px;"></span>
-          <span><b>Admissions Open</b>: GIS, SOS-HGIC & Achimota</span>
-        </div>
-        <div class="hero-floating-chip hero-floating-chip-right">
-          <span>⚡</span>
-          <span><b>Live Inquiries</b>: 28 Parents in East Legon today</span>
-        </div>
+
 
         <div class="container hero-content">
-          <div class="hero-pill">
-            <span>🇬🇭</span> Ghana's Verified Education Directory & Network
+          <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
+            <div class="hero-pill" style="margin: 0;">
+              <span>🇬🇭</span> Ghana's Verified Education Directory & Network
+            </div>
+            <button id="btn-hero-role-tour" class="hero-tour-pill" title="Take a 30-second guided tour for Parents, Schools, Suppliers & Teachers">
+              <span>🧭</span> New to SkoolFinder? Take a 30s Guided Tour &rarr;
+            </button>
           </div>
           <h1 class="hero-title">
             Find the <span>Right School</span> for Your Child in Ghana
@@ -73,16 +79,16 @@ const HomeView = {
               </button>
             </form>
 
-            <div class="search-quick-tags">
-              <span>Popular Enclaves:</span>
-              <button class="quick-tag-pill" data-suburb="East Legon">East Legon</button>
-              <button class="quick-tag-pill" data-suburb="Cantonments">Cantonments</button>
-              <button class="quick-tag-pill" data-suburb="Tema">Tema</button>
-              <button class="quick-tag-pill" data-suburb="Ahodwo">Ahodwo (Kumasi)</button>
-              <button class="quick-tag-pill" data-suburb="Nhyiaeso">Nhyiaeso (Kumasi)</button>
-              <button class="quick-tag-pill" data-boarding="Boarding">Boarding Schools</button>
-            </div>
+
           </div>
+        </div>
+
+        <!-- Slide Switcher Indicators -->
+        <div class="hero-slide-indicators" id="hero-slide-indicators">
+          <span class="slide-indicator active" data-index="0" title="Campus Quadrangle"></span>
+          <span class="slide-indicator" data-index="1" title="Science Labs"></span>
+          <span class="slide-indicator" data-index="2" title="Classrooms"></span>
+          <span class="slide-indicator" data-index="3" title="Sports Complex"></span>
         </div>
       </section>
 
@@ -110,84 +116,99 @@ const HomeView = {
         </div>
       </section>
 
-      <!-- Interactive Guided Role Tour Banner -->
-      <section style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); padding: 2.5rem 0; color: #ffffff;">
+      <!-- 5 Dedicated SaaS Portals Grid -->
+      <section style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); padding: 3rem 0; color: #ffffff; border-top: 1px solid rgba(255,255,255,0.1); border-bottom: 1px solid rgba(255,255,255,0.1);">
         <div class="container">
           <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
             <div>
               <div style="font-size: 0.78rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
-                <span>🇬🇭</span> Step-by-Step Experience Guide
+                <span>🇬🇭</span> Dedicated Educational Ecosystem
               </div>
-              <h3 style="color: #ffffff; font-size: 1.45rem; font-family: var(--font-heading); margin-top: 0.2rem; margin-bottom: 0.25rem;">
-                Explore SkoolFinder by Your Role
+              <h3 style="color: #ffffff; font-size: 1.6rem; font-family: var(--font-heading); margin-top: 0.2rem; margin-bottom: 0.25rem;">
+                Enter Your SkoolFinder Portal
               </h3>
-              <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; max-width: 620px;">
-                Select your perspective below to explore tailored workflows, 1-click live demo portals, and automated features.
+              <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; max-width: 650px;">
+                Access your specialized workspace with live Mobile Money payments, verified directories, and administration tools.
               </p>
             </div>
             <button id="btn-home-full-tour" class="btn-pill btn-gold" style="font-size: 0.88rem; padding: 0.6rem 1.25rem;">
-              <span>🧭</span> Launch Full Interactive Tour
+              <span>🧭</span> Guided Role Tour
             </button>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem;">
-            <!-- Role 1: Parent -->
-            <div class="home-role-tour-card" data-role="parent" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
+            <!-- Portal 1: Parents -->
+            <div class="home-portal-card" data-portal="parents" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(59,130,246,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.75rem;">👨‍👩‍👧</span>
-                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(16,185,129,0.25); color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 100px;">PARENT</span>
+                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(59,130,246,0.25); color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">/parents</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Parent</h4>
-              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
-                Find schools, predict BECE placement, apply online & pay fees via MTN/Telecel MoMo.
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Parents Portal</h4>
+              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Pay fees via MoMo, track school bus live GPS, view student ID & hire home tutors.
               </p>
-              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
-                Take Parent Tour &rarr;
+              <div style="color: #60a5fa; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Open Portal &rarr;
               </div>
             </div>
 
-            <!-- Role 2: School -->
-            <div class="home-role-tour-card" data-role="school" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+            <!-- Portal 2: Teachers -->
+            <div class="home-portal-card" data-portal="teachers" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(16,185,129,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <span style="font-size: 1.75rem;">🏫</span>
-                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(245,158,11,0.25); color: #fde68a; padding: 0.2rem 0.5rem; border-radius: 100px;">SCHOOL</span>
+                <span style="font-size: 1.75rem;">🧑‍🏫</span>
+                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(16,185,129,0.25); color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 100px;">/teachers</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a School Head</h4>
-              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
-                Manage admissions, issue offer letters, publish report cards & send Hubtel SMS.
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Teachers Portal</h4>
+              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Educator marketplace: advertise home tuition, NTC vetting & school job openings.
               </p>
-              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
-                Take School Tour &rarr;
+              <div style="color: #34d399; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Open Marketplace &rarr;
               </div>
             </div>
 
-            <!-- Role 3: Supplier -->
-            <div class="home-role-tour-card" data-role="supplier" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+            <!-- Portal 3: Suppliers -->
+            <div class="home-portal-card" data-portal="suppliers" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(245,158,11,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.75rem;">📦</span>
-                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(59,130,246,0.25); color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">SUPPLIER</span>
+                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(245,158,11,0.25); color: #fde68a; padding: 0.2rem 0.5rem; border-radius: 100px;">/suppliers</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Supplier</h4>
-              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
-                Bid on school RFQs & tenders for desks, lab chemicals, ICT gear, and uniforms.
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Suppliers Portal</h4>
+              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                B2B procurement: bid on school RFQs for textbooks, uniforms, ICT gear & lab items.
               </p>
               <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
-                Take Supplier Tour &rarr;
+                Open Procurement &rarr;
               </div>
             </div>
 
-            <!-- Role 4: Teacher -->
-            <div class="home-role-tour-card" data-role="teacher" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+            <!-- Portal 4: Schools -->
+            <div class="home-portal-card" data-portal="schools" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(139,92,246,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <span style="font-size: 1.75rem;">👨‍🏫</span>
-                <span style="font-size: 0.7rem; font-weight: 800; background: rgba(236,72,153,0.25); color: #fbcfe8; padding: 0.2rem 0.5rem; border-radius: 100px;">TEACHER</span>
+                <span style="font-size: 1.75rem;">🏫</span>
+                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(139,92,246,0.25); color: #c4b5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">/schools</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">I am a Teacher</h4>
-              <p style="color: #94a3b8; font-size: 0.8rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
-                Find teaching jobs, list as a private tutor, and access WAEC syllabus & past papers.
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Schools Portal</h4>
+              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                School Management OS: admissions pipeline, bursar MoMo ledger & bus fleet dispatch.
               </p>
-              <div style="color: #fbbf24; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
-                Take Teacher Tour &rarr;
+              <div style="color: #a78bfa; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Open School OS &rarr;
+              </div>
+            </div>
+
+            <!-- Portal 5: Super Admin -->
+            <div class="home-portal-card" data-portal="admin" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(148,163,184,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-size: 1.75rem;">🛡️</span>
+                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(148,163,184,0.25); color: #cbd5e1; padding: 0.2rem 0.5rem; border-radius: 100px;">/admin</span>
+              </div>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Admin Console</h4>
+              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
+                Platform governance: NaSIA accreditation audits, teacher NTC vetting & SaaS plans.
+              </p>
+              <div style="color: #94a3b8; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
+                Open Admin HQ &rarr;
               </div>
             </div>
           </div>
@@ -562,6 +583,58 @@ const HomeView = {
     // Role Tour Banner Events
     document.getElementById('btn-home-full-tour')?.addEventListener('click', () => {
       Modals.openRoleTourModal('parent');
+    });
+
+    // Hero Role Tour Pill & Track Status
+    document.getElementById('btn-hero-role-tour')?.addEventListener('click', () => {
+      Modals.openRoleTourModal('parent');
+    });
+
+    // 4-Image Hero Crossfade Slideshow
+    const slides = document.querySelectorAll('.hero-slide');
+    const indicators = document.querySelectorAll('.slide-indicator');
+    if (slides.length > 1) {
+      if (window._heroSlideTimer) clearInterval(window._heroSlideTimer);
+      let currentIdx = 0;
+      const setSlide = (newIdx) => {
+        if (newIdx === currentIdx) return;
+        const prevIdx = currentIdx;
+        currentIdx = newIdx;
+        slides.forEach((s, i) => {
+          s.classList.remove('active', 'prev');
+          if (i === currentIdx) {
+            s.classList.add('active');
+          } else if (i === prevIdx) {
+            s.classList.add('prev');
+          }
+        });
+        indicators.forEach((ind, i) => ind.classList.toggle('active', i === currentIdx));
+      };
+      window._heroSlideTimer = setInterval(() => {
+        setSlide((currentIdx + 1) % slides.length);
+      }, 5500);
+
+      indicators.forEach(ind => {
+        ind.addEventListener('click', () => {
+          const idx = parseInt(ind.dataset.index, 10);
+          if (!isNaN(idx)) {
+            setSlide(idx);
+            clearInterval(window._heroSlideTimer);
+            window._heroSlideTimer = setInterval(() => {
+              setSlide((currentIdx + 1) % slides.length);
+            }, 5500);
+          }
+        });
+      });
+    }
+
+
+
+    document.querySelectorAll('.home-portal-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const portal = card.dataset.portal || 'parents';
+        App.navigate(portal);
+      });
     });
 
     document.querySelectorAll('.home-role-tour-card').forEach(card => {
