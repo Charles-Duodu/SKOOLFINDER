@@ -45,16 +45,6 @@ const App = {
         viewName = 'home';
         param = null;
       }
-    } else if (viewName === 'parents') {
-      if (!State.isAuthenticated()) {
-        Modals.openLoginModal({
-          notice: "👨‍👩‍👧 Please sign in to view your parent admission applications, tuition fees, bus tracking, and hired tutors.",
-          redirectView: 'parents'
-        });
-        if (State.currentView === 'home') return;
-        viewName = 'home';
-        param = null;
-      }
     }
 
     State.currentView = viewName;

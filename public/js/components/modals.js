@@ -4442,85 +4442,165 @@ const Modals = {
     div.className = 'modal-backdrop';
 
     const notice = options.notice || null;
+    const initialTab = options.initialTab || (options.mode === 'register' || options.mode === 'signup' ? 'signup' : 'signin');
 
     div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 530px; border-radius: var(--radius-xl); overflow: hidden;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.4rem 1.65rem;">
+      <div class="modal-dialog" style="max-width: 540px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <!-- Modal Top Header Banner -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 2px solid #f59e0b;">
           <div>
-            <div style="font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">
-              🛡️ Dual Secure Authentication (Clerk + Ghana Telco SMS)
+            <div style="font-size: 0.76rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+              <span>🛡️</span> Ghana Dual Authentication (Neon PostgreSQL + Telco SMS OTP)
             </div>
-            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Sign In to SkoolFinder</h3>
+            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.25rem;" id="auth-modal-main-title">
+              ${initialTab === 'signup' ? 'Create New Parent Account' : 'Sign In to SkoolFinder'}
+            </h3>
           </div>
-          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1;">&times;</button>
+          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1; font-size: 1.5rem;">&times;</button>
         </div>
 
-        <div class="modal-body" style="padding: 1.5rem 1.65rem;">
+        <div class="modal-body" style="padding: 1.4rem 1.6rem; max-height: 80vh; overflow-y: auto;">
           ${notice ? `
-            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.85rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.84rem; color: #1e40af; line-height: 1.5;">
+            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1.15rem; font-size: 0.84rem; color: #1e40af; line-height: 1.5;">
               ${notice}
             </div>
           ` : ''}
 
-          <!-- Dual Auth Tab Switcher -->
-          <div style="display: flex; gap: 0.5rem; margin-bottom: 1.35rem; background: #f1f5f9; padding: 0.35rem; border-radius: 12px;">
-            <button type="button" id="tab-login-email" style="flex: 1; border: none; padding: 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border-radius: 8px; cursor: pointer; background: #0a1128; color: #ffffff; transition: all 0.2s;">
-              ✉️ Email Sign In
+          <!-- 3-Way Top Navigation Tabs: Sign In / Parent Sign Up / SMS OTP -->
+          <div style="display: flex; gap: 0.35rem; margin-bottom: 1.25rem; background: #f1f5f9; padding: 0.3rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <button type="button" id="tab-auth-signin" style="flex: 1; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signin' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signin' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+              🔑 Sign In
             </button>
-            <button type="button" id="tab-login-otp" style="flex: 1; border: none; padding: 0.55rem 0.75rem; font-size: 0.84rem; font-weight: 700; border-radius: 8px; cursor: pointer; background: transparent; color: #475569; transition: all 0.2s;">
-              📱 Ghana Phone SMS OTP
+            <button type="button" id="tab-auth-signup" style="flex: 1.2; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signup' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signup' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+              ✨ New Parent Sign Up
+            </button>
+            <button type="button" id="tab-auth-otp" style="flex: 0.95; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'otp' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'otp' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+              📱 SMS OTP
             </button>
           </div>
 
-          <!-- PANE 1: Standard Email & Password Auth -->
-          <div id="auth-pane-email">
-            <!-- 1-Click Fast Demo Role Login Bar -->
-            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
-              <div style="font-size: 0.73rem; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 0.5rem; display: flex; justify-content: space-between;">
-                <span>⚡ 5-Portal Demo Access (1-Click Test)</span>
-                <span style="color: #0284c7;">Auto-fill & Enter</span>
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem;">
-                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
-                  <span>👨‍👩‍👧</span> Parent (Nana Aba)
-                </button>
-                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
-                  <span>🧑‍🏫</span> Teacher (Emmanuel)
-                </button>
-                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="supplier@akiola.com.gh" data-pass="SupplierPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
-                  <span>📦</span> Supplier (Aki-Ola)
-                </button>
-                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="admin@gis.edu.gh" data-pass="AdminPass2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff;">
-                  <span>🏫</span> School Admin (GIS)
-                </button>
-                <button type="button" class="btn-pill btn-outline btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.75rem; padding: 0.4rem 0.5rem; justify-content: center; background: #fff; grid-column: span 2;">
-                  <span>🛡️</span> Super Admin / NaSIA Console
-                </button>
+          <!-- ========================================================= -->
+          <!-- PANE 1: Sign In for Existing Account Holders              -->
+          <!-- ========================================================= -->
+          <div id="auth-pane-signin" style="display: ${initialTab === 'signin' ? 'block' : 'none'};">
+            <!-- Compact 1-Click Fast Demo Logins -->
+            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem 0.75rem; margin-bottom: 1.15rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem;">
+              <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">⚡ 1-Click Fast Test:</span>
+              <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                <button type="button" class="btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer; font-weight: 700; color: #1e40af;">👨‍👩‍👧 Parent</button>
+                <button type="button" class="btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; cursor: pointer; font-weight: 700; color: #065f46;">🧑‍🏫 Teacher</button>
+                <button type="button" class="btn-quick-login" data-login="supplier@akiola.com.gh" data-pass="SupplierPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #fefce8; border: 1px solid #fef08a; border-radius: 6px; cursor: pointer; font-weight: 700; color: #854d0e;">📦 Supplier</button>
+                <button type="button" class="btn-quick-login" data-login="admin@gis.edu.gh" data-pass="AdminPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; cursor: pointer; font-weight: 700; color: #5b21b6;">🏫 Admin</button>
+                <button type="button" class="btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; cursor: pointer; font-weight: 700; color: #93c5fd;">🛡️ Super</button>
               </div>
             </div>
 
             <form id="form-auth-login">
-              <div class="form-group" style="margin-bottom: 0.9rem;">
-                <label class="form-label" style="font-size: 0.82rem;">Email Address or Account Login *</label>
-                <input type="text" id="auth-login-input" class="form-input" placeholder="e.g. parent@gmail.com or admin@gis.edu.gh" required />
+              <div class="form-group" style="margin-bottom: 0.85rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Email Address or Account Login *</label>
+                <input type="text" id="auth-login-input" class="form-input" placeholder="e.g. parent@gmail.com or 024 412 3456" required style="width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;" />
               </div>
 
-              <div class="form-group" style="margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin-bottom: 1.15rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                  <label class="form-label" style="font-size: 0.82rem; margin: 0;">Password *</label>
-                  <button type="button" id="btn-toggle-pass-visibility" style="background: none; border: none; color: #0284c7; font-size: 0.78rem; cursor: pointer;">Show</button>
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin: 0;">Password *</label>
+                  <button type="button" id="btn-toggle-pass-visibility" style="background: none; border: none; color: #0284c7; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
                 </div>
-                <input type="password" id="auth-password-input" class="form-input" placeholder="Enter your password" required />
+                <input type="password" id="auth-password-input" class="form-input" placeholder="Enter your password" required style="width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;" />
               </div>
 
-              <button type="submit" id="btn-submit-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
-                <span>🔑</span> Sign In with Email
+              <!-- High Visibility Prominent Sign In Button -->
+              <button type="submit" id="btn-submit-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1.05rem; font-weight: 800; background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(10,17,40,0.3); display: flex; align-items: center; gap: 0.5rem;">
+                <span>🔑</span> Sign In to SkoolFinder
               </button>
             </form>
+
+            <div style="text-align: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b;">
+              Don't have an account yet? 
+              <button type="button" id="link-switch-to-signup" style="background: none; border: none; color: #d97706; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0; margin-left: 0.25rem;">
+                Create New Parent Account &rarr;
+              </button>
+            </div>
           </div>
 
-          <!-- PANE 2: Ghana Mobile Phone SMS OTP (Hubtel Failover) -->
-          <div id="auth-pane-otp" style="display: none;">
+          <!-- ========================================================= -->
+          <!-- PANE 2: Create New Parent Account (Sign Up)               -->
+          <!-- ========================================================= -->
+          <div id="auth-pane-signup" style="display: ${initialTab === 'signup' ? 'block' : 'none'};">
+            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 1.15rem; font-size: 0.82rem; color: #1e40af; line-height: 1.45;">
+              👨‍👩‍👧 <strong>New Parent Registration:</strong> Set up your parent account to submit admissions, monitor entrance exams, and settle term fees via MoMo.
+            </div>
+
+            <form id="form-modal-parent-register">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Parent / Guardian Full Name *</label>
+                <input type="text" id="mreg-parent-name" class="form-input" placeholder="e.g. Mrs. Vivian Arthur" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Ghana Mobile Phone *</label>
+                  <input type="tel" id="mreg-parent-phone" class="form-input" placeholder="e.g. 024 412 3456" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Email Address *</label>
+                  <input type="email" id="mreg-parent-email" class="form-input" placeholder="e.g. vivian@gmail.com" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Create Password (Min 6 characters) *</label>
+                <input type="password" id="mreg-parent-password" class="form-input" placeholder="Create a secure password" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Child / Ward Full Name *</label>
+                  <input type="text" id="mreg-child-name" class="form-input" placeholder="e.g. Kwame Mensah" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Academic Level *</label>
+                  <select id="mreg-child-level" class="form-select" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                    <option value="Primary (Class 1-6)" selected>Primary (Class 1-6)</option>
+                    <option value="Kindergarten / Nursery">Kindergarten / Nursery</option>
+                    <option value="Junior High (JHS 1-3 / BECE)">Junior High (JHS 1-3 / BECE)</option>
+                    <option value="Senior High (SHS 1-3 / WASSCE)">Senior High (SHS 1-3 / WASSCE)</option>
+                    <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.15rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Target School for Admission *</label>
+                <select id="mreg-target-school" class="form-select" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                  <option value="sch-gis-accra" selected>Ghana International School (GIS) - Cantonments, Accra</option>
+                  <option value="sch-sos-tema">SOS-Hermann Gmeiner International College - Tema</option>
+                  <option value="sch-morning-star-cantonments">Morning Star School - Cantonments, Accra</option>
+                  <option value="sch-achimota-accra">Achimota Basic & Senior High School - Achimota</option>
+                  <option value="sch-tema-intl">Tema International School (TIS) - Tema</option>
+                  <option value="sch-roman-ridge">The Roman Ridge School - Roman Ridge, Accra</option>
+                  <option value="sch-alpha-beta-dansoman">Alpha Beta Education Centres - Dansoman</option>
+                </select>
+              </div>
+
+              <!-- High Visibility Prominent Sign Up Button -->
+              <button type="submit" id="btn-submit-mreg-parent" class="btn-pill btn-gold" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1.05rem; font-weight: 800; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 0.5rem;">
+                <span>✨</span> Create Parent Account & Register Ward &rarr;
+              </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b;">
+              Already registered? 
+              <button type="button" id="link-switch-to-signin" style="background: none; border: none; color: #1e40af; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0; margin-left: 0.25rem;">
+                Sign In to Existing Account &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PANE 3: Ghana Mobile Phone SMS OTP (Hubtel Failover)      -->
+          <!-- ========================================================= -->
+          <div id="auth-pane-otp" style="display: ${initialTab === 'otp' ? 'block' : 'none'};">
             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
               <div style="font-weight: 700; color: #166534; font-size: 0.85rem; margin-bottom: 0.25rem;">
                 🇬🇭 Instant Ghana Phone Login
@@ -4531,9 +4611,9 @@ const Modals = {
             </div>
 
             <div class="form-group" style="margin-bottom: 1rem;">
-              <label class="form-label" style="font-size: 0.82rem;">Ghana Mobile Number *</label>
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Ghana Mobile Number *</label>
               <div style="display: flex; gap: 0.5rem;">
-                <input type="tel" id="otp-phone-input" class="form-input" placeholder="e.g. 024 431 8900" style="flex: 1;" />
+                <input type="tel" id="otp-phone-input" class="form-input" placeholder="e.g. 024 431 8900" style="flex: 1; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px;" />
                 <button type="button" id="btn-send-otp" class="btn-pill btn-outline" style="white-space: nowrap; font-size: 0.82rem; font-weight: 700; padding: 0.6rem 0.9rem;">
                   <span>📨</span> Send OTP
                 </button>
@@ -4543,18 +4623,13 @@ const Modals = {
 
             <div id="otp-verify-section" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.15rem; margin-bottom: 1.25rem;">
               <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label" style="font-size: 0.82rem;">Enter 6-Digit SMS Code *</label>
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Enter 6-Digit SMS Code *</label>
                 <input type="text" id="otp-code-input" class="form-input" placeholder="6-digit code" maxlength="6" style="font-size: 1.25rem; letter-spacing: 0.25em; text-align: center; font-weight: 800;" />
               </div>
               <button type="button" id="btn-verify-otp" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
                 <span>✅</span> Verify & Enter Parents Portal
               </button>
             </div>
-          </div>
-
-          <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #64748b;">
-            Don't have an account yet? 
-            <a href="#" id="link-goto-register" style="color: var(--primary-700); font-weight: 700; text-decoration: underline;">Register School / Account &rarr;</a>
           </div>
         </div>
       </div>
@@ -4564,29 +4639,45 @@ const Modals = {
 
     document.getElementById('modal-close').onclick = () => this.close();
 
-    // Tab switching logic
-    const tabEmail = document.getElementById('tab-login-email');
-    const tabOtp = document.getElementById('tab-login-otp');
-    const paneEmail = document.getElementById('auth-pane-email');
-    const paneOtp = document.getElementById('auth-pane-otp');
+    // Tab Switching Function
+    const setModalTab = (tab) => {
+      const tabSignin = document.getElementById('tab-auth-signin');
+      const tabSignup = document.getElementById('tab-auth-signup');
+      const tabOtp = document.getElementById('tab-auth-otp');
+      const paneSignin = document.getElementById('auth-pane-signin');
+      const paneSignup = document.getElementById('auth-pane-signup');
+      const paneOtp = document.getElementById('auth-pane-otp');
+      const mainTitle = document.getElementById('auth-modal-main-title');
 
-    tabEmail.onclick = () => {
-      tabEmail.style.background = '#0a1128';
-      tabEmail.style.color = '#ffffff';
-      tabOtp.style.background = 'transparent';
-      tabOtp.style.color = '#475569';
-      paneEmail.style.display = 'block';
-      paneOtp.style.display = 'none';
+      if (tabSignin) {
+        tabSignin.style.background = tab === 'signin' ? '#0a1128' : 'transparent';
+        tabSignin.style.color = tab === 'signin' ? '#ffffff' : '#475569';
+      }
+      if (tabSignup) {
+        tabSignup.style.background = tab === 'signup' ? '#0a1128' : 'transparent';
+        tabSignup.style.color = tab === 'signup' ? '#ffffff' : '#475569';
+      }
+      if (tabOtp) {
+        tabOtp.style.background = tab === 'otp' ? '#0a1128' : 'transparent';
+        tabOtp.style.color = tab === 'otp' ? '#ffffff' : '#475569';
+      }
+
+      if (paneSignin) paneSignin.style.display = tab === 'signin' ? 'block' : 'none';
+      if (paneSignup) paneSignup.style.display = tab === 'signup' ? 'block' : 'none';
+      if (paneOtp) paneOtp.style.display = tab === 'otp' ? 'block' : 'none';
+
+      if (mainTitle) {
+        mainTitle.innerText = tab === 'signup' 
+          ? 'Create New Parent Account' 
+          : (tab === 'otp' ? 'Ghana Phone SMS OTP Sign In' : 'Sign In to SkoolFinder');
+      }
     };
 
-    tabOtp.onclick = () => {
-      tabOtp.style.background = '#0a1128';
-      tabOtp.style.color = '#ffffff';
-      tabEmail.style.background = 'transparent';
-      tabEmail.style.color = '#475569';
-      paneEmail.style.display = 'none';
-      paneOtp.style.display = 'block';
-    };
+    document.getElementById('tab-auth-signin').onclick = () => setModalTab('signin');
+    document.getElementById('tab-auth-signup').onclick = () => setModalTab('signup');
+    document.getElementById('tab-auth-otp').onclick = () => setModalTab('otp');
+    document.getElementById('link-switch-to-signup')?.addEventListener('click', () => setModalTab('signup'));
+    document.getElementById('link-switch-to-signin')?.addEventListener('click', () => setModalTab('signin'));
 
     // Toggle password visibility
     const passInput = document.getElementById('auth-password-input');
@@ -4685,13 +4776,7 @@ const Modals = {
       }
     };
 
-    // Goto register link
-    document.getElementById('link-goto-register').onclick = (e) => {
-      e.preventDefault();
-      this.openRegisterModal(options);
-    };
-
-    // Email Form submit
+    // Form 1: Email & Password Sign In
     document.getElementById('form-auth-login').onsubmit = async (e) => {
       e.preventDefault();
       const login = document.getElementById('auth-login-input').value.trim();
@@ -4706,7 +4791,6 @@ const Modals = {
         State.setCurrentUser(res.user, res.token);
         this.close();
 
-        // Refresh navbar immediately
         if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
           document.getElementById('header-root').innerHTML = Navbar.render();
           Navbar.attachEvents();
@@ -4719,7 +4803,6 @@ const Modals = {
         } else if (options.redirectView) {
           App.navigate(options.redirectView, options.redirectParam || null);
         } else {
-          // Default role redirects to the 5 portals
           if (res.user.role === 'school_admin') {
             App.navigate('schools', res.user.schoolId || 'sch-gis-accra');
           } else if (res.user.role === 'parent') {
@@ -4736,118 +4819,39 @@ const Modals = {
         }
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>🔑</span> Sign In with Email';
+        submitBtn.innerHTML = '<span>🔑</span> Sign In to SkoolFinder';
         State.showToast(err.message, 'error');
       }
     };
-  },
 
-  openRegisterModal(options = {}) {
-    this.close();
-    const div = document.createElement('div');
-    div.id = 'modal-backdrop';
-    div.className = 'modal-backdrop';
-
-    div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 550px; border-radius: var(--radius-xl); overflow: hidden;">
-        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.5rem 1.75rem;">
-          <div>
-            <div style="font-size: 0.78rem; font-weight: 700; color: #fbbf24; text-transform: uppercase;">
-              Ghana Education Network
-            </div>
-            <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.2rem;">Create Your Account</h3>
-          </div>
-          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1;">&times;</button>
-        </div>
-
-        <form id="form-auth-register" class="modal-body" style="padding: 1.75rem;">
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label class="form-label" style="font-size: 0.82rem;">Select Account Role *</label>
-            <select id="reg-role" class="form-select" required>
-              <option value="parent">👨‍👩‍👧 Parent / Guardian (Apply, Inquire, Review)</option>
-              <option value="school_admin">🏫 School Proprietor / Administrator</option>
-              <option value="teacher">👨‍🏫 Independent Educator / Subject Tutor</option>
-            </select>
-          </div>
-
-          <div id="reg-school-group" class="form-group" style="display: none; margin-bottom: 1rem;">
-            <label class="form-label" style="font-size: 0.82rem;">Select School Campus *</label>
-            <select id="reg-school-id" class="form-select">
-              <option value="sch-gis-accra">Ghana International School (GIS)</option>
-              <option value="sch-sos-tema">SOS-Hermann Gmeiner International College</option>
-              <option value="sch-morning-star-cantonments">Morning Star School, Cantonments</option>
-              <option value="sch-lincoln-accra">Lincoln Community School (LCS)</option>
-              <option value="sch-roman-ridge-accra">The Roman Ridge School</option>
-              <option value="sch-presec-legon">Presbyterian Boys' Secondary School (PRESEC)</option>
-            </select>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 1rem;">
-            <label class="form-label" style="font-size: 0.82rem;">Full Name *</label>
-            <input type="text" id="reg-name" class="form-input" placeholder="e.g. Dr. Kwame Mensah" required />
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-            <div class="form-group">
-              <label class="form-label" style="font-size: 0.82rem;">Email Address *</label>
-              <input type="email" id="reg-email" class="form-input" placeholder="name@domain.com" required />
-            </div>
-            <div class="form-group">
-              <label class="form-label" style="font-size: 0.82rem;">Phone / WhatsApp *</label>
-              <input type="tel" id="reg-phone" class="form-input" placeholder="+233 24 123 4567" required />
-            </div>
-          </div>
-
-          <div class="form-group" style="margin-bottom: 1.5rem;">
-            <label class="form-label" style="font-size: 0.82rem;">Password (Min 6 characters) *</label>
-            <input type="password" id="reg-password" class="form-input" placeholder="Create a secure password" minlength="6" required />
-          </div>
-
-          <button type="submit" id="btn-submit-register" class="btn-pill btn-gold" style="width: 100%; justify-content: center; padding: 0.75rem; font-size: 0.95rem; font-weight: 700;">
-            <span>✨</span> Complete Registration & Sign In
-          </button>
-
-          <div style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: #64748b;">
-            Already have an account? 
-            <a href="#" id="link-goto-login" style="color: var(--primary-700); font-weight: 700; text-decoration: underline;">Sign In here &rarr;</a>
-          </div>
-        </form>
-      </div>
-    `;
-
-    document.body.appendChild(div);
-
-    document.getElementById('modal-close').onclick = () => this.close();
-
-    // Toggle school picker if role is school_admin
-    const roleSelect = document.getElementById('reg-role');
-    const schoolGroup = document.getElementById('reg-school-group');
-    roleSelect.onchange = () => {
-      schoolGroup.style.display = roleSelect.value === 'school_admin' ? 'block' : 'none';
-    };
-
-    // Link back to login
-    document.getElementById('link-goto-login').onclick = (e) => {
+    // Form 2: New Parent Registration (Sign Up)
+    document.getElementById('form-modal-parent-register').onsubmit = async (e) => {
       e.preventDefault();
-      this.openLoginModal(options);
-    };
-
-    // Form submit
-    document.getElementById('form-auth-register').onsubmit = async (e) => {
-      e.preventDefault();
-      const role = document.getElementById('reg-role').value;
-      const schoolId = role === 'school_admin' ? document.getElementById('reg-school-id').value : null;
-      const name = document.getElementById('reg-name').value.trim();
-      const email = document.getElementById('reg-email').value.trim();
-      const phone = document.getElementById('reg-phone').value.trim();
-      const password = document.getElementById('reg-password').value;
-      const submitBtn = document.getElementById('btn-submit-register');
+      const name = document.getElementById('mreg-parent-name').value.trim();
+      const phone = document.getElementById('mreg-parent-phone').value.trim();
+      const email = document.getElementById('mreg-parent-email').value.trim();
+      const password = document.getElementById('mreg-parent-password').value;
+      const childName = document.getElementById('mreg-child-name').value.trim();
+      const childLevel = document.getElementById('mreg-child-level').value;
+      const targetSchoolId = document.getElementById('mreg-target-school').value;
+      const submitBtn = document.getElementById('btn-submit-mreg-parent');
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>⏳</span> Registering account...';
+      submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
 
       try {
-        const res = await API.register({ role, schoolId, name, email, phone, password });
+        const res = await API.register({
+          role: 'parent',
+          name,
+          phone,
+          email,
+          password,
+          childName,
+          childLevel,
+          targetSchoolId,
+          suburb: 'Ghana'
+        });
+
         State.setCurrentUser(res.user, res.token);
         this.close();
 
@@ -4856,27 +4860,26 @@ const Modals = {
           Navbar.attachEvents();
         }
 
-        State.showToast(`Account created! Welcome, ${res.user.name}.`, 'success');
+        State.showToast(`🎉 Welcome, ${res.user.name}! Your parent account & admission tracking are active.`, 'success');
 
         if (options.onSuccess) {
           options.onSuccess(res.user);
         } else {
-          if (res.user.role === 'school_admin') {
-            App.navigate('dashboard', res.user.schoolId || 'sch-gis-accra');
-          } else if (res.user.role === 'parent') {
-            App.navigate('parent-portal');
-          } else {
-            App.refreshCurrentView();
-          }
+          App.navigate('parents');
         }
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>✨</span> Complete Registration & Sign In';
+        submitBtn.innerHTML = '<span>✨</span> Create Parent Account & Register Ward &rarr;';
         State.showToast(err.message, 'error');
       }
     };
   },
-  // Digital School Fee Invoicing & MoMo Payment Collection (Feature 6)
+
+  // Backward compatibility alias: openRegisterModal delegates to openLoginModal on the sign up tab
+  openRegisterModal(options = {}) {
+    this.openLoginModal({ ...options, initialTab: 'signup' });
+  },
+
   openFeePaymentModal(invoice, onPaidCallback = null) {
     this.close();
     const div = document.createElement('div');

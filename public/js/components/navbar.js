@@ -116,8 +116,11 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-login" class="btn-pill btn-primary nav-action-desktop" style="font-size: 0.88rem; padding: 0.45rem 1.15rem;">
+              <button id="btn-nav-login" class="btn-pill btn-outline nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.9rem; font-weight: 700;">
                 <span>🔑</span> Sign In
+              </button>
+              <button id="btn-nav-parent-signup" class="btn-pill btn-gold nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 1rem; font-weight: 800; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
+                <span>✨</span> New Parent Sign Up
               </button>
             `}
 
@@ -186,9 +189,14 @@ const Navbar = {
                   <span>🚪</span> Logout (${State.currentUser.name.split(' ')[0]})
                 </button>
               ` : `
-                <button id="mob-btn-login" class="btn-pill btn-primary" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem;">
-                  <span>🔑</span> Sign In to Account
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+                  <button id="mob-btn-login" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 700;">
+                    <span>🔑</span> Sign In to Account
+                  </button>
+                  <button id="mob-btn-parent-signup" class="btn-pill btn-gold" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800;">
+                    <span>✨</span> New Parent Sign Up
+                  </button>
+                </div>
               `}
             </div>
           </div>
@@ -272,7 +280,11 @@ const Navbar = {
 
     // Auth Action Buttons
     document.getElementById('btn-nav-login')?.addEventListener('click', () => {
-      Modals.openLoginModal();
+      Modals.openLoginModal({ initialTab: 'signin' });
+    });
+
+    document.getElementById('btn-nav-parent-signup')?.addEventListener('click', () => {
+      Modals.openLoginModal({ initialTab: 'signup' });
     });
 
     document.getElementById('btn-nav-logout')?.addEventListener('click', () => {
@@ -283,7 +295,14 @@ const Navbar = {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
-      Modals.openLoginModal();
+      Modals.openLoginModal({ initialTab: 'signin' });
+    });
+
+    document.getElementById('mob-btn-parent-signup')?.addEventListener('click', () => {
+      this.isMobileMenuOpen = false;
+      const drawer = document.getElementById('mobile-nav-drawer');
+      if (drawer) drawer.classList.remove('open');
+      Modals.openLoginModal({ initialTab: 'signup' });
     });
 
     document.getElementById('mob-btn-logout')?.addEventListener('click', () => {
