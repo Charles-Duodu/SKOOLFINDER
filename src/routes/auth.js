@@ -6,6 +6,21 @@ const { z } = require('zod');
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, JWT_SECRET } = require('../middleware/auth');
 
+function normalizeGhanaPhone(rawPhone) {
+  if (!rawPhone) return '';
+  let cleaned = rawPhone.replace(/[^0-9]/g, '');
+  if (cleaned.startsWith('233') && cleaned.length === 12) {
+    return `+233 ${cleaned.slice(3, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8)}`;
+  }
+  if (cleaned.startsWith('0') && cleaned.length === 10) {
+    return `+233 ${cleaned.slice(1, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+  }
+  if (cleaned.length === 9) {
+    return `+233 ${cleaned.slice(0, 2)} ${cleaned.slice(2, 5)} ${cleaned.slice(5)}`;
+  }
+  return rawPhone;
+}
+
 // In-memory OTP storage for Ghana phone verification (Development fallback)
 const otpStore = new Map();
 
@@ -130,15 +145,17 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Email / username and password are required' });
     }
 
-    // 1. Check in profiles table
+    // 1. Check in profiles table by email or phone
+    const normalizedPhone = normalizeGhanaPhone(identifier);
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from('profiles')
       .select('*')
-      .eq('email', identifier)
-      .single();
+      .or(`email.eq.${identifier},phone.eq.${identifier},phone.eq.${normalizedPhone}`)
+      .limit(1)
+      .maybeSingle();
 
     if (profileErr || !profile) {
-      return res.status(401).json({ error: 'No account found with this email' });
+      return res.status(401).json({ error: 'No account found with this email or phone number. Please check credentials or sign up.' });
     }
 
     if (profile.status === 'suspended') {

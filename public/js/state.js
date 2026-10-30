@@ -18,6 +18,45 @@ const State = {
 
   comparisonList: [], // array of school objects (max 3)
   
+  // Bookmarks & Shortlisted Schools
+  bookmarkedSchoolIds: (() => {
+    try {
+      const stored = localStorage.getItem('skoolfinder_bookmarks');
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  })(),
+
+  isBookmarked(schoolId) {
+    return Array.isArray(this.bookmarkedSchoolIds) && this.bookmarkedSchoolIds.includes(schoolId);
+  },
+
+  async toggleBookmark(schoolId, schoolName = 'School') {
+    const isSaved = this.isBookmarked(schoolId);
+    if (isSaved) {
+      this.bookmarkedSchoolIds = this.bookmarkedSchoolIds.filter(id => id !== schoolId);
+      this.showToast(`Removed ${schoolName} from saved bookmarks.`, 'info');
+    } else {
+      this.bookmarkedSchoolIds.push(schoolId);
+      this.showToast(`Saved ${schoolName} to bookmarks!`, 'success');
+    }
+    try {
+      localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(this.bookmarkedSchoolIds));
+    } catch (e) {
+      console.warn("Bookmark local storage write:", e);
+    }
+
+    if (this.isAuthenticated() && typeof API !== 'undefined' && API.toggleSchoolBookmark) {
+      try {
+        await API.toggleSchoolBookmark(schoolId);
+      } catch (err) {
+        console.warn("Backend bookmark sync:", err.message);
+      }
+    }
+    return !isSaved;
+  },
+  
   // Authentication & Session (Feature 5)
   currentUser: (() => {
     try {

@@ -1757,6 +1757,11 @@ const Modals = {
   // Inquire / Book Campus Tour Modal (For Parents)
   openInquireAdmissionModal(school) {
     this.close();
+    const defaultParentName = State.currentUser?.name || State.currentUser?.fullName || '';
+    const defaultPhone = State.currentUser?.phone || '';
+    const defaultEmail = State.currentUser?.email || '';
+    const todayStr = new Date().toISOString().split('T')[0];
+
     const div = document.createElement('div');
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
@@ -1772,18 +1777,18 @@ const Modals = {
         <form id="form-inquire-admission" class="modal-body">
           <div style="background: var(--primary-50); padding: 0.85rem 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
             <div style="font-weight: 700; color: var(--primary-900);">${school.name}</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">📍 ${school.suburb}, ${school.region} • ${school.admissionsStatus}</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">📍 ${school.suburb || school.locality || 'Accra'}, ${school.region || 'Greater Accra'} • ${school.admissionsStatus || 'Admissions Open'}</div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Parent / Guardian Full Name *</label>
-            <input type="text" id="inq-parent-name" class="form-input" placeholder="e.g. Mr. Samuel Mensah" required />
+            <input type="text" id="inq-parent-name" class="form-input" placeholder="e.g. Mr. Samuel Mensah" value="${defaultParentName}" required />
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
               <label class="form-label">WhatsApp Number *</label>
-              <input type="tel" id="inq-phone" class="form-input" placeholder="e.g. 024 400 0000" required />
+              <input type="tel" id="inq-phone" class="form-input" placeholder="e.g. 024 400 0000" value="${defaultPhone}" required />
             </div>
             <div class="form-group">
               <label class="form-label">Target Class / Grade *</label>
@@ -1793,6 +1798,7 @@ const Modals = {
                 <option value="Primary (Class 1-6)" selected>Primary (Class 1-6)</option>
                 <option value="JHS (Grade 7-9)">JHS (Grade 7-9)</option>
                 <option value="SHS / IGCSE">Senior High (SHS / IGCSE)</option>
+                <option value="IB Diploma / A-Levels">IB Diploma / A-Levels</option>
               </select>
             </div>
           </div>
@@ -1803,23 +1809,24 @@ const Modals = {
               <select id="inq-term" class="form-select">
                 <option value="Term 1 (September 2026)">Term 1 (September 2026)</option>
                 <option value="Term 2 (January 2027)">Term 2 (January 2027)</option>
+                <option value="Term 3 (April 2027)">Term 3 (April 2027)</option>
                 <option value="Immediate Mid-Term">Immediate Mid-Term</option>
               </select>
             </div>
             <div class="form-group">
               <label class="form-label">Preferred Campus Visit Date</label>
-              <input type="date" id="inq-date" class="form-input" />
+              <input type="date" id="inq-date" min="${todayStr}" class="form-input" />
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label">Specific Questions / Ward Needs</label>
-            <textarea id="inq-notes" class="form-textarea" rows="2" placeholder="e.g. Inquiring about school bus pickup in East Legon and fee payment plans."></textarea>
+            <textarea id="inq-notes" class="form-textarea" rows="2" placeholder="e.g. Inquiring about school bus pickup in East Legon, fee payment plans, and entrance screening dates."></textarea>
           </div>
 
           <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: none;">
             <button type="button" class="btn-pill btn-outline" id="btn-cancel-inquire">Cancel</button>
-            <button type="submit" class="btn-pill btn-gold">Submit Official Inquiry</button>
+            <button type="submit" class="btn-pill btn-gold" id="btn-submit-inquire">Submit Official Inquiry</button>
           </div>
         </form>
       </div>
@@ -1831,25 +1838,152 @@ const Modals = {
 
     document.getElementById('form-inquire-admission').onsubmit = async (e) => {
       e.preventDefault();
-      const parentName = document.getElementById('inq-parent-name').value;
-      const phone = document.getElementById('inq-phone').value;
+      const parentName = document.getElementById('inq-parent-name').value.trim();
+      const phone = document.getElementById('inq-phone').value.trim();
       const grade = document.getElementById('inq-grade').value;
       const term = document.getElementById('inq-term').value;
-      const notes = document.getElementById('inq-notes').value;
+      const notes = document.getElementById('inq-notes').value.trim();
+      const tourDate = document.getElementById('inq-date').value || null;
+
+      const submitBtn = document.getElementById('btn-submit-inquire');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Submitting to Admissions...';
+      }
 
       try {
-        await API.recordLead(school.id, 'admission_inquiry');
+        const payload = {
+          schoolId: school.id,
+          parentName,
+          parentPhone: phone,
+          parentWhatsapp: phone,
+          parentEmail: defaultEmail,
+          studentName: `Child of ${parentName}`,
+          gradeApplying: grade,
+          category: 'Admissions & Campus Tour',
+          tourRequested: !!tourDate,
+          preferredTourDate: tourDate,
+          preferredTourTime: 'Morning Session (10:00 AM)',
+          subject: `Admissions Inquiry: ${grade} (${term})`,
+          message: notes || `Admission inquiry and campus visit request for ${grade} (${term}).`
+        };
+
+        const res = await API.submitInquiry(payload);
+        API.recordLead(school.id, 'admission_inquiry').catch(console.error);
+
         this.close();
-        State.showToast(`Admissions inquiry sent to ${school.name}!`, 'success');
-        
-        // Connect to Admissions Desk on WhatsApp with prefilled message
-        const cleanWa = school.whatsapp.replace(/[^0-9]/g, '');
-        const msg = encodeURIComponent(`Hello ${school.name} Admissions, my name is ${parentName}. I just submitted an official admission inquiry on SkoolFinder Ghana regarding ${grade} (${term}). ${notes ? 'Note: ' + notes : ''}`);
-        window.open(`https://wa.me/${cleanWa}?text=${msg}`, '_blank');
+        const trackingRef = res?.inquiry?.referenceNumber || `SF-INQ-${Date.now().toString().slice(-6)}`;
+        this.openInquirySuccessModal({
+          school,
+          trackingRef,
+          parentName,
+          phone,
+          grade,
+          term,
+          notes,
+          tourDate
+        });
       } catch (err) {
         State.showToast(err.message, 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Submit Official Inquiry';
+        }
       }
     };
+  },
+
+  // Feature 16: Digital Admission Inquiry Voucher & Instant WhatsApp Modal
+  openInquirySuccessModal({ school, trackingRef, parentName, phone, grade, term, notes, tourDate }) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    const cleanWa = (school.whatsapp || school.phone || '0244123456').replace(/[^0-9]/g, '');
+    const waText = encodeURIComponent(`Hello ${school.name} Admissions, my name is ${parentName}. I just submitted an official admission inquiry on SkoolFinder Ghana with Reference Code [${trackingRef}] regarding ${grade} (${term}). ${notes ? 'Notes: ' + notes : ''}`);
+    const waUrl = `https://wa.me/${cleanWa}?text=${waText}`;
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px; text-align: center;">
+        <div class="modal-header" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
+          <div style="width: 56px; height: 56px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 0.5rem; box-shadow: 0 4px 12px rgba(16,185,129,0.2);">
+            ✓
+          </div>
+        </div>
+
+        <div class="modal-body" style="padding: 0.5rem 1.75rem 1.5rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: var(--primary-900); margin-bottom: 0.5rem;">
+            Inquiry Successfully Logged!
+          </h3>
+          <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.5rem;">
+            Your inquiry has been registered in <strong>${school.name}</strong>'s Admissions Desk.
+          </p>
+
+          <!-- Digital Voucher Card -->
+          <div style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-radius: var(--radius-xl); padding: 1.5rem; color: #ffffff; text-align: left; margin-bottom: 1.5rem; box-shadow: 0 10px 25px rgba(15,23,42,0.18); position: relative; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+              <div>
+                <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: #fbbf24; font-weight: 700;">
+                  Official Tracking Voucher
+                </div>
+                <div style="font-family: monospace; font-size: 1.3rem; font-weight: 800; color: #ffffff; letter-spacing: 1px; margin-top: 0.2rem;" id="txt-voucher-code">
+                  ${trackingRef}
+                </div>
+              </div>
+              <button id="btn-copy-voucher-code" class="btn-pill btn-gold" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; font-weight: 700;">
+                <span>📋</span> Copy Code
+              </button>
+            </div>
+
+            <div style="font-size: 0.84rem; color: #cbd5e1; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 0.75rem;">
+              <div><strong>Institution:</strong> ${school.name}</div>
+              <div><strong>Target Grade:</strong> ${grade} &bull; ${term}</div>
+              ${tourDate ? `<div><strong>Campus Tour:</strong> ${tourDate} (Morning)</div>` : ''}
+              <div><strong>Status:</strong> <span style="color: #34d399; font-weight: 700;">● Active in Admissions Queue</span></div>
+            </div>
+          </div>
+
+          <!-- Direct Actions -->
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <a href="${waUrl}" target="_blank" class="btn-pill" style="background: #25D366; color: #ffffff; padding: 0.75rem 1.25rem; font-size: 0.95rem; font-weight: 800; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(37,211,102,0.35);">
+              <span>💬</span> Chat Admissions Desk on WhatsApp Now
+            </a>
+
+            <div style="display: flex; gap: 0.75rem; justify-content: center;">
+              <button id="btn-modal-view-tracker" class="btn-pill btn-outline" style="flex: 1; padding: 0.6rem; font-size: 0.88rem;">
+                <span>🔍</span> Track Status
+              </button>
+              <button id="btn-modal-close-voucher" class="btn-pill btn-primary" style="flex: 1; padding: 0.6rem; font-size: 0.88rem;">
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('btn-copy-voucher-code')?.addEventListener('click', () => {
+      navigator.clipboard.writeText(trackingRef);
+      State.showToast(`Tracking Code ${trackingRef} copied to clipboard!`, 'success');
+      const btn = document.getElementById('btn-copy-voucher-code');
+      if (btn) btn.innerHTML = '<span>✓</span> Copied!';
+    });
+
+    document.getElementById('btn-modal-close-voucher')?.addEventListener('click', () => {
+      this.close();
+    });
+
+    document.getElementById('btn-modal-view-tracker')?.addEventListener('click', () => {
+      this.close();
+      this.openTrackInquiryModal();
+      setTimeout(() => {
+        const inp = document.getElementById('track-inq-code');
+        if (inp) inp.value = trackingRef;
+      }, 50);
+    });
   },
 
   openPricingModal() {

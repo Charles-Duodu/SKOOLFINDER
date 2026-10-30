@@ -107,12 +107,15 @@ const Navbar = {
             ` : ''}
 
             ${State.isAuthenticated() ? `
-              <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.4rem;">
+              <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.45rem;">
+                <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.role === 'school_admin' ? 'btn-gold' : 'btn-primary'}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your role workspace">
+                  <span>${State.currentUser.role === 'school_admin' ? '🏫 School OS' : (State.currentUser.role === 'teacher' ? '👨‍🏫 Tutor Desk' : (State.currentUser.role === 'supplier' ? '📦 Vendor Hub' : '👨‍👩‍👧 My Portal'))}</span>
+                </button>
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
-                  ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]} (${State.currentUser.role === 'school_admin' ? 'Admin' : (State.currentUser.role === 'parent' ? 'Parent' : (State.currentUser.role || 'Member'))})
+                  ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]}
                 </span>
-                <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.4rem 0.7rem; font-size: 0.78rem;" title="Sign out of account">
-                  <span>🚪</span> Logout
+                <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.38rem 0.7rem; font-size: 0.78rem;" title="Sign out of account">
+                  <span>🚪</span>
                 </button>
               </div>
             ` : `
@@ -285,6 +288,21 @@ const Navbar = {
 
     document.getElementById('btn-nav-parent-signup')?.addEventListener('click', () => {
       Modals.openLoginModal({ initialTab: 'signup' });
+    });
+
+    document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {
+      const role = State.currentUser?.role;
+      if (role === 'school_admin') {
+        App.navigate('schools', State.currentUser?.schoolId || 'ghana-international-school');
+      } else if (role === 'teacher') {
+        App.navigate('teachers');
+      } else if (role === 'supplier') {
+        App.navigate('suppliers');
+      } else if (role === 'super_admin') {
+        App.navigate('admin');
+      } else {
+        App.navigate('parents');
+      }
     });
 
     document.getElementById('btn-nav-logout')?.addEventListener('click', () => {

@@ -28,6 +28,16 @@ const ParentPortalView = {
       };
     }
 
+    // Hydrate local bookmarks if backend list is empty
+    if ((!this.overviewData.savedSchools || this.overviewData.savedSchools.length === 0) && State.bookmarkedSchoolIds?.length > 0) {
+      try {
+        const allSchools = await API.getSchools();
+        this.overviewData.savedSchools = allSchools.filter(s => State.bookmarkedSchoolIds.includes(s.id));
+      } catch (err) {
+        console.warn("Hydrating local bookmarks:", err);
+      }
+    }
+
     const { user: profile, stats, applications = [], inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData;
     const parentName = profile?.name || user?.name || "Parent / Guardian";
     const parentEmail = profile?.email || user?.email || "parent@gmail.com";
@@ -2410,8 +2420,7 @@ const ParentPortalView = {
       btn.addEventListener('click', async (e) => {
         const schoolId = e.currentTarget.dataset.schoolid;
         try {
-          await API.toggleSchoolBookmark(schoolId);
-          State.showToast("School removed from shortlisted bookmarks", "info");
+          await State.toggleBookmark(schoolId);
           App.refreshCurrentView();
         } catch (err) {
           State.showToast(err.message, "error");

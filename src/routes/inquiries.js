@@ -140,18 +140,98 @@ router.get('/', async (req, res) => {
 });
 
 /**
- * GET /api/inquiries/:refOrId
+ * GET /api/inquiries/lookup/:refOrId & GET /api/inquiries/:refOrId
  * Track inquiry status
  */
-router.get('/:refOrId', async (req, res) => {
-  const { refOrId } = req.params;
-  return res.json({
-    id: refOrId,
-    referenceNumber: refOrId.startsWith('SF-INQ-') ? refOrId : `SF-INQ-${refOrId.slice(-6)}`,
-    status: 'In Review by School Admissions Desk',
-    estimatedFeedback: '24 - 48 Hours',
-    whatsappNotificationSent: true
-  });
+router.get(['/lookup/:refOrId', '/:refOrId'], async (req, res) => {
+  try {
+    const { refOrId } = req.params;
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(refOrId);
+
+    let foundEnquiry = null;
+    let query = supabaseAdmin.from('enquiries').select('*');
+
+    if (isUuid) {
+      query = query.eq('id', refOrId);
+    } else {
+      query = query.or(`message.ilike.%${refOrId}%,subject.ilike.%${refOrId}%`);
+    }
+
+    const { data, error } = await query.limit(1).maybeSingle();
+    foundEnquiry = data;
+
+    // Resolve School Information
+    let school = {
+      id: 'ghana-international-school',
+      name: 'Ghana International School (GIS)',
+      suburb: 'Cantonments',
+      region: 'Greater Accra',
+      whatsapp: '+233244123456'
+    };
+
+    if (foundEnquiry?.recipient_id && foundEnquiry.recipient_id !== '00000000-0000-0000-0000-000000000001') {
+      const { data: sch } = await supabaseAdmin
+        .from('schools')
+        .select('*')
+        .eq('id', foundEnquiry.recipient_id)
+        .maybeSingle();
+      if (sch) school = sch;
+    }
+
+    const trackingCode = refOrId.startsWith('SF-INQ-') || refOrId.startsWith('INQ-') ? refOrId : `SF-INQ-${refOrId.slice(-6)}`;
+
+    // Parse details out of compiled message if available
+    let parentName = 'Parent / Guardian';
+    let parentPhone = '+233 24 000 0000';
+    let studentName = 'Prospective Student';
+    let gradeApplying = 'Primary';
+    let tourRequested = true;
+    let originalNotes = foundEnquiry?.message || 'Inquiry regarding admission entry requirements and campus walkthrough.';
+
+    if (foundEnquiry?.message) {
+      const pMatch = foundEnquiry.message.match(/Parent:\s*([^|\n]+)/);
+      if (pMatch) parentName = pMatch[1].trim();
+      const phMatch = foundEnquiry.message.match(/Phone:\s*([^|\n]+)/);
+      if (phMatch) parentPhone = phMatch[1].trim();
+      const sMatch = foundEnquiry.message.match(/Student:\s*([^\(\n]+)/);
+      if (sMatch) studentName = sMatch[1].trim();
+      const gMatch = foundEnquiry.message.match(/\(([^)]+)\)/);
+      if (gMatch) gradeApplying = gMatch[1].trim();
+    }
+
+    return res.json({
+      id: foundEnquiry?.id || refOrId,
+      inquiryNumber: trackingCode,
+      referenceNumber: trackingCode,
+      schoolId: school.id || 'ghana-international-school',
+      schoolName: school.name || 'Accredited Institution',
+      parentName,
+      parentPhone,
+      parentWhatsapp: parentPhone,
+      studentName,
+      gradeApplying,
+      category: 'Admissions & Campus Tour',
+      subject: foundEnquiry?.subject || `Admissions Inquiry: ${studentName} (${gradeApplying})`,
+      message: originalNotes,
+      tourRequested,
+      preferredTourDate: 'Next Available Visiting Slot',
+      preferredTourTime: 'Morning Session (10:00 AM)',
+      status: foundEnquiry?.status === 'replied' ? 'Replied' : 'Tour Scheduled',
+      createdAt: foundEnquiry?.created_at || new Date().toISOString(),
+      replies: [
+        {
+          sender: 'school',
+          senderName: 'Admissions Desk',
+          senderRole: 'Senior Admissions Registrar',
+          message: `Greetings ${parentName}. We have received your inquiry for ${studentName}. Our admissions team is pleased to invite you for a campus walkthrough. Please present reference code ${trackingCode} at the main gate reception.`,
+          timestamp: new Date().toISOString()
+        }
+      ]
+    });
+  } catch (err) {
+    console.error('Error looking up inquiry:', err);
+    return res.status(500).json({ error: 'Failed to look up inquiry' });
+  }
 });
 
 module.exports = router;

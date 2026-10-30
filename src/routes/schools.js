@@ -198,20 +198,30 @@ router.post('/', authenticate, async (req, res) => {
 router.post('/:id/claim', async (req, res) => {
   try {
     const { id } = req.params;
-    const { officialRole, officialEmail, officialPhone, evidenceNotes, claimantId } = req.body;
+    const officialRole = req.body.officialRole || req.body.claimantRole || 'Head of School / Principal';
+    const officialEmail = req.body.officialEmail || req.body.claimEmail || req.body.email || '';
+    const officialPhone = req.body.officialPhone || req.body.claimPhone || req.body.phone || '';
+    const evidenceNotes = req.body.evidenceNotes || req.body.notes || req.body.claimNotes || '';
+    const claimantName = req.body.claimantName || req.body.name || req.body.claimName || 'School Administrator';
+    const claimantId = req.body.claimantId || req.user?.id || '00000000-0000-0000-0000-000000000001';
 
     const isSchoolUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    const targetSchoolId = isSchoolUuid ? id : '00000000-0000-0000-0000-000000000001';
+    let targetSchoolId = isSchoolUuid ? id : null;
+
+    if (!targetSchoolId) {
+      const { data: sch } = await supabaseAdmin.from('schools').select('id').eq('slug', id).maybeSingle();
+      targetSchoolId = sch?.id || '00000000-0000-0000-0000-000000000001';
+    }
 
     const { data: claim, error } = await supabaseAdmin
       .from('school_claims')
       .insert({
         school_id: targetSchoolId,
-        claimant_id: claimantId || '00000000-0000-0000-0000-000000000001',
-        official_role: officialRole || 'Administrator',
-        official_email: officialEmail || '',
-        official_phone: officialPhone || '',
-        evidence_notes: evidenceNotes || '',
+        claimant_id: claimantId,
+        official_role: officialRole,
+        official_email: officialEmail,
+        official_phone: officialPhone,
+        evidence_notes: `[Claimant: ${claimantName}] ${evidenceNotes}`.trim(),
         status: 'pending'
       })
       .select()
@@ -227,7 +237,8 @@ router.post('/:id/claim', async (req, res) => {
       claim: {
         id: claim?.id || `claim-${Date.now()}`,
         schoolId: id,
-        officialRole: officialRole || 'School Administrator',
+        claimantName,
+        officialRole,
         officialEmail,
         officialPhone,
         status: 'pending',
@@ -235,6 +246,7 @@ router.post('/:id/claim', async (req, res) => {
       }
     });
   } catch (err) {
+    console.error('Error submitting claim:', err);
     return res.status(500).json({ error: 'Failed to submit claim' });
   }
 });

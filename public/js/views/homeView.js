@@ -402,6 +402,7 @@ const HomeView = {
 
   renderSchoolCard(school) {
     const isCompared = State.isInCompare(school.id);
+    const isSaved = State.isBookmarked(school.id);
     const curriculumTag = Array.isArray(school.curriculum) && school.curriculum.length > 0 ? school.curriculum[0] : (school.curriculum || 'GES');
     let badgeClass = 'badge-ges';
     if (String(curriculumTag).includes('Cambridge')) badgeClass = 'badge-cambridge';
@@ -432,6 +433,10 @@ const HomeView = {
         <div class="card-mini-carousel" id="carousel-${school.id}">
           <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" />
           
+          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
+            ${isSaved ? '🔖' : '🤍'}
+          </button>
+
           <div class="carousel-nav-dots" data-school-id="${school.id}">
             <span class="carousel-dot active" data-img="${galleryImgs[0]}" title="Campus Front"></span>
             <span class="carousel-dot" data-img="${galleryImgs[1]}" title="Science & Tech Labs"></span>
@@ -551,6 +556,18 @@ const HomeView = {
         const school = await API.getSchoolById(schoolId);
         State.toggleCompare(school);
         btn.classList.toggle('active', State.isInCompare(schoolId));
+      };
+    });
+
+    // Bookmark / Save button
+    document.querySelectorAll('.btn-card-bookmark').forEach(btn => {
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        const schoolName = btn.dataset.schoolName || 'School';
+        const nowSaved = await State.toggleBookmark(schoolId, schoolName);
+        btn.innerHTML = nowSaved ? '🔖' : '🤍';
+        btn.classList.toggle('active', nowSaved);
       };
     });
 

@@ -17,24 +17,12 @@ const App = {
 
     // Role-based Route Guarding
     if (viewName === 'schools') {
-      if (!State.isAuthenticated()) {
-        Modals.openLoginModal({
-          notice: "🔒 Please sign in with your School Administrator credentials to access the confidential management portal.",
-          redirectView: 'schools',
-          redirectParam: param || 'sch-gis-accra'
-        });
-        if (State.currentView === 'home') return;
-        viewName = 'home';
-        param = null;
-      } else if (State.isParent()) {
-        State.showToast("Redirected: Parent accounts access the Unified Parent Portal", "info");
-        viewName = 'parents';
-        param = null;
-      } else if (State.isSchoolAdmin()) {
-        if (!State.isSuperAdmin() && State.currentUser.schoolId) {
+      if (State.isSchoolAdmin()) {
+        if (!State.isSuperAdmin() && State.currentUser?.schoolId) {
           param = State.currentUser.schoolId;
         }
       }
+      // Non-school admin or guest users will render the Proprietor Landing page inside DashboardView
     } else if (viewName === 'admin') {
       if (!State.isAuthenticated() || !State.isSuperAdmin()) {
         Modals.openLoginModal({

@@ -409,12 +409,30 @@ const API = {
     return res.json();
   },
 
-  // Institutional Document Verification Vault (KYC/KYB)
-  async uploadVerificationDoc(docData) {
-    const res = await fetch(`${this.baseUrl}/verification/upload`, {
+  // File & Document Upload (Supabase Storage / CDN)
+  async uploadFile(fileData, filename = 'upload.jpg', bucket = 'school-media') {
+    const res = await fetch(`${this.baseUrl}/upload`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(docData)
+      body: JSON.stringify({ fileData, filename, bucket })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Upload failed');
+    }
+    return res.json();
+  },
+
+  // Institutional Document Verification Vault (KYC/KYB)
+  async uploadVerificationDoc(docData) {
+    const res = await fetch(`${this.baseUrl}/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        filename: docData.filename || 'verification_doc.pdf',
+        fileData: docData.fileData || docData.base64 || docData.documentUrl || 'demo-content',
+        bucket: 'documents'
+      })
     });
     return res.json();
   },
