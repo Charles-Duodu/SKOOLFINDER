@@ -37,3 +37,4 @@ module.exports = {
   // General API: 100 requests per minute
   standardLimiter: rateLimit({ windowMs: 60 * 1000, max: 120, message: 'Too many requests from this IP address.' })
 };
+

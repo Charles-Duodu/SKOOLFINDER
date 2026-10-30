@@ -30,3 +30,4 @@ CREATE POLICY "Public read audit events" ON public.audit_events FOR SELECT USING
 -- Indexing
 CREATE INDEX IF NOT EXISTS idx_audit_events_action ON public.audit_events(action);
 CREATE INDEX IF NOT EXISTS idx_audit_events_target ON public.audit_events(target_type, target_id);
+
