@@ -4450,7 +4450,7 @@ const Modals = {
         <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 2px solid #f59e0b;">
           <div>
             <div style="font-size: 0.76rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
-              <span>🛡️</span> Ghana Dual Authentication (Neon PostgreSQL + Telco SMS OTP)
+              <span>🛡️</span> Secure Authentication (Supabase Auth + Ghana SMS OTP)
             </div>
             <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.25rem;" id="auth-modal-main-title">
               ${initialTab === 'signup' ? 'Create New Parent Account' : 'Sign In to SkoolFinder'}
@@ -4483,17 +4483,6 @@ const Modals = {
           <!-- PANE 1: Sign In for Existing Account Holders              -->
           <!-- ========================================================= -->
           <div id="auth-pane-signin" style="display: ${initialTab === 'signin' ? 'block' : 'none'};">
-            <!-- Compact 1-Click Fast Demo Logins -->
-            <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.5rem 0.75rem; margin-bottom: 1.15rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.35rem;">
-              <span style="font-size: 0.72rem; font-weight: 800; color: #475569; text-transform: uppercase;">⚡ 1-Click Fast Test:</span>
-              <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
-                <button type="button" class="btn-quick-login" data-login="parent@gmail.com" data-pass="ParentPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer; font-weight: 700; color: #1e40af;">👨‍👩‍👧 Parent</button>
-                <button type="button" class="btn-quick-login" data-login="tutor@skoolfinder.com" data-pass="TeacherPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; cursor: pointer; font-weight: 700; color: #065f46;">🧑‍🏫 Teacher</button>
-                <button type="button" class="btn-quick-login" data-login="supplier@akiola.com.gh" data-pass="SupplierPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #fefce8; border: 1px solid #fef08a; border-radius: 6px; cursor: pointer; font-weight: 700; color: #854d0e;">📦 Supplier</button>
-                <button type="button" class="btn-quick-login" data-login="admin@gis.edu.gh" data-pass="AdminPass2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 6px; cursor: pointer; font-weight: 700; color: #5b21b6;">🏫 Admin</button>
-                <button type="button" class="btn-quick-login" data-login="superadmin@skoolfinder.gh" data-pass="SuperSecure2026!" style="font-size: 0.72rem; padding: 0.25rem 0.5rem; background: #0f172a; border: 1px solid #334155; border-radius: 6px; cursor: pointer; font-weight: 700; color: #93c5fd;">🛡️ Super</button>
-              </div>
-            </div>
 
             <form id="form-auth-login">
               <div class="form-group" style="margin-bottom: 0.85rem;">
@@ -4694,16 +4683,6 @@ const Modals = {
       };
     }
 
-    // Fast demo logins
-    document.querySelectorAll('.btn-quick-login').forEach(btn => {
-      btn.onclick = () => {
-        const login = btn.getAttribute('data-login');
-        const pass = btn.getAttribute('data-pass');
-        document.getElementById('auth-login-input').value = login;
-        document.getElementById('auth-password-input').value = pass;
-        document.getElementById('btn-submit-login').click();
-      };
-    });
 
     // Ghana Phone SMS OTP handlers
     const sendOtpBtn = document.getElementById('btn-send-otp');
