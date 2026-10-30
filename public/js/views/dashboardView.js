@@ -2,7 +2,108 @@
  * SkoolFinder Ghana - School Owner Lead Analytics Portal
  */
 const DashboardView = {
-  async render(schoolId = 'sch-gis-accra') {
+  renderProprietorLanding() {
+    return `
+      <section style="background: var(--bg-main); min-height: 85vh; padding: 3rem 0 5rem;">
+        <div class="container">
+          <!-- Hero Section -->
+          <div style="background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%); border-radius: var(--radius-2xl); padding: 3.5rem 2.5rem; color: #ffffff; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(15,23,42,0.15); position: relative; overflow: hidden;">
+            <div style="max-width: 720px; position: relative; z-index: 2;">
+              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fbbf24; margin-bottom: 1.25rem;">
+                <span>🏫</span> School Management OS • Admissions & Operations Hub (/schools)
+              </div>
+              <h1 style="font-family: var(--font-heading); font-size: 2.5rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; color: #ffffff;">
+                Power Your School Administration in Ghana
+              </h1>
+              <p style="font-size: 1.05rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 2rem;">
+                Connect your institution directly with over 50,000 active parents across Greater Accra and Kumasi. Manage prospective student entrance inquiries, collect term fees via Mobile Money, and procure wholesale school supplies.
+              </p>
+
+              ${State.isAuthenticated() && State.currentUser.role === 'parent' ? `
+                <div style="background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(147, 197, 253, 0.4); border-radius: 12px; padding: 0.85rem 1.15rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+                  <div style="font-size: 0.88rem; color: #bfdbfe;">
+                    👨‍👩‍👧 You are currently signed in as <strong>${State.currentUser.name || 'Parent'}</strong>.
+                  </div>
+                  <button class="btn-pill btn-primary" onclick="App.navigate('directory')" style="font-size: 0.82rem; padding: 0.4rem 0.9rem;">
+                    Find Schools for Your Child &rarr;
+                  </button>
+                </div>
+              ` : ''}
+
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button id="btn-landing-register-school" class="btn-pill btn-gold" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; font-weight: 800;">
+                  <span>✨</span> Register Your School for Vetting
+                </button>
+                <button id="btn-landing-signin-admin" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);">
+                  <span>🔑</span> School Admin Sign In
+                </button>
+                <button id="btn-landing-find-school" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);" onclick="App.navigate('directory')">
+                  <span>🔍</span> Claim Existing Listing
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Pillars Section -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">
+                📥
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                Admissions Desk & Tours
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                Receive prospective parent inquiries, schedule campus walk-throughs, and monitor student entrance exams in one organized queue.
+              </p>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #f0fdf4; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">
+                💳
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                Mobile Money Fee Collection
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                Issue automated digital invoices for term tuition, track paid balances, and send friendly automated SMS reminders to parents.
+              </p>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #fffbeb; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">
+                📦
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                Institutional RFQ Procurement
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                Post bulk procurement requests for dual desks, science lab equipment, textbooks, or cafeteria food and compare competing vendor quotes.
+              </p>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #faf5ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1rem;">
+                🛡️
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
+                Verified Accreditation Badge
+              </h3>
+              <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                Earn verified status backed by institutional vetting, building top-tier credibility for expatriate and Ghanaian families.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  },
+
+  async render(schoolId = 'ghana-international-school') {
+    const isSchoolStaff = State.isAuthenticated() && (State.currentUser.role === 'school_admin' || State.currentUser.role === 'super_admin');
+    if (!isSchoolStaff) {
+      return this.renderProprietorLanding();
+    }
     const school = (await API.getSchoolById(schoolId)) || {};
     const analytics = (await API.getSchoolAnalytics(schoolId)) || { views: 0, whatsappClicks: 0, phoneCalls: 0, applications: 0 };
     const allSchools = (await API.getSchools()) || [];
@@ -2048,6 +2149,17 @@ const DashboardView = {
   },
 
   attachEvents(schoolId) {
+    // Landing page action handlers (if viewing proprietor landing)
+    document.getElementById('btn-landing-register-school')?.addEventListener('click', () => {
+      Modals.openRegisterSchoolModal();
+    });
+    document.getElementById('btn-landing-signin-admin')?.addEventListener('click', () => {
+      Modals.openLoginModal({
+        notice: "🏫 School Administrators: Sign in to access your admissions desk, fee invoicing, and procurement portal.",
+        redirectView: 'schools'
+      });
+    });
+
     // School Switcher
     const select = document.getElementById('dash-school-select');
     if (select) {

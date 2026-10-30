@@ -68,7 +68,15 @@ ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rfqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.rfq_quotes ENABLE ROW LEVEL SECURITY;
 
--- POLICIES
+-- RE-RUNNABLE POLICIES
+DO $$ 
+BEGIN
+    DROP POLICY IF EXISTS "Public read published reviews" ON public.reviews;
+    DROP POLICY IF EXISTS "Public read rfqs" ON public.rfqs;
+    DROP POLICY IF EXISTS "Public read quotes" ON public.rfq_quotes;
+    DROP POLICY IF EXISTS "Insert claims" ON public.school_claims;
+END $$;
+
 CREATE POLICY "Public read published reviews" ON public.reviews FOR SELECT USING (status = 'published');
 CREATE POLICY "Public read rfqs" ON public.rfqs FOR SELECT USING (true);
 CREATE POLICY "Public read quotes" ON public.rfq_quotes FOR SELECT USING (true);

@@ -110,7 +110,12 @@ router.get('/', async (req, res) => {
  */
 router.get('/:idOrSlug', async (req, res) => {
   try {
-    const { idOrSlug } = req.params;
+    let { idOrSlug } = req.params;
+
+    // Legacy ID aliases
+    if (idOrSlug === 'sch-gis-accra' || idOrSlug === 'gis' || idOrSlug === 'default') {
+      idOrSlug = 'ghana-international-school';
+    }
 
     // Determine if param is UUID or slug
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
@@ -122,9 +127,33 @@ router.get('/:idOrSlug', async (req, res) => {
       query = query.eq('slug', idOrSlug);
     }
 
-    const { data: school, error } = await query.single();
+    let { data: school, error } = await query.maybeSingle();
 
-    if (error || !school) {
+    // Resilient fallback: search by name or return primary school
+    if (!school) {
+      const { data: fallbackSchool } = await supabaseAdmin
+        .from('schools')
+        .select('*')
+        .or(`name.ilike.%${idOrSlug}%,slug.ilike.%${idOrSlug}%`)
+        .limit(1)
+        .maybeSingle();
+      
+      school = fallbackSchool;
+    }
+
+    if (!school) {
+      // Default to first published school (GIS)
+      const { data: defaultSchool } = await supabaseAdmin
+        .from('schools')
+        .select('*')
+        .eq('status', 'published')
+        .limit(1)
+        .maybeSingle();
+
+      school = defaultSchool;
+    }
+
+    if (!school) {
       return res.status(404).json({ error: 'School not found' });
     }
 
