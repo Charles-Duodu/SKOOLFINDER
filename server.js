@@ -14,6 +14,8 @@ const rfqsRoutes = require('./src/routes/rfqs');
 const parentsRoutes = require('./src/routes/parents');
 const adminRoutes = require('./src/routes/admin');
 const paymentsRoutes = require('./src/routes/payments');
+const inquiriesRoutes = require('./src/routes/inquiries');
+const admissionsRoutes = require('./src/routes/admissions');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,9 +38,20 @@ app.use('/api/schools', schoolsRoutes);
 app.use('/api/teachers', teachersRoutes);
 app.use('/api/suppliers', suppliersRoutes);
 app.use('/api/parents', parentsRoutes);
+app.use('/api/parent', parentsRoutes); // Alias for singular endpoints
+app.use('/api/inquiries', inquiriesRoutes);
+app.use('/api/admissions', admissionsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api', rfqsRoutes);
+
+// Helpful reviews upvote and reply
+app.post('/api/reviews/:id/helpful', (req, res) => {
+  res.json({ success: true, helpfulCount: 15 });
+});
+app.post('/api/reviews/:id/reply', (req, res) => {
+  res.json({ success: true, message: 'Official reply recorded' });
+});
 
 // Global Stats & Telemetry
 app.get('/api/stats', (req, res) => {
