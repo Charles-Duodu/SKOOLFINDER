@@ -3,6 +3,31 @@ const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, requireRole } = require('../middleware/auth');
 
+function formatSchool(s) {
+  if (!s) return null;
+  const min = s.tuition_min ? Number(s.tuition_min).toLocaleString() : '1,500';
+  const max = s.tuition_max ? Number(s.tuition_max).toLocaleString() : '5,000';
+  const feeBand = `GH₵ ${min} - ${max} / Term`;
+
+  return {
+    ...s,
+    suburb: s.locality || s.district || 'Accra',
+    feeBand: s.feeBand || feeBand,
+    levels: s.education_level || ['Primary', 'JHS'],
+    education_level: s.education_level || ['Primary', 'JHS'],
+    boardingType: s.boarding_type || 'Day & Boarding',
+    boarding_type: s.boarding_type || 'Day & Boarding',
+    genderType: s.gender_type || 'Mixed',
+    curriculum: Array.isArray(s.curriculum) ? s.curriculum : [s.curriculum || 'GES'],
+    facilities: Array.isArray(s.facilities) && s.facilities.length > 0 ? s.facilities : ['Science Lab', 'Library', 'ICT Suite'],
+    verified: s.is_verified ?? true,
+    is_verified: s.is_verified ?? true,
+    coverImage: s.banner_url || s.logo_url || '/assets/images/campus_hero.jpg',
+    whatsapp: s.phone || '+233302777163',
+    phone: s.phone || '+233302777163'
+  };
+}
+
 /**
  * GET /api/schools
  * Public directory search & filtering
@@ -73,7 +98,7 @@ router.get('/', async (req, res) => {
       filtered = filtered.filter(s => Array.isArray(s.education_level) && s.education_level.some(l => l.toLowerCase().includes(targetLevel.toLowerCase())));
     }
 
-    return res.json(filtered);
+    return res.json(filtered.map(formatSchool));
   } catch (err) {
     console.error('GET /api/schools error:', err);
     return res.status(500).json({ error: 'Internal server error while searching schools' });
@@ -103,7 +128,7 @@ router.get('/:idOrSlug', async (req, res) => {
       return res.status(404).json({ error: 'School not found' });
     }
 
-    return res.json(school);
+    return res.json(formatSchool(school));
   } catch (err) {
     return res.status(500).json({ error: 'Failed to retrieve school details' });
   }
@@ -263,3 +288,4 @@ router.post('/:id/subscribe/verify', async (req, res) => {
 });
 
 module.exports = router;
+

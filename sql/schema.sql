@@ -305,3 +305,4 @@ CREATE POLICY "Users read own enquiries" ON public.enquiries FOR SELECT USING (
 CREATE POLICY "Users create enquiries" ON public.enquiries FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = enquiries.sender_id AND auth_user_id = auth.uid())
 );
+

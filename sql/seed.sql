@@ -282,3 +282,4 @@ INSERT INTO public.suppliers (
     4.7
 )
 ON CONFLICT DO NOTHING;
+

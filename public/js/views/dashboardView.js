@@ -1591,7 +1591,7 @@ const DashboardView = {
                       </div>
                       <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
                         <span>Bus Pass:</span>
-                        <strong style="color: #047857;">${id.busPassRoute.split(':')[0]} (${id.busPassStatus})</strong>
+                        <strong style="color: #047857;">${id.busPassRoute ? id.busPassRoute.split(':')[0] : 'Standard Route'} (${id.busPassStatus || 'Active'})</strong>
                       </div>
                       <div style="display: flex; justify-content: space-between;">
                         <span>Security Hash:</span>
@@ -1784,7 +1784,7 @@ const DashboardView = {
                     <div style="background: #ffffff; border: 1px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                       <div style="display: flex; align-items: center; gap: 1rem;">
                         <div style="width: 48px; height: 48px; border-radius: 50%; background: #e0e7ff; color: #3730a3; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700;">
-                          ${app.teacherName.split(' ').map(w => w[0]).slice(0, 2).join('')}
+                          ${(app.teacherName || 'Teacher').split(' ').map(w => w[0]).slice(0, 2).join('')}
                         </div>
                         <div>
                           <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">

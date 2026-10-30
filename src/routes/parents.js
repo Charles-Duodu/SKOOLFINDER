@@ -105,3 +105,4 @@ router.post('/bookmarks', authenticate, async (req, res) => {
 });
 
 module.exports = router;
+

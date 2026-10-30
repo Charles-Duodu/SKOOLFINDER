@@ -139,7 +139,7 @@ const JobsView = {
               <!-- Teacher Cards Grid -->
               <div class="teachers-grid">
                 ${teachers.map(t => {
-                  const initials = t.fullName.split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('');
+                  const initials = (t.fullName || t.full_name || t.name || 'Teacher').split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('');
                   const isFeatured = t.subscriptionTier === 'Featured Pro';
 
                   return `

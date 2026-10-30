@@ -108,8 +108,8 @@ const Navbar = {
 
             ${State.isAuthenticated() ? `
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.4rem;">
-                <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email}">
-                  ${State.currentUser.avatar || '👤'} ${State.currentUser.name.split(' ')[0]} (${State.currentUser.role === 'school_admin' ? 'Admin' : (State.currentUser.role === 'parent' ? 'Parent' : State.currentUser.role)})
+                <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
+                  ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]} (${State.currentUser.role === 'school_admin' ? 'Admin' : (State.currentUser.role === 'parent' ? 'Parent' : (State.currentUser.role || 'Member'))})
                 </span>
                 <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.4rem 0.7rem; font-size: 0.78rem;" title="Sign out of account">
                   <span>🚪</span> Logout
@@ -186,7 +186,7 @@ const Navbar = {
               </a>
               ${State.isAuthenticated() ? `
                 <button id="mob-btn-logout" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.88rem;">
-                  <span>🚪</span> Logout (${State.currentUser.name.split(' ')[0]})
+                  <span>🚪</span> Logout (${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]})
                 </button>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">

@@ -567,3 +567,4 @@ INSERT INTO public.rfqs (
     NOW() + INTERVAL '30 days'
 )
 ON CONFLICT DO NOTHING;
+

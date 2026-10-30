@@ -793,7 +793,7 @@ const SchoolDetailView = {
       container.innerHTML = reviewList.map(r => {
         const fullStars = Math.round(r.overallRating);
         const stars = '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
-        const initials = r.authorName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+        const initials = (r.authorName || 'Parent').split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
         const highlightsHtml = (r.highlights || []).map(h => `
           <span style="background: var(--primary-50); color: var(--primary-800); border: 1px solid var(--border-light); font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: var(--radius-full);">

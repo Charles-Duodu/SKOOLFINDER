@@ -6,8 +6,20 @@ const SuppliersView = {
   activeCategory: 'All',
 
   async render() {
-    const suppliers = await API.getSuppliers(this.activeCategory);
-    const rfqs = await API.getRFQs();
+    let suppliers = [];
+    let rfqs = [];
+    try {
+      const supRes = await API.getSuppliers(this.activeCategory);
+      suppliers = Array.isArray(supRes) ? supRes : [];
+    } catch (e) {
+      suppliers = [];
+    }
+    try {
+      const rfqRes = await API.getRFQs();
+      rfqs = Array.isArray(rfqRes) ? rfqRes : [];
+    } catch (e) {
+      rfqs = [];
+    }
 
     return `
       <section style="background: var(--bg-main); min-height: 80vh; padding: 2.5rem 0 5rem;">
@@ -124,21 +136,21 @@ const SuppliersView = {
                 ${suppliers.map(s => `
                   <div class="supplier-card">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
-                      <span class="badge" style="background: var(--primary-50); color: var(--primary-700);">${s.category}</span>
-                      <span class="badge badge-verified">🛡️ ${s.ratingBadge}</span>
+                      <span class="badge" style="background: var(--primary-50); color: var(--primary-700);">${s.category || 'General'}</span>
+                      <span class="badge badge-verified">🛡️ ${s.ratingBadge || 'Verified'}</span>
                     </div>
 
                     <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.4rem;">
-                      ${s.companyName}
+                      ${s.companyName || s.company_name || 'Educational Supplier'}
                     </h3>
 
                     <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
-                      📍 ${s.address} <br/>
-                      <span style="font-weight: 600; color: var(--text-main);">Coverage:</span> ${s.coverage.join(', ')}
+                      📍 ${s.address || s.service_area || s.region || 'Greater Accra, Ghana'} <br/>
+                      <span style="font-weight: 600; color: var(--text-main);">Coverage:</span> ${(Array.isArray(s.coverage) ? s.coverage : [s.service_area || 'Greater Accra', 'Nationwide']).join(', ')}
                     </div>
 
                     <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; flex-grow: 1;">
-                      ${s.description}
+                      ${s.description || 'Verified educational goods and institutional supplies in Ghana.'}
                     </p>
 
                     <div style="background: var(--bg-main); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem;">
@@ -146,7 +158,7 @@ const SuppliersView = {
                         Catalog Highlights:
                       </div>
                       <ul class="supplier-catalog-list" style="margin: 0;">
-                        ${s.catalogHighlights.map(item => `
+                        ${(Array.isArray(s.catalogHighlights) ? s.catalogHighlights : ['Textbooks & Learning Materials', 'Classroom Equipment', 'Institutional Supply']).map(item => `
                           <li class="supplier-catalog-item">
                             <span style="color: var(--gold-600); font-weight: 800;">•</span> ${item}
                           </li>
@@ -155,10 +167,10 @@ const SuppliersView = {
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; border-top: 1px solid var(--border-light); padding-top: 1rem;">
-                      <a href="https://wa.me/${s.whatsapp.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName)},%20I%20found%20your%20business%20on%20SkoolFinder%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; justify-content: center;">
+                      <a href="https://wa.me/${(s.whatsapp || s.phone || '+233302221888').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName || s.company_name || 'Vendor')},%20I%20found%20your%20business%20on%20SkoolFinder%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; justify-content: center;">
                         💬 WhatsApp
                       </a>
-                      <a href="tel:${s.phone.replace(/[^0-9+]/g, '')}" class="btn-card-view" style="flex: 1; text-align: center;">
+                      <a href="tel:${(s.phone || s.whatsapp || '+233302221888').replace(/[^0-9+]/g, '')}" class="btn-card-view" style="flex: 1; text-align: center;">
                         📞 Call Vendor
                       </a>
                     </div>

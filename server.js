@@ -95,3 +95,4 @@ app.listen(PORT, () => {
   console.log(`📡 Supabase: ${process.env.SUPABASE_URL}`);
   console.log(`====================================================`);
 });
+

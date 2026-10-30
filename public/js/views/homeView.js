@@ -402,11 +402,11 @@ const HomeView = {
 
   renderSchoolCard(school) {
     const isCompared = State.isInCompare(school.id);
-    const curriculumTag = school.curriculum[0] || 'GES';
+    const curriculumTag = Array.isArray(school.curriculum) && school.curriculum.length > 0 ? school.curriculum[0] : (school.curriculum || 'GES');
     let badgeClass = 'badge-ges';
-    if (curriculumTag.includes('Cambridge')) badgeClass = 'badge-cambridge';
-    if (curriculumTag.includes('IB')) badgeClass = 'badge-ib';
-    if (curriculumTag.includes('Montessori')) badgeClass = 'badge-montessori';
+    if (String(curriculumTag).includes('Cambridge')) badgeClass = 'badge-cambridge';
+    if (String(curriculumTag).includes('IB')) badgeClass = 'badge-ib';
+    if (String(curriculumTag).includes('Montessori')) badgeClass = 'badge-montessori';
 
     // Fee Tier Metallic Badges
     const feeRaw = (school.feeBand || '').toLowerCase();
@@ -415,11 +415,17 @@ const HomeView = {
     if (feeRaw.includes('premium')) feeTierClass = 'badge-fee-premium';
     if (feeRaw.includes('elite') || feeRaw.includes('international') || feeRaw.includes('10,000+')) feeTierClass = 'badge-fee-elite';
 
+    const feeStr = school.feeBand || (school.tuition_min ? `GH₵ ${Number(school.tuition_min).toLocaleString()} - ${Number(school.tuition_max).toLocaleString()} / Term` : 'Moderate Fees');
+    const feeDisplay = feeStr.includes('(') ? feeStr.split('(')[0].trim() : feeStr;
+
     const galleryImgs = [
-      school.coverImage || '/assets/images/campus_hero.jpg',
+      school.coverImage || school.banner_url || school.logo_url || '/assets/images/campus_hero.jpg',
       '/assets/images/science_lab.jpg',
       '/assets/images/montessori_class.jpg'
     ];
+
+    const levelsList = Array.isArray(school.levels) ? school.levels : (Array.isArray(school.education_level) ? school.education_level : ['Primary', 'JHS']);
+    const facilitiesList = Array.isArray(school.facilities) ? school.facilities : [];
 
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
@@ -434,38 +440,38 @@ const HomeView = {
 
           <div class="school-card-badges">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
-            ${school.verified ? '<span class="badge badge-verified">🛡️ Verified</span>' : ''}
+            ${(school.verified || school.is_verified) ? '<span class="badge badge-verified">🛡️ Verified</span>' : ''}
             <span class="badge-radar-container"><span class="radar-pulse-core"></span> Admissions Open</span>
           </div>
           <div class="school-card-fee-pill ${feeTierClass}">
-            ${school.feeBand.split('(')[0].trim()}
+            ${feeDisplay}
           </div>
         </div>
         <div class="school-card-body">
           <div class="school-card-location">
-            <span>📍</span> ${school.suburb}, ${school.region}
+            <span>📍</span> ${school.suburb || school.locality || school.district || 'Accra'}, ${school.region || 'Greater Accra'}
           </div>
           <h3 class="school-card-name">${school.name}</h3>
           <div style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; margin: 0.2rem 0 0.4rem;">
-            <span style="color: #b45309; font-weight: 800;">★ 4.9</span>
+            <span style="color: #b45309; font-weight: 800;">★ ${school.rating || '4.8'}</span>
             <span style="color: var(--text-muted); font-size: 0.75rem;">(Verified Parent Reviews)</span>
           </div>
           <div class="school-card-motto">"${school.motto || 'Excellence in Education'}"</div>
           
           <div class="school-card-levels">
-            ${school.levels.map(l => `<span class="level-tag">${l}</span>`).join('')}
-            <span class="level-tag" style="background: var(--primary-50); color: var(--primary-700);">${school.boardingType}</span>
+            ${levelsList.map(l => `<span class="level-tag">${l}</span>`).join('')}
+            <span class="level-tag" style="background: var(--primary-50); color: var(--primary-700);">${school.boardingType || school.boarding_type || 'Day & Boarding'}</span>
           </div>
 
           <div class="school-card-facilities">
-            ${school.facilities.slice(0, 3).map(f => `<span class="facility-chip">✓ ${f}</span>`).join('')}
+            ${facilitiesList.slice(0, 3).map(f => `<span class="facility-chip">✓ ${f}</span>`).join('')}
           </div>
 
           <div class="school-card-footer">
             <button class="btn-card-view btn-pill btn-primary" style="padding: 0.6rem 1.15rem; font-size: 0.88rem;" data-school-id="${school.id}">
               View Profile
             </button>
-            <button class="btn-card-wa btn-quick-wa btn-whatsapp-glow" style="padding: 0.6rem 1rem; font-size: 0.88rem;" data-school-id="${school.id}" data-wa="${school.whatsapp}" title="Chat Admissions on WhatsApp">
+            <button class="btn-card-wa btn-quick-wa btn-whatsapp-glow" style="padding: 0.6rem 1rem; font-size: 0.88rem;" data-school-id="${school.id}" data-wa="${school.whatsapp || school.phone || ''}" title="Chat Admissions on WhatsApp">
               💬 WhatsApp
             </button>
             <button class="btn-card-compare ${isCompared ? 'active' : ''}" data-school-id="${school.id}" title="${isCompared ? 'Remove from Compare' : 'Add to Compare'}">
