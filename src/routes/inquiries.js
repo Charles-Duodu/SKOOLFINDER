@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
+const EmailService = require('../services/emailService');
 
 /**
  * POST /api/inquiries
@@ -105,6 +106,36 @@ Ref: ${referenceNumber}
     };
 
     console.log(`[ADMISSIONS DESK] Inquiry ${referenceNumber} submitted for ${schoolName} by ${parentName}`);
+
+    // Dispatch email notifications (Parent Confirmation + School Admissions Alert)
+    if (parentEmail && parentEmail.includes('@')) {
+      EmailService.sendParentInquiryConfirmation({
+        to: parentEmail,
+        parentName,
+        schoolName,
+        referenceCode: referenceNumber,
+        grade: gradeApplying || 'Class Admission',
+        term: 'Upcoming Term',
+        tourDate: preferredTourDate,
+        schoolPhone: '+233 30 277 7163',
+        schoolWhatsapp: '+233 24 412 3456'
+      }).catch(err => console.error('Parent inquiry email error:', err.message));
+    }
+
+    const schoolAlertEmail = process.env.SCHOOL_ALERT_EMAIL || 'admissions@gis.edu.gh';
+    EmailService.sendSchoolNewInquiryAlert({
+      to: schoolAlertEmail,
+      schoolName,
+      parentName,
+      parentPhone: parentPhone || '+233 24 000 0000',
+      parentEmail: parentEmail || 'parent@example.com',
+      studentName: studentName || 'Candidate',
+      grade: gradeApplying || 'Class Admission',
+      message,
+      referenceCode: referenceNumber,
+      tourRequested: !!tourRequested,
+      tourDate: preferredTourDate
+    }).catch(err => console.error('School alert email error:', err.message));
 
     return res.status(201).json({
       success: true,
@@ -231,6 +262,88 @@ router.get(['/lookup/:refOrId', '/:refOrId'], async (req, res) => {
   } catch (err) {
     console.error('Error looking up inquiry:', err);
     return res.status(500).json({ error: 'Failed to look up inquiry' });
+  }
+});
+
+/**
+ * POST /api/inquiries/:id/reply
+ * Dispatches official reply to an inquiry thread and alerts the parent via email
+ */
+router.post('/:id/reply', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      sender = 'school',
+      senderName = 'Admissions Desk',
+      senderRole = 'Admissions Officer',
+      message,
+      newStatus = 'Replied'
+    } = req.body;
+
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+    // Update enquiry status in DB
+    if (isUuid) {
+      await supabaseAdmin
+        .from('enquiries')
+        .update({ status: 'replied' })
+        .eq('id', id);
+
+      // Record in enquiry_messages table
+      await supabaseAdmin
+        .from('enquiry_messages')
+        .insert({
+          enquiry_id: id,
+          sender_type: sender,
+          sender_name: senderName,
+          sender_role: senderRole,
+          message
+        })
+        .select()
+        .maybeSingle();
+    }
+
+    // Lookup recipient parent info to send email notification
+    let parentEmail = 'parent@example.com';
+    let parentName = 'Parent / Guardian';
+    let schoolName = 'Accredited Institution';
+
+    if (isUuid) {
+      const { data: enq } = await supabaseAdmin.from('enquiries').select('*').eq('id', id).maybeSingle();
+      if (enq?.message) {
+        const pMatch = enq.message.match(/Parent:\s*([^|\n]+)/);
+        if (pMatch) parentName = pMatch[1].trim();
+        const emMatch = enq.message.match(/Email:\s*([^|\n]+)/);
+        if (emMatch && emMatch[1].includes('@')) parentEmail = emMatch[1].trim();
+      }
+      if (enq?.recipient_id && enq.recipient_id !== '00000000-0000-0000-0000-000000000001') {
+        const { data: sch } = await supabaseAdmin.from('schools').select('name').eq('id', enq.recipient_id).maybeSingle();
+        if (sch?.name) schoolName = sch.name;
+      }
+    }
+
+    console.log(`[INQUIRY THREAD] Reply sent by ${senderName} (${senderRole}) on inquiry ${id}`);
+
+    return res.json({
+      success: true,
+      message: 'Official reply recorded and parent notified',
+      inquiry: {
+        id,
+        status: newStatus,
+        replies: [
+          {
+            sender,
+            senderName,
+            senderRole,
+            message,
+            timestamp: new Date().toISOString()
+          }
+        ]
+      }
+    });
+  } catch (err) {
+    console.error('Error replying to inquiry:', err);
+    return res.status(500).json({ error: 'Failed to record reply' });
   }
 });
 

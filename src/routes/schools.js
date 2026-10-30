@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, requireRole } = require('../middleware/auth');
+const EmailService = require('../services/emailService');
 
 function formatSchool(s) {
   if (!s) return null;
@@ -229,6 +230,17 @@ router.post('/:id/claim', async (req, res) => {
 
     if (error) {
       console.warn('Supabase school_claims table notice:', error.message);
+    }
+
+    const claimRef = claim?.id ? `CLAIM-${claim.id.slice(0, 8).toUpperCase()}` : `CLAIM-${Date.now().toString().slice(-6)}`;
+    if (officialEmail && officialEmail.includes('@')) {
+      EmailService.sendSchoolClaimAcknowledgment({
+        to: officialEmail,
+        schoolName: id.replace(/-/g, ' ').toUpperCase(),
+        claimantName,
+        officialRole,
+        referenceCode: claimRef
+      }).catch(err => console.error('School claim email error:', err.message));
     }
 
     return res.json({

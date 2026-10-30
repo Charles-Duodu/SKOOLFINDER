@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
+const EmailService = require('../services/emailService');
 
 /**
  * POST /api/admissions/apply
@@ -39,6 +40,19 @@ Submitted At: ${new Date().toISOString()}
       });
 
     console.log(`[ADMISSIONS] Application #${applicationNumber} submitted for ${applicantName}`);
+
+    // Dispatch formal application confirmation to parent
+    const parentEmail = data.parentEmail || data.email;
+    if (parentEmail && parentEmail.includes('@')) {
+      EmailService.sendParentApplicationConfirmation({
+        to: parentEmail,
+        parentName: data.parentName || 'Parent / Guardian',
+        schoolName: data.schoolName || 'Accredited Institution',
+        referenceCode: applicationNumber,
+        candidateName: applicantName,
+        gradeLevel
+      }).catch(err => console.error('Application confirmation email error:', err.message));
+    }
 
     return res.status(201).json({
       success: true,

@@ -17,6 +17,7 @@ const paymentsRoutes = require('./src/routes/payments');
 const inquiriesRoutes = require('./src/routes/inquiries');
 const admissionsRoutes = require('./src/routes/admissions');
 const uploadRoutes = require('./src/routes/upload');
+const notificationsRoutes = require('./src/routes/notifications');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -45,6 +46,7 @@ app.use('/api/admissions', admissionsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api', rfqsRoutes);
 
 // Helpful reviews upvote and reply

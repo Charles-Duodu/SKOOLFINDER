@@ -1110,36 +1110,96 @@ const Modals = {
 
   openContactTeacherModal(teacher) {
     this.close();
+    const defaultParentName = State.currentUser?.name || State.currentUser?.fullName || '';
+    const defaultPhone = State.currentUser?.phone || '';
+    const defaultEmail = State.currentUser?.email || '';
+
     const div = document.createElement('div');
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
     div.innerHTML = `
-      <div class="modal-dialog">
+      <div class="modal-dialog" style="max-width: 560px;">
         <div class="modal-header">
           <div>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Hire Educator / Tutor</div>
-            <h3 class="modal-title">Contact ${teacher.fullName}</h3>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">Hire Verified Educator</div>
+            <h3 class="modal-title">Consultation with ${teacher.fullName}</h3>
           </div>
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
-        <div class="modal-body">
-          <div style="background: var(--primary-50); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
-            <div style="font-weight: 700; color: var(--primary-900);">${teacher.headline}</div>
-            <div style="font-size: 0.85rem; color: var(--text-muted);">
-              📍 ${teacher.suburb}, ${teacher.region} • Rate: <strong>${teacher.rate}</strong>
+        <div class="modal-body" style="padding: 1.25rem 1.75rem;">
+          <div style="background: var(--primary-50); padding: 0.85rem 1.15rem; border-radius: var(--radius-md); margin-bottom: 1.25rem;">
+            <div style="font-weight: 700; color: var(--primary-900); font-size: 1rem;">${teacher.headline || teacher.title}</div>
+            <div style="font-size: 0.84rem; color: var(--text-muted); margin-top: 0.2rem;">
+              📍 ${teacher.suburb || 'Accra'}, ${teacher.region || 'Greater Accra'} • Hourly Rate: <strong style="color: var(--emerald-600);">${teacher.rate || 'GH₵ 80 / hr'}</strong>
             </div>
           </div>
 
-          <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-            Connect with ${teacher.fullName} directly via WhatsApp or phone to discuss home tutoring schedules, trial lessons, or school placement.
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <button id="btn-modal-tch-wa" class="reveal-contact-btn btn-reveal-whatsapp" style="width: 100%;">
-              <span>💬</span> Chat on WhatsApp (${teacher.whatsapp})
+          <!-- Tab Selector: Quick Connect vs Official Booking -->
+          <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-light); padding-bottom: 0.5rem;">
+            <button id="tab-btn-book-form" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.4rem 0.9rem;">
+              <span>📅</span> Book Consultation Form
             </button>
-            <a href="tel:${teacher.phone.replace(/[^0-9+]/g, '')}" id="btn-modal-tch-call" class="reveal-contact-btn btn-reveal-call" style="width: 100%;">
-              <span>📞</span> Call Direct (${teacher.phone})
+            <button id="tab-btn-direct-contact" class="btn-pill btn-outline" style="font-size: 0.82rem; padding: 0.4rem 0.9rem;">
+              <span>💬</span> Direct WhatsApp & Call
+            </button>
+          </div>
+
+          <!-- Section 1: Consultation Form -->
+          <form id="form-book-tutor-consultation">
+            <div class="form-group" style="margin-bottom: 0.85rem;">
+              <label class="form-label" style="font-size: 0.82rem;">Parent / Guardian Name *</label>
+              <input type="text" id="tutor-parent-name" class="form-input" placeholder="e.g. Mrs. Cynthia Arthur" value="${defaultParentName}" required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">WhatsApp Number *</label>
+                <input type="tel" id="tutor-parent-phone" class="form-input" placeholder="e.g. 024 412 8899" value="${defaultPhone}" required />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Email for Confirmation</label>
+                <input type="email" id="tutor-parent-email" class="form-input" placeholder="parent@gmail.com" value="${defaultEmail}" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; margin-bottom: 0.85rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Student Name & Grade *</label>
+                <input type="text" id="tutor-student-info" class="form-input" placeholder="e.g. Nana Yaw (Class 5)" required />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.82rem;">Focus Subject *</label>
+                <input type="text" id="tutor-subject" class="form-input" placeholder="e.g. Mathematics & Science" value="${Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : (teacher.subjects || 'Core Subjects')}" required />
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+              <label class="form-label" style="font-size: 0.82rem;">Preferred Lesson Format & Schedule</label>
+              <select id="tutor-format" class="form-select">
+                <option value="In-Person Home Tutoring">In-Person Home Tutoring (Evenings & Weekends)</option>
+                <option value="Online Tutoring (Zoom/Meet)">Online Tutoring (Zoom / Google Meet)</option>
+                <option value="Intensive Exam Prep (BECE / WASSCE / IGCSE)">Intensive Exam Prep (BECE / WASSCE / IGCSE)</option>
+              </select>
+            </div>
+
+            <div class="modal-footer" style="padding: 0.75rem 0 0; background: none; border-top: none; display: flex; justify-content: flex-end; gap: 0.5rem;">
+              <button type="button" class="btn-pill btn-outline" id="btn-cancel-tch-modal">Cancel</button>
+              <button type="submit" class="btn-pill btn-gold" id="btn-submit-tutor-booking">
+                <span>🚀</span> Dispatch Consultation Request
+              </button>
+            </div>
+          </form>
+
+          <!-- Section 2: Direct Contact Box (Hidden by default) -->
+          <div id="section-direct-contact" style="display: none; flex-direction: column; gap: 0.75rem; padding-top: 0.5rem;">
+            <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 0.5rem;">
+              Connect with <strong>${teacher.fullName}</strong> immediately via verified WhatsApp or phone:
+            </p>
+            <button id="btn-modal-tch-wa" class="reveal-contact-btn btn-reveal-whatsapp" style="width: 100%;">
+              <span>💬</span> Chat on WhatsApp (${teacher.whatsapp || teacher.phone})
+            </button>
+            <a href="tel:${(teacher.phone || '').replace(/[^0-9+]/g, '')}" id="btn-modal-tch-call" class="reveal-contact-btn btn-reveal-call" style="width: 100%;">
+              <span>📞</span> Call Direct (${teacher.phone || 'Phone'})
             </a>
           </div>
         </div>
@@ -1148,13 +1208,75 @@ const Modals = {
 
     document.body.appendChild(div);
     document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-tch-modal').onclick = () => this.close();
 
-    document.getElementById('btn-modal-tch-wa').onclick = async () => {
+    // Tab switcher
+    const formSection = document.getElementById('form-book-tutor-consultation');
+    const directSection = document.getElementById('section-direct-contact');
+    const tabForm = document.getElementById('tab-btn-book-form');
+    const tabDirect = document.getElementById('tab-btn-direct-contact');
+
+    tabForm.onclick = () => {
+      formSection.style.display = 'block';
+      directSection.style.display = 'none';
+      tabForm.className = 'btn-pill btn-primary';
+      tabDirect.className = 'btn-pill btn-outline';
+    };
+
+    tabDirect.onclick = () => {
+      formSection.style.display = 'none';
+      directSection.style.display = 'flex';
+      tabDirect.className = 'btn-pill btn-primary';
+      tabForm.className = 'btn-pill btn-outline';
+    };
+
+    // Direct WhatsApp
+    document.getElementById('btn-modal-tch-wa')?.addEventListener('click', async () => {
       await API.recordTeacherLead(teacher.id, 'whatsapp');
-      const cleanWa = teacher.whatsapp.replace(/[^0-9]/g, '');
+      const cleanWa = (teacher.whatsapp || teacher.phone || '0244000000').replace(/[^0-9]/g, '');
       window.open(`https://wa.me/${cleanWa}?text=Hello%20${encodeURIComponent(teacher.fullName)},%20I%20found%20your%20educator%20profile%20on%20SkoolFinder%20Ghana.%20I%20am%20interested%20in%20discussing%20tutoring/teaching.`, '_blank');
       this.close();
       State.showToast("Connected to educator on WhatsApp!", "success");
+    });
+
+    // Form submission
+    formSection.onsubmit = async (e) => {
+      e.preventDefault();
+      const parentName = document.getElementById('tutor-parent-name').value.trim();
+      const phone = document.getElementById('tutor-parent-phone').value.trim();
+      const email = document.getElementById('tutor-parent-email').value.trim();
+      const studentInfo = document.getElementById('tutor-student-info').value.trim();
+      const subject = document.getElementById('tutor-subject').value.trim();
+      const format = document.getElementById('tutor-format').value;
+
+      const submitBtn = document.getElementById('btn-submit-tutor-booking');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Dispatching to Educator...';
+      }
+
+      try {
+        const res = await API.bookTutor({
+          teacherId: teacher.id,
+          parentName,
+          phone,
+          email,
+          studentName: studentInfo,
+          subject,
+          sessionType: format,
+          preferredDays: 'Evenings & Weekends'
+        });
+
+        this.close();
+        const ref = res?.referenceCode || `TUTOR-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+        State.showToast(`Consultation request sent to ${teacher.fullName}! Reference: ${ref}`, 'success');
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'Dispatch Consultation Request';
+        }
+      }
     };
   },
 

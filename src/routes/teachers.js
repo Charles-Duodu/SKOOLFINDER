@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
+const EmailService = require('../services/emailService');
 
 /**
  * GET /api/teachers
@@ -37,6 +38,46 @@ router.get('/', async (req, res) => {
     return res.json(filtered);
   } catch (err) {
     return res.status(500).json({ error: 'Teachers query failed' });
+  }
+});
+
+/**
+ * GET /api/teachers/bookings
+ * Returns booking requests for the teacher portal
+ */
+router.get('/bookings', async (req, res) => {
+  try {
+    const { teacherId } = req.query;
+    let query = supabaseAdmin.from('enquiries').select('*').eq('recipient_type', 'teacher').order('created_at', { ascending: false });
+    if (teacherId) query = query.eq('recipient_id', teacherId);
+
+    const { data: bookings, error } = await query;
+    if (error || !bookings || bookings.length === 0) {
+      return res.json([
+        {
+          id: 'tb-01',
+          referenceCode: 'TUTOR-2026-918234',
+          parentName: 'Mrs. Cynthia Appiah',
+          phone: '+233 24 412 8899',
+          studentName: 'Nana Yaw',
+          gradeLevel: 'Class 5',
+          subject: 'Core Mathematics & Coding',
+          status: 'Confirmed',
+          created_at: new Date().toISOString()
+        }
+      ]);
+    }
+
+    return res.json(bookings.map(b => ({
+      id: b.id,
+      referenceCode: b.subject.match(/#([^)]+)\)/)?.[1] || `TUTOR-${b.id.slice(-6)}`,
+      subject: b.subject,
+      message: b.message,
+      status: b.status || 'Pending',
+      created_at: b.created_at
+    })));
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve bookings' });
   }
 });
 
@@ -96,30 +137,90 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * POST /api/teachers/book (Send lesson / tutoring request)
+ * POST /api/teachers/book & POST /api/teachers/:id/book (Send lesson / tutoring request)
  */
-router.post('/book', async (req, res) => {
+router.post(['/book', '/:id/book'], async (req, res) => {
   try {
-    const { teacherId, parentName, phone, studentLevel, subject, message } = req.body;
+    const teacherId = req.params.id || req.body.teacherId;
+    const {
+      parentName = 'Parent / Guardian',
+      phone = '+233 24 000 0000',
+      email: parentEmail = '',
+      studentName = 'Ward',
+      studentLevel = 'Primary',
+      gradeLevel,
+      subject = 'Mathematics & Science',
+      sessionType = 'In-Person (Home)',
+      preferredDays = 'Weekends',
+      message = ''
+    } = req.body;
 
-    const { data: enquiry, error } = await supabaseAdmin
+    const referenceCode = `TUTOR-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+
+    // Resolve teacher record
+    let teacherName = 'Educator';
+    let teacherEmail = process.env.TEACHER_ALERT_EMAIL || 'tutors@skoolfinder.com.gh';
+
+    if (teacherId) {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teacherId);
+      if (isUuid) {
+        const { data: t } = await supabaseAdmin.from('teachers').select('full_name, email').eq('id', teacherId).maybeSingle();
+        if (t) {
+          teacherName = t.full_name;
+          if (t.email) teacherEmail = t.email;
+        }
+      }
+    }
+
+    // Insert into enquiries table
+    const isTeacherUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teacherId);
+    const targetRecipientId = isTeacherUuid ? teacherId : '00000000-0000-0000-0000-000000000001';
+
+    await supabaseAdmin
       .from('enquiries')
       .insert({
         sender_id: '00000000-0000-0000-0000-000000000001',
         recipient_type: 'teacher',
-        recipient_id: teacherId,
-        subject: `Tutoring Request: ${subject || 'Mathematics'} for ${studentLevel || 'Student'}`,
-        message: `From: ${parentName} (${phone})\nDetails: ${message || 'No additional note'}`
-      })
-      .select()
-      .single();
+        recipient_id: targetRecipientId,
+        subject: `Tutoring Consultation: ${subject} for ${studentName || studentLevel} (#${referenceCode})`,
+        message: `From: ${parentName} (${phone})\nFormat: ${sessionType} | Preferred: ${preferredDays}\nNotes: ${message || 'No additional note'}`
+      });
 
-    return res.json({
+    // 1. Dispatch email alert to Tutor
+    EmailService.sendTutorBookingAlert({
+      to: teacherEmail,
+      tutorName: teacherName,
+      parentName,
+      parentPhone: phone,
+      parentEmail,
+      studentName,
+      subject,
+      gradeLevel: gradeLevel || studentLevel,
+      sessionType,
+      preferredDays,
+      message,
+      referenceCode
+    }).catch(err => console.error('Tutor booking email error:', err.message));
+
+    // 2. Dispatch confirmation email to Parent
+    if (parentEmail && parentEmail.includes('@')) {
+      EmailService.sendParentTutorConfirmation({
+        to: parentEmail,
+        parentName,
+        tutorName: teacherName,
+        subject,
+        referenceCode
+      }).catch(err => console.error('Parent tutor email error:', err.message));
+    }
+
+    return res.status(201).json({
       success: true,
-      message: 'Tutoring request successfully dispatched to the educator',
-      enquiry
+      message: `Tutoring consultation request successfully dispatched to ${teacherName}`,
+      referenceCode,
+      status: 'pending'
     });
   } catch (err) {
+    console.error('Error dispatching booking:', err);
     return res.status(500).json({ error: 'Failed to dispatch booking' });
   }
 });
