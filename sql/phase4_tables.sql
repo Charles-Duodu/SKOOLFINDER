@@ -105,3 +105,4 @@ VALUES
         '["Verified Ghana B2B Supplier Badge", "Unlimited RFQ Bidding Access", "School Board Direct RFQ Alerts", "Product Catalog Listing"]'::jsonb
     )
 ON CONFLICT (slug) DO NOTHING;
+

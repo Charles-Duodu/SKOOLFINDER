@@ -18,6 +18,8 @@ const inquiriesRoutes = require('./src/routes/inquiries');
 const admissionsRoutes = require('./src/routes/admissions');
 const uploadRoutes = require('./src/routes/upload');
 const notificationsRoutes = require('./src/routes/notifications');
+const { strictLimiter, standardLimiter } = require('./src/middleware/rateLimiter');
+const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +35,11 @@ app.use(morgan('dev'));
 
 // Static files (Vanilla JS SPA)
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Rate Limiting
+app.use('/api', standardLimiter);
+app.use('/api/auth', strictLimiter);
+app.use('/api/payments', strictLimiter);
 
 // Mount API routes
 app.use('/api/auth', authRoutes);
@@ -95,14 +102,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error('Unhandled Server Error:', err);
-  res.status(500).json({
-    error: 'Internal Server Error',
-    message: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+// Global Sanitized Error Handler (No stack traces exposed in production)
+app.use(errorHandler);
 
 // Start Server
 app.listen(PORT, () => {
