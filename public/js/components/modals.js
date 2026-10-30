@@ -1480,7 +1480,7 @@ const Modals = {
           targetId,
           targetTitle
         });
-        initTx = res.transaction;
+        initTx = res.transaction || res;
       } catch (err) {
         State.showToast("Failed to initiate payment: " + err.message, "error");
         return;
@@ -1512,7 +1512,7 @@ const Modals = {
       setTimeout(async () => {
         try {
           const verifyRes = await API.verifyPayment(initTx.reference, { network });
-          const tx = verifyRes.transaction;
+          const tx = verifyRes.transaction || verifyRes;
 
           // 4. Render SkoolFinder Official Electronic Receipt
           container.innerHTML = `

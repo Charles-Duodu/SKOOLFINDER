@@ -86,3 +86,4 @@ CREATE INDEX IF NOT EXISTS idx_email_logs_portal ON public.email_logs(portal);
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_enquiry_messages_enquiry_id ON public.enquiry_messages(enquiry_id);
 CREATE INDEX IF NOT EXISTS idx_tutor_bookings_teacher ON public.tutor_bookings(teacher_id);
+
