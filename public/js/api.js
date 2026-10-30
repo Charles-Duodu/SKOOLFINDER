@@ -753,6 +753,17 @@ const API = {
     return res.json();
   },
 
+  async addParentWard(wardData) {
+    const res = await fetch(`${this.baseUrl}/parents/wards`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(wardData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to add ward");
+    return result;
+  },
+
   async toggleSchoolBookmark(schoolId) {
     const res = await fetch(`${this.baseUrl}/parent/bookmarks`, {
       method: 'POST',

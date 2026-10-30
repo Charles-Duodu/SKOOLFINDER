@@ -915,6 +915,26 @@
   ],
   "rfqs": [
     {
+      "id": "rfq-1793320331295",
+      "status": "Tender Awarded",
+      "quotesReceived": 1,
+      "createdAt": "2026-10-30T00:32:11.295Z",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "title": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "budgetRange": "GH₵ 15,000 - 20,000",
+      "deadline": "2026-11-30",
+      "description": "Procurement for new Chemistry laboratory wing.",
+      "awardedQuoteId": "quote-1793320332723",
+      "awardedSupplier": "LabEquip West Africa Ltd",
+      "awardedPrice": "GH₵ 17,500",
+      "awardedAt": "2026-10-30T00:32:14.343Z",
+      "lpoId": "lpo-1793320334346",
+      "lpoNumber": "LPO-GH-2026-3210"
+    },
+    {
       "id": "rfq-1793318232901",
       "status": "Tender Awarded",
       "quotesReceived": 1,
@@ -1210,6 +1230,24 @@
       "updatedAt": "2026-10-29T23:57:15.563Z",
       "lpoId": "lpo-1793318235563",
       "lpoNumber": "LPO-GH-2026-3513"
+    },
+    {
+      "id": "quote-1793320332723",
+      "status": "Awarded",
+      "createdAt": "2026-10-30T00:32:12.723Z",
+      "rfqId": "rfq-1793320331295",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "price": "GH₵ 17,500",
+      "deliveryDays": 5,
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "phone": "+233244889900",
+      "email": "omotade.duodu@gmail.com",
+      "contactPerson": "Mr. Frank Mensah",
+      "declineReason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "updatedAt": "2026-10-30T00:32:14.343Z",
+      "lpoId": "lpo-1793320334346",
+      "lpoNumber": "LPO-GH-2026-3210"
     }
   ],
   "jobs": [
@@ -1301,6 +1339,38 @@
     }
   ],
   "teachers": [
+    {
+      "id": "tch-1793320316229",
+      "verified": true,
+      "subscriptionTier": "Featured Pro",
+      "ratingBadge": "Verified Educator",
+      "subjects": [
+        "Chemistry",
+        "Integrated Science"
+      ],
+      "curricula": [
+        "Cambridge (CIE)",
+        "GES Standards-based"
+      ],
+      "levels": [
+        "SHS",
+        "A-Levels"
+      ],
+      "teachingModes": [
+        "Home Tutoring",
+        "Online Lessons"
+      ],
+      "createdAt": "2026-10-30T00:31:56.230Z",
+      "fullName": "Mr. Daniel Boateng, M.Ed (1793320313908)",
+      "headline": "Cambridge IGCSE & IB Diploma Chemistry Specialist",
+      "region": "Greater Accra",
+      "suburb": "East Legon",
+      "rate": "GH₵ 140 / hr",
+      "whatsapp": "+233244988771",
+      "phone": "+233244988771",
+      "qualification": "M.Ed Chemistry, KNUST (NTC Reg: NTC-ED-90412)",
+      "bio": "Passionate educator with 9 years preparing students for straight A*s."
+    },
     {
       "id": "tch-1792770759180",
       "verified": true,
@@ -3566,6 +3636,95 @@
   ],
   "admissionApplications": [
     {
+      "id": "app-1793320316147",
+      "applicationNumber": "SKF-APP-2026-3657",
+      "schoolId": "sch-morning-star-cantonments",
+      "schoolName": "Morning Star School",
+      "academicYear": "2026/2027",
+      "term": "First Term",
+      "gradeApplyingFor": "Kindergarten 2",
+      "status": "Submitted (Under Review)",
+      "statusColor": "gold",
+      "submissionDate": "2026-10-30",
+      "userId": "usr-1793320314197",
+      "wardId": "wrd-1793320316146",
+      "guardianEmail": "dr.kofi.asante.1793320313908@gmail.com",
+      "student": {
+        "firstName": "Akosua",
+        "lastName": "Asante",
+        "fullName": "Akosua Asante",
+        "gender": "Female",
+        "dob": "2019-03-22",
+        "currentSchool": "Ghana Basic School",
+        "specialNeeds": "Mild asthma; peanut allergy"
+      },
+      "parentGuardian": {
+        "name": "Dr. Kofi Asante",
+        "relationship": "Father",
+        "phone": "0244123890",
+        "email": "dr.kofi.asante.1793320313908@gmail.com",
+        "occupation": "Professional",
+        "address": "Airport Residential, Accra, Ghana"
+      },
+      "documents": [
+        {
+          "name": "Birth Certificate",
+          "verified": true,
+          "uploadDate": "2026-10-30"
+        },
+        {
+          "name": "Health Record",
+          "verified": true,
+          "uploadDate": "2026-10-30"
+        }
+      ],
+      "reviewNotes": "Online parent portal secondary ward enrollment.",
+      "createdAt": "2026-10-30T00:31:56.147Z"
+    },
+    {
+      "id": "app-1793320314198",
+      "applicationNumber": "SKF-APP-2026-9649",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "academicYear": "2026/2027",
+      "term": "First Term",
+      "gradeApplyingFor": "Primary 4",
+      "status": "Submitted (Under Review)",
+      "statusColor": "gold",
+      "submissionDate": "2026-10-30",
+      "userId": "usr-1793320314197",
+      "guardianEmail": "dr.kofi.asante.1793320313908@gmail.com",
+      "student": {
+        "fullName": "Kwabena Asante",
+        "gender": "Not Specified",
+        "dob": "2015-05-12",
+        "currentSchool": "Ghana Basic School",
+        "specialNeeds": "None"
+      },
+      "parentGuardian": {
+        "name": "Dr. Kofi Asante",
+        "relationship": "Parent / Guardian",
+        "phone": "0244123890",
+        "email": "dr.kofi.asante.1793320313908@gmail.com",
+        "occupation": "Professional",
+        "address": "Airport Residential, Accra, Ghana"
+      },
+      "documents": [
+        {
+          "name": "Birth Certificate",
+          "verified": true,
+          "uploadDate": "2026-10-30"
+        },
+        {
+          "name": "Previous Terminal Report Card",
+          "verified": true,
+          "uploadDate": "2026-10-30"
+        }
+      ],
+      "reviewNotes": "Online parent portal registration. Application pending admission committee vetting.",
+      "createdAt": "2026-10-30T00:31:54.198Z"
+    },
+    {
       "id": "app-1793318224710",
       "applicationNumber": "SKF-APP-2026-4042",
       "schoolId": "sch-gis-accra",
@@ -4321,6 +4480,21 @@
     }
   ],
   "inquiries": [
+    {
+      "id": "inq-1793320314198",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "parentName": "Dr. Kofi Asante",
+      "parentEmail": "dr.kofi.asante.1793320313908@gmail.com",
+      "parentPhone": "0244123890",
+      "wardName": "Kwabena Asante",
+      "wardLevel": "Primary 4",
+      "message": "Inquiry registered during parent portal onboarding. Seeking admission for Kwabena Asante into Primary 4.",
+      "status": "Pending Response",
+      "statusColor": "gold",
+      "userId": "usr-1793320314197",
+      "createdAt": "2026-10-30T00:31:54.198Z"
+    },
     {
       "id": "inq-1793318224710",
       "schoolId": "sch-gis-accra",
@@ -5666,6 +5840,24 @@
       "suburb": "East Legon, Greater Accra",
       "targetSchoolId": "sch-gis-accra",
       "createdAt": "2026-10-29T23:57:04.710Z"
+    },
+    {
+      "id": "usr-1793320314197",
+      "name": "Dr. Kofi Asante",
+      "email": "dr.kofi.asante.1793320313908@gmail.com",
+      "phone": "0244123890",
+      "role": "parent",
+      "schoolId": null,
+      "schoolName": null,
+      "title": "Parent / Guardian",
+      "password": "ParentPassword2026!",
+      "verified": true,
+      "avatar": "👨‍👩‍👧",
+      "childName": "Kwabena Asante",
+      "childLevel": "Primary 4",
+      "suburb": "Airport Residential, Accra",
+      "targetSchoolId": "sch-gis-accra",
+      "createdAt": "2026-10-30T00:31:54.197Z"
     }
   ],
   "sessions": [
@@ -6522,6 +6714,55 @@
       "role": "parent",
       "schoolId": null,
       "createdAt": "2026-10-29T23:57:12.884Z"
+    },
+    {
+      "token": "sdtk_mvu8m2c6rju5sv5vrk",
+      "userId": "usr-1793320314197",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:31:54.198Z"
+    },
+    {
+      "token": "sdtk_mvu8mfa2repcr2ivaq",
+      "userId": "usr-parent-nana-aba",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:32:10.970Z"
+    },
+    {
+      "token": "sdtk_mvu8mfb8pg33ptlhg8",
+      "userId": "usr-teacher-emmanuel",
+      "role": "teacher",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:32:11.012Z"
+    },
+    {
+      "token": "sdtk_mvu8mfcaatmed8q0ft",
+      "userId": "usr-supplier-akiola",
+      "role": "supplier",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:32:11.050Z"
+    },
+    {
+      "token": "sdtk_mvu8mfd8yit197xolm",
+      "userId": "usr-admin-gis",
+      "role": "school_admin",
+      "schoolId": "sch-gis-accra",
+      "createdAt": "2026-10-30T00:32:11.084Z"
+    },
+    {
+      "token": "sdtk_mvu8mfe40167uxn676",
+      "userId": "usr-super-admin",
+      "role": "super_admin",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:32:11.116Z"
+    },
+    {
+      "token": "sdtk_mvu8mffkc8ob3aerly",
+      "userId": "usr-parent-1793312334033",
+      "role": "parent",
+      "schoolId": null,
+      "createdAt": "2026-10-30T00:32:11.168Z"
     }
   ],
   "bookmarks": {
@@ -9235,6 +9476,24 @@
   ],
   "tutorBookings": [
     {
+      "id": "tbk-1793320331246",
+      "teacherId": "tch-1",
+      "teacherName": "Mr. Emmanuel Addo",
+      "parentName": "Mr. Kojo Baffoe",
+      "parentEmail": "",
+      "parentPhone": "+233244001122",
+      "studentName": "Yaw Baffoe",
+      "studentGrade": "JHS 2",
+      "subject": "Elective Physics",
+      "curriculum": "GES Standards-based",
+      "mode": "In-Person Home Tuition",
+      "suburb": "East Legon",
+      "preferredDays": "Weekdays 4:30 PM",
+      "rateAgreedGHS": 150,
+      "status": "Confirmed",
+      "createdAt": "2026-10-30T00:32:11.246Z"
+    },
+    {
       "id": "tbk-1793318232894",
       "teacherId": "tch-1",
       "teacherName": "Mr. Emmanuel Addo",
@@ -9551,6 +9810,51 @@
   ],
   "procurementAuditLogs": [
     {
+      "id": "plog-1793320334630-252",
+      "timestamp": "2026-10-30T00:32:14.630Z",
+      "stage": "tender_awarded",
+      "stageLabel": "Tender Awarded",
+      "statusColor": "emerald",
+      "rfqId": "rfq-1793320331295",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "reason": "Compliant with NaSIA laboratory safety standards and competitive pricing.",
+      "summary": "Tender Awarded: Ghana International School (GIS) officially accepted bid of GH₵ 17,500 from LabEquip West Africa Ltd for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\"."
+    },
+    {
+      "id": "plog-1793320332765-485",
+      "timestamp": "2026-10-30T00:32:12.765Z",
+      "stage": "quote_submitted",
+      "stageLabel": "Quotation Submitted",
+      "statusColor": "blue",
+      "rfqId": "rfq-1793320331295",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "amount": "GH₵ 17,500",
+      "summary": "LabEquip West Africa Ltd submitted a quotation of GH₵ 17,500 (lead time: 5 days) for \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" at Ghana International School (GIS)."
+    },
+    {
+      "id": "plog-1793320331327-709",
+      "timestamp": "2026-10-30T00:32:11.327Z",
+      "stage": "rfq_published",
+      "stageLabel": "Tender Published",
+      "statusColor": "gold",
+      "rfqId": "rfq-1793320331295",
+      "rfqTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "supplierName": "Open for Bids",
+      "amount": "GH₵ 15,000 - 20,000",
+      "summary": "Ghana International School (GIS) published a new tender: \"Supply of 200 Lab Safety Goggles & Chemical Glassware\" (200 Sets). Budget: GH₵ 15,000 - 20,000."
+    },
+    {
       "id": "plog-1793318235586-632",
       "timestamp": "2026-10-29T23:57:15.586Z",
       "stage": "tender_awarded",
@@ -9838,6 +10142,58 @@
     }
   ],
   "purchaseOrders": [
+    {
+      "id": "lpo-1793320334346",
+      "lpoNumber": "LPO-GH-2026-3210",
+      "quoteId": "quote-1793320332723",
+      "rfqId": "rfq-1793320331295",
+      "schoolId": "sch-gis-accra",
+      "schoolName": "Ghana International School (GIS)",
+      "schoolAddress": "Cantonments, Greater Accra, Ghana",
+      "schoolPhone": "+233 30 277 7163",
+      "schoolEmail": "admissions@gis.edu.gh",
+      "nasiaLicense": "NaSIA-ACC-2026-REG",
+      "supplierId": "sup-sci-gh",
+      "supplierName": "LabEquip West Africa Ltd",
+      "supplierPhone": "+233244889900",
+      "supplierEmail": "omotade.duodu@gmail.com",
+      "supplierAddress": "Industrial Area, Accra",
+      "tenderTitle": "Supply of 200 Lab Safety Goggles & Chemical Glassware",
+      "category": "STEM & Robotics Equipment",
+      "quantity": "200 Sets",
+      "specifications": "Procurement for new Chemistry laboratory wing.",
+      "warrantyTerms": "2 Years Replacement Guarantee",
+      "deliveryLeadTime": "5 Business Days",
+      "deliveryDeadline": "2026-11-30",
+      "totalAmountGHS": 17500,
+      "totalAmountFormatted": "GH₵ 17,500",
+      "milestones": [
+        {
+          "index": 1,
+          "name": "Mobilization & Production Advance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Disbursement",
+          "disbursedAt": null,
+          "transactionRef": null
+        },
+        {
+          "index": 2,
+          "name": "Delivery Inspection & Final Acceptance",
+          "percent": 50,
+          "amountGHS": 8750,
+          "amountFormatted": "GH₵ 8,750",
+          "status": "Pending Delivery",
+          "disbursedAt": null,
+          "transactionRef": null
+        }
+      ],
+      "paymentStatus": "Issued",
+      "createdAt": "2026-10-30T00:32:14.346Z",
+      "issuedBy": "Bursary & Procurement Board",
+      "status": "Active"
+    },
     {
       "id": "lpo-1793318235563",
       "lpoNumber": "LPO-GH-2026-3513",
@@ -10186,6 +10542,25 @@
       "interviewDetails": null,
       "contractDetails": null,
       "ntcVerifiedDate": "2026-10-29T10:52:05.962Z"
+    }
+  ],
+  "wards": [
+    {
+      "id": "wrd-1793320316146",
+      "parentId": "usr-1793320314197",
+      "parentName": "Dr. Kofi Asante",
+      "parentEmail": "dr.kofi.asante.1793320313908@gmail.com",
+      "parentPhone": "0244123890",
+      "name": "Akosua Asante",
+      "fullName": "Akosua Asante",
+      "gender": "Female",
+      "dateOfBirth": "2019-03-22",
+      "level": "Kindergarten 2",
+      "bloodGroup": "O+",
+      "allergies": "Mild asthma; peanut allergy",
+      "targetSchoolId": "sch-morning-star-cantonments",
+      "schoolName": "Morning Star School",
+      "createdAt": "2026-10-30T00:31:56.147Z"
     }
   ]
 }

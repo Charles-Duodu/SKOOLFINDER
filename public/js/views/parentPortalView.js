@@ -668,15 +668,39 @@ const ParentPortalView = {
           <p style="color: var(--text-muted); max-width: 500px; margin: 0 auto 1.5rem; font-size: 0.95rem;">
             You have not submitted an online admission application yet. You can apply directly to verified partner schools with zero paperwork friction.
           </p>
-          <button class="btn-pill btn-primary" onclick="App.navigate('directory')">
-            Browse Schools & Apply Now
-          </button>
+          <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="btn-submit-new-admission-empty" class="btn-pill btn-gold" style="font-weight: 700;">
+              <span>➕</span> Submit New Admission Application
+            </button>
+            <button class="btn-pill btn-primary" onclick="App.navigate('directory')">
+              Browse Schools & Apply Now
+            </button>
+          </div>
         </div>
       `;
     }
 
     return `
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Top Action Dossier Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: #ffffff; padding: 1.25rem 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: var(--gold-600); text-transform: uppercase;">
+              Ghana MoE & GES Unified Admissions
+            </div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: var(--primary-900); margin: 0.2rem 0 0 0;">
+              Candidate Admission Dossiers (${applications.length})
+            </h3>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="btn-add-secondary-ward" class="btn-pill btn-outline" style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+              <span>👶</span> Add Another Child / Ward
+            </button>
+            <button id="btn-submit-new-admission" class="btn-pill btn-gold" style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
+              <span>➕</span> Submit New School Admission
+            </button>
+          </div>
+        </div>
         ${applications.map(app => {
           const statusBadge = this.getStatusBadge(app.status);
           const studentName = `${app.student?.firstName || ''} ${app.student?.lastName || ''}`.trim() || 'Student Applicant';
@@ -2315,6 +2339,20 @@ const ParentPortalView = {
   },
 
   attachTabChildEvents() {
+    // Add Secondary Ward
+    document.getElementById('btn-add-secondary-ward')?.addEventListener('click', () => {
+      Modals.openAddWardModal(() => {
+        App.refreshCurrentView();
+      });
+    });
+
+    // Submit New Admission Application
+    const openNewAdmission = () => {
+      Modals.openOnlineAdmissionModal();
+    };
+    document.getElementById('btn-submit-new-admission')?.addEventListener('click', openNewAdmission);
+    document.getElementById('btn-submit-new-admission-empty')?.addEventListener('click', openNewAdmission);
+
     // Pay via MoMo
     document.querySelectorAll('.btn-pay-momo').forEach(btn => {
       btn.addEventListener('click', (e) => {

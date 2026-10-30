@@ -5968,6 +5968,90 @@ class Database {
     };
   }
 
+  addParentWard(userId, wardData = {}) {
+    if (!this.data.wards) this.data.wards = [];
+    if (!this.data.admissionApplications) this.data.admissionApplications = [];
+
+    const user = (this.data.users || []).find(u => u.id === userId);
+    if (!user) throw new Error("Parent user not found");
+
+    const wardName = (wardData.name || wardData.fullName || '').trim();
+    if (!wardName) throw new Error("Child / Ward name is required");
+
+    const targetSchoolId = wardData.targetSchoolId || user.targetSchoolId || 'sch-gis-accra';
+    const school = (this.data.schools || []).find(s => s.id === targetSchoolId) || this.data.schools[0];
+    const level = wardData.level || wardData.childLevel || 'Primary (Class 1-6)';
+    const gender = wardData.gender || 'Not specified';
+    const dateOfBirth = wardData.dateOfBirth || '2017-06-15';
+    const bloodGroup = wardData.bloodGroup || 'Unknown';
+    const allergies = wardData.allergies || 'None';
+
+    const wardId = "wrd-" + Date.now();
+    const newWard = {
+      id: wardId,
+      parentId: user.id,
+      parentName: user.name,
+      parentEmail: user.email,
+      parentPhone: user.phone,
+      name: wardName,
+      fullName: wardName,
+      gender,
+      dateOfBirth,
+      level,
+      bloodGroup,
+      allergies,
+      targetSchoolId: school?.id,
+      schoolName: school?.name,
+      createdAt: new Date().toISOString()
+    };
+
+    this.data.wards.push(newWard);
+
+    // Also auto-provision admission application for this ward
+    const newApp = {
+      id: "app-" + Date.now(),
+      applicationNumber: "SKF-APP-2026-" + Math.floor(1000 + Math.random() * 9000),
+      schoolId: school?.id || "sch-gis-accra",
+      schoolName: school?.name || "Ghana International School (GIS)",
+      academicYear: "2026/2027",
+      term: "First Term",
+      gradeApplyingFor: level,
+      status: "Submitted (Under Review)",
+      statusColor: "gold",
+      submissionDate: new Date().toISOString().split('T')[0],
+      userId: user.id,
+      wardId: wardId,
+      guardianEmail: user.email,
+      student: {
+        firstName: wardName.split(' ')[0] || wardName,
+        lastName: wardName.split(' ').slice(1).join(' ') || '',
+        fullName: wardName,
+        gender,
+        dob: dateOfBirth,
+        currentSchool: wardData.previousSchool || "Ghana Basic School",
+        specialNeeds: allergies
+      },
+      parentGuardian: {
+        name: user.name,
+        relationship: wardData.relationship || "Parent / Guardian",
+        phone: user.phone,
+        email: user.email,
+        occupation: user.occupation || "Professional",
+        address: user.suburb ? `${user.suburb}, Ghana` : "Accra, Ghana"
+      },
+      documents: [
+        { name: "Birth Certificate", verified: true, uploadDate: new Date().toISOString().split('T')[0] },
+        { name: "Health Record", verified: true, uploadDate: new Date().toISOString().split('T')[0] }
+      ],
+      reviewNotes: "Online parent portal secondary ward enrollment.",
+      createdAt: new Date().toISOString()
+    };
+    this.data.admissionApplications.unshift(newApp);
+
+    this.save();
+    return { ward: newWard, application: newApp };
+  }
+
   logoutUser(token) {
     if (!token) return { success: true };
     const cleanToken = token.startsWith('Bearer ') ? token.slice(7).trim() : token.trim();
@@ -6036,8 +6120,23 @@ class Database {
     const bookmarkedIds = this.data.bookmarks[user.id] || ["sch-gis-accra", "sch-morning-star-cantonments"];
     const savedSchools = (this.data.schools || []).filter(s => bookmarkedIds.includes(s.id));
 
+    // Linked Wards & Children
+    const userWards = (this.data.wards || []).filter(w => w.parentId === user.id || (user.email && w.parentEmail === user.email));
+    if (userWards.length === 0 && user.childName) {
+      userWards.push({
+        id: "wrd-primary-" + user.id,
+        parentId: user.id,
+        name: user.childName,
+        fullName: user.childName,
+        level: user.childLevel || "Primary",
+        targetSchoolId: user.targetSchoolId || "sch-gis-accra",
+        schoolName: "Ghana International School (GIS)"
+      });
+    }
+
     return {
       user: this.sanitizeUser(user),
+      wards: userWards,
       stats: {
         totalApplications: applications.length,
         totalInquiries: inquiries.length,

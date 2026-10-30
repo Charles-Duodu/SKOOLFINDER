@@ -677,8 +677,7 @@ const TeachersView = {
 
     // Enroll as teacher button
     document.getElementById('btn-portal-enroll-teacher')?.addEventListener('click', () => {
-      this.activeTab = 'profile';
-      App.refreshCurrentView();
+      Modals.openTeacherSubscribeModal();
     });
 
     // Reset filters

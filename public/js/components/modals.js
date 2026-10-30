@@ -2104,9 +2104,10 @@ const Modals = {
   },
 
   // FEATURE #1: Parent Online Student Admission Application Wizard
-  openOnlineAdmissionModal(school) {
+  openOnlineAdmissionModal(school = null) {
     this.close();
     let currentStep = 1;
+    const targetSchool = school || { id: 'sch-gis-accra', name: 'Ghana International School (GIS)', whatsapp: '+233 24 412 3456' };
 
     const div = document.createElement('div');
     div.id = 'modal-backdrop';
@@ -2119,7 +2120,7 @@ const Modals = {
             <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">
               Official Digital Admissions Portal
             </div>
-            <h3 class="modal-title">Student Admission Application — ${school.name}</h3>
+            <h3 class="modal-title" id="app-modal-title">Student Admission Application — ${targetSchool.name}</h3>
           </div>
           <button class="modal-close-btn" id="modal-close">&times;</button>
         </div>
@@ -2157,6 +2158,22 @@ const Modals = {
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
               Please provide the candidate's exact legal name as it appears on their birth certificate.
             </p>
+
+            ${!school || !school.id ? `
+            <div class="form-group" style="background: #f8fafc; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.25rem;">
+              <label class="form-label" style="font-weight: 700; color: var(--primary-900);">Select Target School for Admission *</label>
+              <select id="app-target-school-select" class="form-select" required>
+                <option value="sch-gis-accra" selected>Ghana International School (GIS) - Cantonments, Accra</option>
+                <option value="sch-sos-tema">SOS-Hermann Gmeiner International College - Tema</option>
+                <option value="sch-morning-star-cantonments">Morning Star School - Cantonments, Accra</option>
+                <option value="sch-achimota-accra">Achimota Basic & Senior High School - Achimota</option>
+                <option value="sch-tema-intl">Tema International School (TIS) - Tema</option>
+                <option value="sch-roman-ridge">The Roman Ridge School - Roman Ridge, Accra</option>
+                <option value="sch-presby-boys-legon">Presbyterian Boys' Secondary School (PRESEC) - Legon</option>
+                <option value="sch-alpha-beta-dansoman">Alpha Beta Education Centres - Dansoman</option>
+              </select>
+            </div>
+            ` : ''}
 
             <div class="form-group">
               <label class="form-label">Student Full Name *</label>
@@ -2343,7 +2360,7 @@ const Modals = {
               <label style="display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.82rem; color: var(--primary-900); cursor: pointer;">
                 <input type="checkbox" id="check-declare" required checked style="width: 18px; height: 18px; margin-top: 2px;" />
                 <span>
-                  I hereby declare that all information submitted in this application is accurate and complete. I understand that provisional admission is subject to physical verification of certificates and entrance assessment by <strong>${school.name}</strong>.
+                  I hereby declare that all information submitted in this application is accurate and complete. I understand that provisional admission is subject to physical verification of certificates and entrance assessment by <strong id="app-declaration-school-name">${targetSchool.name}</strong>.
                 </span>
               </label>
             </div>
@@ -2459,8 +2476,9 @@ const Modals = {
       if (document.getElementById('check-doc-report')?.checked) docs.push({ docType: "Terminal Report", fileName: "previous_report.pdf", verified: true });
 
       try {
+        const targetSchoolId = (school && school.id) ? school.id : (document.getElementById('app-target-school-select')?.value || 'sch-gis-accra');
         const res = await API.submitAdmissionApplication({
-          schoolId: school.id,
+          schoolId: targetSchoolId,
           studentName,
           gender,
           dateOfBirth,
@@ -2542,11 +2560,152 @@ const Modals = {
 
         document.getElementById('modal-close-slip').onclick = () => this.close();
         document.getElementById('btn-slip-wa').onclick = () => {
-          const cleanWa = school.whatsapp.replace(/[^0-9]/g, '');
-          const msg = encodeURIComponent(`Hello ${school.name} Admissions, I have submitted online application ${app.applicationNumber} for ${app.student.fullName} into ${app.gradeApplying}. I would like to confirm receipt.`);
+          const cleanWa = (school?.whatsapp || '+233 24 412 3456').replace(/[^0-9]/g, '');
+          const activeSchoolName = school?.name || app.schoolName || 'Admissions Office';
+          const msg = encodeURIComponent(`Hello ${activeSchoolName} Admissions, I have submitted online application ${app.applicationNumber} for ${app.student.fullName} into ${app.gradeApplying}. I would like to confirm receipt.`);
           window.open(`https://wa.me/${cleanWa}?text=${msg}`, '_blank');
         };
 
+      } catch (err) {
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  // Modal: Add Secondary Child / Ward to Parent Account
+  openAddWardModal(onSuccess) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">
+              Parent Account Management
+            </div>
+            <h3 class="modal-title">👶 Add Another Child / Ward</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-add-ward" class="modal-body" style="padding: 1.5rem 2rem;">
+          <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.5;">
+            Enroll an additional child or ward under your verified parent account. This immediately links their student profile, prepares admission dossiers, and tracks academic performance.
+          </p>
+
+          <div class="form-group">
+            <label class="form-label">Child / Ward Legal Full Name *</label>
+            <input type="text" id="ward-name" class="form-input" placeholder="e.g. Akosua Serwaa Mensah" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Gender *</label>
+              <select id="ward-gender" class="form-select" required>
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Date of Birth *</label>
+              <input type="date" id="ward-dob" class="form-input" value="2018-09-12" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Current Academic Level *</label>
+              <select id="ward-level" class="form-select" required>
+                <option value="Kindergarten / Nursery">Kindergarten / Nursery</option>
+                <option value="Primary (Class 1-6)" selected>Primary (Class 1-6)</option>
+                <option value="Junior High (JHS 1-3 / BECE)">Junior High (JHS 1-3 / BECE)</option>
+                <option value="Senior High (SHS 1-3 / WASSCE)">Senior High (SHS 1-3 / WASSCE)</option>
+                <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target School *</label>
+              <select id="ward-school-id" class="form-select" required>
+                <option value="sch-gis-accra" selected>Ghana International School (GIS)</option>
+                <option value="sch-sos-tema">SOS-Hermann Gmeiner College</option>
+                <option value="sch-morning-star-cantonments">Morning Star School</option>
+                <option value="sch-achimota-accra">Achimota School</option>
+                <option value="sch-tema-intl">Tema International School</option>
+                <option value="sch-roman-ridge">The Roman Ridge School</option>
+                <option value="sch-alpha-beta-dansoman">Alpha Beta Education</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 1rem;">
+            <div class="form-group">
+              <label class="form-label">Blood Group</label>
+              <select id="ward-blood" class="form-select">
+                <option value="O+">O Positive (O+)</option>
+                <option value="A+">A Positive (A+)</option>
+                <option value="B+">B Positive (B+)</option>
+                <option value="AB+">AB Positive (AB+)</option>
+                <option value="O-">O Negative (O-)</option>
+                <option value="Unknown">Unknown</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Relationship to Student</label>
+              <select id="ward-relationship" class="form-select">
+                <option value="Mother">Mother</option>
+                <option value="Father">Father</option>
+                <option value="Legal Guardian">Legal Guardian</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Medical & Allergy Notes (Optional)</label>
+            <input type="text" id="ward-allergies" class="form-input" placeholder="e.g. Mild asthma inhaler user; allergic to peanuts" />
+          </div>
+
+          <div class="modal-footer" style="padding: 1.25rem 0 0 0; background: none; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-ward">Cancel</button>
+            <button type="submit" class="btn-pill btn-gold">
+              <span>➕</span> Register Ward & Create Dossier
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-ward').onclick = () => this.close();
+
+    document.getElementById('form-add-ward').onsubmit = async (e) => {
+      e.preventDefault();
+      const fullName = document.getElementById('ward-name').value.trim();
+      const gender = document.getElementById('ward-gender').value;
+      const dateOfBirth = document.getElementById('ward-dob').value;
+      const level = document.getElementById('ward-level').value;
+      const targetSchoolId = document.getElementById('ward-school-id').value;
+      const bloodGroup = document.getElementById('ward-blood').value;
+      const relationship = document.getElementById('ward-relationship').value;
+      const allergies = document.getElementById('ward-allergies').value.trim();
+
+      try {
+        const res = await API.addParentWard({
+          fullName,
+          gender,
+          dateOfBirth,
+          level,
+          targetSchoolId,
+          bloodGroup,
+          relationship,
+          allergies
+        });
+
+        this.close();
+        State.showToast(`Child / Ward "${fullName}" added successfully! Admission dossier created.`, 'success');
+        if (typeof onSuccess === 'function') onSuccess(res);
       } catch (err) {
         State.showToast(err.message, 'error');
       }

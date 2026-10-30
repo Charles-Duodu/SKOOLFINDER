@@ -1827,6 +1827,20 @@ app.get(['/api/parent/overview', '/api/parents/overview'], (req, res) => {
   }
 });
 
+// API: Add Secondary Ward / Child to Parent Account
+app.post(['/api/parents/wards', '/api/parents/children'], async (req, res) => {
+  try {
+    const user = getAuthenticatedUser(req);
+    if (!user) {
+      return res.status(401).json({ error: "Authentication required as parent" });
+    }
+    const result = db.addParentWard(user.id, req.body);
+    res.status(201).json({ success: true, ...result });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
 // API: Toggle School Bookmark
 app.post('/api/parent/bookmarks', (req, res) => {
   try {
