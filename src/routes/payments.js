@@ -266,7 +266,9 @@ router.post('/verify', async (req, res) => {
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const signature = req.headers['x-paystack-signature'];
-    const rawBody = req.body.toString('utf8');
+    const rawBody = Buffer.isBuffer(req.body)
+      ? req.body.toString('utf8')
+      : (typeof req.body === 'string' ? req.body : JSON.stringify(req.body || {}));
 
     // 1. Verify HMAC SHA512 signature
     if (!PaystackService.verifyWebhookSignature(rawBody, signature)) {
@@ -274,7 +276,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
       return res.status(401).json({ error: 'Invalid webhook signature' });
     }
 
-    const payload = JSON.parse(rawBody);
+    const payload = typeof req.body === 'object' && !Buffer.isBuffer(req.body) ? req.body : JSON.parse(rawBody);
     const event = payload.event;
     const data = payload.data;
 
