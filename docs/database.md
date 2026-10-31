@@ -218,3 +218,4 @@ All migrations are designed to be idempotent (`IF NOT EXISTS` / `ON CONFLICT DO 
 1. `sql/setup_full_database.sql` - Core schema, initial profiles, schools, teachers, suppliers, and seed dataset.
 2. `sql/phase3_tables.sql` - Email logs, notifications, inquiry message threads, tutor bookings.
 3. `sql/phase4_and_5_tables.sql` - Paystack payment orders, subscriptions, subscription plans, and audit logging.
+

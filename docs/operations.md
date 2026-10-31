@@ -107,3 +107,4 @@ Every security-critical administrative action is logged to the `audit_events` ta
 - Timestamp (UTC)
 
 Audit logs can be reviewed in real-time at `GET /api/admin/audit-logs`.
+

@@ -65,7 +65,7 @@ app.post('/api/reviews/:id/reply', (req, res) => {
 });
 
 // Global Stats & Telemetry
-app.get('/api/stats', (req, res) => {
+app.get(['/api/stats', '/stats'], (req, res) => {
   res.json({
     schoolsCount: 65,
     teachersCount: 28,
@@ -75,7 +75,7 @@ app.get('/api/stats', (req, res) => {
   });
 });
 
-app.get('/api/saas/status', (req, res) => {
+app.get(['/api/saas/status', '/saas/status'], (req, res) => {
   res.json({
     status: 'operational',
     version: '2.0.0',
@@ -85,7 +85,7 @@ app.get('/api/saas/status', (req, res) => {
   });
 });
 
-app.get('/api/health', (req, res) => {
+app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'healthy',
     uptime: process.uptime(),
@@ -105,12 +105,17 @@ app.get('*', (req, res) => {
 // Global Sanitized Error Handler (No stack traces exposed in production)
 app.use(errorHandler);
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`====================================================`);
-  console.log(`🚀 SkoolFinder Server running on port ${PORT}`);
-  console.log(`🌐 Local URL: http://localhost:${PORT}`);
-  console.log(`📡 Supabase: ${process.env.SUPABASE_URL}`);
-  console.log(`====================================================`);
-});
+// Export app for serverless environments (e.g. Vercel)
+module.exports = app;
+
+// Start Server locally when run directly
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`====================================================`);
+    console.log(`🚀 SkoolFinder Server running on port ${PORT}`);
+    console.log(`🌐 Local URL: http://localhost:${PORT}`);
+    console.log(`📡 Supabase: ${process.env.SUPABASE_URL}`);
+    console.log(`====================================================`);
+  });
+}
 
