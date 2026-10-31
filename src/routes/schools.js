@@ -83,7 +83,10 @@ router.get('/', async (req, res) => {
 
     if (error) {
       console.error('Schools query error:', error);
-      return res.status(500).json({ error: 'Failed to fetch schools' });
+      return res.status(500).json({ 
+        error: 'Failed to fetch schools',
+        details: error.message || error.code || 'Database query error'
+      });
     }
 
     // Secondary in-memory array filtering for PostgreSQL array columns if needed

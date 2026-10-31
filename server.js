@@ -89,7 +89,13 @@ app.get(['/api/health', '/health'], (req, res) => {
   res.json({
     status: 'healthy',
     uptime: process.uptime(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    services: {
+      supabaseConfigured: !!(process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY),
+      supabaseUrlPrefix: process.env.SUPABASE_URL ? process.env.SUPABASE_URL.substring(0, 20) + '...' : null,
+      paystackConfigured: !!process.env.PAYSTACK_SECRET_KEY,
+      nodeEnv: process.env.NODE_ENV || 'development'
+    }
   });
 });
 
