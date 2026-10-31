@@ -9,8 +9,13 @@ if (!supabaseUrl || !supabaseServiceKey) {
   console.warn('⚠️ Warning: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing from environment variables.');
 }
 
+// Fallback to avoid build-time top-level crashes if env vars are being loaded asynchronously
+const safeUrl = supabaseUrl || 'https://placeholder.supabase.co';
+const safeServiceKey = supabaseServiceKey || 'placeholder-service-key';
+const safeAnonKey = supabaseAnonKey || 'placeholder-anon-key';
+
 // Admin client for backend operations (bypasses RLS safely on server-side)
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+const supabaseAdmin = createClient(safeUrl, safeServiceKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
@@ -18,7 +23,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
 });
 
 // Public client for user-scoped operations
-const supabasePublic = createClient(supabaseUrl, supabaseAnonKey);
+const supabasePublic = createClient(safeUrl, safeAnonKey);
 
 module.exports = {
   supabaseAdmin,

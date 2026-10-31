@@ -2,13 +2,26 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const { supabaseAdmin } = require('../config/supabase');
 
-// Ensure local uploads directory exists as a resilient offline/sandbox fallback
-const localUploadsDir = path.join(__dirname, '../../public/uploads');
-if (!fs.existsSync(localUploadsDir)) {
-  fs.mkdirSync(localUploadsDir, { recursive: true });
-}
+// Fallback upload directory (safe for serverless read-only environments)
+const getFallbackUploadsDir = () => {
+  // Use /tmp in serverless/production or local public/uploads during local development
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production';
+  const targetDir = isServerless 
+    ? path.join(os.tmpdir(), 'uploads') 
+    : path.join(__dirname, '../../public/uploads');
+
+  try {
+    if (!fs.existsSync(targetDir)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+    }
+    return targetDir;
+  } catch (e) {
+    return os.tmpdir();
+  }
+};
 
 /**
  * POST /api/upload
@@ -61,17 +74,28 @@ router.post('/', async (req, res) => {
       console.warn('Supabase storage exception, falling back to static storage:', storageErr.message);
     }
 
-    // Resilient local fallback
-    const localFilePath = path.join(localUploadsDir, safeName);
-    fs.writeFileSync(localFilePath, buffer);
-    const localUrl = `/uploads/${safeName}`;
+    // Resilient fallback (safe for both local server and Vercel serverless)
+    try {
+      const fallbackDir = getFallbackUploadsDir();
+      const localFilePath = path.join(fallbackDir, safeName);
+      fs.writeFileSync(localFilePath, buffer);
+      const localUrl = `/uploads/${safeName}`;
 
-    return res.status(201).json({
-      success: true,
-      provider: 'local-static',
-      url: localUrl,
-      filename: safeName
-    });
+      return res.status(201).json({
+        success: true,
+        provider: 'local-static',
+        url: localUrl,
+        filename: safeName
+      });
+    } catch (fsErr) {
+      // If filesystem is completely read-only and Supabase failed, return inline data URI
+      return res.status(201).json({
+        success: true,
+        provider: 'inline-data',
+        url: `data:${contentType};base64,${base64Data}`,
+        filename: safeName
+      });
+    }
   } catch (err) {
     console.error('File upload error:', err);
     return res.status(500).json({ error: 'Failed to process file upload' });
