@@ -171,9 +171,15 @@ const API = {
   },
 
   async getTutorBookings(filters = {}) {
-    const query = new URLSearchParams(filters);
-    const res = await fetch(`${this.baseUrl}/teachers/bookings?${query.toString()}`);
-    return res.json();
+    try {
+      const query = new URLSearchParams(filters);
+      const res = await fetch(`${this.baseUrl}/teachers/bookings?${query.toString()}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      return [];
+    }
   },
 
   // PORTAL 5: SUPER ADMIN & REGULATORY DESK
@@ -209,14 +215,21 @@ const API = {
   },
 
   async getSchools(filters = {}) {
-    const query = new URLSearchParams();
-    Object.keys(filters).forEach(k => {
-      if (filters[k] && filters[k] !== 'All') {
-        query.append(k, filters[k]);
-      }
-    });
-    const res = await fetch(`${this.baseUrl}/schools?${query.toString()}`);
-    return res.json();
+    try {
+      const query = new URLSearchParams();
+      Object.keys(filters).forEach(k => {
+        if (filters[k] && filters[k] !== 'All') {
+          query.append(k, filters[k]);
+        }
+      });
+      const res = await fetch(`${this.baseUrl}/schools?${query.toString()}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('getSchools error:', e);
+      return [];
+    }
   },
 
   async getSchoolById(id) {
@@ -259,9 +272,16 @@ const API = {
 
   // Suppliers & RFQ
   async getSuppliers(category = null) {
-    const q = category && category !== 'All' ? `?category=${encodeURIComponent(category)}` : '';
-    const res = await fetch(`${this.baseUrl}/suppliers${q}`);
-    return res.json();
+    try {
+      const q = category && category !== 'All' ? `?category=${encodeURIComponent(category)}` : '';
+      const res = await fetch(`${this.baseUrl}/suppliers${q}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('getSuppliers error:', e);
+      return [];
+    }
   },
 
   async createSupplier(data) {
@@ -345,14 +365,20 @@ const API = {
 
   // Jobs
   async getJobs(filters = {}) {
-    const query = new URLSearchParams();
-    Object.keys(filters).forEach(k => {
-      if (filters[k] && filters[k] !== 'All') {
-        query.append(k, filters[k]);
-      }
-    });
-    const res = await fetch(`${this.baseUrl}/jobs?${query.toString()}`);
-    return res.json();
+    try {
+      const query = new URLSearchParams();
+      Object.keys(filters).forEach(k => {
+        if (filters[k] && filters[k] !== 'All') {
+          query.append(k, filters[k]);
+        }
+      });
+      const res = await fetch(`${this.baseUrl}/jobs?${query.toString()}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      return [];
+    }
   },
 
   async createJob(jobData) {
@@ -375,14 +401,21 @@ const API = {
 
   // Teachers & Tutors Directory & Subscription (Phase 2)
   async getTeachers(filters = {}) {
-    const query = new URLSearchParams();
-    Object.keys(filters).forEach(k => {
-      if (filters[k] && filters[k] !== 'All') {
-        query.append(k, filters[k]);
-      }
-    });
-    const res = await fetch(`${this.baseUrl}/teachers?${query.toString()}`);
-    return res.json();
+    try {
+      const query = new URLSearchParams();
+      Object.keys(filters).forEach(k => {
+        if (filters[k] && filters[k] !== 'All') {
+          query.append(k, filters[k]);
+        }
+      });
+      const res = await fetch(`${this.baseUrl}/teachers?${query.toString()}`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('getTeachers error:', e);
+      return [];
+    }
   },
 
   async getTeacherById(id) {

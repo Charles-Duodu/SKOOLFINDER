@@ -19,22 +19,30 @@ const TeachersView = {
     let bookings = [];
 
     try {
-      teachers = await API.getTeachers(this.filters);
+      const res = await API.getTeachers(this.filters);
+      teachers = Array.isArray(res) ? res : [];
     } catch (e) {
       teachers = [];
     }
 
     try {
-      jobs = await API.getJobs();
+      const res = await API.getJobs();
+      jobs = Array.isArray(res) ? res : [];
     } catch (e) {
       jobs = [];
     }
 
     try {
-      bookings = await API.getTutorBookings();
+      const res = await API.getTutorBookings();
+      bookings = Array.isArray(res) ? res : [];
     } catch (e) {
       bookings = [];
     }
+
+    // Defensive guarantee
+    if (!Array.isArray(teachers)) teachers = [];
+    if (!Array.isArray(jobs)) jobs = [];
+    if (!Array.isArray(bookings)) bookings = [];
 
     const isTeacherUser = State.isAuthenticated() && State.isTeacher();
     const currentTeacher = isTeacherUser ? (teachers.find(t => t.id === State.currentUser.teacherProfileId) || teachers[0]) : null;
@@ -152,6 +160,7 @@ const TeachersView = {
   },
 
   renderDirectoryTab(teachers) {
+    const list = Array.isArray(teachers) ? teachers : [];
     return `
       <!-- Filter Bar -->
       <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
@@ -202,21 +211,21 @@ const TeachersView = {
           </div>
 
           <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
-            Showing <strong>${teachers.length}</strong> vetted educators
+            Showing <strong>${list.length}</strong> vetted educators
           </div>
         </div>
       </div>
 
       <!-- Teachers Grid -->
       <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.5rem;">
-        ${teachers.length === 0 ? `
+        ${list.length === 0 ? `
           <div style="grid-column: 1 / -1; text-align: center; padding: 4rem; background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light);">
             <div style="font-size: 3rem; margin-bottom: 1rem;">🧑‍🏫</div>
             <h3 style="font-family: var(--font-heading); color: var(--text-main);">No teachers match your search</h3>
             <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Try adjusting your subject or location filters.</p>
             <button class="btn-pill btn-primary" id="btn-reset-tch-filters">Reset All Filters</button>
           </div>
-        ` : teachers.map(t => `
+        ` : list.map(t => `
           <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem; border: 1px solid var(--border-light); border-radius: var(--radius-xl); transition: transform 0.2s, box-shadow 0.2s; background: #fff;">
             <div>
               <!-- Top Row: Avatar & Trust Badges -->
