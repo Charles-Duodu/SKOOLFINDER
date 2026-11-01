@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { Resend } = require('resend');
 const nodemailer = require('nodemailer');
 const { supabaseAdmin } = require('../config/supabase');
@@ -124,7 +125,7 @@ async function dispatchEmail({ to, subject, html, text, portal, templateType, re
   }
 
   const logEntry = {
-    id: `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+    id: crypto.randomUUID(),
     recipient_email: Array.isArray(to) ? to.join(', ') : to,
     recipient_name: recipientName,
     portal,
@@ -142,12 +143,15 @@ async function dispatchEmail({ to, subject, html, text, portal, templateType, re
 
   // 4. Log to Supabase email_logs table
   try {
-    await supabaseAdmin
+    const { error: insertError } = await supabaseAdmin
       .from('email_logs')
       .insert(logEntry);
+    if (insertError) {
+      console.warn('[EMAIL AUDIT NOTICE] Could not record email log in DB:', insertError.message);
+    }
   } catch (dbErr) {
     // Non-blocking DB audit log
-    console.warn('[EMAIL AUDIT NOTICE] Could not record email log in DB:', dbErr.message);
+    console.warn('[EMAIL AUDIT EXCEPTION]:', dbErr.message);
   }
 
   return { success: status !== 'failed', provider, status, referenceCode };
