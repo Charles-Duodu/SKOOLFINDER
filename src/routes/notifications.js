@@ -78,7 +78,15 @@ router.get('/email-logs', async (req, res) => {
     }
 
     const { data: logs, error } = await query;
-    if (error || !logs || logs.length === 0) {
+    if (error) {
+      console.error('Email logs query error:', error);
+      return res.status(500).json({ 
+        error: 'Failed to retrieve email logs from database',
+        details: error.message || error.code || error
+      });
+    }
+
+    if (!logs || logs.length === 0) {
       let cached = EmailService.getRecentLogs();
       if (portal) {
         cached = cached.filter(l => l.portal === portal);
