@@ -90,3 +90,4 @@ The platform exhibits rapid execution once scripts are cached due to its lightwe
 | **Initial Payload** | 6.26 MB | **~850 KB** | -86% |
 | **HTTP Requests** | 28 | **11** | -60% |
 | **Performance Score**| 68 / 100 | **94 / 100** | +38% |
+

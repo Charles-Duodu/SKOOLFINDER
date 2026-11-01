@@ -71,3 +71,4 @@
 1. **Sprint 1 (Quick Wins):** Add the skip-to-content link, fix `.btn-gold` text contrast, and add `aria-label` to all icon buttons and modal close triggers.
 2. **Sprint 2 (Modal Hardening):** Add `role="dialog"`, `aria-modal="true"`, focus-trap lifecycle, and `Escape` key listeners to `modals.js`.
 3. **Sprint 3 (Form Accessibility):** Associate all form labels with inputs using matching `for` and `id` attributes, and bind error alerts via `aria-describedby` and `aria-invalid="true"`.
+

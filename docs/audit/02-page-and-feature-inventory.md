@@ -73,3 +73,4 @@ All modals are dynamically injected into `#modal-backdrop` via `public/js/compon
 2. **Service Worker Offline Cache:** `public/sw.js` activates and claims clients, but contains no asset manifest or cache population logic; offline requests fail.
 3. **PWA Mobile App Icons:** `public/manifest.json` points to `/assets/images/campus_hero.jpg` (a 1MB landscape photo) instead of dedicated square 192x192 and 512x512 app icons.
 4. **Dynamic Title & OpenGraph Meta Tags:** Page transitions do not update `document.title` or `<meta property="og:title">`, causing WhatsApp social shares of specific school links to display generic homepage metadata.
+

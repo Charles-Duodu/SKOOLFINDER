@@ -54,3 +54,4 @@
 - **Tablet (641px–1024px):** 82 / 100
 - **Desktop (>1024px):** 95 / 100
 - **Overall Responsive Design Rating:** **85 / 100**
+

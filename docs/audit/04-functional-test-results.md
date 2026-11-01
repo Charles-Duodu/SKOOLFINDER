@@ -113,3 +113,4 @@
 - **Component:** `State.isAuthenticated()` (`public/js/state.js` lines 109–112)
 - **Observation:** `State.isAuthenticated()` checks only `!!(this.currentUser && this.authToken)`. If a user returns after 7 days and their JWT is expired, the UI renders them as logged in until an API call fails with 401.
 - **Proposed Fix:** Add an initial `API.getMe()` verification in `App.init()`. If it returns 401, call `State.logout()` silently to clean up stale localStorage.
+

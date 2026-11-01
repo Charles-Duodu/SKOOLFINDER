@@ -115,3 +115,4 @@ The Express backend connects the frontend to three major third-party services:
 2. **Missing Input Sanitization in Template Literals:** Direct string interpolation into `.innerHTML` throughout 147 UI locations presents XSS risks if malicious content is entered into reviews or inquiry notes.
 3. **No Bundle Splitting:** Complex modules like the 201KB School Dashboard and 190KB Parent Portal are loaded on the public landing page even for first-time casual visitors.
 4. **Missing Offline Cache Strategy:** Service Worker activates but precaches no shell assets, resulting in network errors when mobile data drops.
+

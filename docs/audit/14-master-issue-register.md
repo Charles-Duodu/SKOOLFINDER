@@ -40,3 +40,4 @@
 | **SEC-02** | AppSec | **Medium** | Content Security Policy completely disabled in Helmet | Medium | Small | `server.js`:29 | Configure a targeted CSP allowing required CDNs (Fonts, Leaflet, Paystack). |
 | **SEC-03** | AppSec | **Medium** | JWT authentication token stored in `localStorage` | Medium | Large | `public/js/state.js`:84 | Plan roadmap migration from `localStorage` to `HttpOnly` session cookies. |
 | **SEC-04** | AppSec | **Low** | Administrative view rendered without server claim verify | Low | Small | `public/js/app.js`:26 | Validate admin token via `API.getMe()` before mounting regulatory tools in `AdminView`. |
+

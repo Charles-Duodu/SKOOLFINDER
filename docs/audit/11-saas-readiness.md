@@ -93,3 +93,4 @@ The platform architecture accommodates four distinct revenue models:
    - Premium schools (e.g. Ghana International School) have requested whitelabel URLs (e.g. `admissions.gis.edu.gh`). The frontend client-side router needs multi-domain awareness.
 3. **Parent WhatsApp Transaction Receipts:**
    - While email receipts are sent via Resend, parents in Ghana overwhelmingly prefer receiving PDF receipt confirmation via WhatsApp API (Infobip / Twilio).
+

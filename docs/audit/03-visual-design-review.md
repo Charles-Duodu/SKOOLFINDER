@@ -91,3 +91,4 @@ The site uses a responsive container with max-width `1280px` and standard paddin
 2. **WebP Image Pipeline:** Compress and convert all five photographic assets into `.webp` format and implement responsive `<picture>` tags with `srcset`.
 3. **Preload Typography:** Move Google Fonts imports from CSS into `<link rel="preconnect">` and `<link rel="preload">` in `index.html`.
 4. **Button Loading States:** Implement a uniform `.btn-loading` state across all modals and form submissions.
+

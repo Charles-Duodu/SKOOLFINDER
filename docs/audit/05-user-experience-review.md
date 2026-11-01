@@ -108,3 +108,4 @@
 | **Admission Voucher** | Voucher code displayed in modal only | Auto-populate code into Online Admission Form step 1 | Increases voucher completion rate by 35%. |
 | **Proprietor Claim** | Toast message only | Immediate confirmation email + dashboard ticket | Enhances institutional trust and accelerates onboarding. |
 | **Supplier Hub** | Manual refresh for quote status | Automated SMS alert when LPO is generated | Reduces procurement lead time from days to hours. |
+

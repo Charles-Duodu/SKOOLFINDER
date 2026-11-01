@@ -119,3 +119,4 @@ However, the **frontend presentation layer** exhibits vulnerabilities related to
    - *Recommendation:* Ensure sickbay medical logs are restricted to school medical officers and parents of that specific child via Supabase RLS.
 2. **Consent & Privacy Policy:**  
    The platform includes a dedicated `openPolicyModal('privacy')` articulating parent rights, school vetting standards, and NaSIA accreditation references.
+

@@ -116,3 +116,4 @@ SkoolFinder possesses strong educational keyword positioning, descriptive copywr
 | **"CSSPS school placement calculator"** | Very High (Annual peak Aug–Oct) | `#/cssps` | Add BECE cut-off point guides and FAQs. |
 | **"International schools in Cantonments"** | Medium | `#/directory?suburb=Cantonments` | Surface suburb landing hubs. |
 | **"Schools in Kumasi Ahodwo"** | Medium | `#/directory?region=Ashanti` | Create dedicated Ashanti regional hub. |
+
