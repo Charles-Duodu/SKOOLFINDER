@@ -12,10 +12,10 @@ const HomeView = {
       <section class="hero-section">
         <!-- 4-Image Transition Background -->
         <div class="hero-slideshow" id="hero-slideshow">
-          <div class="hero-slide active" style="background-image: url('/assets/images/campus_hero.jpg');"></div>
-          <div class="hero-slide" style="background-image: url('/assets/images/science_lab.jpg');"></div>
-          <div class="hero-slide" style="background-image: url('/assets/images/montessori_class.jpg');"></div>
-          <div class="hero-slide" style="background-image: url('/assets/images/sports_complex.jpg');"></div>
+          <div class="hero-slide active" style="background-image: url('/assets/images/campus_hero.webp');"></div>
+          <div class="hero-slide" data-bg="/assets/images/science_lab.webp"></div>
+          <div class="hero-slide" data-bg="/assets/images/montessori_class.webp"></div>
+          <div class="hero-slide" data-bg="/assets/images/sports_complex.webp"></div>
         </div>
 
         <!-- Lighter Glassmorphic Navy Overlay -->
@@ -420,9 +420,9 @@ const HomeView = {
     const feeDisplay = feeStr.includes('(') ? feeStr.split('(')[0].trim() : feeStr;
 
     const galleryImgs = [
-      school.coverImage || school.banner_url || school.logo_url || '/assets/images/campus_hero.jpg',
-      '/assets/images/science_lab.jpg',
-      '/assets/images/montessori_class.jpg'
+      school.coverImage || school.banner_url || school.logo_url || '/assets/images/campus_hero.webp',
+      '/assets/images/science_lab.webp',
+      '/assets/images/montessori_class.webp'
     ];
 
     const levelsList = Array.isArray(school.levels) ? school.levels : (Array.isArray(school.education_level) ? school.education_level : ['Primary', 'JHS']);
@@ -431,7 +431,7 @@ const HomeView = {
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
         <div class="card-mini-carousel" id="carousel-${school.id}">
-          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" />
+          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" />
           
           <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
             ${isSaved ? '🔖' : '🤍'}
@@ -619,10 +619,31 @@ const HomeView = {
     if (slides.length > 1) {
       if (window._heroSlideTimer) clearInterval(window._heroSlideTimer);
       let currentIdx = 0;
+      // PF-01: Lazy-load hero slides to conserve mobile data and accelerate LCP
+      const ensureSlideBg = (slide) => {
+        if (slide && slide.dataset.bg && !slide.style.backgroundImage) {
+          slide.style.backgroundImage = `url('${slide.dataset.bg}')`;
+        }
+      };
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => {
+          slides.forEach((s, idx) => {
+            if (idx > 0) setTimeout(() => ensureSlideBg(s), idx * 1000);
+          });
+        });
+      } else {
+        setTimeout(() => {
+          slides.forEach((s, idx) => {
+            if (idx > 0) ensureSlideBg(s);
+          });
+        }, 1500);
+      }
       const setSlide = (newIdx) => {
         if (newIdx === currentIdx) return;
         const prevIdx = currentIdx;
         currentIdx = newIdx;
+        ensureSlideBg(slides[currentIdx]);
         slides.forEach((s, i) => {
           s.classList.remove('active', 'prev');
           if (i === currentIdx) {

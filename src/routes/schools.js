@@ -171,7 +171,7 @@ function formatSchool(s) {
     facilities: Array.isArray(s.facilities) && s.facilities.length > 0 ? s.facilities : ['Science Lab', 'Library', 'ICT Suite'],
     verified: s.is_verified ?? true,
     is_verified: s.is_verified ?? true,
-    coverImage: s.banner_url || s.logo_url || '/assets/images/campus_hero.jpg',
+    coverImage: s.banner_url || s.logo_url || '/assets/images/campus_hero.webp',
     whatsapp: s.phone || '+233302777163',
     phone: s.phone || '+233302777163'
   };

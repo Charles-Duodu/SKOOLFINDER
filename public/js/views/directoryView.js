@@ -236,7 +236,7 @@ const DirectoryView = {
           const marker = L.marker([s.lat, s.lng]).addTo(this.mapInstance);
           marker.bindPopup(`
             <div class="map-popup-card">
-              <img src="${s.coverImage || s.banner_url || '/assets/images/campus_hero.jpg'}" class="map-popup-img" alt="${s.name}" />
+              <img src="${s.coverImage || s.banner_url || '/assets/images/campus_hero.webp'}" class="map-popup-img" alt="${s.name}" loading="lazy" />
               <div class="map-popup-body">
                 <div class="map-popup-title">${s.name}</div>
                 <div class="map-popup-suburb">📍 ${s.suburb || s.locality || 'Accra'}, ${s.region || 'Greater Accra'}</div>

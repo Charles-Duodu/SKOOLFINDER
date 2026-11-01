@@ -194,7 +194,7 @@ const SchoolDetailView = {
 
                 <!-- Active Facility Main Interactive Stage -->
                 <div id="vtour-stage-container" style="position: relative; border-radius: var(--radius-lg); overflow: hidden; height: 420px; background: #0f172a; border: 2px solid #1e293b; box-shadow: var(--shadow-md);">
-                  <img id="vtour-active-img" src="/assets/images/science_lab.jpg" alt="Science Laboratory" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;" />
+                  <img id="vtour-active-img" src="/assets/images/science_lab.webp" alt="Science Laboratory" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.3s ease;" />
                   <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(10, 17, 40, 0.85) 0%, rgba(10, 17, 40, 0.2) 50%, transparent 100%);"></div>
 
                   <!-- 360 Compass Indicator -->
@@ -636,7 +636,7 @@ const SchoolDetailView = {
         'fac-stem-lab': {
           title: 'Cambridge Practical Science & Chemistry Lab',
           category: 'STEM & SCIENCE',
-          image: '/assets/images/science_lab.jpg',
+          image: '/assets/images/science_lab.webp',
           description: 'Fully equipped Cambridge CIE-certified science laboratory with 30 Olympus binocular microscopes, chemical fume extraction hood, and digital spectrophotometer.',
           schoolName: school.name,
           schoolId: school.id,
@@ -652,7 +652,7 @@ const SchoolDetailView = {
         'fac-robotics': {
           title: 'Advanced STEM Robotics & ICT Innovation Center',
           category: 'ROBOTICS & ICT',
-          image: '/assets/images/robotics_lab.jpg',
+          image: '/assets/images/robotics_lab.webp',
           description: 'Ultra-modern coding and robotics center featuring Arduino kits, robotic arms, rapid 3D printing stations, and fiber-optic gigabit workstations.',
           schoolName: school.name,
           schoolId: school.id,
@@ -668,7 +668,7 @@ const SchoolDetailView = {
         'fac-sports': {
           title: 'Olympic Swimming Pool & Multi-Sport Stadium',
           category: 'SPORTS & ATHLETICS',
-          image: '/assets/images/sports_complex.jpg',
+          image: '/assets/images/sports_complex.webp',
           description: 'World-class 8-lane 50-meter Olympic swimming pool with certified FINA timing pads, 400m tartan running track, and FIFA-grade natural turf football pitch.',
           schoolName: school.name,
           schoolId: school.id,
@@ -684,7 +684,7 @@ const SchoolDetailView = {
         'fac-montessori': {
           title: 'Early Childhood Montessori Exploration Hub',
           category: 'PRESCHOOL & KINDERGARTEN',
-          image: '/assets/images/montessori_class.jpg',
+          image: '/assets/images/montessori_class.webp',
           description: 'Nurturing early childhood learning environment with authentic AMI wooden sensorial materials, child-height botanical stations, and quiet reading nooks.',
           schoolName: school.name,
           schoolId: school.id,
@@ -700,7 +700,7 @@ const SchoolDetailView = {
         'fac-campus-drone': {
           title: '25-Acre Gated Campus Aerial Drone Overview',
           category: 'CAMPUS & GROUNDS',
-          image: '/assets/images/campus_hero.jpg',
+          image: '/assets/images/campus_hero.webp',
           description: 'Bird\'s-eye panoramic aerial survey of the 25-acre secured compound in Cantonments, showcasing academic blocks, auditorium, and transport depots.',
           schoolName: school.name,
           schoolId: school.id,
