@@ -467,12 +467,14 @@ button {
 
 .btn-gold {
   background: var(--gradient-gold);
-  color: #ffffff;
+  color: #0a1128 !important;
+  font-weight: 800;
   box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
 }
 
 .btn-gold:hover {
   transform: translateY(-1px);
+  color: #0a1128 !important;
   box-shadow: 0 6px 20px rgba(217, 119, 6, 0.35);
 }
 

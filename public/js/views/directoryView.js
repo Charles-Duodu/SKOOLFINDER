@@ -28,7 +28,7 @@ const DirectoryView = {
                 <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900);">
                   School Directory: Greater Accra & Kumasi
                 </h1>
-                <p style="color: var(--text-muted); font-size: 0.95rem;">
+                <p id="dir-count-text" style="color: var(--text-muted); font-size: 0.95rem;">
                   Showing <strong>${schools.length}</strong> accredited schools matching your criteria.
                 </p>
               </div>
@@ -146,19 +146,19 @@ const DirectoryView = {
                 <label class="filter-group-label">Must-Have Amenities</label>
                 <div class="filter-checkbox-list">
                   <label class="filter-checkbox-item">
-                    <input type="checkbox" class="facility-checkbox" value="School Bus" ${State.filters.facility === 'School Bus' ? 'checked' : ''} />
+                    <input type="checkbox" class="facility-checkbox" value="School Bus" ${(Array.isArray(State.filters.facilities) && State.filters.facilities.includes('School Bus')) || State.filters.facility === 'School Bus' ? 'checked' : ''} />
                     <span>School Bus Shuttle</span>
                   </label>
                   <label class="filter-checkbox-item">
-                    <input type="checkbox" class="facility-checkbox" value="Science" ${State.filters.facility === 'Science' ? 'checked' : ''} />
+                    <input type="checkbox" class="facility-checkbox" value="Science" ${(Array.isArray(State.filters.facilities) && State.filters.facilities.includes('Science')) || State.filters.facility === 'Science' ? 'checked' : ''} />
                     <span>Science & Robotics Lab</span>
                   </label>
                   <label class="filter-checkbox-item">
-                    <input type="checkbox" class="facility-checkbox" value="Swimming" ${State.filters.facility === 'Swimming' ? 'checked' : ''} />
+                    <input type="checkbox" class="facility-checkbox" value="Swimming" ${(Array.isArray(State.filters.facilities) && State.filters.facilities.includes('Swimming')) || State.filters.facility === 'Swimming' ? 'checked' : ''} />
                     <span>Swimming Pool</span>
                   </label>
                   <label class="filter-checkbox-item">
-                    <input type="checkbox" class="facility-checkbox" value="Sick Bay" ${State.filters.facility === 'Sick Bay' ? 'checked' : ''} />
+                    <input type="checkbox" class="facility-checkbox" value="Sick Bay" ${(Array.isArray(State.filters.facilities) && State.filters.facilities.includes('Sick Bay')) || State.filters.facility === 'Sick Bay' ? 'checked' : ''} />
                     <span>Sick Bay & Nurse</span>
                   </label>
                 </div>
@@ -166,7 +166,7 @@ const DirectoryView = {
             </aside>
 
             <!-- Results Section -->
-            <main>
+            <main id="dir-results-main">
               ${this.viewMode === 'map' ? `
                 <!-- FEATURE 1: INTERACTIVE GEOLOCATION MAP -->
                 <div>
@@ -264,6 +264,61 @@ const DirectoryView = {
     }
   },
 
+  updateResults(schools) {
+    const countEl = document.getElementById('dir-count-text');
+    if (countEl) {
+      countEl.innerHTML = `Showing <strong>${schools.length}</strong> accredited schools matching your criteria.`;
+    }
+
+    const mainEl = document.getElementById('dir-results-main');
+    if (!mainEl) return;
+
+    if (this.viewMode === 'map') {
+      this.initMap(schools);
+      return;
+    }
+
+    if (schools.length === 0) {
+      mainEl.innerHTML = `
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px dashed var(--border-light); padding: 4rem 2rem; text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: var(--primary-900); margin-bottom: 0.5rem;">
+            No schools matched your exact filters
+          </h3>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+            Try clearing some filters or searching a nearby suburb in Accra or Kumasi.
+          </p>
+          <button id="btn-empty-reset" class="btn-pill btn-primary">
+            Clear All Filters
+          </button>
+        </div>
+      `;
+      document.getElementById('btn-empty-reset')?.addEventListener('click', () => this.resetFilters());
+    } else {
+      mainEl.innerHTML = `
+        <div class="schools-grid">
+          ${schools.map(s => HomeView.renderSchoolCard(s)).join('')}
+        </div>
+      `;
+      HomeView.attachEvents();
+    }
+  },
+
+  resetFilters() {
+    State.filters = {
+      search: '',
+      region: 'All',
+      suburb: 'All',
+      level: 'All',
+      curriculum: 'All',
+      boarding: 'All',
+      feeBand: 'All',
+      facility: 'All',
+      facilities: []
+    };
+    App.navigate('directory');
+  },
+
   attachEvents() {
     // Breadcrumb Home
     document.querySelector('.breadcrumb-home')?.addEventListener('click', (e) => {
@@ -281,16 +336,23 @@ const DirectoryView = {
       App.navigate('directory');
     });
 
-    // Search Input
+    // In-Place Search Input (Preserves Keyboard Focus)
     const searchInput = document.getElementById('dir-search-input');
     if (searchInput) {
       searchInput.oninput = (e) => {
         State.filters.search = e.target.value.trim();
-        App.debounce(() => App.navigate('directory'), 350);
+        App.debounce(async () => {
+          try {
+            const schools = await API.getSchools(State.filters);
+            DirectoryView.updateResults(schools);
+          } catch (err) {
+            console.warn("Search input error:", err);
+          }
+        }, 250);
       };
     }
 
-    // Filter Selects
+    // Filter Selects (Fast in-place refresh)
     const selects = [
       { id: 'filter-region', key: 'region' },
       { id: 'filter-suburb', key: 'suburb' },
@@ -303,38 +365,36 @@ const DirectoryView = {
     selects.forEach(({ id, key }) => {
       const el = document.getElementById(id);
       if (el) {
-        el.onchange = (e) => {
+        el.onchange = async (e) => {
           State.filters[key] = e.target.value;
-          App.navigate('directory');
+          try {
+            const schools = await API.getSchools(State.filters);
+            DirectoryView.updateResults(schools);
+          } catch (err) {
+            App.navigate('directory');
+          }
         };
       }
     });
 
-    // Facility Checkboxes
+    // Multi-Select Facility Checkboxes
     document.querySelectorAll('.facility-checkbox').forEach(cb => {
-      cb.onchange = (e) => {
-        State.filters.facility = e.target.checked ? e.target.value : 'All';
-        App.navigate('directory');
+      cb.onchange = async () => {
+        const checkedValues = Array.from(document.querySelectorAll('.facility-checkbox:checked')).map(el => el.value);
+        State.filters.facilities = checkedValues;
+        State.filters.facility = checkedValues.length > 0 ? checkedValues.join(',') : 'All';
+        try {
+          const schools = await API.getSchools(State.filters);
+          DirectoryView.updateResults(schools);
+        } catch (err) {
+          console.warn("Facility filter error:", err);
+        }
       };
     });
 
-    // Reset Filters
-    const resetFilters = () => {
-      State.filters = {
-        search: '',
-        region: 'All',
-        suburb: 'All',
-        level: 'All',
-        curriculum: 'All',
-        boarding: 'All',
-        feeBand: 'All',
-        facility: 'All'
-      };
-      App.navigate('directory');
-    };
-
-    document.getElementById('btn-reset-filters')?.addEventListener('click', resetFilters);
-    document.getElementById('btn-empty-reset')?.addEventListener('click', resetFilters);
+    // Reset Filters Buttons
+    document.getElementById('btn-reset-filters')?.addEventListener('click', () => this.resetFilters());
+    document.getElementById('btn-empty-reset')?.addEventListener('click', () => this.resetFilters());
 
     // If in map mode, initialize Leaflet map
     if (this.viewMode === 'map') {

@@ -54,6 +54,15 @@ const API = {
     return res.json();
   },
 
+  async getCurrentUser() {
+    try {
+      const data = await this.getMe();
+      return data.user || data;
+    } catch {
+      return null;
+    }
+  },
+
   // --- DUAL AUTH: GHANA PHONE SMS OTP (HUBTEL GATEWAY) ---
   async sendOTP(phone, purpose = 'login') {
     const res = await fetch(`${this.baseUrl}/auth/otp/send`, {
@@ -740,57 +749,6 @@ const API = {
       throw new Error(err.error || "Failed to upload academic resource");
     }
     return res.json();
-  },
-
-  // Authentication & Role-Based Security Engine (Feature 5)
-  getAuthHeaders(extra = {}) {
-    const headers = { 'Content-Type': 'application/json', ...extra };
-    if (typeof State !== 'undefined' && State.authToken) {
-      headers['Authorization'] = `Bearer ${State.authToken}`;
-    }
-    return headers;
-  },
-
-  async login(login, password) {
-    const res = await fetch(`${this.baseUrl}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ login, password })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Login failed");
-    return data;
-  },
-
-  async register(userData) {
-    const res = await fetch(`${this.baseUrl}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Registration failed");
-    return data;
-  },
-
-  async getCurrentUser() {
-    const res = await fetch(`${this.baseUrl}/auth/me`, {
-      headers: this.getAuthHeaders()
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.user;
-  },
-
-  async logout() {
-    try {
-      await fetch(`${this.baseUrl}/auth/logout`, {
-        method: 'POST',
-        headers: this.getAuthHeaders()
-      });
-    } catch (e) {
-      console.warn("Logout request failed:", e);
-    }
   },
 
   async getParentOverview() {

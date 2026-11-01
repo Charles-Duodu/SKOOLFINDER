@@ -255,6 +255,17 @@ router.get('/', async (req, res) => {
       filtered = filtered.filter(s => Array.isArray(s.education_level) && s.education_level.some(l => l.toLowerCase().includes(targetLevel.toLowerCase())));
     }
 
+    const targetFacilities = req.query.facilities || req.query.facility;
+    if (targetFacilities && targetFacilities !== 'All') {
+      const facArr = targetFacilities.split(',').map(f => f.trim().toLowerCase()).filter(Boolean);
+      if (facArr.length > 0) {
+        filtered = filtered.filter(s => {
+          const sFac = Array.isArray(s.facilities) ? s.facilities.map(f => f.toLowerCase()) : [];
+          return facArr.every(reqFac => sFac.some(f => f.includes(reqFac)));
+        });
+      }
+    }
+
     return res.json(filtered.map(formatSchool));
   } catch (err) {
     console.error('GET /api/schools error:', err);

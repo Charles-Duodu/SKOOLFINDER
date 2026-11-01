@@ -523,7 +523,7 @@ const SchoolDetailView = {
     if (btnWa) {
       btnWa.onclick = async () => {
         const rawWa = btnWa.dataset.wa;
-        const cleanWa = rawWa.replace(/[^0-9]/g, '');
+        const cleanWa = typeof Utils !== 'undefined' ? Utils.formatGhanaWhatsApp(rawWa) : rawWa.replace(/[^0-9]/g, '');
         // Log lead event
         await API.recordLead(schoolId, 'whatsapp_reveal');
         // Update UI
@@ -805,11 +805,11 @@ const SchoolDetailView = {
           <div style="margin-top: 1rem; background: #f8fafc; border-left: 3px solid var(--primary-600); border-radius: var(--radius-sm); padding: 1rem 1.25rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
               <span class="badge badge-verified" style="font-size: 0.72rem; padding: 0.15rem 0.5rem;">🛡️ Official Institutional Reply</span>
-              <strong style="color: var(--primary-900); font-size: 0.85rem;">${r.officialReply.author}</strong>
-              <span style="color: var(--text-light); font-size: 0.75rem;">• ${r.officialReply.role}</span>
+              <strong style="color: var(--primary-900); font-size: 0.85rem;">${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.officialReply.author) : r.officialReply.author}</strong>
+              <span style="color: var(--text-light); font-size: 0.75rem;">• ${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.officialReply.role) : r.officialReply.role}</span>
             </div>
             <p style="font-size: 0.88rem; color: var(--text-main); line-height: 1.6; margin: 0;">
-              ${r.officialReply.message}
+              ${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.officialReply.message) : r.officialReply.message}
             </p>
           </div>
         ` : '';
@@ -823,13 +823,13 @@ const SchoolDetailView = {
                 </div>
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
-                    <strong style="color: var(--primary-900); font-size: 0.95rem;">${r.authorName}</strong>
+                    <strong style="color: var(--primary-900); font-size: 0.95rem;">${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.authorName) : r.authorName}</strong>
                     <span class="badge" style="background: #dcfce7; color: #15803d; font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.5rem;">
-                      🛡️ ${r.affiliation}
+                      🛡️ ${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.affiliation) : r.affiliation}
                     </span>
                   </div>
                   <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.15rem;">
-                    Ward: <strong>${r.wardGrade}</strong> • ${new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    Ward: <strong>${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.wardGrade) : r.wardGrade}</strong> • ${new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </div>
                 </div>
               </div>
@@ -847,10 +847,10 @@ const SchoolDetailView = {
 
             <!-- Review Title & Content -->
             <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">
-              ${r.title}
+              ${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.title) : r.title}
             </h4>
             <p style="font-size: 0.92rem; color: var(--text-main); line-height: 1.65; margin-bottom: 1rem;">
-              ${r.content}
+              ${typeof Utils !== 'undefined' ? Utils.escapeHTML(r.content) : r.content}
             </p>
 
             <!-- Highlights tags -->

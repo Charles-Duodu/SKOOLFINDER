@@ -1,6 +1,31 @@
 /**
- * SkoolFinder Ghana - Application State & UI Store
+ * SkoolFinder Ghana - Global Utilities & Application State
  */
+const Utils = {
+  formatGhanaWhatsApp(phone) {
+    if (!phone) return '233302777163';
+    let clean = String(phone).replace(/[^0-9]/g, '');
+    if (clean.startsWith('0')) {
+      clean = '233' + clean.substring(1);
+    } else if (!clean.startsWith('233') && clean.length === 9) {
+      clean = '233' + clean;
+    }
+    return clean || '233302777163';
+  },
+
+  escapeHTML(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>"']/g, m => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#039;'
+    }[m]));
+  }
+};
+if (typeof window !== 'undefined') window.Utils = Utils;
+
 const State = {
   currentView: 'home', // 'home' | 'directory' | 'school-detail' | 'compare' | 'suppliers' | 'jobs' | 'dashboard'
   currentSchoolId: null,
@@ -13,7 +38,16 @@ const State = {
     curriculum: 'All',
     boarding: 'All',
     feeBand: 'All',
-    facility: 'All'
+    facility: 'All',
+    facilities: []
+  },
+
+  formatGhanaWhatsApp(phone) {
+    return Utils.formatGhanaWhatsApp(phone);
+  },
+
+  escapeHTML(str) {
+    return Utils.escapeHTML(str);
   },
 
   comparisonList: [], // array of school objects (max 3)

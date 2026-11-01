@@ -189,6 +189,20 @@ const App = {
     window.addEventListener('hashchange', () => resolveRoute());
     resolveRoute();
 
+    // Silent Session Verification (FN-08): Clean up expired JWTs automatically
+    if (State.isAuthenticated() && typeof API !== 'undefined' && API.getMe) {
+      API.getMe().catch(() => {
+        console.warn("Session token expired or invalid; cleaning up stale session.");
+        State.setCurrentUser(null, null);
+        if (['schools', 'admin'].includes(State.currentView)) {
+          App.navigate('home');
+        } else if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents();
+        }
+      });
+    }
+
     // FEATURE 15: Initialize AI Admissions Chatbot
     if (typeof AIChatbot !== 'undefined') {
       AIChatbot.init();
