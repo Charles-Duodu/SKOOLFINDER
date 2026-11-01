@@ -3,11 +3,100 @@
  */
 const Modals = {
   activeModal: null,
+  _escapeHandler: null,
+
+  setupDialogAccessibility(div) {
+    if (!div || div.dataset.a11yInitialized) return;
+    div.dataset.a11yInitialized = 'true';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+
+    const titleEl = div.querySelector('.modal-title');
+    if (titleEl) {
+      if (!titleEl.id) titleEl.id = 'modal-dialog-title-' + Math.random().toString(36).substr(2, 9);
+      div.setAttribute('aria-labelledby', titleEl.id);
+    }
+
+    const dialog = div.querySelector('.modal-dialog');
+    if (dialog && !dialog.getAttribute('tabindex')) {
+      dialog.setAttribute('tabindex', '-1');
+    }
+
+    div.querySelectorAll('.modal-close-btn').forEach(btn => {
+      if (!btn.getAttribute('aria-label')) {
+        btn.setAttribute('aria-label', 'Close dialog');
+      }
+    });
+
+    // Escape listener
+    if (!this._escapeHandler) {
+      this._escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          Modals.close();
+        }
+      };
+      window.addEventListener('keydown', this._escapeHandler);
+    }
+
+    // Focus Trap inside modal
+    const trapHandler = (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = Array.from(div.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )).filter(el => el.offsetWidth > 0 || el.offsetHeight > 0);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          last.focus();
+          e.preventDefault();
+        }
+      } else {
+        if (document.activeElement === last) {
+          first.focus();
+          e.preventDefault();
+        }
+      }
+    };
+    div.addEventListener('keydown', trapHandler);
+
+    // Initial focus on first interactive control
+    setTimeout(() => {
+      const firstInput = div.querySelector('input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button.btn-pill');
+      if (firstInput) {
+        firstInput.focus();
+      } else if (dialog) {
+        dialog.focus();
+      }
+    }, 60);
+  },
+
+  setButtonLoading(btn, isLoading, loadingText = 'Processing...') {
+    if (!btn) return;
+    if (isLoading) {
+      btn.dataset.originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.classList.add('btn-loading');
+      btn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span> <span>${loadingText}</span>`;
+    } else {
+      btn.disabled = false;
+      btn.classList.remove('btn-loading');
+      if (btn.dataset.originalHtml) {
+        btn.innerHTML = btn.dataset.originalHtml;
+      }
+    }
+  },
 
   close() {
     if (this._mockTimerInterval) {
       clearInterval(this._mockTimerInterval);
       this._mockTimerInterval = null;
+    }
+    if (this._escapeHandler) {
+      window.removeEventListener('keydown', this._escapeHandler);
+      this._escapeHandler = null;
     }
     const backdrop = document.getElementById('modal-backdrop');
     if (backdrop) backdrop.remove();
@@ -10365,4 +10454,32 @@ const Modals = {
     };
   }
 };
+
+// MutationObserver to automatically attach accessibility & focus management to all modals
+if (typeof window !== 'undefined') {
+  const initModalObserver = () => {
+    if (typeof MutationObserver === 'undefined') return;
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        mutation.addedNodes.forEach(node => {
+          if (node.nodeType === 1) {
+            if (node.id === 'modal-backdrop' || node.classList?.contains('modal-backdrop')) {
+              Modals.setupDialogAccessibility(node);
+            } else if (node.querySelector) {
+              const modalChild = node.querySelector('#modal-backdrop, .modal-backdrop');
+              if (modalChild) Modals.setupDialogAccessibility(modalChild);
+            }
+          }
+        });
+      });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initModalObserver);
+  } else {
+    initModalObserver();
+  }
+}
 

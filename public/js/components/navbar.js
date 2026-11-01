@@ -114,7 +114,7 @@ const Navbar = {
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
                   ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]}
                 </span>
-                <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.38rem 0.7rem; font-size: 0.78rem;" title="Sign out of account">
+                <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.38rem 0.7rem; font-size: 0.78rem;" title="Sign out of account" aria-label="Sign out of account">
                   <span>🚪</span>
                 </button>
               </div>
@@ -128,7 +128,7 @@ const Navbar = {
             `}
 
             <!-- Theme Toggle Button -->
-            <button id="btn-theme-toggle" class="theme-toggle-btn" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Dark Mode">
+            <button id="btn-theme-toggle" class="theme-toggle-btn" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Scholastic Midnight Dark Mode">
               🌙
             </button>
 
@@ -146,7 +146,7 @@ const Navbar = {
           <div class="mobile-nav-links">
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.5rem 0.75rem 0.5rem; border-bottom: 1px solid var(--border-light); margin-bottom: 0.75rem;">
               <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Scholastic Theme</span>
-              <button id="mob-btn-theme-toggle" class="theme-toggle-btn" title="Toggle Dark Mode">🌙</button>
+              <button id="mob-btn-theme-toggle" class="theme-toggle-btn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌙</button>
             </div>
 
             <!-- Category 1: Public Discovery -->

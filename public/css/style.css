@@ -125,6 +125,41 @@ body {
   flex-direction: column;
 }
 
+/* WCAG 2.4.1 Skip Link */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: #0a1128;
+  color: #fbbf24;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 800;
+  font-size: 0.9rem;
+  z-index: 999999;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  border: 2px solid #fbbf24;
+  transition: top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skip-to-content:focus {
+  top: 1rem;
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* WCAG 2.4.7 Focus Visible Across Interactive Controls */
+:focus-visible {
+  outline: 2.5px solid #2563eb !important;
+  outline-offset: 3px !important;
+}
+
+[data-theme="dark"] :focus-visible {
+  outline: 2.5px solid #60a5fa !important;
+  outline-offset: 3px !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;

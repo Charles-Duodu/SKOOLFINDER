@@ -26,7 +26,19 @@ const PORT = process.env.PORT || 3000;
 
 // Security & Parsing Middleware
 app.use(helmet({
-  contentSecurityPolicy: false // Allow inline scripts and external fonts/styles used by frontend
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://unpkg.com", "https://js.paystack.co"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://unpkg.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+      imgSrc: ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://*.openstreetmap.org", "https://*.supabase.co"],
+      connectSrc: ["'self'", "https://*.supabase.co", "https://api.paystack.co", "https://*.openstreetmap.org"],
+      frameSrc: ["'self'", "https://js.paystack.co", "https://checkout.paystack.com"],
+      objectSrc: ["'none'"]
+    }
+  },
+  crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));

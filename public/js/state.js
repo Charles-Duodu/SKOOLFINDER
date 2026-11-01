@@ -222,9 +222,11 @@ const State = {
 
     if (this.comparisonList.length === 0) {
       bar.style.display = 'none';
+      if (typeof document !== 'undefined') document.body.classList.remove('has-comparison-dock');
       return;
     }
 
+    if (typeof document !== 'undefined') document.body.classList.add('has-comparison-dock');
     bar.style.display = 'flex';
     bar.innerHTML = `
       <div style="display: flex; align-items: center; gap: 0.75rem;">

@@ -32,6 +32,24 @@ const App = {
         if (State.currentView === 'home') return;
         viewName = 'home';
         param = null;
+      } else {
+        // SEC-04: Validate administrative claims with backend before mounting Admin Console
+        try {
+          const authCheck = await API.getMe();
+          const userRole = authCheck?.user?.role || authCheck?.role;
+          if (userRole !== 'super_admin') {
+            throw new Error("Invalid administrative claim");
+          }
+        } catch (err) {
+          console.warn("Administrative session verification notice:", err.message);
+          State.setCurrentUser(null, null);
+          Modals.openLoginModal({
+            notice: "🛡️ Administrative re-authentication required.",
+            redirectView: 'admin'
+          });
+          viewName = 'home';
+          param = null;
+        }
       }
     }
 

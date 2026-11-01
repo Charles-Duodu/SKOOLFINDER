@@ -47,11 +47,14 @@ const CompareView = {
           </div>
 
           <!-- Comparison Table Card -->
-          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); overflow-x: auto; box-shadow: var(--shadow-md);">
+          <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+            <span>👉</span> <em>Swipe horizontally on mobile to view and compare all schools.</em>
+          </div>
+          <div class="comparison-table-wrapper" style="background: var(--bg-surface); border-radius: var(--radius-xl); border: 1px solid var(--border-light); overflow-x: auto; -webkit-overflow-scrolling: touch; box-shadow: var(--shadow-md);">
             <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 650px;">
               <thead>
                 <tr style="border-bottom: 2px solid var(--border-light); background: var(--bg-main);">
-                  <th style="padding: 1.5rem; width: 220px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">
+                  <th class="comp-attr-col" style="padding: 1.5rem; width: 220px; font-size: 0.85rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em;">
                     School Attribute
                   </th>
                   ${list.map(s => `
@@ -65,7 +68,7 @@ const CompareView = {
                             📍 ${s.suburb}, ${s.region}
                           </div>
                         </div>
-                        <button class="btn-remove-comp" data-school-id="${s.id}" style="color: var(--text-light); font-size: 1.25rem;" title="Remove from comparison">&times;</button>
+                        <button class="btn-remove-comp" data-school-id="${s.id}" style="color: var(--text-light); font-size: 1.25rem;" title="Remove from comparison" aria-label="Remove ${s.name} from comparison">&times;</button>
                       </div>
                     </th>
                   `).join('')}
@@ -74,7 +77,7 @@ const CompareView = {
               <tbody>
                 <!-- Curriculum -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Curriculum Framework
                   </td>
                   ${list.map(s => `
@@ -86,7 +89,7 @@ const CompareView = {
 
                 <!-- Levels Offered -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Levels Offered
                   </td>
                   ${list.map(s => `
@@ -100,7 +103,7 @@ const CompareView = {
 
                 <!-- Fee Range -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Estimated Term Fees
                   </td>
                   ${list.map(s => `
@@ -112,7 +115,7 @@ const CompareView = {
 
                 <!-- Attendance / Boarding -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Attendance Type
                   </td>
                   ${list.map(s => `
@@ -124,7 +127,7 @@ const CompareView = {
 
                 <!-- Student-Teacher Ratio -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Student-to-Teacher Ratio
                   </td>
                   ${list.map(s => `
@@ -136,7 +139,7 @@ const CompareView = {
 
                 <!-- Year Established -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Year Established
                   </td>
                   ${list.map(s => `
@@ -148,7 +151,7 @@ const CompareView = {
 
                 <!-- Facilities -->
                 <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.25rem; font-weight: 700; color: var(--primary-900); font-size: 0.9rem; background: rgba(248, 250, 252, 0.5);">
                     Key Amenities
                   </td>
                   ${list.map(s => `
@@ -162,7 +165,7 @@ const CompareView = {
 
                 <!-- Direct Actions -->
                 <tr>
-                  <td style="padding: 1.5rem; font-weight: 700; color: var(--primary-900); background: rgba(248, 250, 252, 0.5);">
+                  <td class="comp-attr-col" style="padding: 1.5rem; font-weight: 700; color: var(--primary-900); background: rgba(248, 250, 252, 0.5);">
                     Connect
                   </td>
                   ${list.map(s => `
