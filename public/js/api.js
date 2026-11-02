@@ -200,6 +200,121 @@ const API = {
     return res.json();
   },
 
+  async getAdminSchools(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/schools?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load schools list");
+    return res.json();
+  },
+
+  async createSchool(schoolData) {
+    const res = await fetch(`${this.baseUrl}/admin/schools`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(schoolData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create school");
+    return result;
+  },
+
+  async updateSchool(schoolId, updates) {
+    const res = await fetch(`${this.baseUrl}/admin/schools/${schoolId}`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(updates)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update school");
+    return result;
+  },
+
+  async archiveSchool(schoolId, reason) {
+    const res = await fetch(`${this.baseUrl}/admin/schools/${schoolId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ reason })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to archive school");
+    return result;
+  },
+
+  async restoreSchool(schoolId) {
+    const res = await fetch(`${this.baseUrl}/admin/schools/${schoolId}/restore`, {
+      method: 'POST',
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to restore school");
+    return result;
+  },
+
+  async impersonateSchool(schoolId) {
+    const res = await fetch(`${this.baseUrl}/admin/impersonate/school/${schoolId}`, {
+      method: 'POST',
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to initiate impersonation");
+    return result;
+  },
+
+  async getAdminUsers(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/users?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load user accounts");
+    return res.json();
+  },
+
+  async updateUserRole(userId, role) {
+    const res = await fetch(`${this.baseUrl}/admin/users/${userId}/role`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ role })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update user role");
+    return result;
+  },
+
+  async getAdminFinanceSummary() {
+    const res = await fetch(`${this.baseUrl}/admin/finance/summary`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load financial telemetry");
+    return res.json();
+  },
+
+  async getAdminTransactions(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/finance/transactions?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load transactions");
+    return res.json();
+  },
+
+  async getAdminVouchers() {
+    const res = await fetch(`${this.baseUrl}/admin/finance/vouchers`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load vouchers");
+    return res.json();
+  },
+
+  async adminSearch(q) {
+    const res = await fetch(`${this.baseUrl}/admin/search?q=${encodeURIComponent(q)}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) return { results: { schools: [], users: [], payments: [] } };
+    return res.json();
+  },
+
   async verifyEntity(entityId, entityType, verified) {
     const res = await fetch(`${this.baseUrl}/admin/verify`, {
       method: 'POST',

@@ -137,3 +137,4 @@ SET role = 'super_admin', status = 'active';
 
 -- Output confirmation
 SELECT 'Phase 1 Database Hardening Migration Completed Successfully' AS status;
+
