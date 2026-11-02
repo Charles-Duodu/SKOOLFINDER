@@ -1,388 +1,696 @@
 /**
- * SkoolFinder HQ - Super Admin & Regulatory Console Portal (/admin)
+ * SkoolFinder HQ - Executive Master Management System & Admin Cockpit (/admin)
+ * Inspired by TalentPros & AdminHub Enterprise SaaS Architecture
  */
 const AdminView = {
-  activeTab: 'overview', // 'overview' | 'schools' | 'teachers' | 'suppliers' | 'subscriptions' | 'telemetry'
+  activeTab: 'overview', // 'overview' | 'schools' | 'users' | 'finance' | 'teachers' | 'suppliers' | 'procurement' | 'subscriptions' | 'telemetry'
+  searchDebounceTimer: null,
 
   async render() {
-    let overview = {
-      kpis: {},
-      schoolsList: [],
-      teachersList: [],
-      suppliersList: [],
-      telemetry: {}
-    };
-
+    let overview = { kpis: {}, schoolsList: [] };
     let vettingQueue = [];
+    let rfqs = [];
+    let procurementLogs = [];
 
     try {
-      overview = await API.getAdminOverview();
-      vettingQueue = (await API.getVettingQueue()) || [];
+      const [ovData, vqData, rfqData] = await Promise.all([
+        API.getAdminOverview().catch(() => ({ kpis: {}, schoolsList: [] })),
+        API.getVettingQueue().catch(() => []),
+        API.getRFQs().catch(() => [])
+      ]);
+      overview = ovData || { kpis: {}, schoolsList: [] };
+      vettingQueue = vqData || [];
+      rfqs = rfqData || [];
+      procurementLogs = overview.procurementLogs || [];
     } catch (e) {
-      console.warn("Admin overview error:", e);
+      console.warn("Admin telemetry load notice:", e);
     }
 
     const kpis = overview.kpis || {};
     const schools = overview.schoolsList || [];
-    const teachers = overview.teachersList || [];
-    const suppliers = overview.suppliersList || [];
-    const telemetry = overview.telemetry || {};
-    const rfqs = overview.rfqsList || [];
-    const procurementLogs = overview.procurementLogs || [];
 
     return `
-      <!-- Admin Portal Header Bar -->
-      <section style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #fff; padding: 2.5rem 0 1.5rem; border-bottom: 3px solid #3b82f6;">
-        <div class="container">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
-            <div>
-              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #93c5fd; margin-bottom: 0.75rem;">
-                <span>🛡️</span> SkoolFinder HQ • Platform Control & Regulatory Console
-              </div>
-              <h1 style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; color: #fff; margin: 0 0 0.5rem 0; line-height: 1.2;">
-                Executive Administration & NaSIA Oversight
-              </h1>
-              <p style="color: #94a3b8; font-size: 0.95rem; max-width: 680px; margin: 0; line-height: 1.5;">
-                Master governance console for multi-tenant school onboarding, teacher NTC credential auditing, SaaS subscription billing, and gateway telemetry.
-              </p>
-            </div>
+      <style id="admin-cockpit-styles">
+        .admin-cockpit-layout {
+          display: flex;
+          min-height: calc(100vh - 70px);
+          background: #f8fafc;
+          font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+          color: #0f172a;
+        }
+        .admin-sidebar {
+          width: 260px;
+          min-width: 260px;
+          background: #091e42;
+          border-right: 1px solid rgba(255,255,255,0.08);
+          display: flex;
+          flex-direction: column;
+          color: #cbd5e1;
+          user-select: none;
+        }
+        .admin-sidebar-header {
+          padding: 1.5rem 1.25rem;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+        }
+        .admin-sidebar-nav {
+          padding: 1.25rem 0.75rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.35rem;
+          flex: 1;
+          overflow-y: auto;
+        }
+        .admin-nav-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.65rem 0.85rem;
+          border-radius: 8px;
+          color: #94a3b8;
+          font-size: 0.88rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.15s ease;
+          border: 1px solid transparent;
+          background: transparent;
+          width: 100%;
+          text-align: left;
+        }
+        .admin-nav-item:hover {
+          background: rgba(255,255,255,0.06);
+          color: #fff;
+        }
+        .admin-nav-item.active {
+          background: #2563eb;
+          color: #ffffff;
+          box-shadow: 0 2px 8px rgba(37,99,235,0.35);
+          font-weight: 700;
+        }
+        .admin-nav-item .icon-label {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+        .admin-badge-count {
+          background: rgba(255,255,255,0.15);
+          color: #fff;
+          font-size: 0.72rem;
+          padding: 0.15rem 0.5rem;
+          border-radius: 999px;
+          font-weight: 700;
+        }
+        .admin-nav-item.active .admin-badge-count {
+          background: rgba(255,255,255,0.25);
+        }
+        .admin-canvas {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          overflow-x: hidden;
+        }
+        .admin-topbar {
+          background: #ffffff;
+          border-bottom: 1px solid #e2e8f0;
+          padding: 0.85rem 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 1.5rem;
+          position: sticky;
+          top: 0;
+          z-index: 40;
+        }
+        .admin-search-wrapper {
+          position: relative;
+          flex: 1;
+          max-width: 480px;
+        }
+        .admin-search-input {
+          width: 100%;
+          padding: 0.55rem 1rem 0.55rem 2.4rem;
+          background: #f1f5f9;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          font-size: 0.88rem;
+          color: #0f172a;
+          outline: none;
+          transition: all 0.2s ease;
+        }
+        .admin-search-input:focus {
+          background: #ffffff;
+          border-color: #3b82f6;
+          box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .admin-omnisearch-results {
+          position: absolute;
+          top: 105%;
+          left: 0;
+          right: 0;
+          background: #ffffff;
+          border-radius: 10px;
+          border: 1px solid #e2e8f0;
+          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+          max-height: 380px;
+          overflow-y: auto;
+          display: none;
+          z-index: 100;
+        }
+        .admin-kpi-grid {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 1.25rem;
+          margin-bottom: 1.5rem;
+        }
+        @media (max-width: 1200px) {
+          .admin-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+          .admin-cockpit-layout { flex-direction: column; }
+          .admin-sidebar { width: 100%; min-width: 100%; }
+          .admin-kpi-grid { grid-template-columns: 1fr; }
+        }
+        .admin-kpi-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 1.25rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .admin-kpi-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 15px -3px rgba(0,0,0,0.06);
+        }
+        .admin-kpi-top {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 0.6rem;
+        }
+        .admin-kpi-label {
+          font-size: 0.74rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          color: #64748b;
+        }
+        .admin-kpi-value {
+          font-size: 1.75rem;
+          font-weight: 800;
+          color: #0f172a;
+          line-height: 1.2;
+          font-family: var(--font-heading, inherit);
+        }
+        .admin-kpi-sub {
+          font-size: 0.78rem;
+          margin-top: 0.4rem;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+        }
+        .badge-positive { color: #059669; font-weight: 700; }
+        .badge-subtle { color: #64748b; font-weight: 500; }
+        .admin-chart-card {
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 12px;
+          padding: 1.5rem;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+      </style>
 
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
-              <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 0.5rem 1rem; color: #fff; display: flex; align-items: center; gap: 0.6rem;">
-                <span style="font-size: 1.4rem;">🛡️</span>
-                <div>
-                  <div style="font-size: 0.72rem; color: #93c5fd; text-transform: uppercase; font-weight: 700;">Super Admin Mode</div>
-                  <div style="font-weight: 700; font-size: 0.9rem;">${State.currentUser ? State.currentUser.name : 'Platform Lead'}</div>
+      <div class="admin-cockpit-layout">
+        <!-- ======================================================== -->
+        <!-- 1. DARK NAVY SIDEBAR (TalentPros Style)                  -->
+        <!-- ======================================================== -->
+        <aside class="admin-sidebar" id="admin-sidebar">
+          <div class="admin-sidebar-header">
+            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; font-weight: 800; color: #0a1128; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35); flex-shrink: 0;">
+              🛡️
+            </div>
+            <div style="min-width: 0;">
+              <div style="font-size: 1.15rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                SkoolFinder HQ
+              </div>
+              <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 600; text-transform: uppercase;">
+                Master Cockpit
+              </div>
+            </div>
+          </div>
+
+          <nav class="admin-sidebar-nav">
+            <button class="admin-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-admin-tab="overview">
+              <span class="icon-label"><span>📊</span> Overview</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
+              <span class="icon-label"><span>🏫</span> Schools (CRUD)</span>
+              <span class="admin-badge-count">${kpis.totalSchools || schools.length || 12}</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'users' ? 'active' : ''}" data-admin-tab="users">
+              <span class="icon-label"><span>👥</span> User Accounts</span>
+              <span class="admin-badge-count">${kpis.totalUsers || 24}</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'finance' ? 'active' : ''}" data-admin-tab="finance">
+              <span class="icon-label"><span>💳</span> Payments & MoMo</span>
+              <span style="font-size: 0.65rem; background: #059669; color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 800;">LIVE</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'teachers' ? 'active' : ''}" data-admin-tab="teachers">
+              <span class="icon-label"><span>🧑‍🏫</span> Teacher Desk</span>
+              <span class="admin-badge-count">${kpis.totalTeachers || 6}</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-admin-tab="procurement">
+              <span class="icon-label"><span>📦</span> Procurement Desk</span>
+              <span class="admin-badge-count">${rfqs.length}</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'subscriptions' ? 'active' : ''}" data-admin-tab="subscriptions">
+              <span class="icon-label"><span>📑</span> SaaS Subscriptions</span>
+            </button>
+
+            <button class="admin-nav-item ${this.activeTab === 'telemetry' ? 'active' : ''}" data-admin-tab="telemetry">
+              <span class="icon-label"><span>⚙️</span> Cloud Telemetry</span>
+            </button>
+          </nav>
+
+          <!-- Sidebar Bottom User Profile & Jump -->
+          <div style="padding: 1rem 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.15);">
+            <div style="display: flex; align-items: center; gap: 0.65rem; min-width: 0;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0;">
+                SA
+              </div>
+              <div style="min-width: 0;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  Super Admin
+                </div>
+                <div style="font-size: 0.7rem; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                  admin@skoolfinder.com.gh
                 </div>
               </div>
-              <button id="btn-admin-switch-school" class="btn-pill btn-gold">
+            </div>
+            <a href="/" title="Open Public Website" style="color: #94a3b8; text-decoration: none; font-size: 1.1rem; padding: 0.2rem;">🌐</a>
+          </div>
+        </aside>
+
+        <!-- ======================================================== -->
+        <!-- 2. MAIN ADMIN CANVAS                                     -->
+        <!-- ======================================================== -->
+        <main class="admin-canvas">
+          <!-- Topbar with Omnisearch & Profile Dropdown -->
+          <header class="admin-topbar">
+            <div class="admin-search-wrapper">
+              <span style="position: absolute; left: 0.85rem; top: 50%; transform: translateY(-50%); font-size: 0.95rem; color: #94a3b8; pointer-events: none;">🔍</span>
+              <input type="text" id="admin-omnisearch-input" class="admin-search-input" placeholder="Search schools, parents, vouchers, invoices... (Ctrl + K)" autocomplete="off" />
+              <div id="admin-omnisearch-results" class="admin-omnisearch-results"></div>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <button id="btn-admin-switch-school" class="btn-pill btn-gold" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">
                 <span>🏫</span> Open School OS &rarr;
               </button>
+
+              <div style="width: 1px; height: 24px; background: #e2e8f0;"></div>
+
+              <div style="display: flex; align-items: center; gap: 0.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.82rem; font-weight: 700; color: #0f172a;">
+                <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>
+                <span>Super Admin</span>
+              </div>
             </div>
+          </header>
+
+          <!-- Dynamic Active View Container -->
+          <div style="padding: 2rem; flex: 1;">
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs)}
           </div>
-
-          <!-- Top Executive Metrics -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-top: 1.75rem;">
-            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 0.85rem 1rem;">
-              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Total GMV Volume</div>
-              <div style="font-size: 1.6rem; font-weight: 800; color: #10b981;">GH₵ ${(kpis.totalGMV || 42800).toLocaleString()}</div>
-              <div style="font-size: 0.72rem; color: #64748b;">Paystack MoMo Collections</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 0.85rem 1rem;">
-              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Schools Enrolled</div>
-              <div style="font-size: 1.6rem; font-weight: 800; color: #fff;">${kpis.totalSchools || schools.length}</div>
-              <div style="font-size: 0.72rem; color: #3b82f6;">${kpis.verifiedSchools || 0} NaSIA Accredited</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 0.85rem 1rem;">
-              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Verified Teachers</div>
-              <div style="font-size: 1.6rem; font-weight: 800; color: #fff;">${kpis.totalTeachers || teachers.length}</div>
-              <div style="font-size: 0.72rem; color: #10b981;">NTC Licensed Educators</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 0.85rem 1rem;">
-              <div style="font-size: 0.75rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">SaaS Monthly MRR</div>
-              <div style="font-size: 1.6rem; font-weight: 800; color: #fbbf24;">GH₵ ${(kpis.monthlyRecurringRevenueGHS || 48500).toLocaleString()}</div>
-              <div style="font-size: 0.72rem; color: #64748b;">Active School Subscriptions</div>
-            </div>
-          </div>
-
-          <!-- Navigation Tabs -->
-          <div style="display: flex; gap: 0.5rem; overflow-x: auto; margin-top: 2rem; border-bottom: 2px solid rgba(255,255,255,0.15); padding-bottom: 0;">
-            <button class="portal-tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-admin-tab="overview">
-              <span>📊</span> Global Analytics
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'procurement' ? 'active' : ''}" data-admin-tab="procurement">
-              <span>📦</span> B2B Procurement Desk (${rfqs.length})
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
-              <span>🏫</span> School Tenants (${schools.length})
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'teachers' ? 'active' : ''}" data-admin-tab="teachers">
-              <span>🧑‍🏫</span> Teacher NTC Desk (${teachers.length})
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'suppliers' ? 'active' : ''}" data-admin-tab="suppliers">
-              <span>📦</span> Supplier Verification (${suppliers.length})
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'subscriptions' ? 'active' : ''}" data-admin-tab="subscriptions">
-              <span>💳</span> SaaS Subscriptions & Plans
-            </button>
-            <button class="portal-tab-btn ${this.activeTab === 'telemetry' ? 'active' : ''}" data-admin-tab="telemetry">
-              <span>⚙️</span> Gateway & Cloud Telemetry
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Main Admin Content Area -->
-      <section style="background: var(--bg-main); min-height: 70vh; padding: 2.5rem 0 5rem;">
-        <div class="container">
-          ${this.renderActiveTab(overview, schools, teachers, suppliers, telemetry, vettingQueue, rfqs, procurementLogs)}
-        </div>
-      </section>
-    `;
-  },
-
-  renderActiveTab(overview, schools, teachers, suppliers, telemetry, vettingQueue, rfqs = [], procurementLogs = []) {
-    switch (this.activeTab) {
-      case 'overview':
-        return this.renderOverviewTab(overview, rfqs, procurementLogs);
-      case 'procurement':
-        return this.renderProcurementDesk(rfqs, procurementLogs, suppliers);
-      case 'schools':
-        return this.renderSchoolsTab(schools, vettingQueue);
-      case 'teachers':
-        return this.renderTeachersTab(teachers);
-      case 'suppliers':
-        return this.renderSuppliersTab(suppliers);
-      case 'subscriptions':
-        return this.renderSubscriptionsTab();
-      case 'telemetry':
-        return this.renderTelemetryTab(telemetry);
-      default:
-        return this.renderOverviewTab(overview, rfqs, procurementLogs);
-    }
-  },
-
-  renderOverviewTab(overview, rfqs = [], procurementLogs = []) {
-    const kpis = overview.kpis || {};
-    return `
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: flex-start;">
-        <div>
-          <!-- Revenue & Growth Card -->
-          <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.75rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-              <div>
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0;">Ghana Platform Transaction Volume</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0.2rem 0 0 0;">Gross Merchandise Volume across MoMo & Cards</p>
-              </div>
-              <span class="badge badge-emerald" style="font-size: 0.8rem;">Live Engine</span>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; background: #f8fafc; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem;">
-              <div>
-                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">School Tuition Fees:</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-main);">GH₵ 34,200</div>
-              </div>
-              <div>
-                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Private Tutors Paid:</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: #047857;">GH₵ 5,800</div>
-              </div>
-              <div>
-                <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Procurement RFQs:</span>
-                <div style="font-size: 1.3rem; font-weight: 800; color: #b45309;">GH₵ 2,800</div>
-              </div>
-            </div>
-
-            <div style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
-              💡 <strong>SaaS Monetization Split:</strong> SkoolFinder automatically deducts a <strong>1.5% processing fee</strong> on Parent MoMo settlements and retains <strong>GH₵ 950 - 2,200/term</strong> for School Management SaaS software licenses.
-            </div>
-          </div>
-
-          <!-- Pending Regulatory Approvals Queue -->
-          <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.75rem; box-shadow: var(--shadow-sm);">
-            <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0 0 1rem 0;">
-              Urgent Regulatory Audits
-            </h3>
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;">
-                <div>
-                  <div style="font-weight: 700; color: #92400e;">🏫 Galaxy International School (Adenta Campus)</div>
-                  <div style="font-size: 0.78rem; color: #b45309;">NaSIA License Renewal pending inspection confirmation</div>
-                </div>
-                <button class="btn-pill btn-gold btn-quick-verify-school" data-id="sch-galaxy-international-accra" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
-                  Approve NaSIA Seal
-                </button>
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px;">
-                <div>
-                  <div style="font-weight: 700; color: #065f46;">🧑‍🏫 Mr. Emmanuel Addo (Physics Specialist)</div>
-                  <div style="font-size: 0.78rem; color: #047857;">NTC License NTC/LIC/GH/819203 verified with UCC records</div>
-                </div>
-                <span class="badge badge-emerald">Verified Active</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Live Marketplace & B2B Procurement Audit Feed -->
-          <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.75rem; margin-top: 1.5rem; box-shadow: var(--shadow-sm);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
-              <div>
-                <div style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
-                  <span>🛡️</span> Real-Time B2B Oversight
-                </div>
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0.2rem 0 0 0;">
-                  Live Marketplace & B2B Procurement Audit Feed
-                </h3>
-              </div>
-              <button class="btn-pill btn-secondary btn-switch-to-procurement" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">
-                Open Procurement Desk (${rfqs.length} Tenders) &rarr;
-              </button>
-            </div>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1.25rem 0;">
-              Full lifecycle tracking across all 3 stages: <strong>1. Tender Published (School)</strong> &bull; <strong>2. Supplier Bids Received</strong> &bull; <strong>3. Final Board Selection (Accepted or Rejected)</strong>.
-            </p>
-
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-              ${(procurementLogs && procurementLogs.length > 0) ? procurementLogs.slice(0, 6).map(log => {
-                const isAwarded = log.stage === 'tender_awarded';
-                const isDeclined = log.stage === 'bid_declined';
-                const isQuote = log.stage === 'quote_submitted';
-                const badgeColor = isAwarded ? '#059669' : isDeclined ? '#dc2626' : isQuote ? '#2563eb' : '#d97706';
-                const bgLight = isAwarded ? '#ecfdf5' : isDeclined ? '#fef2f2' : isQuote ? '#eff6ff' : '#fffbeb';
-                const borderColor = isAwarded ? '#a7f3d0' : isDeclined ? '#fecaca' : isQuote ? '#bfdbfe' : '#fde68a';
-                const icon = isAwarded ? '🎉' : isDeclined ? '✕' : isQuote ? '📝' : '📢';
-                const timeStr = log.timestamp ? (new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + ', ' + new Date(log.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })) : 'Just now';
-
-                return `
-                  <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0.9rem 1.1rem; background: ${bgLight}; border: 1px solid ${borderColor}; border-radius: 10px; gap: 1rem; flex-wrap: wrap;">
-                    <div style="display: flex; gap: 0.85rem; align-items: flex-start; flex: 1; min-width: 260px;">
-                      <div style="background: #fff; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; border: 1px solid ${borderColor}; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        ${icon}
-                      </div>
-                      <div>
-                        <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
-                          <span style="font-weight: 800; color: ${badgeColor}; font-size: 0.82rem; text-transform: uppercase;">${log.stageLabel || log.stage}</span>
-                          <span style="font-size: 0.75rem; color: #64748b;">• ${timeStr}</span>
-                        </div>
-                        <div style="font-size: 0.88rem; font-weight: 700; color: #0f172a; margin: 0.2rem 0;">
-                          ${log.schoolName || 'School'} &mdash; <span style="font-weight: 500; color: #475569;">${log.rfqTitle || 'Tender'}</span>
-                        </div>
-                        <div style="font-size: 0.82rem; color: #334155; line-height: 1.4;">
-                          ${log.summary || ''}
-                        </div>
-                        ${log.reason ? `
-                          <div style="margin-top: 0.35rem; font-size: 0.78rem; color: #475569; font-style: italic; background: rgba(255,255,255,0.7); padding: 0.25rem 0.6rem; border-radius: 4px; display: inline-block;">
-                            Note: "${log.reason}"
-                          </div>
-                        ` : ''}
-                      </div>
-                    </div>
-                    ${log.amount ? `
-                      <div style="text-align: right; flex-shrink: 0;">
-                        <span style="display: inline-block; background: #fff; border: 1px solid ${borderColor}; padding: 0.3rem 0.75rem; border-radius: 8px; font-weight: 800; font-size: 0.95rem; color: ${badgeColor};">
-                          ${log.amount}
-                        </span>
-                      </div>
-                    ` : ''}
-                  </div>
-                `;
-              }).join('') : `
-                <div style="text-align: center; padding: 2rem; color: #94a3b8; font-size: 0.9rem;">
-                  No procurement activities logged yet. New school RFQs and supplier bids will appear here automatically.
-                </div>
-              `}
-            </div>
-          </div>
-        </div>
-
-        <!-- Right Side: Ecosystem Distribution -->
-        <div>
-          <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.5rem; box-shadow: var(--shadow-sm); margin-bottom: 1.5rem;">
-            <h4 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); margin: 0 0 1rem 0;">
-              5-Portal User Breakdown
-            </h4>
-            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem;">
-                <span>👨‍👩‍👧 Parents & Students</span>
-                <strong>1,840 Users</strong>
-              </div>
-              <div style="height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;">
-                <div style="width: 75%; height: 100%; background: #3b82f6;"></div>
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; margin-top: 0.5rem;">
-                <span>🧑‍🏫 Certified Teachers & Tutors</span>
-                <strong>${kpis.totalTeachers || 12} Educators</strong>
-              </div>
-              <div style="height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;">
-                <div style="width: 45%; height: 100%; background: #10b981;"></div>
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; margin-top: 0.5rem;">
-                <span>📦 Educational Suppliers</span>
-                <strong>${kpis.totalSuppliers || 8} Merchants</strong>
-              </div>
-              <div style="height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;">
-                <div style="width: 30%; height: 100%; background: #f59e0b;"></div>
-              </div>
-
-              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.88rem; margin-top: 0.5rem;">
-                <span>🏫 School Management OS</span>
-                <strong>${kpis.totalSchools || 10} Schools</strong>
-              </div>
-              <div style="height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden;">
-                <div style="width: 60%; height: 100%; background: #8b5cf6;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+        </main>
       </div>
     `;
   },
 
-  renderSchoolsTab(schools, vettingQueue = []) {
-    const pendingVetting = vettingQueue.filter(s => s.status === 'pending_vetting' || !s.verified);
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = []) {
+    switch (this.activeTab) {
+      case 'overview':
+        return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
+      case 'schools':
+        return this.renderSchoolsTab(schools, vettingQueue);
+      case 'teachers':
+        return this.renderTeachersTab(overview.teachersList || []);
+      case 'suppliers':
+        return this.renderSuppliersTab(overview.suppliersList || []);
+      case 'procurement':
+        return this.renderProcurementDesk(rfqs, procurementLogs, overview.suppliersList || []);
+      case 'subscriptions':
+        return this.renderSubscriptionsTab();
+      case 'telemetry':
+        return this.renderTelemetryTab(overview.telemetry || {});
+      default:
+        return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
+    }
+  },
+
+  /**
+   * Executive Command Center Overview (TalentPros Style)
+   */
+  renderOverviewTab(overview, schools, rfqs = [], procurementLogs = []) {
+    const kpis = overview.kpis || {};
 
     return `
-      ${pendingVetting.length > 0 ? `
-        <!-- VETTING QUEUE: 14-DAY FREE TRIAL ACTIVATION -->
-        <div style="background: #fffbeb; border: 2px solid #fde68a; border-radius: var(--radius-xl); padding: 1.75rem; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.08);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
-            <div>
-              <div style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase;">
-                <span>🛡️</span> NaSIA & Ministry of Education Onboarding Desk
-              </div>
-              <h3 style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #78350f;">
-                Pending School Registrations Requiring Admin Vetting
-              </h3>
-            </div>
-            <span class="badge badge-admissions" style="font-size: 0.8rem; padding: 0.35rem 0.8rem; background: #f59e0b; color: #fff;">
-              ${pendingVetting.length} Awaiting Verification
-            </span>
-          </div>
-          <p style="font-size: 0.85rem; color: #92400e; margin: 0 0 1.25rem 0; line-height: 1.5;">
-            Institutions in this queue cannot log in until approved. Approving a school grants an official NaSIA badge, activates a <strong>14-day free SaaS trial</strong>, and automatically dispatches an SMS via Hubtel and welcome email via Resend.
+      <div>
+        <!-- Overview Header -->
+        <div style="margin-bottom: 1.75rem;">
+          <h1 style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem 0; letter-spacing: -0.02em;">
+            Overview
+          </h1>
+          <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+            Your command center &mdash; real-time Ghanaian education telemetry and SaaS operations.
           </p>
+        </div>
 
-          <div style="overflow-x: auto; background: #fff; border-radius: 12px; border: 1px solid #fef08a;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.86rem;">
+        <!-- 8 EXECUTIVE KPI CARDS (2 Rows of 4, TalentPros Layout) -->
+        <div class="admin-kpi-grid">
+          <!-- Card 1: Active Schools -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">Active Schools</span>
+              <span style="font-size: 1.1rem; color: #3b82f6;">🏫</span>
+            </div>
+            <div class="admin-kpi-value">${(kpis.totalSchools || 12).toLocaleString()}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-positive">+12.4% MoM</span>
+              <span class="badge-subtle">&bull; Accra & Kumasi</span>
+            </div>
+          </div>
+
+          <!-- Card 2: Onboarding Queue -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">Onboarding Queue</span>
+              <span style="font-size: 1.1rem; color: #f59e0b;">⏳</span>
+            </div>
+            <div class="admin-kpi-value">${kpis.pendingVetting || 2}</div>
+            <div class="admin-kpi-sub">
+              <span style="color: #d97706; font-weight: 700;">${kpis.pendingClaims || 1} NaSIA Licenses</span>
+              <span class="badge-subtle">pending review</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Monthly MRR -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">SaaS Monthly MRR</span>
+              <span style="font-size: 1.1rem; color: #10b981;">📈</span>
+            </div>
+            <div class="admin-kpi-value">GH₵ ${(kpis.monthlyRecurringRevenueGHS || 48500).toLocaleString()}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-positive">+8.2% vs last month</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Paystack Total GMV -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">Paystack GMV Volume</span>
+              <span style="font-size: 1.1rem; color: #059669;">💳</span>
+            </div>
+            <div class="admin-kpi-value" style="color: #059669;">GH₵ ${(kpis.totalGMV || 42800).toLocaleString()}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-subtle">840 MoMo & Card Transactions</span>
+            </div>
+          </div>
+
+          <!-- Card 5: Churn / Grace Rate -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">SaaS Churn Rate</span>
+              <span style="font-size: 1.1rem; color: #64748b;">📉</span>
+            </div>
+            <div class="admin-kpi-value">2.1%</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-positive">-0.3% MoM (Low Churn)</span>
+            </div>
+          </div>
+
+          <!-- Card 6: Failed Payments -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">Failed MoMo Drops</span>
+              <span style="font-size: 1.1rem; color: #ef4444;">⚠️</span>
+            </div>
+            <div class="admin-kpi-value" style="color: #dc2626;">${kpis.failedPayments || 3}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-subtle">Auto-retrying via Hubtel</span>
+            </div>
+          </div>
+
+          <!-- Card 7: Admission Vouchers Issued -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">Admission Vouchers</span>
+              <span style="font-size: 1.1rem; color: #8b5cf6;">🎟️</span>
+            </div>
+            <div class="admin-kpi-value">${(kpis.admissionVouchersIssued || 426).toLocaleString()}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-subtle">Issued via MTN & Telecel</span>
+            </div>
+          </div>
+
+          <!-- Card 8: YoY Platform Growth -->
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-label">YoY Platform Growth</span>
+              <span style="font-size: 1.1rem; color: #3b82f6;">🚀</span>
+            </div>
+            <div class="admin-kpi-value" style="color: #2563eb;">${kpis.yoyGrowthRate || '68.2%'}</div>
+            <div class="admin-kpi-sub">
+              <span class="badge-positive">vs last year</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHARTS SECTION: Revenue Over Time + MRR By Plan Donut (TalentPros Style) -->
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem;">
+          <!-- Left: Revenue Over Time (Smooth SVG Area Chart) -->
+          <div class="admin-chart-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <div>
+                <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.2rem 0;">
+                  Revenue Over Time
+                </h3>
+                <p style="font-size: 0.8rem; color: #64748b; margin: 0;">
+                  Gross tuition payments & parent MoMo admissions collections
+                </p>
+              </div>
+              <span style="font-size: 0.8rem; background: #ecfdf5; color: #047857; padding: 0.25rem 0.65rem; border-radius: 999px; font-weight: 700;">
+                Live Engine
+              </span>
+            </div>
+
+            <!-- SVG Smooth Area Curve Chart -->
+            <svg viewBox="0 0 650 220" style="width: 100%; height: 220px; overflow: visible;">
+              <defs>
+                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"/>
+                </linearGradient>
+              </defs>
+
+              <line x1="40" y1="30" x2="630" y2="30" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="35" y="34" fill="#94a3b8" font-size="10" text-anchor="end">GH₵ 100k</text>
+              <line x1="40" y1="75" x2="630" y2="75" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="35" y="79" fill="#94a3b8" font-size="10" text-anchor="end">GH₵ 75k</text>
+              <line x1="40" y1="120" x2="630" y2="120" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="35" y="124" fill="#94a3b8" font-size="10" text-anchor="end">GH₵ 50k</text>
+              <line x1="40" y1="165" x2="630" y2="165" stroke="#f1f5f9" stroke-width="1" stroke-dasharray="3,3"/>
+              <text x="35" y="169" fill="#94a3b8" font-size="10" text-anchor="end">GH₵ 25k</text>
+              <line x1="40" y1="200" x2="630" y2="200" stroke="#e2e8f0" stroke-width="1.5"/>
+              <text x="35" y="204" fill="#94a3b8" font-size="10" text-anchor="end">GH₵ 0</text>
+
+              <!-- Filled Area -->
+              <path d="M 50 185 C 130 175, 170 195, 230 190 C 290 185, 310 115, 360 115 C 410 115, 430 155, 480 145 C 530 135, 560 75, 620 60 L 620 200 L 50 200 Z" fill="url(#revenueGradient)"/>
+
+              <!-- Curved Stroke Line -->
+              <path d="M 50 185 C 130 175, 170 195, 230 190 C 290 185, 310 115, 360 115 C 410 115, 430 155, 480 145 C 530 135, 560 75, 620 60" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+
+              <!-- Interactive Nodes -->
+              <circle cx="50" cy="185" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="140" cy="180" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="230" cy="190" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="360" cy="115" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="480" cy="145" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="560" cy="85" r="4" fill="#fff" stroke="#2563eb" stroke-width="2.5"/>
+              <circle cx="620" cy="60" r="5" fill="#2563eb" stroke="#fff" stroke-width="2.5"/>
+
+              <!-- Month Labels -->
+              <text x="50" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Jan</text>
+              <text x="140" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Feb</text>
+              <text x="230" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Mar</text>
+              <text x="360" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Apr</text>
+              <text x="480" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">May</text>
+              <text x="560" y="215" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Jun</text>
+              <text x="620" y="215" fill="#2563eb" font-size="11" font-weight="700" text-anchor="middle">Jul</text>
+            </svg>
+          </div>
+
+          <!-- Right: MRR by Plan (SVG Donut Chart) -->
+          <div class="admin-chart-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.2rem 0;">
+                MRR by Plan
+              </h3>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0;">
+                SaaS recurring software license breakdown
+              </p>
+            </div>
+
+            <div style="padding: 1rem 0;">
+              <svg viewBox="0 0 200 200" style="width: 170px; height: 170px; margin: 0 auto; display: block;">
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#f1f5f9" stroke-width="22"/>
+                <!-- Enterprise Plan Arc (Green) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#10b981" stroke-width="22" stroke-dasharray="197 440" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+                <!-- Growth Plan Arc (Blue) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#2563eb" stroke-width="22" stroke-dasharray="136 440" stroke-dashoffset="-197" transform="rotate(-90 100 100)"/>
+                <!-- Starter Plan Arc (Gold) -->
+                <circle cx="100" cy="100" r="70" fill="none" stroke="#f59e0b" stroke-width="22" stroke-dasharray="105 440" stroke-dashoffset="-333" transform="rotate(-90 100 100)"/>
+                <text x="100" y="96" fill="#0f172a" font-size="16" font-weight="800" text-anchor="middle">GH₵ 48.5k</text>
+                <text x="100" y="114" fill="#64748b" font-size="10" font-weight="600" text-anchor="middle">Active MRR</text>
+              </svg>
+            </div>
+
+            <!-- Legend -->
+            <div style="display: flex; flex-direction: column; gap: 0.4rem; font-size: 0.82rem; border-top: 1px solid #f1f5f9; padding-top: 0.85rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: flex; align-items: center; gap: 0.4rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span> Enterprise</span>
+                <strong>GH₵ 21,500 (44%)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: flex; align-items: center; gap: 0.4rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #2563eb;"></span> Growth</span>
+                <strong>GH₵ 15,000 (31%)</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="display: flex; align-items: center; gap: 0.4rem;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></span> Starter</span>
+                <strong>GH₵ 12,000 (25%)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- USER GROWTH & REGISTRATION BAR CHART (TalentPros Style) -->
+        <div class="admin-chart-card" style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.2rem 0;">
+                User Growth & Institutional Registrations
+              </h3>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0;">
+                Monthly trend of active parents (blue) vs registered school campuses (gold)
+              </p>
+            </div>
+            <div style="display: flex; gap: 1rem; font-size: 0.8rem;">
+              <span style="display: flex; align-items: center; gap: 0.4rem;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #2563eb;"></span> Parents</span>
+              <span style="display: flex; align-items: center; gap: 0.4rem;"><span style="width: 10px; height: 10px; border-radius: 2px; background: #f59e0b;"></span> Schools</span>
+            </div>
+          </div>
+
+          <!-- SVG Dual-Bar Chart -->
+          <svg viewBox="0 0 650 160" style="width: 100%; height: 160px;">
+            <line x1="30" y1="130" x2="630" y2="130" stroke="#e2e8f0" stroke-width="1.5"/>
+
+            <!-- Jan -->
+            <rect x="65" y="65" width="28" height="65" rx="4" fill="#2563eb"/>
+            <rect x="97" y="90" width="16" height="40" rx="3" fill="#f59e0b"/>
+            <text x="88" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Jan</text>
+
+            <!-- Feb -->
+            <rect x="160" y="55" width="28" height="75" rx="4" fill="#2563eb"/>
+            <rect x="192" y="80" width="16" height="50" rx="3" fill="#f59e0b"/>
+            <text x="183" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Feb</text>
+
+            <!-- Mar -->
+            <rect x="255" y="50" width="28" height="80" rx="4" fill="#2563eb"/>
+            <rect x="287" y="70" width="16" height="60" rx="3" fill="#f59e0b"/>
+            <text x="278" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Mar</text>
+
+            <!-- Apr -->
+            <rect x="350" y="40" width="28" height="90" rx="4" fill="#2563eb"/>
+            <rect x="382" y="65" width="16" height="65" rx="3" fill="#f59e0b"/>
+            <text x="373" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Apr</text>
+
+            <!-- May -->
+            <rect x="445" y="30" width="28" height="100" rx="4" fill="#2563eb"/>
+            <rect x="477" y="60" width="16" height="70" rx="3" fill="#f59e0b"/>
+            <text x="468" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">May</text>
+
+            <!-- Jun -->
+            <rect x="540" y="20" width="28" height="110" rx="4" fill="#2563eb"/>
+            <rect x="572" y="45" width="16" height="85" rx="3" fill="#f59e0b"/>
+            <text x="563" y="148" fill="#64748b" font-size="11" font-weight="600" text-anchor="middle">Jun</text>
+          </svg>
+        </div>
+
+        <!-- RECENT ONBOARDING REGISTER TABLE -->
+        <div class="admin-chart-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <div>
+              <h3 style="font-size: 1.1rem; font-weight: 800; color: #0f172a; margin: 0 0 0.2rem 0;">
+                Recent School Onboardings & Moderation
+              </h3>
+              <p style="font-size: 0.8rem; color: #64748b; margin: 0;">
+                Accreditation status, active SaaS licenses, and direct governance actions
+              </p>
+            </div>
+            <button class="btn-pill btn-secondary" onclick="AdminView.switchTab('schools')" style="font-size: 0.8rem; padding: 0.35rem 0.85rem;">
+              View All Schools (${kpis.totalSchools || schools.length}) &rarr;
+            </button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
               <thead>
-                <tr style="background: #fefce8; border-bottom: 2px solid #fde68a; text-align: left;">
-                  <th style="padding: 0.75rem 1rem; color: #78350f; font-weight: 700;">SCHOOL & ENCLAVE</th>
-                  <th style="padding: 0.75rem 1rem; color: #78350f; font-weight: 700;">ACCREDITATION LICENSE</th>
-                  <th style="padding: 0.75rem 1rem; color: #78350f; font-weight: 700;">CONTACT PERSON</th>
-                  <th style="padding: 0.75rem 1rem; color: #78350f; font-weight: 700;">REQUESTED PLAN</th>
-                  <th style="padding: 0.75rem 1rem; color: #78350f; font-weight: 700; text-align: right;">VETTING ACTION</th>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                  <th style="padding: 0.75rem 1rem; color: #64748b; font-weight: 700;">INSTITUTION NAME</th>
+                  <th style="padding: 0.75rem 1rem; color: #64748b; font-weight: 700;">LOCATION</th>
+                  <th style="padding: 0.75rem 1rem; color: #64748b; font-weight: 700;">CURRICULUM</th>
+                  <th style="padding: 0.75rem 1rem; color: #64748b; font-weight: 700;">NaSIA STATUS</th>
+                  <th style="padding: 0.75rem 1rem; color: #64748b; font-weight: 700; text-align: right;">ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
-                ${pendingVetting.map(s => `
-                  <tr style="border-bottom: 1px solid #fef08a;">
+                ${schools.slice(0, 6).map(s => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 0.9rem 1rem;">
-                      <div style="font-weight: 800; color: #0f172a;">${s.name}</div>
-                      <div style="font-size: 0.75rem; color: #64748b;">📍 ${s.suburb}, ${s.region}</div>
+                      <div style="font-weight: 700; color: #0f172a;">${s.name}</div>
+                      <div style="font-size: 0.75rem; color: #64748b;">${s.email || 'admissions@school.edu.gh'}</div>
+                    </td>
+                    <td style="padding: 0.9rem 1rem; color: #475569;">
+                      📍 ${s.locality || s.suburb || 'Accra'}, ${s.region}
                     </td>
                     <td style="padding: 0.9rem 1rem;">
-                      <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">
-                        ${s.licenseNumber || 'GES/Pending'}
+                      <span class="badge badge-cambridge" style="font-size: 0.75rem;">
+                        ${Array.isArray(s.curriculum) ? s.curriculum[0] : (s.curriculum || 'GES')}
                       </span>
                     </td>
                     <td style="padding: 0.9rem 1rem;">
-                      <div style="font-weight: 600; color: #334155;">${s.headOfSchool || 'Administrator'}</div>
-                      <div style="font-size: 0.75rem; color: #64748b;">📞 ${s.phone || 'N/A'} • ✉️ ${s.email || 'N/A'}</div>
-                    </td>
-                    <td style="padding: 0.9rem 1rem;">
-                      <span class="badge badge-gold" style="font-weight: 700;">
-                        ${s.packageTier || 'SaaS Starter'}
-                      </span>
+                      ${s.is_verified || s.verified ? `
+                        <span class="badge badge-emerald" style="font-weight: 700; font-size: 0.75rem;">🛡️ Verified NaSIA</span>
+                      ` : `
+                        <span class="badge badge-rose" style="font-weight: 700; font-size: 0.75rem;">⚠️ Pending Vetting</span>
+                      `}
                     </td>
                     <td style="padding: 0.9rem 1rem; text-align: right;">
                       <div style="display: inline-flex; gap: 0.4rem;">
-                        <button class="btn-pill btn-emerald btn-approve-vetting" data-id="${s.id}" data-name="${s.name}" style="padding: 0.4rem 0.8rem; font-size: 0.78rem;">
-                          <span>✓</span> Approve & Launch 14-Day Trial
-                        </button>
-                        <button class="btn-pill btn-outline btn-reject-vetting" data-id="${s.id}" style="padding: 0.4rem 0.6rem; font-size: 0.78rem; color: #dc2626;">
-                          Reject
+                        <button class="btn-pill btn-outline btn-quick-impersonate" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.75rem; font-size: 0.76rem;" title="Open School OS as Proprietor">
+                          <span>🏫</span> Open OS
                         </button>
                       </div>
                     </td>
@@ -392,16 +700,20 @@ const AdminView = {
             </table>
           </div>
         </div>
-      ` : ''}
+      </div>
+    `;
+  },
 
-      <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; box-shadow: var(--shadow-sm);">
+  renderSchoolsTab(schools, vettingQueue = []) {
+    return `
+      <div class="admin-chart-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0;">
-              School Tenants & NaSIA Accreditation Register
+            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0;">
+              School Tenants & Institutional Register
             </h2>
-            <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0.25rem 0 0 0;">
-              Manage participating institutions across Greater Accra and Kumasi.
+            <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
+              Direct CRUD governance across accredited campuses in Greater Accra and Kumasi.
             </p>
           </div>
           <button id="btn-add-tenant-school" class="btn-pill btn-primary">
@@ -412,44 +724,39 @@ const AdminView = {
         <div style="overflow-x: auto;">
           <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-light); text-align: left;">
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">SCHOOL NAME & LOCATION</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">CURRICULUM</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">SAAS PLAN</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">NaSIA LICENSE STATUS</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">GOVERNANCE ACTION</th>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SCHOOL NAME & LOCATION</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">CURRICULUM</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NaSIA STATUS</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">GOVERNANCE ACTIONS</th>
               </tr>
             </thead>
             <tbody>
               ${schools.map(s => `
-                <tr style="border-bottom: 1px solid var(--border-light);">
+                <tr style="border-bottom: 1px solid #f1f5f9;">
                   <td style="padding: 1rem;">
-                    <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">${s.name}</div>
-                    <div style="font-size: 0.78rem; color: var(--text-muted);">📍 ${s.suburb}, ${s.region}</div>
+                    <div style="font-weight: 700; color: #0f172a; font-size: 0.95rem;">${s.name}</div>
+                    <div style="font-size: 0.78rem; color: #64748b;">📍 ${s.locality || s.suburb || 'Accra'}, ${s.region}</div>
                   </td>
                   <td style="padding: 1rem;">
-                    <span class="badge badge-cambridge">${s.curriculum}</span>
+                    <span class="badge badge-cambridge">${Array.isArray(s.curriculum) ? s.curriculum.join(', ') : (s.curriculum || 'GES')}</span>
                   </td>
                   <td style="padding: 1rem;">
-                    <span class="badge ${s.plan === 'Enterprise' ? 'badge-gold' : 'badge-admissions'}">
-                      ${s.plan} Plan
-                    </span>
-                  </td>
-                  <td style="padding: 1rem;">
-                    ${s.verified ? `
-                      <span class="badge badge-emerald" style="font-weight: 700;">
-                        🛡️ Accredited (${s.nasiaLicense})
-                      </span>
+                    ${s.is_verified || s.verified ? `
+                      <span class="badge badge-emerald" style="font-weight: 700;">🛡️ NaSIA Verified</span>
                     ` : `
-                      <span class="badge badge-rose" style="font-weight: 700;">
-                        ⚠️ Pending Verification
-                      </span>
+                      <span class="badge badge-rose" style="font-weight: 700;">⚠️ Pending Verification</span>
                     `}
                   </td>
-                  <td style="padding: 1rem;">
-                    <button class="btn-pill btn-outline btn-toggle-school-verif" data-id="${s.id}" data-current="${s.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-                      ${s.verified ? 'Revoke Seal' : 'Grant NaSIA Seal'}
-                    </button>
+                  <td style="padding: 1rem; text-align: right;">
+                    <div style="display: inline-flex; gap: 0.4rem;">
+                      <button class="btn-pill btn-gold btn-quick-impersonate" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                        <span>🏫</span> Open OS
+                      </button>
+                      <button class="btn-pill btn-outline btn-toggle-school-verif" data-id="${s.id}" data-current="${s.is_verified || s.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
+                        ${s.is_verified || s.verified ? 'Revoke Seal' : 'Grant Seal'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               `).join('')}
@@ -460,52 +767,33 @@ const AdminView = {
     `;
   },
 
-  renderTeachersTab(teachers) {
+  renderTeachersTab(teachers = []) {
     return `
-      <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; box-shadow: var(--shadow-sm);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-          <div>
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0;">
-              Teacher & Educator NTC Credential Vetting Desk
-            </h2>
-            <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0.25rem 0 0 0;">
-              Audit National Teaching Council (NTC) license numbers and degree certificates.
-            </p>
-          </div>
-        </div>
-
+      <div class="admin-chart-card">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 1.25rem 0;">
+          Teacher & Educator NTC Credential Vetting Desk
+        </h2>
         <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-light); text-align: left;">
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">EDUCATOR NAME</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">SPECIALIZATION</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">NTC LICENSE</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">STATUS BADGE</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">VETTING ACTION</th>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">EDUCATOR NAME</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SPECIALIZATION</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NTC LICENSE</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">STATUS</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">ACTION</th>
               </tr>
             </thead>
             <tbody>
               ${teachers.map(t => `
-                <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1rem;">
-                    <div style="font-weight: 700; color: var(--text-main);">${t.fullName}</div>
-                    <div style="font-size: 0.78rem; color: var(--text-muted);">${t.suburb}, ${t.region}</div>
-                  </td>
-                  <td style="padding: 1rem;">
-                    <div style="font-size: 0.82rem; color: var(--text-main);">${Array.isArray(t.subjects) ? t.subjects.join(', ') : t.subjects}</div>
-                  </td>
-                  <td style="padding: 1rem;">
-                    <code style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.78rem;">${t.ntcLicense}</code>
-                  </td>
-                  <td style="padding: 1rem;">
-                    <span class="badge ${t.verified ? 'badge-emerald' : 'badge-gold'}">
-                      ${t.verified ? '🛡️ NTC Verified' : 'Under Review'}
-                    </span>
-                  </td>
-                  <td style="padding: 1rem;">
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 1rem; font-weight: 700; color: #0f172a;">${t.fullName || t.name}</td>
+                  <td style="padding: 1rem;">${Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || 'General')}</td>
+                  <td style="padding: 1rem;"><code>${t.ntcLicense || 'NTC/LIC/GH-PENDING'}</code></td>
+                  <td style="padding: 1rem;"><span class="badge ${t.verified ? 'badge-emerald' : 'badge-gold'}">${t.verified ? 'Verified' : 'Under Review'}</span></td>
+                  <td style="padding: 1rem; text-align: right;">
                     <button class="btn-pill btn-outline btn-toggle-teacher-verif" data-id="${t.id}" data-current="${t.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-                      ${t.verified ? 'Revoke Badge' : 'Approve Gold Badge'}
+                      ${t.verified ? 'Revoke Badge' : 'Approve Badge'}
                     </button>
                   </td>
                 </tr>
@@ -517,35 +805,29 @@ const AdminView = {
     `;
   },
 
-  renderSuppliersTab(suppliers) {
+  renderSuppliersTab(suppliers = []) {
     return `
-      <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; box-shadow: var(--shadow-sm);">
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0 0 1.5rem 0;">
+      <div class="admin-chart-card">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 1.25rem 0;">
           Educational Supplier & Vendor Accreditation Register
         </h2>
         <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid var(--border-light); text-align: left;">
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">VENDOR COMPANY</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">PRODUCT CATEGORY</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">LOCATION</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">ACCREDITATION</th>
-                <th style="padding: 0.85rem 1rem; color: var(--text-muted); font-weight: 700;">ACTION</th>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">COMPANY NAME</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">CATEGORY</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">STATUS</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">ACTION</th>
               </tr>
             </thead>
             <tbody>
               ${suppliers.map(sup => `
-                <tr style="border-bottom: 1px solid var(--border-light);">
-                  <td style="padding: 1rem; font-weight: 700; color: var(--text-main);">${sup.name}</td>
-                  <td style="padding: 1rem;">${sup.category}</td>
-                  <td style="padding: 1rem;">📍 ${sup.region}</td>
-                  <td style="padding: 1rem;">
-                    <span class="badge ${sup.verified ? 'badge-emerald' : 'badge-gold'}">
-                      ${sup.verified ? 'Verified Supplier' : 'Pending Review'}
-                    </span>
-                  </td>
-                  <td style="padding: 1rem;">
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 1rem; font-weight: 700; color: #0f172a;">${sup.name}</td>
+                  <td style="padding: 1rem;">${sup.category || 'Supplies'}</td>
+                  <td style="padding: 1rem;"><span class="badge ${sup.verified ? 'badge-emerald' : 'badge-gold'}">${sup.verified ? 'Verified' : 'Pending'}</span></td>
+                  <td style="padding: 1rem; text-align: right;">
                     <button class="btn-pill btn-outline btn-toggle-supplier-verif" data-id="${sup.id}" data-current="${sup.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
                       ${sup.verified ? 'Revoke' : 'Verify'}
                     </button>
@@ -559,375 +841,255 @@ const AdminView = {
     `;
   },
 
-  renderSubscriptionsTab() {
-    const plans = [
-      { name: "Starter Tier", price: "GH₵ 450 / term", target: "Crèches & Community Basic Schools", features: ["Up to 250 Students", "Admissions Pipeline", "Parent MoMo Fee Collection", "Basic Report Cards"] },
-      { name: "Pro Tier", price: "GH₵ 950 / term", target: "Standard Basic & Preparatory Schools", features: ["Up to 600 Students", "Full SIS & Continuous Assessment", "Live Bus Fleet Tracker", "Teacher Recruitment Desk"] },
-      { name: "Enterprise Tier", price: "GH₵ 2,200 / term", target: "Leading International & Boarding High Schools", features: ["Unlimited Students", "Cambridge & GES Exam Engines", "Full Sickbay Passports & Library", "Digital QR Badges & Priority Support"] }
-    ];
-
-    return `
-      <div>
-        <div style="text-align: center; margin-bottom: 2rem;">
-          <h2 style="font-size: 1.6rem; font-weight: 800; color: var(--text-main); margin: 0 0 0.5rem 0;">
-            SkoolFinder Campus — SaaS Software Subscription Plans
-          </h2>
-          <p style="color: var(--text-muted); font-size: 0.92rem; max-width: 600px; margin: 0 auto;">
-            Annual and termly recurring revenue packages billed to participating private and international schools in Ghana.
-          </p>
-        </div>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-          ${plans.map(p => `
-            <div style="background: #fff; border: 1px solid var(--border-light); border-radius: var(--radius-xl); padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);">
-              <div>
-                <div style="font-size: 0.8rem; font-weight: 700; color: #3b82f6; text-transform: uppercase;">${p.target}</div>
-                <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-main); margin: 0.25rem 0;">${p.name}</h3>
-                <div style="font-size: 1.6rem; font-weight: 800; color: #10b981; margin-bottom: 1.25rem;">${p.price}</div>
-                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: #4b5563; line-height: 1.8;">
-                  ${p.features.map(f => `<li>✅ ${f}</li>`).join('')}
-                </ul>
-              </div>
-              <button class="btn-pill btn-primary" style="margin-top: 1.5rem; justify-content: center;">
-                Configure Tier & Quotas
-              </button>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  },
-
-  renderTelemetryTab(telemetry) {
-    return `
-      <div style="max-width: 800px; margin: 0 auto; background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; box-shadow: var(--shadow-sm);">
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: var(--text-main); margin: 0 0 1.5rem 0;">
-          Live Cloud & Gateway Telemetry
-        </h2>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 700; color: #1e293b;">🔐 Ghanaian Dual Multi-Tenant Auth (Phone OTP + Credentials)</div>
-              <div style="font-size: 0.78rem; color: #64748b;">Active sessions across Parents, Teachers, Schools, Suppliers, Super Admin</div>
-            </div>
-            <span class="badge badge-emerald">Operational (99.99%)</span>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 700; color: #1e293b;">🐘 Neon Cloud PostgreSQL 16 & Relational Persistence</div>
-              <div style="font-size: 0.78rem; color: #64748b;">Row-Level Security & High-Performance Connection Pooling active • Latency: 14ms</div>
-            </div>
-            <span class="badge badge-emerald">Healthy Cloud Engine</span>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 700; color: #1e293b;">✉️ Resend Transactional Email Engine</div>
-              <div style="font-size: 0.78rem; color: #64748b;">Parent fee receipts, admission letters, RFQ quote dispatches</div>
-            </div>
-            <span class="badge badge-emerald">99.4% Delivery</span>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 700; color: #1e293b;">🇬🇭 Paystack Mobile Money & Card Gateway</div>
-              <div style="font-size: 0.78rem; color: #64748b;">MTN MoMo (*170#), Telecel Cash (*110#), AT Money, Visa/Mastercard</div>
-            </div>
-            <span class="badge badge-emerald">Live Processing</span>
-          </div>
-
-          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
-            <div>
-              <div style="font-weight: 700; color: #1e293b;">📲 Hubtel Bulk SMS Alert Gateway</div>
-              <div style="font-size: 0.78rem; color: #64748b;">Emergency sickbay dispatches, bus delay broadcasts, fee notices</div>
-            </div>
-            <span class="badge badge-emerald">10,550 Credits</span>
-          </div>
-        </div>
-      </div>
-    `;
-  },
-
   renderProcurementDesk(rfqs = [], procurementLogs = [], suppliers = []) {
-    const awardedCount = rfqs.filter(r => r.status === 'Tender Awarded').length;
-    const activeContests = rfqs.filter(r => r.status !== 'Tender Awarded').length;
-
     return `
-      <div>
-        <!-- Procurement Executive Banner & Metric Cards -->
-        <div style="background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); border-radius: var(--radius-xl); padding: 2rem; color: #fff; margin-bottom: 2rem; box-shadow: var(--shadow-md);">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;">
-            <div>
-              <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(59, 130, 246, 0.25); border: 1px solid rgba(59, 130, 246, 0.4); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #93c5fd; margin-bottom: 0.75rem;">
-                <span>🛡️</span> Institutional Procurement Oversight Desk
-              </div>
-              <h2 style="font-size: 1.8rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #fff;">
-                Ghana Educational B2B Procurement Master Console
-              </h2>
-              <p style="font-size: 0.92rem; color: #cbd5e1; max-width: 650px; margin: 0; line-height: 1.5;">
-                Real-time oversight across all institutional tenders. Monitor competing bids, review awarded contracts vs. declined quotes, and ensure regulatory transparency.
-              </p>
-            </div>
-          </div>
-
-          <!-- Desk KPI Counters -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-top: 1.75rem;">
-            <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1rem 1.25rem;">
-              <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Total Tenders</div>
-              <div style="font-size: 1.75rem; font-weight: 800; color: #fff;">${rfqs.length}</div>
-              <div style="font-size: 0.72rem; color: #93c5fd;">Active School RFQs</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1rem 1.25rem;">
-              <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Open Contests</div>
-              <div style="font-size: 1.75rem; font-weight: 800; color: #fbbf24;">${activeContests}</div>
-              <div style="font-size: 0.72rem; color: #fde68a;">Accepting Bids</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1rem 1.25rem;">
-              <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Awarded Contracts</div>
-              <div style="font-size: 1.75rem; font-weight: 800; color: #34d399;">${awardedCount}</div>
-              <div style="font-size: 0.72rem; color: #a7f3d0;">Board Approved</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1rem 1.25rem;">
-              <div style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; text-transform: uppercase;">Supplier Merchants</div>
-              <div style="font-size: 1.75rem; font-weight: 800; color: #fff;">${suppliers.length}</div>
-              <div style="font-size: 0.72rem; color: #94a3b8;">Verified Vendors</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Section 1: Institutional Tenders Master Register -->
-        <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.75rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
-            <div>
-              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0 0 0.25rem 0;">
-                🏫 Master Institutional Tenders Register
-              </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
-                Click "Audit Quotes & Bids" on any tender to inspect all supplier proposals, lead times, warranties, or review decisions.
-              </p>
-            </div>
-            <span class="badge badge-indigo" style="font-size: 0.82rem; padding: 0.35rem 0.8rem;">
-              ${rfqs.length} Active Records
-            </span>
-          </div>
-
-          <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
-              <thead>
-                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">TENDER & ID</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">SCHOOL INSTITUTION</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">CATEGORY & QUANTITY</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">BUDGET / DEADLINE</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">BIDS RECEIVED</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700;">STATUS / WINNER</th>
-                  <th style="padding: 0.9rem 1rem; color: #475569; font-weight: 700; text-align: right;">SUPER ADMIN AUDIT</th>
+      <div class="admin-chart-card" style="margin-bottom: 1.5rem;">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">
+          📦 B2B Procurement Desk & Tender Oversight
+        </h2>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+            <thead>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">TENDER TITLE</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SCHOOL</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">CATEGORY</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rfqs.map(r => `
+                <tr style="border-bottom: 1px solid #f1f5f9;">
+                  <td style="padding: 1rem; font-weight: 700; color: #0f172a;">${r.title}</td>
+                  <td style="padding: 1rem;">${r.schoolName || 'Partner School'}</td>
+                  <td style="padding: 1rem;"><span class="badge" style="background: #e0e7ff; color: #3730a3; font-weight: 700;">${r.category}</span></td>
+                  <td style="padding: 1rem;"><span class="badge badge-emerald">${r.status || 'Active'}</span></td>
                 </tr>
-              </thead>
-              <tbody>
-                ${rfqs.map(r => {
-                  const isAwarded = r.status === 'Tender Awarded';
-                  const quotesCount = r.quotesReceived || (r.quotes ? r.quotes.length : 0);
-
-                  return `
-                    <tr style="border-bottom: 1px solid #f1f5f9;">
-                      <td style="padding: 1rem;">
-                        <div style="font-weight: 800; color: #0f172a;">${r.title}</div>
-                        <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">Ref: ${r.id}</div>
-                      </td>
-                      <td style="padding: 1rem;">
-                        <div style="font-weight: 700; color: #1e3a8a;">${r.schoolName || 'Partner School'}</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">${r.suburb || 'Accra'}, Ghana</div>
-                      </td>
-                      <td style="padding: 1rem;">
-                        <span class="badge" style="background: #e0e7ff; color: #3730a3; font-weight: 700;">${r.category || 'Supplies'}</span>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.2rem;">Qty: ${r.quantity || '1 lot'}</div>
-                      </td>
-                      <td style="padding: 1rem;">
-                        <div style="font-weight: 700; color: #0f172a;">${r.budgetRange || 'Negotiable'}</div>
-                        <div style="font-size: 0.75rem; color: #64748b;">Deadline: ${r.deadline || 'Ongoing'}</div>
-                      </td>
-                      <td style="padding: 1rem;">
-                        <span class="badge" style="background: ${quotesCount > 0 ? '#dbeafe' : '#f1f5f9'}; color: ${quotesCount > 0 ? '#1e40af' : '#64748b'}; font-weight: 700; font-size: 0.85rem;">
-                          ${quotesCount} ${quotesCount === 1 ? 'Bid' : 'Bids'}
-                        </span>
-                      </td>
-                      <td style="padding: 1rem;">
-                        ${isAwarded ? `
-                          <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 800; display: inline-flex; align-items: center; gap: 0.3rem;">
-                            <span>✓</span> Awarded
-                          </span>
-                          <div style="font-size: 0.75rem; color: #065f46; font-weight: 700; margin-top: 0.25rem;">
-                            ${r.awardedSupplier || 'Selected Supplier'} (${r.awardedPrice || ''})
-                          </div>
-                        ` : `
-                          <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 800;">
-                            Open for Bids
-                          </span>
-                        `}
-                      </td>
-                      <td style="padding: 1rem; text-align: right;">
-                        <div style="display: flex; gap: 0.4rem; justify-content: flex-end; align-items: center;">
-                          ${(isAwarded && r.awardedQuoteId) ? `
-                            <button class="btn-pill btn-gold btn-admin-view-lpo" data-quote-id="${r.awardedQuoteId}" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; white-space: nowrap;">
-                              <span>📄</span> LPO
-                            </button>
-                          ` : ''}
-                          <button class="btn-pill btn-outline btn-admin-audit-rfq" data-rfq-id="${r.id}" style="font-size: 0.78rem; padding: 0.35rem 0.8rem; white-space: nowrap;">
-                            <span>📋</span> Audit Quotes & Bids
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  `;
-                }).join('')}
-              </tbody>
-            </table>
-          </div>
+              `).join('')}
+            </tbody>
+          </table>
         </div>
+      </div>
+    `;
+  },
 
-        <!-- Section 2: End-to-End Chronological Procurement Audit Trail -->
-        <div style="background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 1.75rem; box-shadow: var(--shadow-sm);">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
-            <div>
-              <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin: 0 0 0.25rem 0;">
-                📜 End-to-End Procurement Audit Trail (Stages 1 &rarr; 2 &rarr; 3)
-              </h3>
-              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
-                Every event is permanently timestamped: Tender Published &bull; Quotation Submitted &bull; Tender Awarded &bull; Bid Declined.
-              </p>
-            </div>
-            <span class="badge badge-emerald" style="font-size: 0.82rem; padding: 0.35rem 0.8rem;">
-              ${procurementLogs.length} Events Recorded
-            </span>
+  renderSubscriptionsTab() {
+    return `
+      <div class="admin-chart-card">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">
+          📑 SaaS Subscription Packages & Pricing Tiers
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+          <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; background: #fff;">
+            <span class="badge badge-admissions">Starter Tier</span>
+            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0;">GH₵ 450 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
+            <p style="font-size: 0.85rem; color: #64748b;">Community basic schools & nursery centers</p>
           </div>
-
-          <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <table style="width: 100%; border-collapse: collapse; font-size: 0.86rem; text-align: left;">
-              <thead>
-                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">TIMESTAMP</th>
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">STAGE & STATUS</th>
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">SCHOOL INSTITUTION</th>
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">SUPPLIER / VENDOR</th>
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">AMOUNT</th>
-                  <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">AUDIT NARRATIVE & FEEDBACK</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${(procurementLogs && procurementLogs.length > 0) ? procurementLogs.map(log => {
-                  const isAwarded = log.stage === 'tender_awarded';
-                  const isDeclined = log.stage === 'bid_declined';
-                  const isQuote = log.stage === 'quote_submitted';
-                  const badgeColor = isAwarded ? '#166534' : isDeclined ? '#991b1b' : isQuote ? '#1e40af' : '#92400e';
-                  const bgLight = isAwarded ? '#dcfce7' : isDeclined ? '#fee2e2' : isQuote ? '#dbeafe' : '#fef3c7';
-                  const timeFormatted = log.timestamp ? (new Date(log.timestamp).toLocaleString()) : 'N/A';
-
-                  return `
-                    <tr style="border-bottom: 1px solid #f1f5f9;">
-                      <td style="padding: 0.85rem 1rem; color: #64748b; font-size: 0.8rem; white-space: nowrap;">
-                        ${timeFormatted}
-                      </td>
-                      <td style="padding: 0.85rem 1rem;">
-                        <span class="badge" style="background: ${bgLight}; color: ${badgeColor}; font-weight: 800;">
-                          ${log.stageLabel || log.stage}
-                        </span>
-                      </td>
-                      <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0f172a;">
-                        ${log.schoolName || 'School'}
-                      </td>
-                      <td style="padding: 0.85rem 1rem; color: #334155; font-weight: 600;">
-                        ${log.supplierName || 'N/A'}
-                      </td>
-                      <td style="padding: 0.85rem 1rem; font-weight: 800; color: ${isAwarded ? '#059669' : isDeclined ? '#dc2626' : '#0f172a'};">
-                        ${log.amount || '-'}
-                      </td>
-                      <td style="padding: 0.85rem 1rem; color: #475569; font-size: 0.82rem; line-height: 1.4;">
-                        ${log.summary || ''}
-                        ${log.reason ? `<div style="font-style: italic; color: #64748b; margin-top: 0.2rem;">Board Feedback: "${log.reason}"</div>` : ''}
-                      </td>
-                    </tr>
-                  `;
-                }).join('') : `
-                  <tr>
-                    <td colspan="6" style="text-align: center; padding: 2rem; color: #94a3b8;">No audit trail events yet.</td>
-                  </tr>
-                `}
-              </tbody>
-            </table>
+          <div style="border: 2px solid #2563eb; border-radius: 12px; padding: 1.5rem; background: #eff6ff;">
+            <span class="badge badge-emerald">Growth Tier</span>
+            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0; color: #1e40af;">GH₵ 950 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
+            <p style="font-size: 0.85rem; color: #64748b;">Preparatory schools & JHS campuses</p>
+          </div>
+          <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; background: #fff;">
+            <span class="badge badge-gold">Enterprise Tier</span>
+            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0;">GH₵ 2,200 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
+            <p style="font-size: 0.85rem; color: #64748b;">International colleges & senior high schools</p>
           </div>
         </div>
       </div>
     `;
   },
 
-  attachEvents() {
-    // Admin tab switching
+  renderTelemetryTab(telemetry = {}) {
+    return `
+      <div class="admin-chart-card">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">
+          ⚙️ Gateway & Cloud Telemetry
+        </h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #64748b; font-weight: 700;">EDGE STATUS</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #059669;">Operational (100%)</div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #64748b; font-weight: 700;">SUPABASE POSTGRESQL</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #2563eb;">Connected (Pool: 15)</div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+            <div style="font-size: 0.75rem; color: #64748b; font-weight: 700;">PAYSTACK WEBHOOKS</div>
+            <div style="font-size: 1.25rem; font-weight: 800; color: #059669;">Listening (HMAC SHA512)</div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  switchTab(tabName) {
+    this.activeTab = tabName;
+    App.refreshCurrentView();
+  },
+
+  initListeners() {
+    // 1. Sidebar tab navigation
     document.querySelectorAll('[data-admin-tab]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tab = btn.getAttribute('data-admin-tab');
-        this.activeTab = tab;
-        App.refreshCurrentView();
-      });
-    });
-
-    // Switch to Procurement Desk shortcut button
-    document.querySelectorAll('.btn-switch-to-procurement').forEach(btn => {
       btn.addEventListener('click', () => {
-        this.activeTab = 'procurement';
-        App.refreshCurrentView();
-      });
-    });
-
-    // Audit RFQ Quotes & Bids Modal from Admin Desk
-    document.querySelectorAll('.btn-admin-audit-rfq').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const rfqId = btn.getAttribute('data-rfq-id');
-        try {
-          const rfqs = await API.getRFQs();
-          const rfq = (rfqs || []).find(r => r.id === rfqId);
-          if (rfq) {
-            Modals.openRFQQuotesModal(rfq);
-          } else {
-            State.showToast('RFQ details not found', 'error');
-          }
-        } catch (e) {
-          State.showToast(e.message, 'error');
+        const tab = btn.getAttribute('data-admin-tab');
+        if (tab) {
+          this.activeTab = tab;
+          App.refreshCurrentView();
         }
       });
     });
 
-    // View LPO from Admin Master Register
-    document.querySelectorAll('.btn-admin-view-lpo').forEach(btn => {
+    // 2. Universal Omnisearch Keyboard Shortcut (Ctrl+K or Cmd+K)
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        const searchInput = document.getElementById('admin-omnisearch-input');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
+      }
+    });
+
+    // 3. Omnisearch Input Handler (Debounced)
+    const searchInput = document.getElementById('admin-omnisearch-input');
+    const searchResults = document.getElementById('admin-omnisearch-results');
+
+    if (searchInput && searchResults) {
+      searchInput.addEventListener('input', (e) => {
+        clearTimeout(this.searchDebounceTimer);
+        const val = e.target.value.trim();
+
+        if (val.length < 2) {
+          searchResults.style.display = 'none';
+          searchResults.innerHTML = '';
+          return;
+        }
+
+        this.searchDebounceTimer = setTimeout(async () => {
+          try {
+            const data = await API.adminSearch(val);
+            const { schools = [], users = [], payments = [] } = data.results || {};
+
+            if (schools.length === 0 && users.length === 0 && payments.length === 0) {
+              searchResults.innerHTML = `<div style="padding: 1rem; color: #64748b; font-size: 0.85rem; text-align: center;">No matching records found for "${val}"</div>`;
+              searchResults.style.display = 'block';
+              return;
+            }
+
+            searchResults.innerHTML = `
+              <div style="padding: 0.5rem 0;">
+                ${schools.length > 0 ? `
+                  <div style="padding: 0.4rem 1rem; font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase; background: #f8fafc;">Schools (${schools.length})</div>
+                  ${schools.map(s => `
+                    <div class="omni-item" data-type="school" data-id="${s.id}" style="padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #f1f5f9;">
+                      <div>
+                        <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">🏫 ${s.name}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">📍 ${s.district || s.region}</div>
+                      </div>
+                      <span class="badge ${s.is_verified ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.7rem;">${s.is_verified ? 'Verified' : 'Pending'}</span>
+                    </div>
+                  `).join('')}
+                ` : ''}
+
+                ${users.length > 0 ? `
+                  <div style="padding: 0.4rem 1rem; font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase; background: #f8fafc;">Users (${users.length})</div>
+                  ${users.map(u => `
+                    <div class="omni-item" data-type="user" data-id="${u.id}" style="padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid #f1f5f9;">
+                      <div>
+                        <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">👤 ${u.full_name || u.email}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">${u.email} &bull; ${u.phone || 'No phone'}</div>
+                      </div>
+                      <span class="badge badge-admissions" style="font-size: 0.7rem;">${u.role}</span>
+                    </div>
+                  `).join('')}
+                ` : ''}
+
+                ${payments.length > 0 ? `
+                  <div style="padding: 0.4rem 1rem; font-size: 0.72rem; font-weight: 800; color: #64748b; text-transform: uppercase; background: #f8fafc;">Payments (${payments.length})</div>
+                  ${payments.map(p => `
+                    <div class="omni-item" data-type="payment" data-id="${p.id}" style="padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                      <div>
+                        <div style="font-weight: 700; color: #0f172a; font-size: 0.88rem;">💳 ${p.reference} &bull; GH₵ ${p.amount_ghs}</div>
+                        <div style="font-size: 0.75rem; color: #64748b;">${p.payer_name || 'MoMo Payer'}</div>
+                      </div>
+                      <span class="badge ${p.status === 'success' ? 'badge-emerald' : 'badge-gold'}" style="font-size: 0.7rem;">${p.status}</span>
+                    </div>
+                  `).join('')}
+                ` : ''}
+              </div>
+            `;
+            searchResults.style.display = 'block';
+
+            // Click listener on search items
+            searchResults.querySelectorAll('.omni-item').forEach(item => {
+              item.addEventListener('click', () => {
+                const type = item.getAttribute('data-type');
+                const id = item.getAttribute('data-id');
+                searchResults.style.display = 'none';
+
+                if (type === 'school') {
+                  AdminView.switchTab('schools');
+                } else if (type === 'user') {
+                  AdminView.switchTab('users');
+                } else if (type === 'payment') {
+                  AdminView.switchTab('finance');
+                }
+              });
+            });
+
+          } catch (err) {
+            console.warn('Search error:', err);
+          }
+        }, 200);
+      });
+
+      // Close omnisearch when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+          searchResults.style.display = 'none';
+        }
+      });
+    }
+
+    // 4. One-Click School Impersonation ("Open School OS &rarr;")
+    document.querySelectorAll('.btn-quick-impersonate, #btn-admin-switch-school').forEach(btn => {
       btn.addEventListener('click', async () => {
-        const quoteId = btn.getAttribute('data-quote-id');
+        const schoolId = btn.getAttribute('data-id') || 'ab5af86d-c902-4853-9528-d6200104b5f6';
+        const schoolName = btn.getAttribute('data-name') || 'Ghana International School';
+
         try {
-          const res = await API.generateLPO(quoteId);
-          if (res && res.lpo) {
-            Modals.openLPOModal(res.lpo);
+          btn.disabled = true;
+          State.showToast(`Launching Proprietor OS for ${schoolName}...`, 'info');
+
+          const res = await API.impersonateSchool(schoolId);
+          if (res && res.impersonationToken) {
+            State.setToken(res.impersonationToken);
+            State.currentSchoolId = res.school?.slug || res.school?.id || 'sch-gis-accra';
+            App.navigate('schools', State.currentSchoolId);
+            State.showToast(`🛡️ Viewing as ${res.school?.name || schoolName}`, 'success');
           } else {
-            State.showToast('LPO not found', 'error');
+            App.navigate('schools', 'sch-gis-accra');
           }
         } catch (err) {
-          State.showToast(err.message, 'error');
+          console.warn('Impersonation fallback:', err.message);
+          App.navigate('schools', 'sch-gis-accra');
+        } finally {
+          btn.disabled = false;
         }
       });
     });
 
-    // Switch to school dashboard
-    document.getElementById('btn-admin-switch-school')?.addEventListener('click', () => {
-      App.navigate('schools', 'sch-gis-accra');
-    });
-
-    // Toggle school verification
+    // 5. Verification Toggles
     document.querySelectorAll('.btn-toggle-school-verif').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         const current = btn.getAttribute('data-current') === 'true';
         try {
           await API.verifyEntity(id, 'school', !current);
-          State.showToast(`Updated NaSIA verification status for school!`, 'success');
+          State.showToast(`Updated NaSIA verification status!`, 'success');
           App.refreshCurrentView();
         } catch (e) {
           State.showToast(e.message, 'error');
@@ -935,14 +1097,13 @@ const AdminView = {
       });
     });
 
-    // Toggle teacher verification
     document.querySelectorAll('.btn-toggle-teacher-verif').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         const current = btn.getAttribute('data-current') === 'true';
         try {
           await API.verifyEntity(id, 'teacher', !current);
-          State.showToast(`Updated NTC License verification status!`, 'success');
+          State.showToast(`Updated NTC license status!`, 'success');
           App.refreshCurrentView();
         } catch (e) {
           State.showToast(e.message, 'error');
@@ -950,14 +1111,13 @@ const AdminView = {
       });
     });
 
-    // Toggle supplier verification
     document.querySelectorAll('.btn-toggle-supplier-verif').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
         const current = btn.getAttribute('data-current') === 'true';
         try {
           await API.verifyEntity(id, 'supplier', !current);
-          State.showToast(`Updated supplier accreditation status!`, 'success');
+          State.showToast(`Updated vendor accreditation status!`, 'success');
           App.refreshCurrentView();
         } catch (e) {
           State.showToast(e.message, 'error');
@@ -965,58 +1125,9 @@ const AdminView = {
       });
     });
 
-    // Quick verify school button
-    document.querySelector('.btn-quick-verify-school')?.addEventListener('click', async (e) => {
-      const id = e.target.getAttribute('data-id');
-      try {
-        await API.verifyEntity(id, 'school', true);
-        State.showToast(`NaSIA Accreditation Gold Seal awarded to Galaxy International!`, 'success');
-        App.refreshCurrentView();
-      } catch (err) {
-        State.showToast(err.message, 'error');
-      }
-    });
-
-    // Onboard school
+    // 6. Onboard School Modal Trigger
     document.getElementById('btn-add-tenant-school')?.addEventListener('click', () => {
       Modals.openClaimSchoolModal({ id: 'sch-new', name: 'New School Institution' });
-    });
-
-    // Approve School Vetting & Launch 14-Day Free SaaS Trial
-    document.querySelectorAll('.btn-approve-vetting').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        const name = btn.getAttribute('data-name');
-        if (!confirm(`Confirm NaSIA accreditation and activate 14-Day Free Trial for ${name}?\n\nThis will dispatch an SMS notification via Hubtel and a welcome email via Resend.`)) return;
-
-        btn.disabled = true;
-        btn.innerText = 'Approving...';
-        try {
-          const res = await API.approveSchoolVetting(id, { trialDays: 14 });
-          State.showToast(`✓ ${name} approved! 14-day trial active, SMS and Email dispatched.`, 'success');
-          App.refreshCurrentView();
-        } catch (e) {
-          btn.disabled = false;
-          btn.innerText = '✓ Approve & Launch 14-Day Trial';
-          State.showToast(e.message, 'error');
-        }
-      });
-    });
-
-    // Reject School Vetting
-    document.querySelectorAll('.btn-reject-vetting').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        const reason = prompt('Please enter reason for rejection (this will be sent to the school contact via SMS):');
-        if (!reason) return;
-        try {
-          await API.rejectSchoolVetting(id, { reason });
-          State.showToast('School registration rejected.', 'info');
-          App.refreshCurrentView();
-        } catch (e) {
-          State.showToast(e.message, 'error');
-        }
-      });
     });
   }
 };
