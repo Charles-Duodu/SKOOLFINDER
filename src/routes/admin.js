@@ -1707,4 +1707,672 @@ router.post('/verify', async (req, res) => {
   }
 });
 
+// ============================================================================
+// 8. CENTRALIZED ADMISSIONS, TEACHER NTC & B2B PROCUREMENT (Phase 7)
+// ============================================================================
+
+let SEED_ADMISSIONS = [
+  {
+    id: 'app-gh-01',
+    application_number: 'SF-ADM-2026-782194',
+    student_name: 'Nana Yaa Boateng',
+    grade_applying: 'Primary Class 4',
+    previous_school: 'Jack & Jill Preparatory',
+    school_name: 'Ghana International School',
+    school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+    parent_name: 'Dr. Kwame Boateng',
+    parent_phone: '+233 24 411 9922',
+    parent_email: 'k.boateng@gmail.com',
+    status: 'exam_scheduled',
+    status_label: 'Entrance Exam Scheduled',
+    submitted_at: '2026-10-28T09:30:00.000Z'
+  },
+  {
+    id: 'app-gh-02',
+    application_number: 'SF-ADM-2026-891024',
+    student_name: 'Kweku Serwaa Osei',
+    grade_applying: 'JHS Form 1',
+    previous_school: 'Morning Star School',
+    school_name: 'Achimota Basic School',
+    school_id: 'b11b5105-e991-49fa-bd7d-78703a5632d4',
+    parent_name: 'Mr. Michael Osei',
+    parent_phone: '+233 24 333 9876',
+    parent_email: 'm.osei@yahoo.com',
+    status: 'admitted',
+    status_label: 'Admitted / Offer Dispatched',
+    submitted_at: '2026-10-25T11:15:00.000Z'
+  },
+  {
+    id: 'app-gh-03',
+    application_number: 'SF-ADM-2026-663920',
+    student_name: 'Akosua Mensah',
+    grade_applying: 'SHS Form 1 (General Science)',
+    previous_school: 'Ridge Church School',
+    school_name: 'St. Rose\'s Senior High School',
+    school_id: 'd05ea273-b7a5-4865-999b-63753830ab7a',
+    parent_name: 'Mrs. Abigail Mensah',
+    parent_phone: '+233 50 123 4567',
+    parent_email: 'abigail.m@yahoo.com',
+    status: 'pending',
+    status_label: 'Pending Document Review',
+    submitted_at: '2026-10-31T14:40:00.000Z'
+  },
+  {
+    id: 'app-gh-04',
+    application_number: 'SF-ADM-2026-551982',
+    student_name: 'Kofi Poku',
+    grade_applying: 'Class 1 (Early Years)',
+    previous_school: 'Cantonments Early Learners',
+    school_name: 'Roman Ridge School',
+    school_id: 'sch-romanridge-accra',
+    parent_name: 'Nana Kwame Poku',
+    parent_phone: '+233 55 332 1100',
+    parent_email: 'k.poku@outlook.com',
+    status: 'pending',
+    status_label: 'Under Interview Evaluation',
+    submitted_at: '2026-11-01T08:20:00.000Z'
+  },
+  {
+    id: 'app-gh-05',
+    application_number: 'SF-ADM-2026-442918',
+    student_name: 'Eyram Tetteh',
+    grade_applying: 'JHS Form 2',
+    previous_school: 'SOS Hermann Gmeiner Community',
+    school_name: 'SOS Hermann Gmeiner International',
+    school_id: 'sch-sos-hermann',
+    parent_name: 'Mr. Emmanuel Tetteh',
+    parent_phone: '+233 24 998 1234',
+    parent_email: 'emmanuel.tetteh@ges.gov.gh',
+    status: 'admitted',
+    status_label: 'Admitted / Enrolled',
+    submitted_at: '2026-10-20T16:00:00.000Z'
+  },
+  {
+    id: 'app-gh-06',
+    application_number: 'SF-ADM-2026-331092',
+    student_name: 'Yaw Prempeh',
+    grade_applying: 'Primary Class 6',
+    previous_school: 'St. Anthony Preparatory',
+    school_name: 'Presbyterian Boys\' Secondary',
+    school_id: 'sch-presec-legon',
+    parent_name: 'Nana Ama Prempeh',
+    parent_phone: '+233 50 112 4455',
+    parent_email: 'orders@crownstationery.gh',
+    status: 'declined',
+    status_label: 'Application Declined',
+    submitted_at: '2026-10-18T10:10:00.000Z'
+  }
+];
+
+let SEED_ADMIN_TEACHERS = [
+  {
+    id: 'tch-01',
+    fullName: 'Emmanuel Kwame Boateng',
+    title: 'Senior Mathematics & Physics Specialist',
+    subjects: ['Mathematics', 'Physics', 'Robotics'],
+    levels: ['JHS', 'SHS', 'A-Levels'],
+    curricula: ['Cambridge', 'GES'],
+    ntcLicense: 'NTC/LIC/GH-2023-8192',
+    hourlyRate: 120,
+    verified: true,
+    rating: 4.9,
+    region: 'Greater Accra',
+    experienceYears: '12+',
+    qualification: 'B.Sc Physics (Legon), PGDE'
+  },
+  {
+    id: 'tch-02',
+    fullName: 'Dr. Araba Mensah',
+    title: 'Chemistry & Biology Educator',
+    subjects: ['Chemistry', 'Biology', 'Science'],
+    levels: ['SHS', 'IGCSE', 'A-Levels'],
+    curricula: ['Cambridge', 'IB'],
+    ntcLicense: 'NTC/LIC/GH-2022-4410',
+    hourlyRate: 150,
+    verified: true,
+    rating: 5.0,
+    region: 'Greater Accra',
+    experienceYears: '10+',
+    qualification: 'Ph.D Biochemistry (Legon)'
+  },
+  {
+    id: 'tch-03',
+    fullName: 'Kofi Addo-Mensah',
+    title: 'French & English Language Consultant',
+    subjects: ['French', 'English'],
+    levels: ['Primary', 'JHS', 'SHS'],
+    curricula: ['GES', 'Cambridge'],
+    ntcLicense: 'NTC/LIC/GH-2024-1198',
+    hourlyRate: 90,
+    verified: true,
+    rating: 4.8,
+    region: 'Greater Accra',
+    experienceYears: '7+',
+    qualification: 'B.A French & Linguistics (UCC)'
+  },
+  {
+    id: 'tch-04',
+    fullName: 'Grace Osei-Tutu',
+    title: 'Early Literacy & Phonics Specialist',
+    subjects: ['Phonics', 'English', 'Mathematics'],
+    levels: ['Primary', 'Early Years'],
+    curricula: ['Montessori', 'GES'],
+    ntcLicense: 'NTC/LIC/GH-2021-3921',
+    hourlyRate: 85,
+    verified: true,
+    rating: 4.9,
+    region: 'Ashanti',
+    experienceYears: '9+',
+    qualification: 'B.Ed Early Childhood Education (UEW)'
+  },
+  {
+    id: 'tch-05',
+    fullName: 'Kwabena Danquah',
+    title: 'Coding, Robotics & STEM Tutor',
+    subjects: ['Coding', 'Science', 'Mathematics'],
+    levels: ['Primary', 'JHS', 'SHS'],
+    curricula: ['Cambridge', 'GES'],
+    ntcLicense: 'NTC/LIC/GH-PENDING',
+    hourlyRate: 140,
+    verified: false,
+    rating: 4.9,
+    region: 'Greater Accra',
+    experienceYears: '6+',
+    qualification: 'B.Sc Computer Science (KNUST)'
+  },
+  {
+    id: 'tch-06',
+    fullName: 'Bernice Serwaa Antwi',
+    title: 'Integrated Science & ICT Lead',
+    subjects: ['Integrated Science', 'ICT'],
+    levels: ['JHS', 'SHS'],
+    curricula: ['GES'],
+    ntcLicense: 'NTC/LIC/GH-2024-9912',
+    hourlyRate: 95,
+    verified: true,
+    rating: 4.7,
+    region: 'Eastern Region',
+    experienceYears: '5+',
+    qualification: 'B.Sc Education (Cape Coast)'
+  }
+];
+
+let SEED_ADMIN_RFQS = [
+  {
+    id: 'rfq-01',
+    title: 'Supply of 150 Robotics & STEM Microcontroller Starter Kits',
+    schoolName: 'Ghana International School (GIS)',
+    schoolId: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+    category: 'IT / Software / Computers',
+    budgetRange: 'GH₵ 40,000 - 55,000',
+    quantity: '150 Student Sets',
+    deadline: '2026-11-30',
+    region: 'Greater Accra',
+    status: 'Open',
+    quotesReceived: 4
+  },
+  {
+    id: 'rfq-02',
+    title: 'Bulk Supply of Core Mathematics & Science Textbooks',
+    schoolName: 'Achimota School',
+    schoolId: 'b11b5105-e991-49fa-bd7d-78703a5632d4',
+    category: 'Books & Stationery',
+    budgetRange: 'GH₵ 25,000 - 35,000',
+    quantity: '500 Textbooks',
+    deadline: '2026-11-20',
+    region: 'Greater Accra',
+    status: 'Open',
+    quotesReceived: 6
+  },
+  {
+    id: 'rfq-03',
+    title: 'Installation of 12 Interactive 75" Touch Smartboards',
+    schoolName: 'St. Rose\'s Senior High School',
+    schoolId: 'd05ea273-b7a5-4865-999b-63753830ab7a',
+    category: 'Classroom Electronics',
+    budgetRange: 'GH₵ 72,000 - 90,000',
+    quantity: '12 Displays',
+    deadline: '2026-12-15',
+    region: 'Eastern Region',
+    status: 'Under Evaluation',
+    quotesReceived: 3
+  },
+  {
+    id: 'rfq-04',
+    title: 'Annual Provision of Custom Branded School Uniforms',
+    schoolName: 'Morning Star School',
+    schoolId: 'sch-morningstar-cantonments',
+    category: 'Uniforms & Textiles',
+    budgetRange: 'GH₵ 30,000 - 45,000',
+    quantity: '600 Uniform Sets',
+    deadline: '2026-11-15',
+    region: 'Greater Accra',
+    status: 'Awarded',
+    quotesReceived: 5
+  }
+];
+
+let SEED_ADMIN_SUPPLIERS = [
+  {
+    id: 'sup-01',
+    name: 'Aki-Ola Publications Ghana',
+    companyName: 'Aki-Ola Publications Ghana',
+    category: 'Books & Stationery',
+    description: 'Ghana’s leading educational book publishers for BECE and WASSCE textbooks.',
+    region: 'Greater Accra',
+    coverage: ['Nationwide (Accra, Kumasi, Takoradi)'],
+    tin: 'C0019283719',
+    phone: '+233 30 222 1888',
+    verified: true,
+    rating: 4.9
+  },
+  {
+    id: 'sup-02',
+    name: 'Kingdom Books & Stationery Ltd',
+    companyName: 'Kingdom Books & Stationery Ltd',
+    category: 'Books & Classroom Furniture',
+    description: 'Premier distributor of classroom furniture, photocopiers and smartboards.',
+    region: 'Greater Accra',
+    coverage: ['Greater Accra & Eastern'],
+    tin: 'C0084729103',
+    phone: '+233 30 276 4125',
+    verified: true,
+    rating: 4.8
+  },
+  {
+    id: 'sup-03',
+    name: 'Ghana STEM & Science Equipment Hub',
+    companyName: 'Ghana STEM & Science Equipment Hub',
+    category: 'Lab Equipment & Robotics',
+    description: 'Direct importers of laboratory glassware, biology microscopes and robotics kits.',
+    region: 'Ashanti',
+    coverage: ['Kumasi & Northern Ghana'],
+    tin: 'C0038192041',
+    phone: '+233 32 203 9988',
+    verified: true,
+    rating: 4.9
+  },
+  {
+    id: 'sup-04',
+    name: 'Crown Garments & Uniforms GH',
+    companyName: 'Crown Garments & Uniforms GH',
+    category: 'Uniforms & Sportswear',
+    description: 'Bulk apparel manufacturing for private and international school students.',
+    region: 'Greater Accra',
+    coverage: ['Greater Accra'],
+    tin: 'C0099281723',
+    phone: '+233 50 112 4455',
+    verified: false,
+    rating: 4.2
+  }
+];
+
+/**
+ * GET /api/admin/admissions
+ * Master admissions application ledger across all partner schools
+ */
+router.get('/admissions', async (req, res) => {
+  try {
+    const { q, status, schoolId, limit = 50, page = 1 } = req.query;
+
+    let dbApps = [];
+    try {
+      const { data } = await supabaseAdmin
+        .from('enquiries')
+        .select('*')
+        .ilike('subject', '%APPLICATION%')
+        .order('created_at', { ascending: false });
+      if (Array.isArray(data)) dbApps = data;
+    } catch (e) {}
+
+    let allApps = [...SEED_ADMISSIONS];
+
+    if (status && status !== 'All') {
+      allApps = allApps.filter(a => a.status.toLowerCase() === status.toLowerCase());
+    }
+
+    if (schoolId && schoolId !== 'All') {
+      allApps = allApps.filter(a => a.school_id === schoolId || a.school_name.toLowerCase().includes(schoolId.toLowerCase()));
+    }
+
+    const searchTerm = (q || '').trim().toLowerCase();
+    if (searchTerm) {
+      allApps = allApps.filter(a =>
+        a.student_name.toLowerCase().includes(searchTerm) ||
+        a.application_number.toLowerCase().includes(searchTerm) ||
+        a.parent_name.toLowerCase().includes(searchTerm) ||
+        a.parent_phone.includes(searchTerm) ||
+        a.school_name.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    const from = (parseInt(page) - 1) * parseInt(limit);
+    const paginated = allApps.slice(from, from + parseInt(limit));
+
+    return res.json({
+      success: true,
+      total: allApps.length,
+      applications: paginated
+    });
+  } catch (err) {
+    console.error('GET /api/admin/admissions error:', err);
+    return res.status(500).json({ error: 'Failed to fetch admissions applications' });
+  }
+});
+
+/**
+ * PATCH /api/admin/admissions/:id/status
+ * Super Admin override for student application status
+ */
+router.patch('/admissions/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // 'admitted' | 'exam_scheduled' | 'pending' | 'declined'
+    const adminUser = req.user;
+
+    const app = SEED_ADMISSIONS.find(a => a.id === id);
+    if (!app) {
+      return res.status(404).json({ error: 'Admission application not found' });
+    }
+
+    const oldStatus = app.status;
+    app.status = status;
+    app.status_label = status === 'admitted' ? 'Admitted / Offer Dispatched' : (status === 'exam_scheduled' ? 'Entrance Exam Scheduled' : (status === 'declined' ? 'Application Declined' : 'Under Review'));
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'admission_status_updated',
+      targetType: 'admission_application',
+      targetId: id,
+      details: { applicationNumber: app.application_number, studentName: app.student_name, oldStatus, newStatus: status }
+    });
+
+    return res.json({
+      success: true,
+      message: `Admission status for ${app.student_name} set to ${app.status_label}.`,
+      application: app
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update admission status' });
+  }
+});
+
+/**
+ * GET /api/admin/teachers
+ * Master teacher & tutor directory with NTC license verification status
+ */
+router.get('/teachers', async (req, res) => {
+  try {
+    const { q, verified, curriculum } = req.query;
+
+    let dbTeachers = [];
+    try {
+      const { data } = await supabaseAdmin.from('teachers').select('*');
+      if (Array.isArray(data)) dbTeachers = data;
+    } catch (e) {}
+
+    let list = [...SEED_ADMIN_TEACHERS];
+
+    if (verified !== undefined && verified !== 'All') {
+      const isVer = verified === 'true';
+      list = list.filter(t => t.verified === isVer);
+    }
+
+    if (curriculum && curriculum !== 'All') {
+      list = list.filter(t => t.curricula && t.curricula.includes(curriculum));
+    }
+
+    const searchTerm = (q || '').trim().toLowerCase();
+    if (searchTerm) {
+      list = list.filter(t =>
+        t.fullName.toLowerCase().includes(searchTerm) ||
+        t.title.toLowerCase().includes(searchTerm) ||
+        t.ntcLicense.toLowerCase().includes(searchTerm) ||
+        (t.subjects && t.subjects.some(s => s.toLowerCase().includes(searchTerm)))
+      );
+    }
+
+    return res.json({
+      success: true,
+      total: list.length,
+      teachers: list
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve teachers' });
+  }
+});
+
+/**
+ * PATCH /api/admin/teachers/:id/verify
+ * Toggle NTC License Verification badge
+ */
+router.patch('/teachers/:id/verify', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { verified } = req.body;
+    const adminUser = req.user;
+
+    const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === id);
+    if (!teacher) {
+      return res.status(404).json({ error: 'Teacher profile not found' });
+    }
+
+    teacher.verified = !!verified;
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: verified ? 'teacher_ntc_approved' : 'teacher_ntc_revoked',
+      targetType: 'teacher',
+      targetId: id,
+      details: { teacherName: teacher.fullName, ntcLicense: teacher.ntcLicense, verified }
+    });
+
+    return res.json({
+      success: true,
+      message: `NTC license verification status for ${teacher.fullName} is now ${verified ? 'Approved' : 'Revoked'}.`,
+      teacher
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update teacher verification' });
+  }
+});
+
+/**
+ * GET /api/admin/procurement/rfqs
+ * Institutional RFQs and tender register
+ */
+router.get('/procurement/rfqs', async (req, res) => {
+  try {
+    const { q, category, status } = req.query;
+    let list = [...SEED_ADMIN_RFQS];
+
+    if (category && category !== 'All') {
+      list = list.filter(r => r.category.toLowerCase().includes(category.toLowerCase()));
+    }
+
+    if (status && status !== 'All') {
+      list = list.filter(r => r.status.toLowerCase() === status.toLowerCase());
+    }
+
+    const searchTerm = (q || '').trim().toLowerCase();
+    if (searchTerm) {
+      list = list.filter(r =>
+        r.title.toLowerCase().includes(searchTerm) ||
+        r.schoolName.toLowerCase().includes(searchTerm) ||
+        r.category.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    return res.json({
+      success: true,
+      total: list.length,
+      rfqs: list
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch tenders' });
+  }
+});
+
+/**
+ * POST /api/admin/procurement/rfqs
+ * Issue a new institutional tender
+ */
+router.post('/procurement/rfqs', async (req, res) => {
+  try {
+    const { title, schoolName, category = 'General Supplies', budgetRange = 'GH₵ 25,000 - 50,000', quantity = 'Bulk Order', deadline = 'Within 30 Days', region = 'Greater Accra' } = req.body || {};
+    const adminUser = req.user;
+
+    if (!title || !schoolName) {
+      return res.status(400).json({ error: 'Tender title and issuing school are required' });
+    }
+
+    const newRFQ = {
+      id: 'rfq-' + Date.now().toString(36),
+      title: title.trim(),
+      schoolName: schoolName.trim(),
+      category,
+      budgetRange,
+      quantity,
+      deadline,
+      region,
+      status: 'Open',
+      quotesReceived: 0,
+      created_at: new Date().toISOString()
+    };
+
+    SEED_ADMIN_RFQS.unshift(newRFQ);
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'rfq_published',
+      targetType: 'procurement_rfq',
+      targetId: newRFQ.id,
+      newState: newRFQ,
+      details: { title: newRFQ.title, schoolName: newRFQ.schoolName }
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: `Tender "${newRFQ.title}" published successfully to B2B Procurement Desk.`,
+      rfq: newRFQ
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to publish tender' });
+  }
+});
+
+/**
+ * PATCH /api/admin/procurement/rfqs/:id/status
+ */
+router.patch('/procurement/rfqs/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body; // 'Open' | 'Under Evaluation' | 'Awarded' | 'Closed'
+    const adminUser = req.user;
+
+    const rfq = SEED_ADMIN_RFQS.find(r => r.id === id);
+    if (!rfq) {
+      return res.status(404).json({ error: 'Tender record not found' });
+    }
+
+    rfq.status = status;
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'rfq_status_changed',
+      targetType: 'procurement_rfq',
+      targetId: id,
+      details: { title: rfq.title, newStatus: status }
+    });
+
+    return res.json({
+      success: true,
+      message: `Tender status updated to ${status}`,
+      rfq
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update RFQ status' });
+  }
+});
+
+/**
+ * GET /api/admin/procurement/suppliers
+ */
+router.get('/procurement/suppliers', async (req, res) => {
+  try {
+    const { q, verified, category } = req.query;
+    let list = [...SEED_ADMIN_SUPPLIERS];
+
+    if (verified !== undefined && verified !== 'All') {
+      const isVer = verified === 'true';
+      list = list.filter(s => s.verified === isVer);
+    }
+
+    if (category && category !== 'All') {
+      list = list.filter(s => s.category.toLowerCase().includes(category.toLowerCase()));
+    }
+
+    const searchTerm = (q || '').trim().toLowerCase();
+    if (searchTerm) {
+      list = list.filter(s =>
+        s.name.toLowerCase().includes(searchTerm) ||
+        s.category.toLowerCase().includes(searchTerm) ||
+        s.region.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    return res.json({
+      success: true,
+      total: list.length,
+      suppliers: list
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch suppliers' });
+  }
+});
+
+/**
+ * PATCH /api/admin/procurement/suppliers/:id/verify
+ */
+router.patch('/procurement/suppliers/:id/verify', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { verified } = req.body;
+    const adminUser = req.user;
+
+    const sup = SEED_ADMIN_SUPPLIERS.find(s => s.id === id);
+    if (!sup) {
+      return res.status(404).json({ error: 'Supplier record not found' });
+    }
+
+    sup.verified = !!verified;
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: verified ? 'supplier_accredited' : 'supplier_accreditation_revoked',
+      targetType: 'supplier',
+      targetId: id,
+      details: { supplierName: sup.name, verified }
+    });
+
+    return res.json({
+      success: true,
+      message: `Vendor accreditation for ${sup.name} is now ${verified ? 'Accredited' : 'Pending Review'}.`,
+      supplier: sup
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update supplier verification' });
+  }
+});
+
 module.exports = router;

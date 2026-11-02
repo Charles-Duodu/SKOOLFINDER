@@ -360,6 +360,98 @@ const API = {
     return result;
   },
 
+  // Phase 7: Admissions, Teachers NTC & B2B Procurement Desk
+  async getAdminAdmissions(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/admissions?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load admissions");
+    return res.json();
+  },
+
+  async updateAdminAdmissionStatus(id, status) {
+    const res = await fetch(`${this.baseUrl}/admin/admissions/${id}/status`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ status })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update admission status");
+    return result;
+  },
+
+  async getAdminTeachersList(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/teachers?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load teachers");
+    return res.json();
+  },
+
+  async toggleAdminTeacherNTC(id, verified) {
+    const res = await fetch(`${this.baseUrl}/admin/teachers/${id}/verify`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ verified })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update teacher NTC status");
+    return result;
+  },
+
+  async getAdminProcurementRFQs(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/procurement/rfqs?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load tenders");
+    return res.json();
+  },
+
+  async createAdminProcurementRFQ(data) {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/rfqs`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to publish tender");
+    return result;
+  },
+
+  async updateAdminProcurementRFQStatus(id, status) {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/rfqs/${id}/status`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ status })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update tender status");
+    return result;
+  },
+
+  async getAdminProcurementSuppliers(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/procurement/suppliers?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load suppliers");
+    return res.json();
+  },
+
+  async toggleAdminSupplierAccreditation(id, verified) {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/suppliers/${id}/verify`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ verified })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update vendor accreditation");
+    return result;
+  },
+
   async adminSearch(q) {
     const res = await fetch(`${this.baseUrl}/admin/search?q=${encodeURIComponent(q)}`, {
       headers: this.getAuthHeaders()

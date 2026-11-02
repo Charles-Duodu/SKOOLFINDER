@@ -11201,6 +11201,202 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  openCreateRFQModal(onCreated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 560px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              B2B Procurement & Tenders
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Issue Institutional Tender (RFQ)
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-create-rfq" style="padding: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Tender Title *</label>
+            <input type="text" id="rfq-title" required placeholder="e.g. Supply of 150 Robotics & STEM Microcontroller Starter Kits" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Issuing Institution / School *</label>
+            <input type="text" id="rfq-school" required placeholder="e.g. Ghana International School (GIS)" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Procurement Category</label>
+              <select id="rfq-category" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+                <option value="IT / Software / Computers">IT / Software / Computers</option>
+                <option value="Books & Stationery">Books & Stationery</option>
+                <option value="Lab Equipment & Robotics">Lab Equipment & Robotics</option>
+                <option value="Classroom Electronics">Classroom Electronics</option>
+                <option value="Uniforms & Textiles">Uniforms & Textiles</option>
+                <option value="Solar & Facility Infrastructure">Solar & Facility Infrastructure</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Budget Range (GHS)</label>
+              <input type="text" id="rfq-budget" placeholder="e.g. GH₵ 40,000 - 55,000" value="GH₵ 30,000 - 50,000" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Order Quantity / Scope</label>
+              <input type="text" id="rfq-quantity" placeholder="e.g. 150 Student Sets" value="Bulk Order (Term 1)" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Delivery Region</label>
+              <select id="rfq-region" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+                <option value="Greater Accra">Greater Accra</option>
+                <option value="Ashanti">Ashanti (Kumasi)</option>
+                <option value="Eastern Region">Eastern Region</option>
+                <option value="Western Region">Western Region</option>
+                <option value="Central Region">Central Region</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-create-rfq">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-confirm-create-rfq" style="font-weight: 800;">
+              Publish Tender
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-create-rfq').onclick = () => this.close();
+
+    document.getElementById('form-create-rfq').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-create-rfq');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Publishing...';
+
+      const title = document.getElementById('rfq-title').value.trim();
+      const schoolName = document.getElementById('rfq-school').value.trim();
+      const category = document.getElementById('rfq-category').value;
+      const budgetRange = document.getElementById('rfq-budget').value.trim();
+      const quantity = document.getElementById('rfq-quantity').value.trim();
+      const region = document.getElementById('rfq-region').value;
+
+      try {
+        const res = await API.createAdminProcurementRFQ({ title, schoolName, category, budgetRange, quantity, region });
+        this.close();
+        State.showToast(`✓ Tender "${title}" published successfully to B2B Procurement Desk!`, 'success');
+        if (onCreated) onCreated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Publish Tender';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openReviewAdmissionModal(app, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 520px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Admissions Governance
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Review Student Application
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-review-admission" style="padding: 1.5rem;">
+          <!-- Candidate Summary Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <div>
+                <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">${app.student_name}</div>
+                <div style="font-size: 0.8rem; color: #2563eb; font-weight: 700;">Applying for: ${app.grade_applying}</div>
+              </div>
+              <span class="badge" style="font-size: 0.72rem; font-family: monospace;">${app.application_number}</span>
+            </div>
+            <div style="font-size: 0.82rem; color: #475569; display: flex; flex-direction: column; gap: 0.25rem;">
+              <div>🏫 <strong>Target School:</strong> ${app.school_name}</div>
+              <div>🎒 <strong>Previous School:</strong> ${app.previous_school || 'N/A'}</div>
+              <div>👤 <strong>Parent / Guardian:</strong> ${app.parent_name} (${app.parent_phone})</div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Application Decision & Status *</label>
+            <select id="admission-status-select" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+              <option value="pending" ${app.status === 'pending' ? 'selected' : ''}>Under Initial Review</option>
+              <option value="exam_scheduled" ${app.status === 'exam_scheduled' ? 'selected' : ''}>Entrance Exam Scheduled</option>
+              <option value="admitted" ${app.status === 'admitted' ? 'selected' : ''}>Admitted / Formal Offer Dispatched</option>
+              <option value="declined" ${app.status === 'declined' ? 'selected' : ''}>Application Declined</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="https://wa.me/${(app.parent_phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hello ' + app.parent_name + ', regarding ' + app.student_name + '\'s application (' + app.application_number + ') to ' + app.school_name + '...')}" target="_blank" class="btn-pill" style="background: #25d366; color: #fff; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 999px;">
+              <span>📲</span> WhatsApp Parent
+            </a>
+
+            <div style="display: flex; gap: 0.75rem;">
+              <button type="button" class="btn-pill btn-secondary" id="btn-cancel-review-app">Cancel</button>
+              <button type="submit" class="btn-pill btn-primary" id="btn-confirm-review-app" style="font-weight: 800;">
+                Update Status
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-review-app').onclick = () => this.close();
+
+    document.getElementById('form-review-admission').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-review-app');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Updating...';
+
+      const status = document.getElementById('admission-status-select').value;
+
+      try {
+        const res = await API.updateAdminAdmissionStatus(app.id, status);
+        this.close();
+        State.showToast(`✓ Admission status for "${app.student_name}" updated to ${status}.`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Update Status';
+        State.showToast(err.message, 'error');
+      }
+    };
   }
 };
 
