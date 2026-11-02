@@ -72,7 +72,10 @@ const App = {
     if (viewName === 'schools') {
       if (State.isSchoolAdmin()) {
         if (!State.isSuperAdmin() && State.currentUser?.schoolId) {
-          param = State.currentUser.schoolId;
+          if (!param) {
+            param = State.currentSchoolId || State.currentUser?.schoolId || 'sch-gis-accra';
+          }
+          State.currentSchoolId = param;
         }
       }
       // Non-school admin or guest users will render the Proprietor Landing page inside DashboardView
@@ -278,7 +281,39 @@ const App = {
   },
 
   init() {
+    // Whitelabel School Admissions Portal Detection (Sprint 5)
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const whitelabelParam = urlParams.get('whitelabel') || urlParams.get('school');
+      const hostname = window.location.hostname;
+
+      let whitelabelSchoolId = whitelabelParam;
+      if (!whitelabelSchoolId && hostname && !hostname.startsWith('skoolfinder') && !hostname.startsWith('localhost') && !hostname.startsWith('127.')) {
+        if (hostname.includes('gis')) whitelabelSchoolId = 'ab5af86d-c902-4853-9528-d6200104b5f6';
+        else if (hostname.includes('sos') || hostname.includes('hgic')) whitelabelSchoolId = '47508357-d2b3-4a6a-b6a9-21e037ef9dd2';
+        else if (hostname.includes('achimota')) whitelabelSchoolId = 'sch-03';
+        else if (hostname.includes('lincoln')) whitelabelSchoolId = 'sch-04';
+        else if (hostname.includes('prempeh')) whitelabelSchoolId = 'sch-05';
+      }
+
+      if (whitelabelSchoolId) {
+        State.isWhitelabel = true;
+        State.whitelabelSchoolId = whitelabelSchoolId;
+        document.body.classList.add('whitelabel-mode');
+      }
+    } catch (e) {
+      console.warn("Whitelabel detection notice:", e);
+    }
+
     const resolveRoute = () => {
+      // 0. Whitelabel root resolution
+      if (typeof State !== 'undefined' && State.isWhitelabel) {
+        const checkPath = window.location.pathname.replace(/^\//, '');
+        if (!checkPath || checkPath === 'home') {
+          this.navigate('school-detail', State.whitelabelSchoolId, false);
+          return;
+        }
+      }
       // 1. Check path-based route (/parents, /directory, /schools/sch-03, /school-detail/sch-03, etc.)
       const pathParts = window.location.pathname.replace(/^\//, '').split('/');
       const rootPath = pathParts[0];

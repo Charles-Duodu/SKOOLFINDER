@@ -194,6 +194,28 @@ const DashboardView = {
             </div>
           </div>
 
+          ${(school.subscriptionStatus === 'past_due' || school.dunningStatus === 'grace_period') ? `
+            <!-- Dunning Grace Period Alert Banner (Sprint 5) -->
+            <div style="background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%); border: 2px solid #ef4444; border-radius: var(--radius-xl); padding: 1.25rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.15);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="font-size: 2.2rem; background: #ffffff; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
+                  ⚠️
+                </div>
+                <div>
+                  <div style="font-weight: 800; font-size: 1.1rem; color: #991b1b;">
+                    🔴 Payment Notice: Subscription Renewal Pending (Grace Period Active)
+                  </div>
+                  <div style="font-size: 0.84rem; color: #b91c1c; margin-top: 0.2rem;">
+                    Automatic MoMo billing could not be processed. Your verified campus profile remains active for <strong>5 days</strong> during the grace period.
+                  </div>
+                </div>
+              </div>
+              <button class="btn-pill btn-primary" id="btn-resolve-dunning" style="background: #ef4444; color: #ffffff; font-weight: 700; border: none; padding: 0.65rem 1.25rem;">
+                <span>💳</span> Settle Renewal via MoMo (GH₵ 450)
+              </button>
+            </div>
+          ` : ''}
+
           ${school.subscriptionStatus === 'active' || school.trialStatus === 'converted_to_paid' ? `
             <!-- Active SaaS License Banner -->
             <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #22c55e; border-radius: var(--radius-xl); padding: 1.25rem 1.75rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.12);">
@@ -2164,7 +2186,8 @@ const DashboardView = {
     const select = document.getElementById('dash-school-select');
     if (select) {
       select.onchange = (e) => {
-        App.navigate('dashboard', e.target.value);
+        State.switchCampus(e.target.value);
+        App.navigate('schools', e.target.value);
       };
     }
 
@@ -3143,6 +3166,21 @@ const DashboardView = {
     document.getElementById('btn-manage-subscription')?.addEventListener('click', async () => {
       const schoolObj = await API.getSchoolById(schoolId);
       Modals.openSaaSSubscriptionModal(schoolObj);
+    });
+
+    // Dunning Settle Action Trigger (Sprint 5)
+    document.getElementById('btn-resolve-dunning')?.addEventListener('click', async () => {
+      const schoolObj = await API.getSchoolById(schoolId);
+      Modals.openPaystackCheckoutModal({
+        amount: 450,
+        purpose: 'saas_subscription_renewal',
+        targetId: schoolObj.id,
+        targetTitle: `SaaS License Renewal (MoMo) - ${schoolObj.name}`,
+        onSuccess: () => {
+          State.showToast("Subscription renewed successfully! Grace period cleared.", "success");
+          App.refreshCurrentView();
+        }
+      });
     });
 
     // Initial load

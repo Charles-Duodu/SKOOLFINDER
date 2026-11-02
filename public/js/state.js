@@ -125,6 +125,25 @@ const State = {
     }
   },
 
+  // Multi-Campus Proprietor Management (Sprint 5)
+  getManagedCampuses() {
+    if (!this.currentUser) return [];
+    if (Array.isArray(this.currentUser.managedCampuses) && this.currentUser.managedCampuses.length > 0) {
+      return this.currentUser.managedCampuses;
+    }
+    return [this.currentUser.schoolId || 'sch-gis-accra'];
+  },
+
+  switchCampus(schoolId) {
+    this.currentSchoolId = schoolId;
+    if (this.currentUser) {
+      this.currentUser.activeSchoolId = schoolId;
+      try {
+        localStorage.setItem('skoolfinder_user', JSON.stringify(this.currentUser));
+      } catch (e) {}
+    }
+  },
+
   logout() {
     if (typeof API !== 'undefined' && API.logout) {
       API.logout().catch(console.error);

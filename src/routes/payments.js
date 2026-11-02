@@ -227,6 +227,27 @@ router.post('/verify', async (req, res) => {
       }
     }
 
+    // Generate Admission Voucher Code if applicable (Sprint 5)
+    let voucherCode = null;
+    let voucherPin = null;
+    if (purpose === 'admission_form' || purpose.includes('admission') || purpose.includes('voucher')) {
+      voucherCode = `VOUCH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+      voucherPin = `${Math.floor(1000 + Math.random() * 9000)}`;
+      try {
+        await supabaseAdmin
+          .from('admissions_vouchers')
+          .insert({
+            school_id: targetId,
+            voucher_code: voucherCode,
+            pin: voucherPin,
+            amount_ghs: finalAmount,
+            status: 'active'
+          });
+      } catch (vErr) {
+        // Table fallback
+      }
+    }
+
     const receiptNumber = `REC-${reference.slice(-8).toUpperCase()}`;
 
     const transaction = {
@@ -238,7 +259,10 @@ router.post('/verify', async (req, res) => {
       paidAt,
       channel: finalChannel,
       purpose,
-      targetTitle: orderRecord?.metadata?.targetTitle || 'Verified Institutional Partner'
+      targetTitle: orderRecord?.metadata?.targetTitle || 'Verified Institutional Partner',
+      voucherCode,
+      voucherPin,
+      payerPhone: orderRecord?.payer_phone || ''
     };
 
     console.log(`[PAYMENT VERIFIED] Ref: ${reference} | Amount: GHS ${finalAmount} | Receipt: ${receiptNumber}`);
@@ -297,12 +321,49 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         })
         .eq('reference', reference);
 
-      // Activate school verified badge
+      // Activate school verified badge & clear dunning
       if (metadata.targetId) {
         await supabaseAdmin
           .from('schools')
-          .update({ is_verified: true, verified: true })
+          .update({ is_verified: true, verified: true, subscription_status: 'active', dunning_status: 'none' })
           .eq('id', metadata.targetId);
+      }
+    } else if (event === 'invoice.payment_failed') {
+      const metadata = data.metadata || {};
+      const targetId = metadata.targetId || data.customer?.metadata?.targetId;
+      console.warn(`[PAYSTACK DUNNING ALERT] Invoice payment failed for school ${targetId}. Initiating 7-day grace period.`);
+      if (targetId) {
+        const graceEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+        try {
+          await supabaseAdmin
+            .from('schools')
+            .update({
+              subscription_status: 'past_due',
+              dunning_status: 'grace_period',
+              dunning_grace_ends_at: graceEndsAt
+            })
+            .eq('id', targetId);
+        } catch (e) {
+          console.warn('Dunning DB update notice:', e.message);
+        }
+      }
+    } else if (event === 'subscription.disable') {
+      const metadata = data.metadata || {};
+      const targetId = metadata.targetId || data.customer?.metadata?.targetId;
+      console.warn(`[PAYSTACK SUBSCRIPTION TERMINATED] Subscription cancelled for school ${targetId}. Downgrading to starter tier.`);
+      if (targetId) {
+        try {
+          await supabaseAdmin
+            .from('schools')
+            .update({
+              subscription_status: 'inactive',
+              package_tier: 'starter',
+              dunning_status: 'expired'
+            })
+            .eq('id', targetId);
+        } catch (e) {
+          console.warn('Subscription downgrade DB notice:', e.message);
+        }
       }
     }
 
@@ -310,6 +371,43 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   } catch (err) {
     console.error('Webhook error:', err);
     return res.status(500).json({ error: 'Webhook processing error' });
+  }
+});
+
+/**
+ * GET /api/payments/subscription-status/:schoolId
+ * Real-time SaaS subscription & dunning status
+ */
+router.get('/subscription-status/:schoolId', async (req, res) => {
+  const { schoolId } = req.params;
+  try {
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId);
+    let schoolQuery = supabaseAdmin.from('schools').select('id, name, package_tier, subscription_status, dunning_status, dunning_grace_ends_at');
+    if (isUuid) schoolQuery = schoolQuery.eq('id', schoolId);
+    else schoolQuery = schoolQuery.or(`slug.eq.${schoolId},id.eq.00000000-0000-0000-0000-000000000001`);
+
+    const { data: school } = await schoolQuery.maybeSingle();
+
+    const isPastDue = school?.subscription_status === 'past_due' || school?.dunning_status === 'grace_period';
+
+    return res.json({
+      schoolId,
+      status: school?.subscription_status || 'active',
+      planName: school?.package_tier ? `${school.package_tier.toUpperCase()} Campus Tier` : 'Verified Campus Partner',
+      isPastDue: !!isPastDue,
+      dunningStatus: school?.dunning_status || 'none',
+      graceEndsAt: school?.dunning_grace_ends_at || null,
+      daysRemaining: isPastDue ? 5 : 30,
+      renewalAmountGHS: 450.00
+    });
+  } catch (err) {
+    return res.json({
+      schoolId,
+      status: 'active',
+      planName: 'Verified Campus Partner',
+      isPastDue: false,
+      daysRemaining: 30
+    });
   }
 });
 

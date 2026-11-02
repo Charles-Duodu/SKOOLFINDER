@@ -5,6 +5,35 @@ const Navbar = {
   isMobileMenuOpen: false,
 
   render() {
+    if (typeof State !== 'undefined' && State.isWhitelabel) {
+      return `
+        <header class="site-header whitelabel-header" style="background: #0a1128; border-bottom: 2px solid var(--gold-500); padding: 0.75rem 0;">
+          <div class="container nav-wrapper" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.6rem;">🎓</span>
+              <div>
+                <div style="font-weight: 800; font-size: 1.1rem; color: #ffffff; font-family: var(--font-heading); display: flex; align-items: center; gap: 0.5rem;">
+                  Official Admissions Portal
+                  <span class="badge badge-emerald" style="font-size: 0.65rem; padding: 0.15rem 0.45rem;">Verified Campus 🛡️</span>
+                </div>
+                <div style="font-size: 0.75rem; color: var(--gold-400);">Admissions & Student Enrollment Gateway</div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <button class="btn-pill btn-emerald" onclick="document.getElementById('btn-apply-admission-online')?.click()" style="font-size: 0.82rem; padding: 0.45rem 0.95rem;">
+                <span>📝</span> Apply Online
+              </button>
+              <button class="btn-pill btn-gold" onclick="document.getElementById('btn-inquire-tour')?.click()" style="font-size: 0.82rem; padding: 0.45rem 0.95rem;">
+                <span>📅</span> Book Tour
+              </button>
+              <a href="/" class="btn-pill btn-outline" style="font-size: 0.78rem; padding: 0.4rem 0.85rem; color: #cbd5e1; border-color: rgba(255,255,255,0.2);">
+                SkoolFinder &rarr;
+              </a>
+            </div>
+          </div>
+        </header>
+      `;
+    }
     return `
       <header class="site-header">
         <div class="container nav-wrapper">

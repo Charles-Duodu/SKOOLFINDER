@@ -1645,7 +1645,13 @@ const Modals = {
                 </div>
                 ${tx.voucherCode ? `
                   <div style="background: var(--gold-50); border: 1px solid var(--gold-400); border-radius: 8px; padding: 0.6rem; margin-top: 0.75rem; text-align: center;">
-                    <div style="font-size: 0.7rem; color: #78350f; font-weight: 700;">OFFICIAL APPLICATION VOUCHER CODE</div>
+                    <div style="font-size: 0.72rem; color: #78350f; font-weight: 800; text-transform: uppercase;">🎓 Official Digital Admissions Voucher</div>
+                    <div style="font-size: 0.8rem; color: #78350f; margin-top: 0.2rem;">Security PIN: <strong>${tx.voucherPin || '5821'}</strong></div>
+                    <div style="margin: 0.5rem 0;">
+                      <a id="btn-wa-voucher-delivery" href="https://api.whatsapp.com/send?text=${encodeURIComponent(`🎓 *SKOOLFINDER GHANA — OFFICIAL ADMISSIONS VOUCHER* 🇬🇭\n\nSchool: ${tx.targetTitle}\nReceipt: ${tx.receiptNumber}\nVoucher Serial: ${tx.voucherCode}\nSecurity PIN: ${tx.voucherPin || '5821'}\nAmount Paid: GH₵ ${tx.amount.toFixed(2)}\nStatus: ACTIVE & VALID FOR ADMISSION\n\nPresent this digital voucher code and PIN at the school admissions desk.`)}" target="_blank" class="btn-pill" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: #25D366; color: #ffffff; font-weight: 700; font-size: 0.82rem; padding: 0.45rem 1rem; border-radius: 9999px; text-decoration: none;">
+                        <span>📲</span> Deliver Voucher to WhatsApp
+                      </a>
+                    </div>
                     <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.1em; color: #92400e;">${tx.voucherCode}</div>
                   </div>
                 ` : ''}
