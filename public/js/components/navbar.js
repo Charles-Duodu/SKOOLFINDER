@@ -166,7 +166,10 @@ const Navbar = {
                 <span>🔑</span> Sign In
               </button>
               <button id="btn-nav-parent-signup" class="btn-pill btn-gold nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 1rem; font-weight: 800; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
-                <span>✨</span> New Parent Sign Up
+                <span>👨‍👩‍👧</span> Parent Sign Up
+              </button>
+              <button id="btn-nav-admin-signup" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
+                <span>🛡️</span> Admin Sign Up
               </button>
             `}
 
@@ -240,7 +243,10 @@ const Navbar = {
                     <span>🔑</span> Sign In to Account
                   </button>
                   <button id="mob-btn-parent-signup" class="btn-pill btn-gold" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800;">
-                    <span>✨</span> New Parent Sign Up
+                    <span>👨‍👩‍👧</span> Parent Sign Up
+                  </button>
+                  <button id="mob-btn-admin-signup" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800; background: #091e42; color: #93c5fd; border: 1px solid #1e3a8a;">
+                    <span>🛡️</span> Admin Sign Up
                   </button>
                 </div>
               `}
@@ -331,6 +337,17 @@ const Navbar = {
 
     document.getElementById('btn-nav-parent-signup')?.addEventListener('click', () => {
       Modals.openLoginModal({ initialTab: 'signup' });
+    });
+
+    document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
+      Modals.openLoginModal({ initialTab: 'admin', redirectView: 'admin' });
+    });
+
+    document.getElementById('mob-btn-admin-signup')?.addEventListener('click', () => {
+      this.isMobileMenuOpen = false;
+      const drawer = document.getElementById('mobile-nav-drawer');
+      if (drawer) drawer.classList.remove('open');
+      Modals.openLoginModal({ initialTab: 'admin', redirectView: 'admin' });
     });
 
     document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {

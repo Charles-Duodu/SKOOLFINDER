@@ -4793,7 +4793,7 @@ const Modals = {
     div.className = 'modal-backdrop';
 
     const notice = options.notice || null;
-    const initialTab = options.initialTab || (options.mode === 'register' || options.mode === 'signup' ? 'signup' : 'signin');
+    const initialTab = options.initialTab || (options.mode === 'admin' || options.redirectView === 'admin' ? 'admin' : (options.mode === 'register' || options.mode === 'signup' ? 'signup' : 'signin'));
 
     div.innerHTML = `
       <div class="modal-dialog" style="max-width: 540px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
@@ -4804,7 +4804,7 @@ const Modals = {
               <span>🛡️</span> Secure Authentication (Supabase Auth + Ghana SMS OTP)
             </div>
             <h3 class="modal-title" style="color: #fff; font-size: 1.35rem; margin-top: 0.25rem;" id="auth-modal-main-title">
-              ${initialTab === 'signup' ? 'Create New Parent Account' : 'Sign In to SkoolFinder'}
+              ${initialTab === 'admin' ? 'Register Super Administrator Account' : (initialTab === 'signup' ? 'Create New Parent Account' : 'Sign In to SkoolFinder')}
             </h3>
           </div>
           <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1; font-size: 1.5rem;">&times;</button>
@@ -4817,16 +4817,19 @@ const Modals = {
             </div>
           ` : ''}
 
-          <!-- 3-Way Top Navigation Tabs: Sign In / Parent Sign Up / SMS OTP -->
-          <div style="display: flex; gap: 0.35rem; margin-bottom: 1.25rem; background: #f1f5f9; padding: 0.3rem; border-radius: 12px; border: 1px solid #e2e8f0;">
-            <button type="button" id="tab-auth-signin" style="flex: 1; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signin' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signin' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+          <!-- 4-Way Top Navigation Tabs: Sign In / Parent Sign Up / Admin Sign Up / SMS OTP -->
+          <div style="display: flex; gap: 0.35rem; margin-bottom: 1.25rem; background: #f1f5f9; padding: 0.3rem; border-radius: 12px; border: 1px solid #e2e8f0; flex-wrap: wrap;">
+            <button type="button" id="tab-auth-signin" style="flex: 1; min-width: 80px; border: none; padding: 0.65rem 0.4rem; font-size: 0.82rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signin' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signin' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
               🔑 Sign In
             </button>
-            <button type="button" id="tab-auth-signup" style="flex: 1.2; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signup' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signup' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
-              ✨ New Parent Sign Up
+            <button type="button" id="tab-auth-signup" style="flex: 1.1; min-width: 105px; border: none; padding: 0.65rem 0.4rem; font-size: 0.82rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'signup' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'signup' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+              👨‍👩‍👧 Parent
             </button>
-            <button type="button" id="tab-auth-otp" style="flex: 0.95; border: none; padding: 0.65rem 0.5rem; font-size: 0.84rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'otp' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'otp' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
-              📱 SMS OTP
+            <button type="button" id="tab-auth-admin" style="flex: 1.3; min-width: 125px; border: none; padding: 0.65rem 0.4rem; font-size: 0.82rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'admin' ? '#091e42' : 'transparent'}; color: ${initialTab === 'admin' ? '#ffffff' : '#475569'}; border: ${initialTab === 'admin' ? '1px solid #f59e0b' : 'none'}; transition: all 0.2s;">
+              🛡️ Admin Sign Up
+            </button>
+            <button type="button" id="tab-auth-otp" style="flex: 0.9; min-width: 80px; border: none; padding: 0.65rem 0.4rem; font-size: 0.82rem; font-weight: 800; border-radius: 8px; cursor: pointer; background: ${initialTab === 'otp' ? '#0a1128' : 'transparent'}; color: ${initialTab === 'otp' ? '#ffffff' : '#475569'}; transition: all 0.2s;">
+              📱 OTP
             </button>
           </div>
 
@@ -4858,7 +4861,11 @@ const Modals = {
             <div style="text-align: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b;">
               Don't have an account yet? 
               <button type="button" id="link-switch-to-signup" style="background: none; border: none; color: #d97706; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0; margin-left: 0.25rem;">
-                Create New Parent Account &rarr;
+                Parent Sign Up &rarr;
+              </button>
+              <span style="margin: 0 0.4rem; color: #cbd5e1;">&bull;</span>
+              <button type="button" id="link-switch-to-admin" style="background: none; border: none; color: #2563eb; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0;">
+                Admin Sign Up &rarr;
               </button>
             </div>
           </div>
@@ -4938,6 +4945,63 @@ const Modals = {
           </div>
 
           <!-- ========================================================= -->
+          <!-- PANE 4: Create Administrator / Staff Account (Admin Sign Up) -->
+          <!-- ========================================================= -->
+          <div id="auth-pane-admin" style="display: ${initialTab === 'admin' ? 'block' : 'none'};">
+            <div style="background: linear-gradient(135deg, #eff6ff 0%, #f0fdf4 100%); border-left: 4px solid #2563eb; border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 1.15rem; font-size: 0.82rem; color: #1e40af; line-height: 1.45;">
+              🛡️ <strong>Platform Administrator & Institutional Staff Registration:</strong> Set up your Super Administrator or Campus Leader credentials to access the Master Management System.
+            </div>
+
+            <form id="form-modal-admin-register">
+              <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Full Administrator Name *</label>
+                <input type="text" id="mreg-admin-name" class="form-input" placeholder="e.g. Charles Duodu" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Phone Line (UK / Ghana / Intl) *</label>
+                  <input type="tel" id="mreg-admin-phone" class="form-input" placeholder="e.g. +44 7911 123456 or +233 24 000 0000" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Work / Admin Email Address *</label>
+                  <input type="email" id="mreg-admin-email" class="form-input" placeholder="e.g. admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Administrative Level *</label>
+                  <select id="mreg-admin-role" class="form-select" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+                    <option value="super_admin" selected>🛡️ Super Administrator (Full HQ Access)</option>
+                    <option value="school_admin">🏫 School Administrator (Headteacher / Campus OS)</option>
+                  </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Security Passcode *</label>
+                  <input type="password" id="mreg-admin-passcode" class="form-input" placeholder="Passcode" value="skoolfinder2026" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" title="Default setup key: skoolfinder2026" />
+                </div>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.15rem;">
+                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Create Password (Min 6 characters) *</label>
+                <input type="password" id="mreg-admin-password" class="form-input" placeholder="Create your administrator password" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+              </div>
+
+              <button type="submit" id="btn-submit-mreg-admin" class="btn-pill btn-primary" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1.05rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.35); display: flex; align-items: center; gap: 0.5rem;">
+                <span>🛡️</span> Create Administrator Account & Launch Cockpit &rarr;
+              </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b;">
+              Already registered as admin? 
+              <button type="button" id="link-switch-admin-to-signin" style="background: none; border: none; color: #1e40af; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0; margin-left: 0.25rem;">
+                Sign In Here &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
           <!-- PANE 3: Ghana Mobile Phone SMS OTP (Hubtel Failover)      -->
           <!-- ========================================================= -->
           <div id="auth-pane-otp" style="display: ${initialTab === 'otp' ? 'block' : 'none'};">
@@ -4997,6 +5061,14 @@ const Modals = {
         tabSignup.style.background = tab === 'signup' ? '#0a1128' : 'transparent';
         tabSignup.style.color = tab === 'signup' ? '#ffffff' : '#475569';
       }
+      const tabAdmin = document.getElementById('tab-auth-admin');
+      const paneAdmin = document.getElementById('auth-pane-admin');
+
+      if (tabAdmin) {
+        tabAdmin.style.background = tab === 'admin' ? '#091e42' : 'transparent';
+        tabAdmin.style.color = tab === 'admin' ? '#ffffff' : '#475569';
+        tabAdmin.style.border = tab === 'admin' ? '1px solid #f59e0b' : 'none';
+      }
       if (tabOtp) {
         tabOtp.style.background = tab === 'otp' ? '#0a1128' : 'transparent';
         tabOtp.style.color = tab === 'otp' ? '#ffffff' : '#475569';
@@ -5004,20 +5076,24 @@ const Modals = {
 
       if (paneSignin) paneSignin.style.display = tab === 'signin' ? 'block' : 'none';
       if (paneSignup) paneSignup.style.display = tab === 'signup' ? 'block' : 'none';
+      if (paneAdmin) paneAdmin.style.display = tab === 'admin' ? 'block' : 'none';
       if (paneOtp) paneOtp.style.display = tab === 'otp' ? 'block' : 'none';
 
       if (mainTitle) {
-        mainTitle.innerText = tab === 'signup' 
-          ? 'Create New Parent Account' 
-          : (tab === 'otp' ? 'Ghana Phone SMS OTP Sign In' : 'Sign In to SkoolFinder');
+        mainTitle.innerText = tab === 'admin'
+          ? 'Register Super Administrator Account'
+          : (tab === 'signup' ? 'Create New Parent Account' : (tab === 'otp' ? 'Ghana Phone SMS OTP Sign In' : 'Sign In to SkoolFinder'));
       }
     };
 
     document.getElementById('tab-auth-signin').onclick = () => setModalTab('signin');
     document.getElementById('tab-auth-signup').onclick = () => setModalTab('signup');
+    document.getElementById('tab-auth-admin')?.addEventListener('click', () => setModalTab('admin'));
     document.getElementById('tab-auth-otp').onclick = () => setModalTab('otp');
     document.getElementById('link-switch-to-signup')?.addEventListener('click', () => setModalTab('signup'));
     document.getElementById('link-switch-to-signin')?.addEventListener('click', () => setModalTab('signin'));
+    document.getElementById('link-switch-to-admin')?.addEventListener('click', () => setModalTab('admin'));
+    document.getElementById('link-switch-admin-to-signin')?.addEventListener('click', () => setModalTab('signin'));
 
     // Toggle password visibility
     const passInput = document.getElementById('auth-password-input');
@@ -5153,6 +5229,56 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+
+    // Form 3: Administrator & Institutional Staff Registration
+    const formAdminReg = document.getElementById('form-modal-admin-register');
+    if (formAdminReg) {
+      formAdminReg.onsubmit = async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('mreg-admin-name').value.trim();
+        const phone = document.getElementById('mreg-admin-phone').value.trim();
+        const email = document.getElementById('mreg-admin-email').value.trim();
+        const role = document.getElementById('mreg-admin-role').value;
+        const adminPasscode = document.getElementById('mreg-admin-passcode').value.trim();
+        const password = document.getElementById('mreg-admin-password').value;
+        const submitBtn = document.getElementById('btn-submit-mreg-admin');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> Initializing Administrator Credentials...';
+
+        try {
+          const res = await API.register({
+            role,
+            name,
+            fullName: name,
+            phone,
+            email,
+            password,
+            adminPasscode
+          });
+
+          State.setCurrentUser(res.user, res.token);
+          this.close();
+
+          if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+            document.getElementById('header-root').innerHTML = Navbar.render();
+            Navbar.attachEvents();
+          }
+
+          State.showToast(`🎉 Super Administrator credentials active! Welcome to SkoolFinder HQ, ${res.user.name}.`, 'success');
+
+          if (options.onSuccess) {
+            options.onSuccess(res.user);
+          } else {
+            App.navigate('admin');
+          }
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>🛡️</span> Create Administrator Account & Launch Cockpit &rarr;';
+          State.showToast(err.message, 'error');
+        }
+      };
+    }
 
     // Form 2: New Parent Registration (Sign Up)
     document.getElementById('form-modal-parent-register').onsubmit = async (e) => {

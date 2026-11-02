@@ -45,9 +45,20 @@ router.post('/register', async (req, res) => {
     const password = body.password;
     const phone = body.phone || '';
     const role = body.role || 'parent';
+    const adminPasscode = (body.adminPasscode || body.passcode || '').trim();
 
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    // Security check for super_admin registration
+    if (role === 'super_admin') {
+      const expectedPasscode = process.env.ADMIN_SETUP_KEY || 'skoolfinder2026';
+      if (adminPasscode !== expectedPasscode) {
+        return res.status(403).json({ 
+          error: 'Invalid Administrator Security Passcode. Please enter the authorized platform passcode (default: skoolfinder2026).' 
+        });
+      }
     }
 
     // 1. Create or register in Supabase Auth
@@ -93,12 +104,16 @@ router.post('/register', async (req, res) => {
     }
 
     // 3. Insert into portal_enrolments
-    await supabaseAdmin
-      .from('portal_enrolments')
-      .insert({
-        user_id: newProfile.id,
-        portal_type: role
-      });
+    try {
+      await supabaseAdmin
+        .from('portal_enrolments')
+        .insert({
+          user_id: newProfile.id,
+          portal_type: role
+        });
+    } catch (peErr) {
+      console.warn('portal_enrolments notice:', peErr.message);
+    }
 
     // 4. Generate JWT
     const token = jwt.sign(
