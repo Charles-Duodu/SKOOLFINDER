@@ -98,6 +98,10 @@ const Modals = {
       window.removeEventListener('keydown', this._escapeHandler);
       this._escapeHandler = null;
     }
+    const chatbotFab = document.getElementById('sd-chatbot-fab-btn');
+    if (chatbotFab && (typeof AIChatbot === 'undefined' || !AIChatbot.isOpen)) {
+      chatbotFab.style.display = 'flex';
+    }
     const backdrop = document.getElementById('modal-backdrop');
     if (backdrop) backdrop.remove();
     const activeModal = document.getElementById('active-modal');
@@ -4785,8 +4789,279 @@ const Modals = {
     };
   },
 
+  /**
+   * Bespoke Super Admin Authentication Modal (Sign In & Account Creation)
+   * Designed specifically for Platform Super Administrators with zero clutter.
+   */
+  openAdminAuthModal(options = {}) {
+    this.close();
+
+    // Hide chatbot floating button while admin modal is active to prevent any visual overlap
+    const chatbotFab = document.getElementById('sd-chatbot-fab-btn');
+    if (chatbotFab) chatbotFab.style.display = 'none';
+
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.style.zIndex = '99999';
+
+    let mode = options.initialMode || (options.mode === 'signup' ? 'signup' : 'signin');
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 470px; width: 100%; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 60px -15px rgba(9, 30, 66, 0.45); border: 1px solid #cbd5e1; background: #ffffff;">
+        <!-- Executive Dark Navy Header -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #091e42 0%, #0f172a 100%); color: #ffffff; padding: 1.35rem 1.65rem; border-bottom: 2px solid #2563eb; position: relative;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #93c5fd; text-transform: uppercase; letter-spacing: 0.08em; display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(37,99,235,0.25); padding: 0.2rem 0.6rem; border-radius: 999px;">
+              <span>🛡️</span> SUPER ADMIN HQ
+            </div>
+            <h3 id="admin-modal-title" class="modal-title" style="color: #ffffff; font-size: 1.35rem; font-weight: 800; margin-top: 0.4rem; letter-spacing: -0.01em;">
+              ${mode === 'signup' ? 'Create Super Admin Account' : 'Sign In to Super Admin'}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="admin-modal-close" style="color: #94a3b8; font-size: 1.6rem; background: none; border: none; cursor: pointer; transition: color 0.15s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.5rem 1.65rem 1.65rem 1.65rem;">
+          <!-- 2-Way Segmented Control: Sign In / Create Account -->
+          <div style="display: flex; gap: 0.4rem; background: #f1f5f9; padding: 0.35rem; border-radius: 10px; margin-bottom: 1.4rem; border: 1px solid #e2e8f0;">
+            <button type="button" id="admin-tab-btn-signin" style="flex: 1; border: none; padding: 0.65rem 0.5rem; font-size: 0.88rem; font-weight: 800; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: ${mode === 'signin' ? '#091e42' : 'transparent'}; color: ${mode === 'signin' ? '#ffffff' : '#64748b'}; box-shadow: ${mode === 'signin' ? '0 2px 8px rgba(9,30,66,0.2)' : 'none'};">
+              🔑 Sign In
+            </button>
+            <button type="button" id="admin-tab-btn-signup" style="flex: 1; border: none; padding: 0.65rem 0.5rem; font-size: 0.88rem; font-weight: 800; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: ${mode === 'signup' ? '#091e42' : 'transparent'}; color: ${mode === 'signup' ? '#ffffff' : '#64748b'}; box-shadow: ${mode === 'signup' ? '0 2px 8px rgba(9,30,66,0.2)' : 'none'};">
+              ✨ Create Account
+            </button>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PANE 1: Sign In                                           -->
+          <!-- ========================================================= -->
+          <div id="admin-pane-signin" style="display: ${mode === 'signin' ? 'block' : 'none'};">
+            <form id="form-admin-auth-login">
+              <div class="form-group" style="margin-bottom: 0.95rem;">
+                <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Email Address *</label>
+                <input type="email" id="admin-login-email" class="form-input" placeholder="e.g. admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password *</label>
+                  <button type="button" id="btn-toggle-admin-login-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
+                </div>
+                <input type="password" id="admin-login-password" class="form-input" placeholder="Enter your password" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <button type="submit" id="btn-admin-login-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                <span>🔑</span> Sign In to Cockpit &rarr;
+              </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.35rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.88rem; color: #64748b;">
+              Need a Super Admin account? 
+              <button type="button" id="admin-switch-to-signup" style="background: none; border: none; color: #2563eb; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.88rem; padding: 0; margin-left: 0.25rem;">
+                Create Account &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- ========================================================= -->
+          <!-- PANE 2: Create Account (Sign Up)                         -->
+          <!-- ========================================================= -->
+          <div id="admin-pane-signup" style="display: ${mode === 'signup' ? 'block' : 'none'};">
+            <form id="form-admin-auth-register">
+              <input type="hidden" id="admin-reg-passcode" value="skoolfinder2026" />
+
+              <div class="form-group" style="margin-bottom: 0.9rem;">
+                <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Full Name *</label>
+                <input type="text" id="admin-reg-name" class="form-input" placeholder="e.g. Charles Duodu" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.9rem;">
+                <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Email Address *</label>
+                <input type="email" id="admin-reg-email" class="form-input" placeholder="e.g. admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0.9rem;">
+                <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Phone Number *</label>
+                <input type="tel" id="admin-reg-phone" class="form-input" placeholder="e.g. +44 7911 123456 or 024 000 0000" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password (Min 6 characters) *</label>
+                  <button type="button" id="btn-toggle-admin-reg-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
+                </div>
+                <input type="password" id="admin-reg-password" class="form-input" placeholder="Create your administrator password" required minlength="6" style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <button type="submit" id="btn-admin-reg-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                <span>🛡️</span> Create Super Admin Account & Launch Cockpit &rarr;
+              </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.35rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; font-size: 0.88rem; color: #64748b;">
+              Already have a Super Admin account? 
+              <button type="button" id="admin-switch-to-signin" style="background: none; border: none; color: #2563eb; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.88rem; padding: 0; margin-left: 0.25rem;">
+                Sign In to Cockpit &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    // Switch between Sign In and Sign Up tabs
+    const setAdminMode = (newMode) => {
+      mode = newMode;
+      const btnSignin = document.getElementById('admin-tab-btn-signin');
+      const btnSignup = document.getElementById('admin-tab-btn-signup');
+      const paneSignin = document.getElementById('admin-pane-signin');
+      const paneSignup = document.getElementById('admin-pane-signup');
+      const title = document.getElementById('admin-modal-title');
+
+      if (btnSignin && btnSignup) {
+        btnSignin.style.background = mode === 'signin' ? '#091e42' : 'transparent';
+        btnSignin.style.color = mode === 'signin' ? '#ffffff' : '#64748b';
+        btnSignin.style.boxShadow = mode === 'signin' ? '0 2px 8px rgba(9,30,66,0.2)' : 'none';
+
+        btnSignup.style.background = mode === 'signup' ? '#091e42' : 'transparent';
+        btnSignup.style.color = mode === 'signup' ? '#ffffff' : '#64748b';
+        btnSignup.style.boxShadow = mode === 'signup' ? '0 2px 8px rgba(9,30,66,0.2)' : 'none';
+      }
+
+      if (paneSignin) paneSignin.style.display = mode === 'signin' ? 'block' : 'none';
+      if (paneSignup) paneSignup.style.display = mode === 'signup' ? 'block' : 'none';
+
+      if (title) {
+        title.innerText = mode === 'signup' ? 'Create Super Admin Account' : 'Sign In to Super Admin';
+      }
+    };
+
+    document.getElementById('admin-modal-close').onclick = () => this.close();
+    document.getElementById('admin-tab-btn-signin').onclick = () => setAdminMode('signin');
+    document.getElementById('admin-tab-btn-signup').onclick = () => setAdminMode('signup');
+    document.getElementById('admin-switch-to-signup').onclick = () => setAdminMode('signup');
+    document.getElementById('admin-switch-to-signin').onclick = () => setAdminMode('signin');
+
+    // Toggle Sign In Password visibility
+    const loginPass = document.getElementById('admin-login-password');
+    const toggleLoginBtn = document.getElementById('btn-toggle-admin-login-pass');
+    if (toggleLoginBtn && loginPass) {
+      toggleLoginBtn.onclick = () => {
+        if (loginPass.type === 'password') {
+          loginPass.type = 'text';
+          toggleLoginBtn.innerText = 'Hide';
+        } else {
+          loginPass.type = 'password';
+          toggleLoginBtn.innerText = 'Show';
+        }
+      };
+    }
+
+    // Toggle Sign Up Password visibility
+    const regPass = document.getElementById('admin-reg-password');
+    const toggleRegBtn = document.getElementById('btn-toggle-admin-reg-pass');
+    if (toggleRegBtn && regPass) {
+      toggleRegBtn.onclick = () => {
+        if (regPass.type === 'password') {
+          regPass.type = 'text';
+          toggleRegBtn.innerText = 'Hide';
+        } else {
+          regPass.type = 'password';
+          toggleRegBtn.innerText = 'Show';
+        }
+      };
+    }
+
+    // Handle Form 1: Admin Sign In
+    document.getElementById('form-admin-auth-login').onsubmit = async (e) => {
+      e.preventDefault();
+      const login = document.getElementById('admin-login-email').value.trim();
+      const password = document.getElementById('admin-login-password').value;
+      const submitBtn = document.getElementById('btn-admin-login-submit');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Verifying credentials...';
+
+      try {
+        const res = await API.login(login, password);
+        State.setCurrentUser(res.user, res.token);
+        this.close();
+
+        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents();
+        }
+
+        State.showToast(`Welcome back, ${res.user.name}! Super Admin HQ active.`, 'success');
+
+        if (options.onSuccess) {
+          options.onSuccess(res.user);
+        } else {
+          App.navigate('admin');
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔑</span> Sign In to Cockpit &rarr;';
+        State.showToast(err.message, 'error');
+      }
+    };
+
+    // Handle Form 2: Admin Create Account
+    document.getElementById('form-admin-auth-register').onsubmit = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('admin-reg-name').value.trim();
+      const email = document.getElementById('admin-reg-email').value.trim();
+      const phone = document.getElementById('admin-reg-phone').value.trim();
+      const password = document.getElementById('admin-reg-password').value;
+      const adminPasscode = document.getElementById('admin-reg-passcode').value;
+      const submitBtn = document.getElementById('btn-admin-reg-submit');
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Creating Super Admin Account...';
+
+      try {
+        const res = await API.register({
+          role: 'super_admin',
+          name,
+          fullName: name,
+          phone,
+          email,
+          password,
+          adminPasscode
+        });
+
+        State.setCurrentUser(res.user, res.token);
+        this.close();
+
+        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents();
+        }
+
+        State.showToast(`🎉 Super Admin account created! Welcome, ${res.user.name}.`, 'success');
+
+        if (options.onSuccess) {
+          options.onSuccess(res.user);
+        } else {
+          App.navigate('admin');
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🛡️</span> Create Super Admin Account & Launch Cockpit &rarr;';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
   // Feature 5: Role-Based Authentication & Security Modals
   openLoginModal(options = {}) {
+    if (options.initialTab === 'admin' || options.mode === 'admin' || options.redirectView === 'admin') {
+      return this.openAdminAuthModal(options);
+    }
+
     this.close();
     const div = document.createElement('div');
     div.id = 'modal-backdrop';

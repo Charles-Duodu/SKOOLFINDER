@@ -325,7 +325,11 @@ const Navbar = {
     const handleAdminNav = (e) => {
       e.preventDefault();
       closeMobDrawer();
-      App.navigate('admin');
+      if (!State.isAuthenticated() || !State.isSuperAdmin()) {
+        Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
+      } else {
+        App.navigate('admin');
+      }
     };
     document.getElementById('nav-link-admin')?.addEventListener('click', handleAdminNav);
     document.getElementById('mob-link-admin')?.addEventListener('click', handleAdminNav);
@@ -340,14 +344,14 @@ const Navbar = {
     });
 
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
-      Modals.openLoginModal({ initialTab: 'admin', redirectView: 'admin' });
+      Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
     });
 
     document.getElementById('mob-btn-admin-signup')?.addEventListener('click', () => {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
-      Modals.openLoginModal({ initialTab: 'admin', redirectView: 'admin' });
+      Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
     });
 
     document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {
