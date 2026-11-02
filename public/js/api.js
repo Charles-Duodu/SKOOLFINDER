@@ -321,12 +321,43 @@ const API = {
     return res.json();
   },
 
-  async getAdminVouchers() {
-    const res = await fetch(`${this.baseUrl}/admin/finance/vouchers`, {
+  async getAdminVouchers(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/finance/vouchers?${query}`, {
       headers: this.getAuthHeaders()
     });
     if (!res.ok) throw new Error("Failed to load vouchers");
     return res.json();
+  },
+
+  async getAdminSubscriptions(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/finance/subscriptions?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load subscriptions");
+    return res.json();
+  },
+
+  async updateAdminSubscription(id, data) {
+    const res = await fetch(`${this.baseUrl}/admin/finance/subscriptions/${id}`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update subscription");
+    return result;
+  },
+
+  async reverifyAdminTransaction(reference) {
+    const res = await fetch(`${this.baseUrl}/admin/finance/verify-transaction/${reference}`, {
+      method: 'POST',
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to re-verify transaction");
+    return result;
   },
 
   async adminSearch(q) {

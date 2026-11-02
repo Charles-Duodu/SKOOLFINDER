@@ -11018,6 +11018,189 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  openTransactionReceiptModal(tx) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const isSuccess = (tx.status || 'success') === 'success';
+    const amountFormatted = parseFloat(tx.amount_ghs || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const dateFormatted = tx.created_at ? new Date(tx.created_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 500px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Paystack Gateway Audit
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Transaction Receipt
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;" id="print-receipt-section">
+          <!-- Receipt Header Banner -->
+          <div style="background: ${isSuccess ? '#f0fdf4' : '#fef2f2'}; border: 1px solid ${isSuccess ? '#bbf7d0' : '#fecaca'}; border-radius: 10px; padding: 1.25rem; text-align: center; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.8rem; font-weight: 700; color: ${isSuccess ? '#16a34a' : '#dc2626'}; text-transform: uppercase; letter-spacing: 0.05em;">
+              ${isSuccess ? 'Payment Successful' : 'Transaction ' + (tx.status || 'Pending')}
+            </div>
+            <div style="font-size: 2rem; font-weight: 800; color: #0f172a; margin: 0.35rem 0;">
+              GH₵ ${amountFormatted}
+            </div>
+            <div style="font-size: 0.8rem; color: #64748b; font-family: monospace;">
+              Ref: ${tx.reference || 'N/A'}
+            </div>
+          </div>
+
+          <!-- Transaction Line Items -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.88rem;">
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e2e8f0;">
+              <span style="color: #64748b;">Purpose:</span>
+              <strong style="color: #0f172a; text-align: right;">${tx.purpose_label || tx.purpose || 'Platform Payment'}</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e2e8f0;">
+              <span style="color: #64748b;">Payment Rail:</span>
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700;">${tx.channel || 'Mobile Money'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e2e8f0;">
+              <span style="color: #64748b;">Payer Name:</span>
+              <span style="font-weight: 700; color: #0f172a;">${tx.payer_name || 'Customer'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e2e8f0;">
+              <span style="color: #64748b;">Payer Phone:</span>
+              <span style="color: #0f172a; font-family: monospace;">${tx.payer_phone || 'N/A'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed #e2e8f0;">
+              <span style="color: #64748b;">Payer Email:</span>
+              <span style="color: #0f172a;">${tx.payer_email || 'N/A'}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; padding: 0.4rem 0;">
+              <span style="color: #64748b;">Timestamp:</span>
+              <span style="color: #64748b;">${dateFormatted}</span>
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-print-receipt">
+              <span>🖨️</span> Print
+            </button>
+            <a href="https://wa.me/?text=${encodeURIComponent('SkoolFinder Payment Receipt: GH₵ ' + amountFormatted + ' for ' + (tx.purpose_label || tx.purpose) + '. Ref: ' + tx.reference)}" target="_blank" class="btn-pill" style="background: #25d366; color: #fff; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 1rem; border-radius: 999px;">
+              <span>📲</span> WhatsApp
+            </a>
+            <button type="button" class="btn-pill btn-primary" id="btn-close-receipt">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-receipt').onclick = () => this.close();
+    document.getElementById('btn-print-receipt').onclick = () => window.print();
+  },
+
+  openEditSubscriptionModal(sub, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 520px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              SaaS Subscription Governance
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Manage Campus Subscription
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-edit-subscription" style="padding: 1.5rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 800; font-size: 1rem; color: #0f172a;">${sub.school_name}</div>
+            <div style="font-size: 0.78rem; color: #64748b;">Region: ${sub.region} &bull; Rail: ${sub.channel}</div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Plan Package Tier</label>
+            <select id="edit-sub-plan" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+              <option value="Starter Tier" ${(sub.plan || '').includes('Starter') ? 'selected' : ''}>Starter Tier — GH₵ 450 / term (Basic Directory)</option>
+              <option value="Growth Tier" ${(sub.plan || '').includes('Growth') ? 'selected' : ''}>Growth Tier — GH₵ 950 / term (Admissions & School OS)</option>
+              <option value="Enterprise Tier" ${(sub.plan || '').includes('Enterprise') ? 'selected' : ''}>Enterprise Tier — GH₵ 2,200 / term (Full Platform & Priority Leads)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Subscription Status</label>
+            <select id="edit-sub-status" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+              <option value="active" ${sub.status === 'active' ? 'selected' : ''}>Active (In Good Standing)</option>
+              <option value="grace_period" ${sub.status === 'grace_period' ? 'selected' : ''}>Grace Period (7-Day Dunning Window)</option>
+              <option value="past_due" ${sub.status === 'past_due' ? 'selected' : ''}>Past Due (Suspended Access)</option>
+              <option value="canceled" ${sub.status === 'canceled' ? 'selected' : ''}>Canceled (Revoked)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.85rem 1rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 700; color: #92400e; cursor: pointer;">
+              <input type="checkbox" id="check-extend-grace" style="cursor: pointer;" />
+              <span>Extend Grace Period (+14 Days Renewal Extension)</span>
+            </label>
+            <div style="font-size: 0.74rem; color: #b45309; margin-top: 0.25rem;">
+              Current renewal: <strong>${sub.renewal_date || 'N/A'}</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-edit-sub">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-confirm-edit-sub" style="font-weight: 800;">
+              Save Subscription Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-edit-sub').onclick = () => this.close();
+
+    document.getElementById('form-edit-subscription').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-edit-sub');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...';
+
+      const plan = document.getElementById('edit-sub-plan').value;
+      const status = document.getElementById('edit-sub-status').value;
+      const extendGrace = document.getElementById('check-extend-grace').checked;
+
+      const payload = { plan, status };
+      if (extendGrace) payload.extend_grace_days = 14;
+
+      try {
+        const res = await API.updateAdminSubscription(sub.id, payload);
+        this.close();
+        State.showToast(`✓ Subscription for "${sub.school_name}" successfully updated.`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Save Subscription Changes';
+        State.showToast(err.message, 'error');
+      }
+    };
   }
 };
 
