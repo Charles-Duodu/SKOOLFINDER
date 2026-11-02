@@ -10818,6 +10818,206 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  openChangeUserRoleModal(user, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const currentRole = user.role || 'parent';
+
+    const rolesList = [
+      { id: 'super_admin', label: 'Super Admin', desc: 'Unrestricted master access across all schools, payments, users & telemetry', icon: '🛡️' },
+      { id: 'school_admin', label: 'School Admin / Proprietor', desc: 'Access to School OS, student admissions, staff payroll, termly fees', icon: '🏫' },
+      { id: 'teacher', label: 'Teacher / Educator', desc: 'Lesson planning, student assessments, attendance & NTC directory badge', icon: '🧑‍🏫' },
+      { id: 'supplier', label: 'Educational Supplier / Vendor', desc: 'Manage institutional tender bids, supply catalog & procurement RFQs', icon: '📦' },
+      { id: 'parent', label: 'Parent / Guardian', desc: 'Search school directory, compare fees, submit admission applications', icon: '👨‍👩‍👧' }
+    ];
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 580px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              RBAC Governance & Permissions
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.3rem; font-weight: 800; color: #0f172a;">
+              Modify User Authorization Role
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-change-user-role" style="padding: 1.5rem;">
+          <!-- Target User Summary Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.85rem;">
+              <div style="width: 42px; height: 42px; border-radius: 50%; background: #2563eb; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1rem;">
+                ${(user.full_name || user.email || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <div style="font-weight: 800; color: #0f172a; font-size: 1rem;">${user.full_name || 'Platform User'}</div>
+                <div style="font-size: 0.8rem; color: #64748b;">${user.email || 'No email provided'} &bull; ${user.phone || '+233 --'}</div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Current Role</div>
+              <span class="badge" style="font-size: 0.75rem; font-weight: 700; background: #e0e7ff; color: #3730a3; padding: 0.2rem 0.55rem; border-radius: 6px;">
+                ${currentRole}
+              </span>
+            </div>
+          </div>
+
+          <!-- Role Options List -->
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.65rem;">
+              Select Target Role Designation:
+            </label>
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+              ${rolesList.map(r => `
+                <label style="display: flex; align-items: flex-start; gap: 0.85rem; padding: 0.75rem 1rem; border: 1.5px solid ${r.id === currentRole ? '#2563eb' : '#e2e8f0'}; border-radius: 8px; background: ${r.id === currentRole ? '#eff6ff' : '#ffffff'}; cursor: pointer; transition: all 0.15s ease;">
+                  <input type="radio" name="assigned_role" value="${r.id}" ${r.id === currentRole ? 'checked' : ''} style="margin-top: 0.25rem; cursor: pointer;" />
+                  <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <span style="font-size: 1.1rem;">${r.icon}</span>
+                      <strong style="color: #0f172a; font-size: 0.92rem;">${r.label}</strong>
+                    </div>
+                    <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">
+                      ${r.desc}
+                    </div>
+                  </div>
+                </label>
+              `).join('')}
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-role-change">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-confirm-role-change" style="font-weight: 800;">
+              Save & Reassign Role
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-role-change').onclick = () => this.close();
+
+    document.getElementById('form-change-user-role').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-role-change');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Updating...';
+
+      const selected = document.querySelector('input[name="assigned_role"]:checked')?.value;
+      if (!selected) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Save & Reassign Role';
+        return;
+      }
+
+      try {
+        const res = await API.updateUserRole(user.id, selected);
+        this.close();
+        State.showToast(`✓ Role for "${user.full_name || user.email}" successfully updated to ${selected}.`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Save & Reassign Role';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openCreateUserModal(onCreated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Platform Administration
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.3rem; font-weight: 800; color: #0f172a;">
+              ➕ Provision Platform Account
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-create-admin-user" style="padding: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Full Name *</label>
+            <input type="text" id="new-user-fullname" required placeholder="e.g. Dr. Kwame Nkrumah" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Email Address *</label>
+            <input type="email" id="new-user-email" required placeholder="e.g. kwame.nkrumah@school.edu.gh" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Ghanaian Phone Number</label>
+            <input type="text" id="new-user-phone" placeholder="e.g. +233 24 555 1234" value="+233 " style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Assigned Platform Role *</label>
+            <select id="new-user-role" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+              <option value="school_admin">School Admin / Campus Head (Access to School OS)</option>
+              <option value="teacher">Teacher / Educator (Lesson notes & grades)</option>
+              <option value="supplier">Supplier / Vendor (Procurement bids & shop)</option>
+              <option value="parent" selected>Parent / Guardian (Search & student applications)</option>
+              <option value="super_admin">Super Administrator (Full unrestricted access)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-create-user">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-confirm-create-user" style="font-weight: 800;">
+              Provision Account
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-create-user').onclick = () => this.close();
+
+    document.getElementById('form-create-admin-user').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-create-user');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Provisioning...';
+
+      const full_name = document.getElementById('new-user-fullname').value.trim();
+      const email = document.getElementById('new-user-email').value.trim();
+      const phone = document.getElementById('new-user-phone').value.trim();
+      const role = document.getElementById('new-user-role').value;
+
+      try {
+        const res = await API.createAdminUser({ full_name, email, phone, role });
+        this.close();
+        State.showToast(`✓ Account for "${full_name}" created successfully!`, 'success');
+        if (onCreated) onCreated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Provision Account';
+        State.showToast(err.message, 'error');
+      }
+    };
   }
 };
 

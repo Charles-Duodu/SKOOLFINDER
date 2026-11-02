@@ -282,6 +282,28 @@ const API = {
     return result;
   },
 
+  async updateUserStatus(userId, status) {
+    const res = await fetch(`${this.baseUrl}/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ status })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update user status");
+    return result;
+  },
+
+  async createAdminUser(userData) {
+    const res = await fetch(`${this.baseUrl}/admin/users`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(userData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create user account");
+    return result;
+  },
+
   async getAdminFinanceSummary() {
     const res = await fetch(`${this.baseUrl}/admin/finance/summary`, {
       headers: this.getAuthHeaders()
