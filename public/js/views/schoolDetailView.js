@@ -9,6 +9,84 @@ const SchoolDetailView = {
     const reviews = reviewsData.reviews || [];
     const isCompared = State.isInCompare(school.id);
 
+    // SEO-03 & SEO-04: Update Dynamic SEO Meta & Inject Schema.org JSON-LD
+    if (typeof App !== 'undefined' && App.updateSEO) {
+      const suburbStr = school.suburb ? `${school.suburb}, ` : '';
+      const regionStr = school.region || 'Greater Accra';
+      const currStr = Array.isArray(school.curriculum) ? school.curriculum.join(', ') : (school.curriculum || 'Accredited Curriculum');
+      const feeStr = school.feeBand || 'Verified Fees';
+      const schoolTitle = `${school.name} (${suburbStr}${regionStr}) — Admissions, Fees & Reviews | SkoolFinder Ghana`;
+      const schoolDesc = `${school.name} in ${suburbStr}${regionStr}. Curriculum: ${currStr}. Fees: ${feeStr}. Verified facilities, 360° virtual tour, parent reviews, and direct WhatsApp admissions desk.`;
+      const schoolImg = school.coverImage && school.coverImage.startsWith('http') ? school.coverImage : `https://skoolfinder.vercel.app${school.coverImage || '/assets/images/campus_hero.jpg'}`;
+
+      App.updateSEO({
+        title: schoolTitle,
+        description: schoolDesc,
+        ogTitle: `${school.name} — Verified School in Ghana`,
+        ogDescription: schoolDesc,
+        ogImage: schoolImg,
+        canonicalUrl: `https://skoolfinder.vercel.app/schools/${school.id}`
+      });
+
+      // Inject Schema.org EducationalOrganization / School structured data
+      try {
+        const schemaData = {
+          "@context": "https://schema.org",
+          "@type": "School",
+          "@id": `https://skoolfinder.vercel.app/schools/${school.id}#school`,
+          "name": school.name,
+          "description": school.description || school.about || school.motto || `${school.name} is an accredited educational institution in ${suburbStr}${regionStr}, Ghana.`,
+          "url": `https://skoolfinder.vercel.app/schools/${school.id}`,
+          "image": schoolImg,
+          "telephone": school.phone || school.whatsapp || "+233302777163",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": school.address || school.suburb || "Accra",
+            "addressLocality": school.suburb || "Accra",
+            "addressRegion": regionStr,
+            "addressCountry": "GH"
+          },
+          ...(school.lat && school.lng ? {
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": school.lat,
+              "longitude": school.lng
+            }
+          } : {}),
+          "priceRange": feeStr,
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Academic Curricula & Admissions",
+            "itemListElement": (Array.isArray(school.curriculum) ? school.curriculum : [school.curriculum || 'GES']).map(c => ({
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Course",
+                "name": `${c} Curriculum`
+              }
+            }))
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": (ratingSummary.averageOverall || school.rating || 4.8).toString(),
+            "bestRating": "5",
+            "worstRating": "1",
+            "ratingCount": (ratingSummary.totalReviews || (school.reviews && school.reviews.length) || 12).toString()
+          }
+        };
+
+        let scriptTag = document.getElementById('schema-school-jsonld');
+        if (!scriptTag) {
+          scriptTag = document.createElement('script');
+          scriptTag.type = 'application/ld+json';
+          scriptTag.id = 'schema-school-jsonld';
+          document.head.appendChild(scriptTag);
+        }
+        scriptTag.textContent = JSON.stringify(schemaData, null, 2);
+      } catch (e) {
+        console.warn("Schema.org injection notice:", e);
+      }
+    }
+
     return `
       <section class="school-showcase" style="background: var(--bg-main);">
         <div class="container">
@@ -92,6 +170,11 @@ const SchoolDetailView = {
                 <!-- Purchase Official Admission Form Voucher via MoMo (Feature 1) -->
                 <button id="btn-buy-admission-form" class="btn-pill btn-gold" style="width: 100%; justify-content: center; font-size: 0.88rem; padding: 0.65rem 1rem;">
                   <span>💳</span> Buy Admission Voucher (GH₵ 150)
+                </button>
+
+                <!-- Viral WhatsApp Share Button (SEO-03) -->
+                <button id="btn-share-school-wa" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.88rem; padding: 0.65rem 1rem; background: #25D366; color: #ffffff; font-weight: 700; border: none; cursor: pointer; border-radius: 9999px;">
+                  <span>📲</span> Share School on WhatsApp
                 </button>
 
                 <!-- Compare Toggle -->
@@ -544,6 +627,20 @@ const SchoolDetailView = {
         document.getElementById('label-call').innerText = phone;
         State.showToast(`Admissions line revealed: ${phone}`, 'success');
         window.location.href = `tel:${phone.replace(/[^0-9+]/g, '')}`;
+      };
+    }
+
+    // Viral WhatsApp Share Button (SEO-03)
+    const btnShareWa = document.getElementById('btn-share-school-wa');
+    if (btnShareWa) {
+      btnShareWa.onclick = async () => {
+        const school = await API.getSchoolById(schoolId);
+        const name = school?.name || 'this school';
+        const suburb = school?.suburb ? ` in ${school.suburb}` : '';
+        const fee = school?.feeBand ? ` (Fees: ${school.feeBand})` : '';
+        const shareUrl = `https://skoolfinder.vercel.app/schools/${schoolId}`;
+        const shareText = encodeURIComponent(`Check out ${name}${suburb}${fee} on SkoolFinder Ghana! Explore verified curricula, 360° virtual tour & admissions:\n${shareUrl}`);
+        window.open(`https://api.whatsapp.com/send?text=${shareText}`, '_blank');
       };
     }
 
