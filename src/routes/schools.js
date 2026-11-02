@@ -231,7 +231,7 @@ router.get('/', async (req, res) => {
     try {
       const { data, error } = await query;
       if (!error && Array.isArray(data) && data.length > 0) {
-        schools = data;
+        schools = data.filter(s => !s.deleted_at && s.status !== 'archived');
       }
     } catch (dbErr) {
       console.warn('Supabase schools query notice:', dbErr.message);
@@ -329,6 +329,10 @@ router.get('/:idOrSlug', async (req, res) => {
     // Absolute fallback: default to premier flagship school
     if (!school) {
       school = FALLBACK_SCHOOLS[0];
+    }
+
+    if (school && (school.deleted_at || school.status === 'archived')) {
+      return res.status(404).json({ error: 'This school listing has been archived or deactivated.' });
     }
 
     return res.json(formatSchool(school));

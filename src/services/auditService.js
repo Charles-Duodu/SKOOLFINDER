@@ -6,16 +6,20 @@ const AuditService = {
   /**
    * Logs administrative action to Supabase audit_events and in-memory cache
    */
-  async log({ actorId = null, actorEmail = 'admin@skoolfinder.com.gh', action, targetType, targetId, details = {}, ip = '127.0.0.1' }) {
+  async log({ actorId = null, actorEmail = 'admin@skoolfinder.com.gh', actorRole = 'super_admin', action, targetType, targetId, oldState = null, newState = null, details = {}, ip = '127.0.0.1', userAgent = null }) {
     const entry = {
       id: `audit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       actor_id: actorId,
       actor_email: actorEmail,
+      actor_role: actorRole,
       action,
       target_type: targetType,
       target_id: String(targetId),
+      old_state: oldState,
+      new_state: newState,
       details,
       ip_address: ip,
+      user_agent: userAgent,
       created_at: new Date().toISOString()
     };
 
@@ -28,17 +32,21 @@ const AuditService = {
         .insert({
           actor_id: actorId,
           actor_email: actorEmail,
+          actor_role: actorRole,
           action,
           target_type: targetType,
           target_id: String(targetId),
+          old_state: oldState,
+          new_state: newState,
           details,
-          ip_address: ip
+          ip_address: ip,
+          user_agent: userAgent
         });
     } catch (err) {
       console.warn('[AUDIT NOTICE] Failed to persist audit event to DB:', err.message);
     }
 
-    console.log(`🛡️ [ADMIN AUDIT] Action: ${action} | Target: ${targetType}:${targetId} by ${actorEmail}`);
+    console.log(`🛡️ [ADMIN AUDIT] Action: ${action} | Target: ${targetType}:${targetId} by ${actorEmail} (${actorRole})`);
     return entry;
   },
 
