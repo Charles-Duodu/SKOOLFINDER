@@ -34,7 +34,21 @@ const Navbar = {
         </header>
       `;
     }
+        const isImpersonating = typeof State !== 'undefined' && State.isImpersonating && State.isImpersonating();
+    const impersonationBanner = isImpersonating ? `
+      <div id="impersonation-alert-banner" style="background: linear-gradient(90deg, #92400e 0%, #b45309 100%); color: #ffffff; padding: 0.55rem 1.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 700; z-index: 1000; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
+        <div style="display: flex; align-items: center; gap: 0.6rem;">
+          <span style="font-size: 1.15rem;">🛡️</span>
+          <span>SUPER ADMIN IMPERSONATION: Viewing <strong>${State.currentUser?.impersonatedSchoolName || 'School'}</strong> as Proprietor</span>
+        </div>
+        <button id="btn-navbar-exit-impersonate" class="btn-pill" style="background: #0f172a; color: #fff; border: 1px solid rgba(255,255,255,0.3); font-weight: 800; cursor: pointer; padding: 0.3rem 0.85rem; font-size: 0.76rem; border-radius: 999px;">
+          🚪 Exit Back to Admin HQ
+        </button>
+      </div>
+    ` : '';
+
     return `
+      ${impersonationBanner}
       <header class="site-header">
         <div class="container nav-wrapper">
           <!-- Brand Logo -->
@@ -455,6 +469,14 @@ const Navbar = {
       closeMobile();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
       App.navigate('directory');
+    });
+
+        document.getElementById('btn-navbar-exit-impersonate')?.addEventListener('click', () => {
+      if (typeof State !== 'undefined' && State.stopImpersonation) {
+        State.stopImpersonation();
+        State.showToast("Exited impersonation mode. Welcome back to Super Admin HQ.", "info");
+        App.navigate('admin');
+      }
     });
 
     document.getElementById('mob-link-compare')?.addEventListener('click', (e) => {

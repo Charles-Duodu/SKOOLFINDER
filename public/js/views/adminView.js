@@ -704,62 +704,144 @@ const AdminView = {
     `;
   },
 
-  renderSchoolsTab(schools, vettingQueue = []) {
+    renderSchoolsTab(schools = [], vettingQueue = []) {
+    const currentSubTab = this.schoolsSubTab || 'active';
+    const activeSchools = schools.filter(s => s.status !== 'archived' && !s.deleted_at && (s.is_verified || s.status === 'published'));
+    const pendingSchools = schools.filter(s => s.status === 'pending_vetting' || !s.is_verified);
+    const archivedSchools = schools.filter(s => s.status === 'archived' || Boolean(s.deleted_at));
+
+    let displayList = currentSubTab === 'archived' ? archivedSchools : (currentSubTab === 'pending' ? pendingSchools : activeSchools);
+
+    if (this.schoolsSearchTerm) {
+      const q = this.schoolsSearchTerm.toLowerCase();
+      displayList = displayList.filter(s => (s.name && s.name.toLowerCase().includes(q)) || (s.locality && s.locality.toLowerCase().includes(q)) || (s.district && s.district.toLowerCase().includes(q)));
+    }
+
+    if (this.schoolsRegionFilter && this.schoolsRegionFilter !== 'All') {
+      displayList = displayList.filter(s => s.region && s.region.toLowerCase().includes(this.schoolsRegionFilter.toLowerCase()));
+    }
+
     return `
       <div class="admin-chart-card">
+        <!-- Top Action Bar -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0;">
-              School Tenants & Institutional Register
+              School Management & Institutional Register
             </h2>
             <p style="color: #64748b; font-size: 0.88rem; margin: 0.25rem 0 0 0;">
-              Direct CRUD governance across accredited campuses in Greater Accra and Kumasi.
+              Full CRUD control: Onboard, edit attributes, soft-delete, and 1-click impersonate any campus.
             </p>
           </div>
-          <button id="btn-add-tenant-school" class="btn-pill btn-primary">
+          <button id="btn-open-create-school" class="btn-pill btn-primary" style="font-weight: 800; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
             <span>➕</span> Onboard New Institution
           </button>
         </div>
 
-        <div style="overflow-x: auto;">
-          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem;">
+        <!-- Sub-Tabs: Active vs Pending vs Archived -->
+        <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.25rem; padding-bottom: 0;">
+          <button class="btn-schools-subtab ${currentSubTab === 'active' ? 'active' : ''}" data-subtab="active" style="background: none; border: none; padding: 0.6rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'active' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'active' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+            <span>🏫</span> Active Campuses (${activeSchools.length})
+          </button>
+          <button class="btn-schools-subtab ${currentSubTab === 'pending' ? 'active' : ''}" data-subtab="pending" style="background: none; border: none; padding: 0.6rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'pending' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'pending' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+            <span>⏳</span> Pending Vetting (${pendingSchools.length})
+          </button>
+          <button class="btn-schools-subtab ${currentSubTab === 'archived' ? 'active' : ''}" data-subtab="archived" style="background: none; border: none; padding: 0.6rem 1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'archived' ? '#dc2626' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'archived' ? '#dc2626' : 'transparent'}; margin-bottom: -2px;">
+            <span>🗑️</span> Archived Schools (${archivedSchools.length})
+          </button>
+        </div>
+
+        <!-- Search & Filter Controls -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+          <div style="flex: 2; min-width: 240px;">
+            <input type="text" id="admin-schools-search" class="form-input" placeholder="Search by school name, locality, or district..." value="${this.schoolsSearchTerm || ''}" style="width: 100%; padding: 0.55rem 0.85rem; font-size: 0.88rem;" />
+          </div>
+          <div style="flex: 1; min-width: 180px;">
+            <select id="admin-schools-region" class="form-input" style="width: 100%; padding: 0.55rem 0.85rem; font-size: 0.88rem;">
+              <option value="All" ${!this.schoolsRegionFilter || this.schoolsRegionFilter === 'All' ? 'selected' : ''}>All Regions</option>
+              <option value="Greater Accra" ${this.schoolsRegionFilter === 'Greater Accra' ? 'selected' : ''}>Greater Accra</option>
+              <option value="Ashanti" ${this.schoolsRegionFilter === 'Ashanti' ? 'selected' : ''}>Ashanti Region</option>
+              <option value="Central" ${this.schoolsRegionFilter === 'Central' ? 'selected' : ''}>Central Region</option>
+              <option value="Eastern" ${this.schoolsRegionFilter === 'Eastern' ? 'selected' : ''}>Eastern Region</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Schools Data Table -->
+        <div style="overflow-x: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
             <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SCHOOL NAME & LOCATION</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">CURRICULUM</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NaSIA STATUS</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">GOVERNANCE ACTIONS</th>
+              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">SCHOOL & ENCLAVE</th>
+                <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">CURRICULUM & LEVEL</th>
+                <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">TUITION BAND</th>
+                <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700;">ACCREDITATION</th>
+                <th style="padding: 0.85rem 1rem; color: #475569; font-weight: 700; text-align: right;">CRUD GOVERNANCE</th>
               </tr>
             </thead>
             <tbody>
-              ${schools.map(s => `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 1rem;">
-                    <div style="font-weight: 700; color: #0f172a; font-size: 0.95rem;">${s.name}</div>
-                    <div style="font-size: 0.78rem; color: #64748b;">📍 ${s.locality || s.suburb || 'Accra'}, ${s.region}</div>
-                  </td>
-                  <td style="padding: 1rem;">
-                    <span class="badge badge-cambridge">${Array.isArray(s.curriculum) ? s.curriculum.join(', ') : (s.curriculum || 'GES')}</span>
-                  </td>
-                  <td style="padding: 1rem;">
-                    ${s.is_verified || s.verified ? `
-                      <span class="badge badge-emerald" style="font-weight: 700;">🛡️ NaSIA Verified</span>
-                    ` : `
-                      <span class="badge badge-rose" style="font-weight: 700;">⚠️ Pending Verification</span>
-                    `}
-                  </td>
-                  <td style="padding: 1rem; text-align: right;">
-                    <div style="display: inline-flex; gap: 0.4rem;">
-                      <button class="btn-pill btn-gold btn-quick-impersonate" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-                        <span>🏫</span> Open OS
-                      </button>
-                      <button class="btn-pill btn-outline btn-toggle-school-verif" data-id="${s.id}" data-current="${s.is_verified || s.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">
-                        ${s.is_verified || s.verified ? 'Revoke Seal' : 'Grant Seal'}
-                      </button>
-                    </div>
+              ${displayList.length === 0 ? `
+                <tr>
+                  <td colspan="5" style="padding: 2.5rem; text-align: center; color: #64748b;">
+                    No schools match the current filter or search criteria.
                   </td>
                 </tr>
-              `).join('')}
+              ` : displayList.map(s => {
+                const isArchived = s.status === 'archived' || Boolean(s.deleted_at);
+                const isVerified = s.is_verified || s.verified;
+                const minFee = s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()}` : 'GH₵ 3,500';
+                const maxFee = s.tuition_max ? `GH₵ ${Number(s.tuition_max).toLocaleString()}` : 'GH₵ 12,000';
+
+                return `
+                  <tr style="border-bottom: 1px solid #f1f5f9; background: ${isArchived ? '#fef2f2' : '#ffffff'};">
+                    <td style="padding: 0.9rem 1rem;">
+                      <div style="font-weight: 800; color: #0f172a; font-size: 0.95rem;">${s.name}</div>
+                      <div style="font-size: 0.76rem; color: #64748b;">📍 ${s.locality || s.suburb || 'Accra'}, ${s.region}</div>
+                      <div style="font-size: 0.72rem; color: #94a3b8;">📞 ${s.phone || '+233 30 200 0000'} &bull; ✉️ ${s.email || 'admissions@school.edu.gh'}</div>
+                    </td>
+                    <td style="padding: 0.9rem 1rem;">
+                      <span class="badge badge-cambridge" style="font-size: 0.75rem;">
+                        ${Array.isArray(s.curriculum) ? s.curriculum[0] : (s.curriculum || 'GES')}
+                      </span>
+                      <div style="font-size: 0.74rem; color: #64748b; margin-top: 0.2rem;">
+                        ${Array.isArray(s.education_level) ? s.education_level.join(', ') : (s.education_level || 'Basic & JHS')}
+                      </div>
+                    </td>
+                    <td style="padding: 0.9rem 1rem;">
+                      <div style="font-weight: 700; color: #0f172a;">${minFee} &ndash; ${maxFee}</div>
+                      <div style="font-size: 0.72rem; color: #64748b;">per term &bull; GHS</div>
+                    </td>
+                    <td style="padding: 0.9rem 1rem;">
+                      ${isArchived ? `
+                        <span class="badge badge-rose" style="font-weight: 800; font-size: 0.74rem;">🗑️ Archived</span>
+                      ` : (isVerified ? `
+                        <span class="badge badge-emerald" style="font-weight: 800; font-size: 0.74rem;">🛡️ NaSIA Verified</span>
+                      ` : `
+                        <span class="badge badge-gold" style="font-weight: 800; font-size: 0.74rem;">⚠️ Pending Vetting</span>
+                      `)}
+                    </td>
+                    <td style="padding: 0.9rem 1rem; text-align: right;">
+                      <div style="display: inline-flex; gap: 0.35rem; align-items: center; justify-content: flex-end;">
+                        ${!isArchived ? `
+                          <button class="btn-pill btn-gold btn-action-impersonate" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.7rem; font-size: 0.76rem;" title="Open School OS as Proprietor">
+                            <span>🏫</span> Open OS
+                          </button>
+                          <button class="btn-pill btn-outline btn-action-edit-school" data-id="${s.id}" style="padding: 0.35rem 0.65rem; font-size: 0.76rem;">
+                            <span>✏️</span> Edit
+                          </button>
+                          <button class="btn-pill btn-outline btn-action-archive-school" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.65rem; font-size: 0.76rem; color: #dc2626; border-color: #fecaca;">
+                            <span>🗑️</span> Archive
+                          </button>
+                        ` : `
+                          <button class="btn-pill btn-emerald btn-action-restore-school" data-id="${s.id}" data-name="${s.name}" style="padding: 0.35rem 0.75rem; font-size: 0.76rem;">
+                            <span>🔄</span> Restore to Directory
+                          </button>
+                        `}
+                      </div>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -1125,9 +1207,105 @@ const AdminView = {
       });
     });
 
-    // 6. Onboard School Modal Trigger
+    
+    // 6. School Management Engine CRUD Listeners (Phase 4)
+    document.getElementById('btn-open-create-school')?.addEventListener('click', () => {
+      Modals.openCreateSchoolModal(() => App.refreshCurrentView());
+    });
     document.getElementById('btn-add-tenant-school')?.addEventListener('click', () => {
-      Modals.openClaimSchoolModal({ id: 'sch-new', name: 'New School Institution' });
+      Modals.openCreateSchoolModal(() => App.refreshCurrentView());
+    });
+
+    // Sub-tab switcher in schools tab
+    document.querySelectorAll('.btn-schools-subtab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.schoolsSubTab = btn.getAttribute('data-subtab');
+        App.refreshCurrentView();
+      });
+    });
+
+    // School search input in table
+    const schSearchInput = document.getElementById('admin-schools-search');
+    if (schSearchInput) {
+      schSearchInput.addEventListener('input', (e) => {
+        this.schoolsSearchTerm = e.target.value.trim();
+        clearTimeout(this.schTableTimer);
+        this.schTableTimer = setTimeout(() => App.refreshCurrentView(), 300);
+      });
+    }
+
+    // School region filter dropdown
+    const schRegionSelect = document.getElementById('admin-schools-region');
+    if (schRegionSelect) {
+      schRegionSelect.addEventListener('change', (e) => {
+        this.schoolsRegionFilter = e.target.value;
+        App.refreshCurrentView();
+      });
+    }
+
+    // 1-Click Impersonator in table
+    document.querySelectorAll('.btn-action-impersonate').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Launching...';
+          State.showToast(`Initiating scoped session for ${name}...`, 'info');
+          const res = await API.impersonateSchool(id);
+          if (res && res.impersonationToken) {
+            State.startImpersonation(res.impersonationToken, res.school);
+            App.navigate('schools', res.school?.slug || res.school?.id || 'sch-gis-accra');
+            State.showToast(`🛡️ Now managing ${name} as Proprietor`, 'success');
+          } else {
+            App.navigate('schools', 'sch-gis-accra');
+          }
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<span>🏫</span> Open OS';
+        }
+      });
+    });
+
+    // Edit School inline modal
+    document.querySelectorAll('.btn-action-edit-school').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        try {
+          const res = await API.getSchools();
+          const target = (res || []).find(s => s.id === id) || { id, name: 'School' };
+          Modals.openEditSchoolModal(target, () => App.refreshCurrentView());
+        } catch (e) {
+          Modals.openEditSchoolModal({ id, name: 'School' }, () => App.refreshCurrentView());
+        }
+      });
+    });
+
+    // Archive School confirmation modal
+    document.querySelectorAll('.btn-action-archive-school').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        Modals.openArchiveSchoolModal({ id, name }, () => App.refreshCurrentView());
+      });
+    });
+
+    // Restore School
+    document.querySelectorAll('.btn-action-restore-school').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const name = btn.getAttribute('data-name');
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Restoring...';
+          await API.restoreSchool(id);
+          State.showToast(`✓ "${name}" restored to active directory!`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+        }
+      });
     });
   }
 };

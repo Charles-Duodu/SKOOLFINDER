@@ -10458,6 +10458,366 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  // ============================================================================
+  // SCHOOL MANAGEMENT ENGINE: FULL CRUD MODALS (Phase 4)
+  // ============================================================================
+
+  openCreateSchoolModal(onCreated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 680px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="border-bottom: 2px solid #3b82f6;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.05em;">Super Admin Desk</div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.35rem; font-weight: 800; color: var(--text-main);">
+              ➕ Onboard New Educational Institution
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-create-school" style="padding: 1.5rem;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 1.25rem 0;">
+            Directly register and publish a verified campus into the SkoolFinder Ghana directory.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label" style="font-weight: 700;">School Name *</label>
+              <input type="text" id="new-sch-name" class="form-input" placeholder="e.g. Accra Apex International Academy" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Ownership Category</label>
+              <select id="new-sch-ownership" class="form-input">
+                <option value="Private">Private Institution</option>
+                <option value="International">International School</option>
+                <option value="Public">Public / Government Assisted</option>
+                <option value="Mission">Mission / Religious</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Region *</label>
+              <select id="new-sch-region" class="form-input">
+                <option value="Greater Accra">Greater Accra</option>
+                <option value="Ashanti">Ashanti Region</option>
+                <option value="Central">Central Region</option>
+                <option value="Eastern">Eastern Region</option>
+                <option value="Western">Western Region</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">District / Municipality *</label>
+              <input type="text" id="new-sch-district" class="form-input" value="Accra Metropolitan" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Locality / Enclave *</label>
+              <input type="text" id="new-sch-locality" class="form-input" placeholder="e.g. Cantonments, East Legon, Adum" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Official Phone Line *</label>
+              <input type="tel" id="new-sch-phone" class="form-input" placeholder="+233 30 200 0000" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Official Email Address *</label>
+              <input type="email" id="new-sch-email" class="form-input" placeholder="admissions@school.edu.gh" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Minimum Tuition Band (GH₵)</label>
+              <input type="number" id="new-sch-min-fee" class="form-input" value="4500" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Maximum Tuition Band (GH₵)</label>
+              <input type="number" id="new-sch-max-fee" class="form-input" value="15000" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Boarding Type</label>
+              <select id="new-sch-boarding" class="form-input">
+                <option value="Day">Day School Only</option>
+                <option value="Boarding">Boarding School Only</option>
+                <option value="Day & Boarding">Day & Boarding Available</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">SaaS Subscription Plan</label>
+              <select id="new-sch-plan" class="form-input">
+                <option value="Starter">Starter (GH₵ 450/term)</option>
+                <option value="Growth">Growth (GH₵ 950/term)</option>
+                <option value="Enterprise" selected>Enterprise (GH₵ 2,200/term)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label" style="font-weight: 700;">Primary Curriculum</label>
+              <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.35rem;">
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.88rem;">
+                  <input type="checkbox" name="new-sch-curriculum" value="Cambridge" checked /> Cambridge International
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.88rem;">
+                  <input type="checkbox" name="new-sch-curriculum" value="GES Standards-Based" checked /> GES Standards-Based
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.88rem;">
+                  <input type="checkbox" name="new-sch-curriculum" value="IB World School" /> IB Diploma
+                </label>
+                <label style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.88rem;">
+                  <input type="checkbox" name="new-sch-curriculum" value="British National" /> British National
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: 1px solid #e2e8f0; display: flex; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-create" style="flex: 1;">Cancel</button>
+            <button type="submit" id="btn-submit-create-school" class="btn-pill btn-primary" style="flex: 2; justify-content: center; font-weight: 800;">
+              <span>➕</span> Publish School to Live Directory
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    this.setupDialogAccessibility(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-create').onclick = () => this.close();
+
+    document.getElementById('form-create-school').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-create-school');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Onboarding & Publishing...';
+
+      const curriculumChecked = Array.from(document.querySelectorAll('input[name="new-sch-curriculum"]:checked')).map(el => el.value);
+
+      const payload = {
+        name: document.getElementById('new-sch-name').value.trim(),
+        ownership_type: document.getElementById('new-sch-ownership').value,
+        region: document.getElementById('new-sch-region').value,
+        district: document.getElementById('new-sch-district').value.trim(),
+        locality: document.getElementById('new-sch-locality').value.trim(),
+        phone: document.getElementById('new-sch-phone').value.trim(),
+        email: document.getElementById('new-sch-email').value.trim(),
+        tuition_min: parseFloat(document.getElementById('new-sch-min-fee').value) || 3500,
+        tuition_max: parseFloat(document.getElementById('new-sch-max-fee').value) || 12000,
+        boarding_type: document.getElementById('new-sch-boarding').value,
+        package_tier: document.getElementById('new-sch-plan').value,
+        curriculum: curriculumChecked.length > 0 ? curriculumChecked : ['GES Standards-Based'],
+        is_verified: true,
+        status: 'published'
+      };
+
+      try {
+        const res = await API.createSchool(payload);
+        this.close();
+        State.showToast(`✓ "${payload.name}" successfully created and live on directory!`, 'success');
+        if (onCreated) onCreated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>➕</span> Publish School to Live Directory';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openEditSchoolModal(school, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 650px; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">Inline Editor</div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.35rem; font-weight: 800; color: var(--text-main);">
+              ✏️ Edit Institution: ${school.name}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-edit-school" style="padding: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label" style="font-weight: 700;">School Name</label>
+              <input type="text" id="edit-sch-name" class="form-input" value="${school.name}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Region</label>
+              <input type="text" id="edit-sch-region" class="form-input" value="${school.region || 'Greater Accra'}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">District / Municipality</label>
+              <input type="text" id="edit-sch-district" class="form-input" value="${school.district || 'Accra Metropolitan'}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Locality / Enclave</label>
+              <input type="text" id="edit-sch-locality" class="form-input" value="${school.locality || school.suburb || 'Cantonments'}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Official Phone Line</label>
+              <input type="tel" id="edit-sch-phone" class="form-input" value="${school.phone || '+233 30 200 0000'}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Minimum Tuition Band (GH₵)</label>
+              <input type="number" id="edit-sch-min-fee" class="form-input" value="${school.tuition_min || 3500}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Maximum Tuition Band (GH₵)</label>
+              <input type="number" id="edit-sch-max-fee" class="form-input" value="${school.tuition_max || 12000}" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">NaSIA Accreditation Status</label>
+              <select id="edit-sch-verified" class="form-input">
+                <option value="true" ${(school.is_verified || school.verified) ? 'selected' : ''}>🛡️ Verified Accredited</option>
+                <option value="false" ${!(school.is_verified || school.verified) ? 'selected' : ''}>⚠️ Pending Verification</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" style="font-weight: 700;">Publication Status</label>
+              <select id="edit-sch-status" class="form-input">
+                <option value="published" ${school.status === 'published' ? 'selected' : ''}>Published Live</option>
+                <option value="pending_vetting" ${school.status === 'pending_vetting' ? 'selected' : ''}>Pending Vetting</option>
+                <option value="archived" ${school.status === 'archived' ? 'selected' : ''}>Archived / Deactivated</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: 1px solid #e2e8f0; display: flex; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-edit" style="flex: 1;">Cancel</button>
+            <button type="submit" id="btn-submit-edit-school" class="btn-pill btn-primary" style="flex: 2; justify-content: center; font-weight: 800;">
+              <span>💾</span> Save Modifications
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    this.setupDialogAccessibility(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-edit').onclick = () => this.close();
+
+    document.getElementById('form-edit-school').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-edit-school');
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Updating Attributes...';
+
+      const updates = {
+        name: document.getElementById('edit-sch-name').value.trim(),
+        region: document.getElementById('edit-sch-region').value.trim(),
+        district: document.getElementById('edit-sch-district').value.trim(),
+        locality: document.getElementById('edit-sch-locality').value.trim(),
+        phone: document.getElementById('edit-sch-phone').value.trim(),
+        tuition_min: parseFloat(document.getElementById('edit-sch-min-fee').value),
+        tuition_max: parseFloat(document.getElementById('edit-sch-max-fee').value),
+        is_verified: document.getElementById('edit-sch-verified').value === 'true',
+        status: document.getElementById('edit-sch-status').value
+      };
+
+      try {
+        const res = await API.updateSchool(school.id, updates);
+        this.close();
+        State.showToast(`✓ "${updates.name}" updated successfully!`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>💾</span> Save Modifications';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openArchiveSchoolModal(school, onArchived) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 520px;">
+        <div class="modal-header" style="border-bottom: 2px solid #ef4444;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #ef4444; text-transform: uppercase;">Safety Guard</div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.3rem; font-weight: 800; color: #7f1d1d;">
+              🗑️ Soft-Delete / Archive Institution
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-archive-school" style="padding: 1.5rem;">
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 800; color: #991b1b; font-size: 0.95rem;">Are you sure you want to archive ${school.name}?</div>
+            <p style="font-size: 0.82rem; color: #b91c1c; margin: 0.35rem 0 0 0; line-height: 1.5;">
+              This school will be removed immediately from public search. Past MoMo payments, admission vouchers, and student records are protected and preserved. You can restore this school at any time.
+            </p>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-weight: 700;">Reason for Deactivation</label>
+            <input type="text" id="archive-reason" class="form-input" value="Archived by Platform Administrator" required />
+          </div>
+
+          <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: 1px solid #e2e8f0; display: flex; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-archive" style="flex: 1;">Cancel</button>
+            <button type="submit" id="btn-confirm-archive" class="btn-pill btn-rose" style="flex: 1.5; justify-content: center; font-weight: 800; background: #dc2626; color: #fff;">
+              Confirm Archive
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    this.setupDialogAccessibility(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-archive').onclick = () => this.close();
+
+    document.getElementById('form-archive-school').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-confirm-archive');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Archiving...';
+
+      const reason = document.getElementById('archive-reason').value.trim();
+
+      try {
+        const res = await API.archiveSchool(school.id, reason);
+        this.close();
+        State.showToast(`✓ "${school.name}" archived and removed from directory.`, 'info');
+        if (onArchived) onArchived(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Confirm Archive';
+        State.showToast(err.message, 'error');
+      }
+    };
   }
 };
 

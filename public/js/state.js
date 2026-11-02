@@ -144,6 +144,57 @@ const State = {
     }
   },
 
+  // Super Admin Impersonation Engine (Phase 4)
+  startImpersonation(token, school) {
+    if (!this.authToken) return;
+    try {
+      localStorage.setItem('skoolfinder_admin_backup_token', this.authToken);
+      localStorage.setItem('skoolfinder_admin_backup_user', JSON.stringify(this.currentUser));
+
+      const impersonatedUser = {
+        id: this.currentUser ? this.currentUser.id : '00000000-0000-0000-0000-000000000001',
+        name: school.name,
+        email: this.currentUser?.email || 'admin@skoolfinder.com.gh',
+        role: 'school_admin',
+        schoolId: school.slug || school.id || 'sch-gis-accra',
+        activeSchoolId: school.slug || school.id || 'sch-gis-accra',
+        isImpersonating: true,
+        impersonatedSchoolName: school.name,
+        impersonatedSchoolId: school.id
+      };
+
+      this.setCurrentUser(impersonatedUser, token);
+    } catch (e) {
+      console.warn("Impersonation storage error:", e);
+    }
+  },
+
+  stopImpersonation() {
+    try {
+      const backupToken = localStorage.getItem('skoolfinder_admin_backup_token');
+      const backupUserStr = localStorage.getItem('skoolfinder_admin_backup_user');
+
+      if (backupToken && backupUserStr) {
+        const backupUser = JSON.parse(backupUserStr);
+        localStorage.removeItem('skoolfinder_admin_backup_token');
+        localStorage.removeItem('skoolfinder_admin_backup_user');
+        this.setCurrentUser(backupUser, backupToken);
+        return true;
+      }
+    } catch (e) {
+      console.warn("Stop impersonation error:", e);
+    }
+    return false;
+  },
+
+  isImpersonating() {
+    try {
+      return Boolean(localStorage.getItem('skoolfinder_admin_backup_token')) || Boolean(this.currentUser?.isImpersonating);
+    } catch {
+      return false;
+    }
+  },
+
   logout() {
     if (typeof API !== 'undefined' && API.logout) {
       API.logout().catch(console.error);
