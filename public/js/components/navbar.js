@@ -167,18 +167,10 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-login" class="btn-pill btn-outline nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.9rem; font-weight: 700;">
-                <span>🔑</span> Sign In
-              </button>
               <button id="btn-nav-admin-signup" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
                 <span>🛡️</span> Admin Sign Up
               </button>
             `}
-
-            <!-- Theme Toggle Button -->
-            <button id="btn-theme-toggle" class="theme-toggle-btn" title="Toggle Scholastic Midnight Dark Mode" aria-label="Toggle Scholastic Midnight Dark Mode">
-              🌙
-            </button>
 
             <!-- Mobile Hamburger Menu Button -->
             <button id="btn-mobile-menu-toggle" class="mobile-menu-btn ${this.isMobileMenuOpen ? 'active' : ''}" aria-label="Toggle Navigation Menu">
@@ -192,10 +184,6 @@ const Navbar = {
         <!-- Mobile Drawer Dropdown -->
         <div id="mobile-nav-drawer" class="mobile-nav-drawer ${this.isMobileMenuOpen ? 'open' : ''}">
           <div class="mobile-nav-links">
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.5rem 0.75rem 0.5rem; border-bottom: 1px solid var(--border-light); margin-bottom: 0.75rem;">
-              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-main);">Scholastic Theme</span>
-              <button id="mob-btn-theme-toggle" class="theme-toggle-btn" title="Toggle Dark Mode" aria-label="Toggle Dark Mode">🌙</button>
-            </div>
 
             <!-- Category 1: Public Discovery -->
             <div class="mob-category-card">
@@ -244,9 +232,6 @@ const Navbar = {
                 </button>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                  <button id="mob-btn-login" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 700;">
-                    <span>🔑</span> Sign In to Account
-                  </button>
                   <button id="mob-btn-admin-signup" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800; background: #091e42; color: #93c5fd; border: 1px solid #1e3a8a;">
                     <span>🛡️</span> Admin Sign Up
                   </button>
@@ -345,10 +330,7 @@ const Navbar = {
     document.getElementById('mob-link-admin')?.addEventListener('click', handleAdminNav);
 
     // Auth Action Buttons
-    document.getElementById('btn-nav-login')?.addEventListener('click', () => {
-      Modals.openParentAuthModal({ initialTab: 'signin' });
-    });
-
+    
     
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
       Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
@@ -380,13 +362,7 @@ const Navbar = {
       State.logout();
     });
 
-    document.getElementById('mob-btn-login')?.addEventListener('click', () => {
-      this.isMobileMenuOpen = false;
-      const drawer = document.getElementById('mobile-nav-drawer');
-      if (drawer) drawer.classList.remove('open');
-      Modals.openParentAuthModal({ initialTab: 'signin' });
-    });
-
+    
     document.getElementById('mob-btn-parent-signup')?.addEventListener('click', () => {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
@@ -467,9 +443,7 @@ const Navbar = {
       State.showToast(`Theme: ${next === 'dark' ? 'Scholastic Midnight (Dark)' : 'Scholastic Ivory (Light)'}`, 'info');
     };
 
-    document.getElementById('btn-theme-toggle')?.addEventListener('click', toggleTheme);
-    document.getElementById('mob-btn-theme-toggle')?.addEventListener('click', toggleTheme);
-
+        
     const activeTheme = document.documentElement.getAttribute('data-theme') || localStorage.getItem('skoolfinder_theme') || 'light';
     updateThemeUI(activeTheme);
 
