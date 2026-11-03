@@ -50,7 +50,7 @@ const State = {
     return Utils.escapeHTML(str);
   },
 
-  comparisonList: [], // array of school objects (max 3)
+  comparisonList: [], // array of school objects (max 4 - Blueprint v4.2)
   
   // Bookmarks & Shortlisted Schools
   bookmarkedSchoolIds: (() => {
