@@ -240,7 +240,7 @@ const DirectoryView = {
               <div class="map-popup-body">
                 <div class="map-popup-title">${s.name}</div>
                 <div class="map-popup-suburb">📍 ${s.suburb || s.locality || 'Accra'}, ${s.region || 'Greater Accra'}</div>
-                <div style="font-size: 0.75rem; color: var(--gold-600); font-weight: 700; margin-bottom: 0.5rem;">${s.feeBand || 'Moderate Fees'}</div>
+                <div style="font-size: 0.75rem; color: var(--gold-600); font-weight: 700; margin-bottom: 0.5rem;">${s.feeBand || (s.tuition_min ? 'GH₵ ' + Number(s.tuition_min).toLocaleString() + (s.tuition_max ? ' - ' + Number(s.tuition_max).toLocaleString() : '') : 'Official fee schedule not published')}</div>
                 <div style="display: flex; gap: 0.35rem;">
                   <button class="btn-pill btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.72rem; flex: 1;" onclick="App.navigate('school-detail', '${s.id}')">View Profile</button>
                   <a href="https://wa.me/${(s.whatsapp || s.phone || '+233302777163').replace(/[^0-9]/g, '')}" target="_blank" class="btn-card-wa" style="padding: 0.3rem 0.5rem; font-size: 0.72rem;">💬</a>

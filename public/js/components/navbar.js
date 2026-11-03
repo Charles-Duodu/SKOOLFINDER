@@ -70,6 +70,11 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             </li>
+            <li>
+              <a href="/parents" id="nav-link-direct-parents" class="nav-link-direct ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parents Portal
+              </a>
+            </li>
 
             <!-- The 5 Dedicated SaaS Portals -->
             <li class="nav-item-dropdown">
@@ -84,7 +89,7 @@ const Navbar = {
                       <span>Parents Portal</span>
                       <span class="badge badge-admissions" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/parents</span>
                     </div>
-                    <div class="dropdown-item-desc">Fees via MoMo, bus tracker, student ID & hire tutors</div>
+                    <div class="dropdown-item-desc">School discovery, 4-way compare, decision board & admissions tracking</div>
                   </div>
                 </a>
 
@@ -201,6 +206,9 @@ const Navbar = {
               <a href="#" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
               </a>
+            <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parents Portal
+              </a>
               ${State.comparisonList.length > 0 ? `
                 <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">
                   <span>⚖️</span> Compare Schools (${State.comparisonList.length})
@@ -288,6 +296,8 @@ const Navbar = {
       App.navigate('parents');
     };
     document.getElementById('nav-link-parents')?.addEventListener('click', handleParentsNav);
+    document.getElementById('nav-link-direct-parents')?.addEventListener('click', handleParentsNav);
+    document.getElementById('mob-link-direct-parents')?.addEventListener('click', handleParentsNav);
     document.getElementById('nav-link-parent')?.addEventListener('click', handleParentsNav);
     document.getElementById('mob-link-parents')?.addEventListener('click', handleParentsNav);
     document.getElementById('mob-link-parent')?.addEventListener('click', handleParentsNav);

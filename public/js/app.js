@@ -198,6 +198,13 @@ const App = {
     document.getElementById('header-root').innerHTML = Navbar.render();
     Navbar.attachEvents();
 
+    // Blueprint v4.2: 5-Tab Persistent Mobile Navigation Dock Mount
+    const mobileDockRoot = document.getElementById('mobile-dock-root');
+    if (mobileDockRoot && typeof MobileNav !== 'undefined') {
+      mobileDockRoot.innerHTML = MobileNav.render();
+      MobileNav.attachEvents();
+    }
+
     // Render Main View
     const mainRoot = document.getElementById('main-root');
     mainRoot.innerHTML = `
@@ -384,6 +391,13 @@ const App = {
         } else if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
           document.getElementById('header-root').innerHTML = Navbar.render();
           Navbar.attachEvents();
+
+    // Blueprint v4.2: 5-Tab Persistent Mobile Navigation Dock Mount
+    const mobileDockRoot = document.getElementById('mobile-dock-root');
+    if (mobileDockRoot && typeof MobileNav !== 'undefined') {
+      mobileDockRoot.innerHTML = MobileNav.render();
+      MobileNav.attachEvents();
+    }
         }
       });
     }

@@ -108,7 +108,7 @@ const CompareView = {
                   </td>
                   ${list.map(s => `
                     <td style="padding: 1.25rem; font-size: 0.95rem; font-weight: 700; color: var(--gold-600);">
-                      ${s.feeBand}
+                      ${s.feeBand || (s.tuition_min ? 'GH₵ ' + Number(s.tuition_min).toLocaleString() + (s.tuition_max ? ' - ' + Number(s.tuition_max).toLocaleString() : '') : '<span style="color: var(--text-muted); font-size: 0.82rem; font-weight: 600;">Official fee schedule not published &bull; Contact desk</span>')}
                     </td>
                   `).join('')}
                 </tr>

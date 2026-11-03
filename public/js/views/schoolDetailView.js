@@ -357,8 +357,8 @@ const SchoolDetailView = {
                     <div class="form-group">
                       <label class="form-label">School Bus Route</label>
                       <select id="calc-bus" class="form-select">
-                        <option value="${school.busFee || 1200}" selected>Two-Way Home Shuttle (+GH₵ ${(school.busFee || 1200).toLocaleString()})</option>
-                        <option value="${Math.round((school.busFee || 1200) * 0.6)}">One-Way Shuttle (+GH₵ ${Math.round((school.busFee || 1200) * 0.6).toLocaleString()})</option>
+                        ${school.busFee ? `<option value="${school.busFee}" selected>Two-Way Home Shuttle (+GH₵ ${school.busFee.toLocaleString()})</option>` : '<option value="0" selected>Bus shuttle fee not published (Contact school)</option>'}
+                        ${school.busFee ? `<option value="${Math.round(school.busFee * 0.6)}">One-Way Shuttle (+GH₵ ${Math.round(school.busFee * 0.6).toLocaleString()})</option>` : ''}
                         <option value="0">No Bus Shuttle (Private drop-off)</option>
                       </select>
                     </div>
@@ -366,7 +366,7 @@ const SchoolDetailView = {
                     <div class="form-group">
                       <label class="form-label">Meal Plan & Canteen</label>
                       <select id="calc-lunch" class="form-select">
-                        <option value="${school.lunchFee || 1000}" selected>Daily Hot Lunch & Snacks (+GH₵ ${(school.lunchFee || 1000).toLocaleString()})</option>
+                        ${school.lunchFee ? `<option value="${school.lunchFee}" selected>Daily Hot Lunch & Snacks (+GH₵ ${school.lunchFee.toLocaleString()})</option>` : '<option value="0" selected>Meal plan fee not published (Contact school)</option>'}
                         <option value="0">Packed Lunch from Home (GH₵ 0)</option>
                       </select>
                     </div>
@@ -379,7 +379,7 @@ const SchoolDetailView = {
                         Estimated Total per Term
                       </div>
                       <div class="calc-total-amount" id="calc-display-term">
-                        GH₵ ${((school.tuitionBase || 3000) + (school.busFee || 1200) + (school.lunchFee || 1000)).toLocaleString()}
+                        ${(school.tuitionBase || school.tuition_min) ? 'GH₵ ' + ((Number(school.tuitionBase || school.tuition_min)) + (school.busFee || 0) + (school.lunchFee || 0)).toLocaleString() : '<span style="font-size: 1.1rem; color: #fef08a;">Fees on Request</span>'}
                       </div>
                       <div style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.7); margin-bottom: 1.25rem;">
                         Projected termly commitment
@@ -387,15 +387,15 @@ const SchoolDetailView = {
 
                       <div class="calc-line-item">
                         <span>Tuition Base:</span>
-                        <strong id="calc-line-tuition">GH₵ ${(school.tuitionBase || 3000).toLocaleString()}</strong>
+                        <strong id="calc-line-tuition">${(school.tuitionBase || school.tuition_min) ? 'GH₵ ' + Number(school.tuitionBase || school.tuition_min).toLocaleString() : 'Not published'}</strong>
                       </div>
                       <div class="calc-line-item">
                         <span>Bus Shuttle:</span>
-                        <strong id="calc-line-bus">GH₵ ${(school.busFee || 1200).toLocaleString()}</strong>
+                        <strong id="calc-line-bus">${school.busFee ? 'GH₵ ' + Number(school.busFee).toLocaleString() : 'Not published'}</strong>
                       </div>
                       <div class="calc-line-item">
                         <span>Canteen Meals:</span>
-                        <strong id="calc-line-lunch">GH₵ ${(school.lunchFee || 1000).toLocaleString()}</strong>
+                        <strong id="calc-line-lunch">${school.lunchFee ? 'GH₵ ' + Number(school.lunchFee).toLocaleString() : 'Not published'}</strong>
                       </div>
                       <div class="calc-line-item">
                         <span>Boarding:</span>
@@ -408,7 +408,7 @@ const SchoolDetailView = {
                         Full Academic Year (3 Terms):
                       </div>
                       <div style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: #ffffff;" id="calc-display-annual">
-                        GH₵ ${(((school.tuitionBase || 3000) + (school.busFee || 1200) + (school.lunchFee || 1000)) * 3).toLocaleString()}
+                        ${(school.tuitionBase || school.tuition_min) ? 'GH₵ ' + (((Number(school.tuitionBase || school.tuition_min)) + (school.busFee || 0) + (school.lunchFee || 0)) * 3).toLocaleString() : 'Contact desk'}
                       </div>
                     </div>
                   </div>
@@ -705,7 +705,8 @@ const SchoolDetailView = {
       const recalculate = () => {
         if (!calcGrade) return;
         const multiplier = parseFloat(calcGrade.value) || 1;
-        const tuition = Math.round((school.tuitionBase || 3000) * multiplier);
+        const baseRate = Number(school.tuitionBase || school.tuition_min || 0);
+        const tuition = baseRate ? Math.round(baseRate * multiplier) : 0;
         const boarding = parseInt(calcBoarding?.value || 0) || 0;
         const bus = parseInt(calcBus?.value || 0) || 0;
         const lunch = parseInt(calcLunch?.value || 0) || 0;
@@ -713,12 +714,12 @@ const SchoolDetailView = {
         const termTotal = tuition + boarding + bus + lunch;
         const annualTotal = termTotal * 3;
 
-        document.getElementById('calc-display-term').innerText = `GH₵ ${termTotal.toLocaleString()}`;
-        document.getElementById('calc-display-annual').innerText = `GH₵ ${annualTotal.toLocaleString()}`;
-        document.getElementById('calc-line-tuition').innerText = `GH₵ ${tuition.toLocaleString()}`;
+        document.getElementById('calc-display-term').innerText = termTotal > 0 ? `GH₵ ${termTotal.toLocaleString()}` : 'Fees on request';
+        document.getElementById('calc-display-annual').innerText = termTotal > 0 ? `GH₵ ${annualTotal.toLocaleString()}` : 'Inquire with school desk';
+        document.getElementById('calc-line-tuition').innerText = tuition > 0 ? `GH₵ ${tuition.toLocaleString()}` : 'Not published';
         document.getElementById('calc-line-boarding').innerText = `GH₵ ${boarding.toLocaleString()}`;
-        document.getElementById('calc-line-bus').innerText = `GH₵ ${bus.toLocaleString()}`;
-        document.getElementById('calc-line-lunch').innerText = `GH₵ ${lunch.toLocaleString()}`;
+        document.getElementById('calc-line-bus').innerText = bus > 0 ? `GH₵ ${bus.toLocaleString()}` : (school.busFee ? 'GH₵ 0 (Own drop-off)' : 'Not published');
+        document.getElementById('calc-line-lunch').innerText = lunch > 0 ? `GH₵ ${lunch.toLocaleString()}` : (school.lunchFee ? 'GH₵ 0 (Home lunch)' : 'Not published');
       };
 
       [calcGrade, calcBoarding, calcBus, calcLunch].forEach(el => {

@@ -261,8 +261,8 @@ const State = {
       this.comparisonList.splice(idx, 1);
       this.showToast(`Removed ${school.name} from comparison.`);
     } else {
-      if (this.comparisonList.length >= 3) {
-        this.showToast(`You can compare up to 3 schools at a time.`, 'error');
+      if (this.comparisonList.length >= 4) {
+        this.showToast(`You can compare up to 4 schools at a time.`, 'error');
         return false;
       }
       this.comparisonList.push(school);
@@ -290,6 +290,10 @@ const State = {
       document.body.appendChild(bar);
     }
 
+    if (typeof MobileNav !== 'undefined') MobileNav.updateBadge();
+    const navPill = document.querySelector('#btn-nav-compare .comparison-counter-pill');
+    if (navPill) navPill.textContent = this.comparisonList.length;
+
     if (this.comparisonList.length === 0) {
       bar.style.display = 'none';
       if (typeof document !== 'undefined') document.body.classList.remove('has-comparison-dock');
@@ -300,7 +304,7 @@ const State = {
     bar.style.display = 'flex';
     bar.innerHTML = `
       <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span class="comparison-counter-pill">${this.comparisonList.length} / 3</span>
+        <span class="comparison-counter-pill">${this.comparisonList.length} / 4</span>
         <span style="font-weight: 700; font-size: 0.95rem;">Schools Selected for Comparison</span>
       </div>
       <div style="display: flex; gap: 0.75rem; align-items: center;">

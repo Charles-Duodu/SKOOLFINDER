@@ -2447,3 +2447,146 @@ body.has-comparison-dock .sd-chat-window {
 
 
 
+
+
+/* ========================================================
+   Blueprint v4.2: 5-Tab Persistent Mobile Navigation Dock
+   ======================================================== */
+.mobile-nav-dock {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* Prevent page content from being hidden behind the fixed dock */
+  body {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Chatbot FAB mobile elevation above dock */
+  .sd-chatbot-fab {
+    bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .sd-chat-window {
+    bottom: calc(136px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  .mobile-nav-dock {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 995;
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 -4px 20px rgba(10, 32, 70, 0.08);
+    height: calc(62px + env(safe-area-inset-bottom, 0px));
+    padding: 0.35rem 0.5rem calc(0.35rem + env(safe-area-inset-bottom, 0px)) 0.5rem;
+    align-items: center;
+    justify-content: space-around;
+  }
+
+  [data-theme="dark"] .mobile-nav-dock {
+    background: rgba(11, 21, 45, 0.97);
+    border-top-color: rgba(30, 58, 138, 0.4);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .mobile-dock-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0.2rem 0.1rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: #4A5568;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  [data-theme="dark"] .mobile-dock-btn {
+    color: #94a3b8;
+  }
+
+  .mobile-dock-btn:focus-visible {
+    outline: 2px solid var(--theme-b-blue, #1266C4);
+    outline-offset: -2px;
+  }
+
+  .mobile-dock-btn.active {
+    color: var(--theme-b-blue, #1266C4);
+    font-weight: 700;
+  }
+
+  [data-theme="dark"] .mobile-dock-btn.active {
+    color: #60a5fa;
+  }
+
+  .mobile-dock-icon-wrap {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: relative;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .mobile-dock-btn.active .mobile-dock-icon-wrap {
+    background: #ebf3fc;
+    transform: translateY(-1px);
+  }
+
+  [data-theme="dark"] .mobile-dock-btn.active .mobile-dock-icon-wrap {
+    background: rgba(30, 58, 138, 0.4);
+  }
+
+  .mobile-dock-icon-wrap svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+  }
+
+  .mobile-dock-label {
+    font-size: 0.68rem;
+    letter-spacing: -0.01em;
+    margin-top: 1px;
+    white-space: nowrap;
+    line-height: 1.1;
+  }
+
+  .mobile-dock-badge {
+    position: absolute;
+    top: -2px;
+    right: -6px;
+    background: var(--theme-b-gold, #D5A63B);
+    color: #0A2046;
+    font-size: 0.62rem;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 4px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #FFFFFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  [data-theme="dark"] .mobile-dock-badge {
+    border-color: #0b152d;
+  }
+}

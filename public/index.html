@@ -24,7 +24,7 @@
 
   <!-- PWA Manifest & Theme -->
   <link rel="manifest" href="/manifest.json">
-  <meta name="theme-color" content="#0a1128">
+  <meta name="theme-color" content="#0A2046">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -35,14 +35,14 @@
   <!-- Google Fonts Preconnect & Async Stylesheet (PF-02: Zero render-blocking cascade) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 
   <!-- Leaflet Map CSS (Feature 1: Interactive Geolocation) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
   <!-- Core CSS -->
-  <link rel="stylesheet" href="/css/style.css?v=39">
-  <link rel="stylesheet" href="/css/components.css?v=39">
+  <link rel="stylesheet" href="/css/style.css?v=40">
+  <link rel="stylesheet" href="/css/components.css?v=40">
 
   <!-- Leaflet Map JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
@@ -70,28 +70,32 @@
   <main id="main-root"></main>
 
   <!-- Global Footer Mount -->
-  <div id="footer-root" style="background-color: #0a1128;"></div>
+  <div id="footer-root" style="background-color: #0A2046;"></div>
+
+  <!-- Blueprint v4.2: 5-Tab Persistent Mobile Navigation Dock -->
+  <div id="mobile-dock-root"></div>
 
   <!-- Client Application Scripts -->
-  <script src="/js/api.js?v=39" defer></script>
-  <script src="/js/state.js?v=39" defer></script>
-  <script src="/js/components/modals.js?v=39" defer></script>
-  <script src="/js/components/navbar.js?v=39" defer></script>
-  <script src="/js/components/footer.js?v=39" defer></script>
-  <script src="/js/components/chatbot.js?v=39" defer></script>
-  <script src="/js/views/homeView.js?v=39" defer></script>
-  <script src="/js/views/directoryView.js?v=39" defer></script>
-  <script src="/js/views/schoolDetailView.js?v=39" defer></script>
-  <script src="/js/views/compareView.js?v=39" defer></script>
-  <script src="/js/views/suppliersView.js?v=39" defer></script>
-  <script src="/js/views/jobsView.js?v=39" defer></script>
-  <script src="/js/views/dashboardView.js?v=39" defer></script>
-  <script src="/js/views/csspsView.js?v=39" defer></script>
-  <script src="/js/views/resourcesView.js?v=39" defer></script>
-  <script src="/js/views/parentPortalView.js?v=39" defer></script>
-  <script src="/js/views/teachersView.js?v=39" defer></script>
-  <script src="/js/views/adminView.js?v=39" defer></script>
-  <script src="/js/app.js?v=39" defer></script>
+  <script src="/js/api.js?v=40" defer></script>
+  <script src="/js/state.js?v=40" defer></script>
+  <script src="/js/components/modals.js?v=40" defer></script>
+  <script src="/js/components/navbar.js?v=40" defer></script>
+  <script src="/js/components/mobileNav.js?v=40" defer></script>
+  <script src="/js/components/footer.js?v=40" defer></script>
+  <script src="/js/components/chatbot.js?v=40" defer></script>
+  <script src="/js/views/homeView.js?v=40" defer></script>
+  <script src="/js/views/directoryView.js?v=40" defer></script>
+  <script src="/js/views/schoolDetailView.js?v=40" defer></script>
+  <script src="/js/views/compareView.js?v=40" defer></script>
+  <script src="/js/views/suppliersView.js?v=40" defer></script>
+  <script src="/js/views/jobsView.js?v=40" defer></script>
+  <script src="/js/views/dashboardView.js?v=40" defer></script>
+  <script src="/js/views/csspsView.js?v=40" defer></script>
+  <script src="/js/views/resourcesView.js?v=40" defer></script>
+  <script src="/js/views/parentPortalView.js?v=40" defer></script>
+  <script src="/js/views/teachersView.js?v=40" defer></script>
+  <script src="/js/views/adminView.js?v=40" defer></script>
+  <script src="/js/app.js?v=40" defer></script>
   <!-- PWA Service Worker Registration & Environment Check -->
   <script>
     if (window.location.protocol === 'file:') {
