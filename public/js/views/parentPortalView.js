@@ -2902,18 +2902,26 @@ const ParentPortalView = {
   },
 
   getStatusBadge(status) {
-    switch (status) {
-      case 'Exam Scheduled':
-        return `<span class="badge" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 9999px;">⚡ Exam Scheduled</span>`;
-      case 'Admitted':
-        return `<span class="badge" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 9999px;">🎉 Admitted</span>`;
-      case 'Under Review':
-        return `<span class="badge" style="background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 9999px;">🔍 Under Review</span>`;
-      case 'Enrolled':
-        return `<span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 9999px;">🎓 Enrolled</span>`;
-      default:
-        return `<span class="badge" style="background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 9999px;">📝 Received</span>`;
+    const s = (status || "").toLowerCase();
+    if (s.includes("admit") || s.includes("offer")) {
+      return `<span class="badge" style="background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">🎉 Offer Extended / Admitted</span>`;
     }
+    if (s.includes("exam") || s.includes("assess")) {
+      return `<span class="badge" style="background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">⚡ Entrance Exam Scheduled</span>`;
+    }
+    if (s.includes("waitlist")) {
+      return `<span class="badge" style="background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">⏳ Waitlisted</span>`;
+    }
+    if (s.includes("review") || s.includes("pending")) {
+      return `<span class="badge" style="background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">📋 Under Official Review</span>`;
+    }
+    if (s.includes("enrolled")) {
+      return `<span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">🎓 Enrolled</span>`;
+    }
+    if (s.includes("decline") || s.includes("reject")) {
+      return `<span class="badge" style="background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">❌ Application Declined</span>`;
+    }
+    return `<span class="badge" style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; font-weight: 800; padding: 0.4rem 0.85rem; border-radius: 9999px;">📬 Submitted</span>`;
   },
 
   getInvoiceStatusBadge(status) {
@@ -3489,9 +3497,9 @@ const ParentPortalView = {
           </div>
           <div>
             <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Parent / Guardian</div>
-            <div style="font-weight: 700; color: var(--primary-900); font-size: 1.05rem;">${parent.name || 'Mrs. Nana Aba Mensah'}</div>
-            <div>Phone: ${parent.phone || '+233 24 412 9845'}</div>
-            <div>Email: ${parent.email || 'parent@gmail.com'}</div>
+            <div style="font-weight: 700; color: var(--primary-900); font-size: 1.05rem;">${parent.name || State.currentUser?.name || State.currentUser?.fullName || 'Parent / Guardian'}</div>
+            <div>Phone: ${parent.phone || State.currentUser?.phone || '+233 24 000 0000'}</div>
+            <div>Email: ${parent.email || State.currentUser?.email || 'parent@example.com'}</div>
           </div>
         </div>
 

@@ -69,6 +69,17 @@ router.get('/overview', authenticate, async (req, res) => {
       savedSchools,
       enquiries,
       linkedWards: userWards,
+      applications: enquiries.map(e => ({
+        id: e.id,
+        applicationNumber: e.subject && e.subject.includes('#') ? e.subject.split('#')[1].replace(')', '').trim() : `SF-ADM-2026-${e.id.slice(0, 6)}`,
+        schoolName: e.subject && e.subject.includes(':') ? e.subject.split(':')[0] : 'Accredited Institution',
+        student: { firstName: 'Applicant', lastName: 'Ward' },
+        gradeApplying: 'Primary Class 4',
+        subject: e.subject,
+        status: e.status === 'replied' ? 'Exam Scheduled' : (e.status === 'pending' ? 'Under Review' : e.status),
+        submittedAt: e.created_at,
+        date: new Date(e.created_at).toLocaleDateString('en-GB')
+      })),
       recentApplications: enquiries.map(e => ({
         id: e.id,
         schoolName: e.subject.includes(':') ? e.subject.split(':')[0] : 'Institution',

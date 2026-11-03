@@ -2468,16 +2468,21 @@ const Modals = {
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
     div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 750px;">
+      <div class="modal-dialog" style="max-width: 750px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
         <!-- Modal Header -->
-        <div class="modal-header">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
-            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">
-              Official Digital Admissions Portal
-            </div>
-            <h3 class="modal-title" id="app-modal-title">Student Admission Application — ${targetSchool.name}</h3>
+            <span class="badge" style="background: rgba(213, 166, 59, 0.25); color: #D5A63B; border: 1px solid #D5A63B; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block;">
+              📬 Blueprint v4.2 &bull; Unified Digital Admissions &amp; Voucher Desk
+            </span>
+            <h3 class="modal-title" id="app-modal-title" style="color: #ffffff; font-size: 1.35rem; margin: 0.2rem 0;">
+              Student Admission Application &mdash; ${targetSchool.name}
+            </h3>
+            <p style="font-size: 0.84rem; color: #e2e8f0; margin: 0.15rem 0 0 0;">
+              Accredited enrollment channel to ${targetSchool.name}. Zero paperwork friction.
+            </p>
           </div>
-          <button class="modal-close-btn" id="modal-close">&times;</button>
+          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1; font-size: 1.5rem;">&times;</button>
         </div>
 
         <!-- Wizard Progress Steps -->
@@ -2636,7 +2641,7 @@ const Modals = {
             <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">Primary Guardian Full Name *</label>
-                <input type="text" id="app-parent-name" class="form-input" placeholder="e.g. Dr. Kofi Asante Mensah" required />
+                <input type="text" id="app-parent-name" class="form-input" placeholder="e.g. Dr. Kofi Asante Mensah" value="${State.currentUser?.name || State.currentUser?.fullName || ''}" required />
               </div>
               <div class="form-group">
                 <label class="form-label">Relationship to Student *</label>
@@ -2652,18 +2657,18 @@ const Modals = {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">Primary Phone Number *</label>
-                <input type="tel" id="app-parent-phone" class="form-input" placeholder="e.g. 024 411 2233" required />
+                <input type="tel" id="app-parent-phone" class="form-input" placeholder="e.g. 024 411 2233" value="${State.currentUser?.phone || ''}" required />
               </div>
               <div class="form-group">
                 <label class="form-label">Active WhatsApp Number *</label>
-                <input type="tel" id="app-parent-wa" class="form-input" placeholder="e.g. 024 411 2233" required />
+                <input type="tel" id="app-parent-wa" class="form-input" placeholder="e.g. 024 411 2233" value="${State.currentUser?.phone || ''}" required />
               </div>
             </div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
               <div class="form-group">
                 <label class="form-label">Email Address *</label>
-                <input type="email" id="app-parent-email" class="form-input" placeholder="e.g. parent@example.com" required />
+                <input type="email" id="app-parent-email" class="form-input" placeholder="e.g. parent@example.com" value="${State.currentUser?.email || ''}" required />
               </div>
               <div class="form-group">
                 <label class="form-label">Occupation / Profession</label>
@@ -2856,7 +2861,32 @@ const Modals = {
           documentsSubmitted: docs
         });
 
-        const app = res.application;
+        const app = res.application || {
+          applicationNumber: res.applicationNumber,
+          student: { fullName: studentName },
+          gradeApplying,
+          schoolName: targetSchool.name,
+          termApplied,
+          parentGuardian: { primaryGuardianName: parentName },
+          status: res.status || 'Under Review'
+        };
+
+        // Blueprint v4.2 Phase 6: Auto-sync shortlist stage to 'applied' if parent is authenticated
+        if (State.isAuthenticated() && State.isParent() && API.updateParentShortlist) {
+          try {
+            await API.updateParentShortlist(targetSchool.id, {
+              stage: 'applied',
+              notes: `Formal admission application submitted (#${app.applicationNumber}) for ${studentName}`
+            });
+            if (!State.isBookmarked(targetSchool.id)) {
+              State.bookmarkedSchoolIds.push(targetSchool.id);
+              try { localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(State.bookmarkedSchoolIds)); } catch (e) {}
+            }
+          } catch (syncErr) {
+            console.warn("Shortlist sync on admission apply:", syncErr.message);
+          }
+        }
+
         State.showToast(`Application ${app.applicationNumber} registered successfully!`, 'success');
 
         // Render Confirmation Slip View
