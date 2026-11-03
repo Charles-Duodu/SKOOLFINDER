@@ -62,9 +62,8 @@ const Navbar = {
             <span>SkoolFinder</span>
           </a>
 
-          <!-- Main Nav Links: Public Directory & 5 Dedicated Portals -->
+          <!-- Main Nav Links -->
           <ul class="nav-links">
-            <!-- Home & Public School Discovery -->
             <li>
               <a href="/" id="nav-link-home" class="nav-link-direct ${State.currentView === 'home' ? 'active' : ''}">
                 <span>🏠</span> Home
@@ -74,71 +73,6 @@ const Navbar = {
               <a href="/directory" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
               </a>
-            </li>
-
-            <!-- The 5 Dedicated SaaS Portals -->
-            <li class="nav-item-dropdown">
-              <button class="nav-dropdown-trigger" id="dropdown-portals-btn" aria-haspopup="true">
-                <span>Portals ▾</span>
-              </button>
-              <div class="nav-dropdown-panel" id="dropdown-portals-panel" style="min-width: 320px;">
-                <a href="/parents" id="nav-link-parents" class="dropdown-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                  <div class="dropdown-icon-box" style="background: #eff6ff;">👨‍👩‍👧</div>
-                  <div>
-                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
-                      <span>Parents Portal</span>
-                      <span class="badge badge-admissions" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/parents</span>
-                    </div>
-                    <div class="dropdown-item-desc">School discovery, 4-way compare, decision board & admissions tracking</div>
-                  </div>
-                </a>
-
-                <a href="/teachers" id="nav-link-teachers" class="dropdown-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
-                  <div class="dropdown-icon-box" style="background: #ecfdf5;">🧑‍🏫</div>
-                  <div>
-                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
-                      <span>Teachers Portal</span>
-                      <span class="badge badge-emerald" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/teachers</span>
-                    </div>
-                    <div class="dropdown-item-desc">Tutor marketplace, NTC vetting & school vacancies</div>
-                  </div>
-                </a>
-
-                <a href="/suppliers" id="nav-link-suppliers" class="dropdown-item ${State.currentView === 'suppliers' ? 'active' : ''}">
-                  <div class="dropdown-icon-box" style="background: #fffbeb;">📦</div>
-                  <div>
-                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
-                      <span>Suppliers Portal</span>
-                      <span class="badge badge-gold" style="font-size: 0.65rem; padding: 0.1rem 0.4rem;">/suppliers</span>
-                    </div>
-                    <div class="dropdown-item-desc">B2B procurement, school RFQ bidding & catalog</div>
-                  </div>
-                </a>
-
-                <a href="/schools" id="nav-link-schools" class="dropdown-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
-                  <div class="dropdown-icon-box" style="background: #f3e8ff;">🏫</div>
-                  <div>
-                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
-                      <span>Schools Portal</span>
-                      <span class="badge" style="background: #8b5cf6; color: #fff; font-size: 0.65rem; padding: 0.1rem 0.4rem;">/schools</span>
-                    </div>
-                    <div class="dropdown-item-desc">School Management OS: Admissions, bursar & fleet</div>
-                  </div>
-                </a>
-
-                <div style="border-top: 1px solid var(--border-light); margin: 0.25rem 0;"></div>
-
-                <a href="/admin" id="nav-link-admin" class="dropdown-item ${State.currentView === 'admin' ? 'active' : ''}">
-                  <div class="dropdown-icon-box" style="background: #0f172a; color: #fff;">🛡️</div>
-                  <div>
-                    <div class="dropdown-item-title" style="display: flex; align-items: center; gap: 0.4rem;">
-                      <span>Admin Console</span>
-                      <span class="badge" style="background: #0f172a; color: #93c5fd; font-size: 0.65rem; padding: 0.1rem 0.4rem;">/admin</span>
-                    </div>
-                    <div class="dropdown-item-desc">Platform control, NaSIA oversight & SaaS billing</div>
-                  </div>
-                </a>
-              </div>
             </li>
           </ul>
 
@@ -181,6 +115,29 @@ const Navbar = {
           </div>
         </div>
 
+        <!-- WHO ARE YOU: SUB-HEADER STRIP -->
+        <div class="who-are-you-bar">
+          <div class="container who-are-you-inner">
+            <span class="who-label">
+              <span>👤</span> Who Are You:
+            </span>
+            <div class="who-roles-list">
+              <a href="/parents" id="who-nav-parent" class="who-role-pill ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parent
+              </a>
+              <a href="/teachers" id="who-nav-teacher" class="who-role-pill ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
+                <span>🧑‍🏫</span> Teacher
+              </a>
+              <a href="/suppliers" id="who-nav-supplier" class="who-role-pill ${State.currentView === 'suppliers' ? 'active' : ''}">
+                <span>📦</span> Supplier
+              </a>
+              <a href="/schools" id="who-nav-school" class="who-role-pill ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
+                <span>🏫</span> School Owner / Proprietor
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- Mobile Drawer Dropdown -->
         <div id="mobile-nav-drawer" class="mobile-nav-drawer ${this.isMobileMenuOpen ? 'open' : ''}">
           <div class="mobile-nav-links">
@@ -201,23 +158,20 @@ const Navbar = {
               ` : ''}
             </div>
 
-            <!-- Category 2: 5 Dedicated SaaS Portals -->
-            <div class="mob-category-card" style="border: 2px solid #3b82f6;">
-              <div class="mob-category-header" style="color: #1d4ed8; font-weight: 800;">🏛️ The 5 Portals</div>
-              <a href="/parents" id="mob-link-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parents Portal (/parents)
+            <!-- Category 2: Who Are You (Singular Roles) -->
+            <div class="mob-category-card" style="border: 2px solid #1266C4;">
+              <div class="mob-category-header" style="color: #0A2046; font-weight: 800;">👤 Who Are You</div>
+              <a href="/parents" id="mob-who-parent" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parent
               </a>
-              <a href="/teachers" id="mob-link-teachers" class="mobile-nav-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
-                <span>🧑‍🏫</span> Teachers Portal (/teachers)
+              <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
+                <span>🧑‍🏫</span> Teacher
               </a>
-              <a href="/suppliers" id="mob-link-suppliers" class="mobile-nav-item ${State.currentView === 'suppliers' ? 'active' : ''}">
-                <span>📦</span> Suppliers Portal (/suppliers)
+              <a href="/suppliers" id="mob-who-supplier" class="mobile-nav-item ${State.currentView === 'suppliers' ? 'active' : ''}">
+                <span>📦</span> Supplier
               </a>
-              <a href="/schools" id="mob-link-schools" class="mobile-nav-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
-                <span>🏫</span> Schools Portal (/schools)
-              </a>
-              <a href="/admin" id="mob-link-admin" class="mobile-nav-item ${State.currentView === 'admin' ? 'active' : ''}">
-                <span>🛡️</span> Admin Console (/admin)
+              <a href="/schools" id="mob-who-school" class="mobile-nav-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
+                <span>🏫</span> School Owner / Proprietor
               </a>
             </div>
 
@@ -276,45 +230,49 @@ const Navbar = {
       if (drawer) drawer.classList.remove('open');
     };
 
-    // Portal 1: Parents
-    const handleParentsNav = (e) => {
+    // Role 1: Parent
+    const handleParentNav = (e) => {
       e.preventDefault();
       closeMobDrawer();
       App.navigate('parents');
     };
-    document.getElementById('nav-link-parents')?.addEventListener('click', handleParentsNav);
-            document.getElementById('nav-link-parent')?.addEventListener('click', handleParentsNav);
-    document.getElementById('mob-link-parents')?.addEventListener('click', handleParentsNav);
-    document.getElementById('mob-link-parent')?.addEventListener('click', handleParentsNav);
+    document.getElementById('who-nav-parent')?.addEventListener('click', handleParentNav);
+    document.getElementById('mob-who-parent')?.addEventListener('click', handleParentNav);
+    document.getElementById('nav-link-parents')?.addEventListener('click', handleParentNav);
+    document.getElementById('mob-link-parents')?.addEventListener('click', handleParentNav);
 
-    // Portal 2: Teachers
-    const handleTeachersNav = (e) => {
+    // Role 2: Teacher
+    const handleTeacherNav = (e) => {
       e.preventDefault();
       closeMobDrawer();
       App.navigate('teachers');
     };
-    document.getElementById('nav-link-teachers')?.addEventListener('click', handleTeachersNav);
-    document.getElementById('mob-link-teachers')?.addEventListener('click', handleTeachersNav);
+    document.getElementById('who-nav-teacher')?.addEventListener('click', handleTeacherNav);
+    document.getElementById('mob-who-teacher')?.addEventListener('click', handleTeacherNav);
+    document.getElementById('nav-link-teachers')?.addEventListener('click', handleTeacherNav);
+    document.getElementById('mob-link-teachers')?.addEventListener('click', handleTeacherNav);
 
-    // Portal 3: Suppliers
-    const handleSuppliersNav = (e) => {
+    // Role 3: Supplier
+    const handleSupplierNav = (e) => {
       e.preventDefault();
       closeMobDrawer();
       App.navigate('suppliers');
     };
-    document.getElementById('nav-link-suppliers')?.addEventListener('click', handleSuppliersNav);
-    document.getElementById('mob-link-suppliers')?.addEventListener('click', handleSuppliersNav);
+    document.getElementById('who-nav-supplier')?.addEventListener('click', handleSupplierNav);
+    document.getElementById('mob-who-supplier')?.addEventListener('click', handleSupplierNav);
+    document.getElementById('nav-link-suppliers')?.addEventListener('click', handleSupplierNav);
+    document.getElementById('mob-link-suppliers')?.addEventListener('click', handleSupplierNav);
 
-    // Portal 4: Schools
-    const handleSchoolsNav = (e) => {
+    // Role 4: School Owner / Proprietor
+    const handleSchoolNav = (e) => {
       e.preventDefault();
       closeMobDrawer();
       App.navigate('schools', State.currentUser?.schoolId || 'sch-gis-accra');
     };
-    document.getElementById('nav-link-schools')?.addEventListener('click', handleSchoolsNav);
-    document.getElementById('nav-link-dashboard')?.addEventListener('click', handleSchoolsNav);
-    document.getElementById('mob-link-schools')?.addEventListener('click', handleSchoolsNav);
-    document.getElementById('mob-link-dashboard')?.addEventListener('click', handleSchoolsNav);
+    document.getElementById('who-nav-school')?.addEventListener('click', handleSchoolNav);
+    document.getElementById('mob-who-school')?.addEventListener('click', handleSchoolNav);
+    document.getElementById('nav-link-schools')?.addEventListener('click', handleSchoolNav);
+    document.getElementById('mob-link-schools')?.addEventListener('click', handleSchoolNav);
 
     // Portal 5: Super Admin
     const handleAdminNav = (e) => {
