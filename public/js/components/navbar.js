@@ -75,6 +75,11 @@ const Navbar = {
                 <span>👨‍👩‍👧</span> Parents Portal
               </a>
             </li>
+            <li>
+              <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parents Portal
+              </a>
+            </li>
 
             <!-- The 5 Dedicated SaaS Portals -->
             <li class="nav-item-dropdown">
@@ -207,6 +212,11 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
+                <span>👨‍👩‍👧</span> Parents Portal
+              </a>
+            </li>
+            <li>
+              <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
                 <span>👨‍👩‍👧</span> Parents Portal
               </a>
               ${State.comparisonList.length > 0 ? `

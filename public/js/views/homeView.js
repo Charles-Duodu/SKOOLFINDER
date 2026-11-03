@@ -78,6 +78,14 @@ const HomeView = {
                 <span>🔍</span> Find Schools
               </button>
             </form>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.15); flex-wrap: wrap; gap: 0.5rem;">
+              <span style="font-size: 0.82rem; color: rgba(255, 255, 255, 0.85);">
+                ✨ Unsure which institution fits your family's criteria?
+              </span>
+              <button id="btn-hero-matchmaker" type="button" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.35rem 0.95rem; font-weight: 800; box-shadow: 0 2px 8px rgba(213, 166, 59, 0.3);">
+                <span>🎯</span> Launch 2-Min Fit Matchmaker &rarr;
+              </button>
+            </div>
 
 
           </div>
@@ -506,6 +514,12 @@ const HomeView = {
         App.navigate('directory');
       };
     }
+
+    // Hero Matchmaker CTA
+    document.getElementById('btn-hero-matchmaker')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('matchmaker');
+    });
 
     // Quick tag pills
     document.querySelectorAll('.quick-tag-pill').forEach(btn => {

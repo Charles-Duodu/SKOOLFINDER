@@ -62,6 +62,17 @@ const DirectoryView = {
                 <button id="btn-reset-filters" class="filter-reset-btn">Reset All</button>
               </div>
 
+              <!-- Blueprint v4.2: Matchmaker Direct Banner -->
+              <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); border-radius: var(--radius-md); padding: 0.85rem 1rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; box-shadow: var(--shadow-sm);">
+                <div>
+                  <div style="font-weight: 800; font-size: 0.82rem; color: #fbbf24;">🎯 Not sure where to start?</div>
+                  <div style="font-size: 0.72rem; color: rgba(255,255,255,0.85); margin-top: 0.15rem;">Try our 2-step Fit Adviser.</div>
+                </div>
+                <button id="btn-dir-launch-match" class="btn-pill btn-gold" style="font-size: 0.72rem; padding: 0.3rem 0.65rem; font-weight: 800; white-space: nowrap;">
+                  Fit Adviser &rarr;
+                </button>
+              </div>
+
               <!-- Region Filter -->
               <div class="filter-group">
                 <label class="filter-group-label">Region</label>
@@ -324,6 +335,12 @@ const DirectoryView = {
     document.querySelector('.breadcrumb-home')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('home');
+    });
+
+    // Launch Matchmaker
+    document.getElementById('btn-dir-launch-match')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('matchmaker');
     });
 
     // View Mode Toggle buttons

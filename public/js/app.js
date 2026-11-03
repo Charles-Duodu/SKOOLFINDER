@@ -113,7 +113,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'cssps', 'resources', 'school-detail'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -146,6 +146,11 @@ const App = {
         title: 'Compare Schools in Ghana | SkoolFinder Academic Comparison Tool',
         description: 'Compare fees, curricula, class sizes, boarding, and facilities side-by-side between top schools in Accra, Tema, and Kumasi.',
         canonicalUrl: 'https://skoolfinder.vercel.app/compare'
+      },
+      'matchmaker': {
+        title: "Child's Educational Fit Adviser & Matchmaker | SkoolFinder Ghana",
+        description: 'Find the ideal school in Ghana for your child. Transparent 2-step matchmaker based on verified curriculum, location, boarding, and family priorities.',
+        canonicalUrl: 'https://skoolfinder.vercel.app/matchmaker'
       },
       'parents': {
         title: 'Parent Admissions Hub | SkoolFinder Ghana',
@@ -234,6 +239,10 @@ const App = {
         content = CompareView.render();
         mainRoot.innerHTML = content;
         CompareView.attachEvents();
+      } else if (viewName === 'matchmaker') {
+        content = await MatchmakerView.render();
+        mainRoot.innerHTML = content;
+        MatchmakerView.attachEvents();
       } else if (viewName === 'parents') {
         content = await ParentPortalView.render();
         mainRoot.innerHTML = content;

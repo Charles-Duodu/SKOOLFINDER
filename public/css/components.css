@@ -2590,3 +2590,39 @@ body.has-comparison-dock .sd-chat-window {
     border-color: #0b152d;
   }
 }
+
+
+/* ========================================================
+   Blueprint v4.2: 4-Way Comparison Matrix & Mobile Toolbar
+   ======================================================== */
+.mobile-compare-toolbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-compare-toolbar {
+    display: block;
+  }
+}
+
+/* ========================================================
+   Blueprint v4.2: School Fit Matchmaker Responsive Cards
+   ======================================================== */
+.match-level-card:hover,
+.match-board-card:hover,
+.match-curr-card:hover,
+.match-budget-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.match-priority-pill:hover {
+  border-color: var(--theme-b-blue, #1266C4) !important;
+}
+
+@media (max-width: 900px) {
+  .match-school-card {
+    grid-template-columns: 1fr !important;
+    gap: 1.25rem !important;
+  }
+}

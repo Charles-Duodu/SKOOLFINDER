@@ -9,7 +9,7 @@ const MobileNav = {
 
     const isHome = current === 'home';
     const isDiscover = current === 'directory';
-    const isExplore = current === 'explore';
+    const isExplore = current === 'explore' || current === 'matchmaker';
     const isCompare = current === 'compare';
     const isMySpace = current === 'parents' || current === 'parent-portal';
 
@@ -101,14 +101,7 @@ const MobileNav = {
     if (btnExplore) {
       btnExplore.onclick = (e) => {
         e.preventDefault();
-        // Navigates to directory and scrolls to quick filters / curated category section
-        if (typeof App !== 'undefined') {
-          App.navigate('directory');
-          setTimeout(() => {
-            const filterEl = document.getElementById('directory-filters-section') || document.querySelector('.filters-section');
-            if (filterEl) filterEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 150);
-        }
+        if (typeof App !== 'undefined') App.navigate('matchmaker');
       };
     }
 
@@ -152,3 +145,4 @@ const MobileNav = {
 if (typeof window !== 'undefined') {
   window.MobileNav = MobileNav;
 }
+
