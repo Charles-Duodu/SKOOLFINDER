@@ -1088,6 +1088,18 @@ const API = {
     return result;
   },
 
+  // Blueprint v4.2 Phase 5: Direct School Admissions Messaging & Visit Replies
+  async replyInquiry(id, replyData = {}) {
+    const res = await fetch(`${this.baseUrl}/inquiries/${encodeURIComponent(id)}/reply`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(replyData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to send inquiry reply");
+    return result;
+  },
+
   // Digital School Fee Invoicing & MoMo Payment Collection (Feature 6)
   async getInvoices(filters = {}) {
     const query = new URLSearchParams();

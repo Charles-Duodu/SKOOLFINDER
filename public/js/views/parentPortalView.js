@@ -1386,6 +1386,103 @@ const ParentPortalView = {
   },
 
   renderInquiriesTab() {
+    const inquiries = this.overviewData?.inquiries || [];
+
+    if (!inquiries || inquiries.length === 0) {
+      return `
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px dashed #cbd5e1; padding: 4rem 2rem; text-align: center;">
+          <div style="font-size: 3rem; margin-bottom: 0.75rem;">💬</div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #0A2046; margin-bottom: 0.5rem;">
+            No Direct School Inquiries Yet
+          </h3>
+          <p style="color: #64748b; max-width: 500px; margin: 0 auto 1.5rem; font-size: 0.95rem; line-height: 1.5;">
+            When you request campus visits, book school open-days, or send admissions inquiries to school heads, they will appear here with live reply threads.
+          </p>
+          <button class="btn-pill btn-primary" onclick="App.navigate('directory')" style="font-size: 0.9rem; font-weight: 700;">
+            Explore Schools to Inquire &rarr;
+          </button>
+        </div>
+      `;
+    }
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0 0 0.2rem 0;">
+              💬 Direct Admissions Messaging &amp; Campus Tours (${inquiries.length})
+            </h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Real-time communication threads logged with verified school admissions desks.
+            </p>
+          </div>
+          <button class="btn-pill btn-outline" onclick="App.navigate('directory')" style="font-size: 0.84rem; font-weight: 700;">
+            <span>➕</span> New School Inquiry
+          </button>
+        </div>
+
+        ${inquiries.map(inq => {
+          const inqDate = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+          const refCode = inq.referenceNumber || inq.inquiryNumber || inq.id || 'SF-INQ-001';
+          const isTour = inq.tourRequested || (inq.subject && inq.subject.toLowerCase().includes('tour'));
+
+          return `
+            <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div style="flex: 1; min-width: 280px;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                    <span style="font-size: 0.82rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                      🏫 ${inq.schoolName || 'Accredited Institution'}
+                    </span>
+                    <span style="font-size: 0.76rem; color: #94a3b8;">&bull;</span>
+                    <span style="font-size: 0.78rem; color: #64748b; font-family: monospace; font-weight: 700;">${refCode}</span>
+                    <span style="font-size: 0.76rem; color: #94a3b8;">&bull;</span>
+                    <span style="font-size: 0.78rem; color: #64748b;">${inqDate}</span>
+                  </div>
+
+                  <h4 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                    ${isTour ? '🚶 In-Person Campus Tour &amp; Facility Inspection' : '❓ Direct Admission &amp; Academic Fit Inquiry'}
+                  </h4>
+
+                  <div style="font-size: 0.82rem; color: #475569; margin-bottom: 0.5rem;">
+                    Candidate: <strong>${inq.studentName || 'Student Ward'}</strong> ${inq.gradeApplying ? `(${inq.gradeApplying})` : ''}
+                  </div>
+
+                  <p style="color: #334155; font-size: 0.88rem; margin: 0 0 0.85rem 0; line-height: 1.5; background: #f8fafc; padding: 0.75rem 1rem; border-radius: 8px; border-left: 3px solid #1266C4;">
+                    "${inq.message || 'Inquiry logged regarding admissions screening, fees, and campus walkthrough.'}"
+                  </p>
+
+                  ${isTour ? `
+                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 0.3rem 0.65rem; font-size: 0.8rem; color: #166534; font-weight: 700;">
+                      <span>📅</span> Requested Tour: ${inq.preferredTourDate || inq.tourDate || 'Next Available Slot'} (${inq.preferredTourTime || 'Morning Session'})
+                    </div>
+                  ` : ''}
+                </div>
+
+                <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem;">
+                  <span class="badge" style="background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; font-weight: 800; padding: 0.35rem 0.75rem; border-radius: 8px;">
+                    ${inq.status || '🟢 Confirmed by Admissions'}
+                  </span>
+                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    <button type="button" class="btn-pill btn-primary btn-open-inquiry-thread" data-inq-id="${refCode}" style="font-size: 0.82rem; padding: 0.45rem 0.95rem; font-weight: 700;">
+                      <span>💬</span> View Thread &amp; Replies
+                    </button>
+                    ${inq.schoolId ? `
+                      <button type="button" class="btn-pill btn-outline" onclick="App.navigate('schools', '${inq.schoolId}')" style="font-size: 0.82rem; padding: 0.45rem 0.85rem; font-weight: 700;">
+                        View School &rarr;
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  },
+
+  _legacy_renderInquiriesTab() {
     const { inquiries } = this.overviewData;
 
     if (!inquiries || inquiries.length === 0) {
@@ -1468,7 +1565,7 @@ const ParentPortalView = {
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
           <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 600;">
-            Showing ${savedSchools.length} shortlisted schools for Kwame Mensah
+            Showing ${savedSchools.length} shortlisted school(s)
           </span>
           <button class="btn-pill btn-secondary" onclick="App.navigate('compare')" style="font-size: 0.82rem;">
             ⚖️ Open Detailed Side-by-Side Comparison
@@ -3056,6 +3153,23 @@ const ParentPortalView = {
       });
     });
 
+    // Phase 5: Open Inquiry Thread Modal
+    document.querySelectorAll('.btn-open-inquiry-thread').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const inqId = e.currentTarget.dataset.inqId;
+        try {
+          btn.disabled = true;
+          const threadData = await API.getInquiryById(inqId);
+          btn.disabled = false;
+          Modals.openInquiryThreadModal(threadData, { name: threadData.schoolName || 'Admissions Desk', id: threadData.schoolId });
+        } catch (err) {
+          btn.disabled = false;
+          State.showToast(err.message || "Failed to load inquiry thread", "error");
+        }
+      });
+    });
+
+    
     // Enrolled Ward Subtab Switching
     document.querySelectorAll('.btn-enrolled-subtab').forEach(btn => {
       btn.addEventListener('click', (e) => {

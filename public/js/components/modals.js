@@ -3704,18 +3704,20 @@ const Modals = {
     div.id = 'modal-backdrop';
     div.className = 'modal-backdrop';
     div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 680px;">
-        <div class="modal-header">
+      <div class="modal-dialog" style="max-width: 680px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
-            <span class="badge" style="background: #e0f2fe; color: #0284c7; font-weight: 700; margin-bottom: 0.35rem;">
-              📬 Feature #3: Direct Admissions Desk Inquiry
+            <span class="badge" style="background: rgba(213, 166, 59, 0.25); color: #D5A63B; border: 1px solid #D5A63B; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block;">
+              📬 Blueprint v4.2 &bull; Direct Admissions Desk Communication
             </span>
-            <h3 class="modal-title">Inquire & Book Campus Tour</h3>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
-              Send a direct verified message to <strong>${school.name}</strong> (${school.suburb}, ${school.region}).
+            <h3 class="modal-title" style="color: #ffffff; font-size: 1.35rem; margin: 0.2rem 0;">
+              Schedule Campus Tour &amp; Admissions Inquiry
+            </h3>
+            <p style="font-size: 0.84rem; color: #e2e8f0; margin: 0.15rem 0 0 0;">
+              Official verified channel to <strong>${school.name}</strong> (${school.suburb || school.locality || 'Accra'}, ${school.region || 'Greater Accra'}).
             </p>
           </div>
-          <button class="modal-close-btn" id="modal-close">&times;</button>
+          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1; font-size: 1.5rem;">&times;</button>
         </div>
 
         <form id="form-inquire-school" class="modal-body" style="padding: 1.75rem;">
@@ -3762,22 +3764,22 @@ const Modals = {
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
             <div>
               <label class="form-label" style="font-size: 0.8rem;">Parent / Guardian Name *</label>
-              <input type="text" id="inq-parent-name" class="form-input" placeholder="e.g. Mrs. Vivian Mensah" required />
+              <input type="text" id="inq-parent-name" class="form-input" placeholder="e.g. Vivian Mensah" value="${State.currentUser?.name || State.currentUser?.fullName || ''}" required />
             </div>
             <div>
               <label class="form-label" style="font-size: 0.8rem;">Phone Number *</label>
-              <input type="tel" id="inq-parent-phone" class="form-input" placeholder="e.g. +233 24 123 4567" required />
+              <input type="tel" id="inq-parent-phone" class="form-input" placeholder="e.g. +233 24 123 4567" value="${State.currentUser?.phone || ''}" required />
             </div>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
             <div>
               <label class="form-label" style="font-size: 0.8rem;">WhatsApp Number (For Direct Replies) *</label>
-              <input type="tel" id="inq-parent-wa" class="form-input" placeholder="e.g. +233 24 123 4567" required />
+              <input type="tel" id="inq-parent-wa" class="form-input" placeholder="e.g. +233 24 123 4567" value="${State.currentUser?.phone || ''}" required />
             </div>
             <div>
               <label class="form-label" style="font-size: 0.8rem;">Email Address (Optional)</label>
-              <input type="email" id="inq-parent-email" class="form-input" placeholder="e.g. vivian.mensah@gmail.com" />
+              <input type="email" id="inq-parent-email" class="form-input" placeholder="e.g. vivian.mensah@gmail.com" value="${State.currentUser?.email || ''}" />
             </div>
           </div>
 
@@ -3806,8 +3808,8 @@ const Modals = {
 
           <div class="modal-footer" style="padding: 1rem 0 0 0; background: none; border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 0.75rem;">
             <button type="button" class="btn-pill btn-outline" id="btn-cancel-inquiry">Cancel</button>
-            <button type="submit" class="btn-pill btn-primary" style="padding: 0.65rem 1.75rem;">
-              <span>📤</span> Dispatch Inquiry to Admissions Desk
+            <button type="submit" class="btn-pill" style="padding: 0.75rem 1.75rem; background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border: none; font-size: 0.95rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; border-radius: 10px; box-shadow: 0 4px 14px rgba(10,32,70,0.3);">
+              <span>📤</span> Dispatch to Admissions Desk &rarr;
             </button>
           </div>
         </form>
@@ -3869,6 +3871,23 @@ const Modals = {
           message
         });
 
+        // Blueprint v4.2 Phase 5: Automatically sync shortlist stage if parent is logged in
+        if (State.isAuthenticated() && State.isParent() && API.updateParentShortlist) {
+          try {
+            const nextStage = tourRequested ? 'visit_planned' : 'interested';
+            await API.updateParentShortlist(school.id, {
+              stage: nextStage,
+              notes: tourRequested ? `Campus tour requested for ${preferredTourDate || 'upcoming session'}` : `Admission inquiry submitted: ${subject}`
+            });
+            if (!State.isBookmarked(school.id)) {
+              State.bookmarkedSchoolIds.push(school.id);
+              try { localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(State.bookmarkedSchoolIds)); } catch (e) {}
+            }
+          } catch (syncErr) {
+            console.warn("Shortlist sync on inquiry:", syncErr.message);
+          }
+        }
+
         this.close();
         Modals.openInquiryConfirmationModal(res.inquiry, school);
         if (onComplete) onComplete(res.inquiry);
@@ -3912,6 +3931,9 @@ const Modals = {
             <a href="https://wa.me/${((school?.whatsapp || inquiry.parentWhatsapp) || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello, I submitted an official inquiry on SkoolFinder Ghana (Ref: ${inquiry.inquiryNumber}) for ${inquiry.studentName}.`)}" target="_blank" class="btn-pill" style="background: var(--whatsapp-green); color: #fff; font-weight: 700; text-decoration: none; justify-content: center; padding: 0.75rem 1rem;">
               <span>💬</span> Continue Direct via Admissions WhatsApp
             </a>
+            <button type="button" class="btn-pill btn-primary" id="btn-inquiry-view-journey" style="justify-content: center; font-weight: 800;">
+              <span>🛣️</span> View in My School Journey
+            </button>
             <button type="button" class="btn-pill btn-outline" id="btn-inquiry-done" style="justify-content: center;">
               Return to Platform
             </button>
@@ -3928,6 +3950,13 @@ const Modals = {
     });
 
     document.getElementById('btn-inquiry-done').onclick = () => this.close();
+    document.getElementById('btn-inquiry-view-journey')?.addEventListener('click', () => {
+      this.close();
+      if (typeof ParentPortalView !== 'undefined') {
+        ParentPortalView.activeTab = 'journey';
+      }
+      App.navigate('parents');
+    });
   },
 
   openInquiryThreadModal(inquiry, school, onComplete = null) {

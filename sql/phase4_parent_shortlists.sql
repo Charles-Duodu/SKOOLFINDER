@@ -26,3 +26,4 @@ DROP POLICY IF EXISTS "Parents manage own shortlists" ON public.parent_shortlist
 CREATE POLICY "Parents manage own shortlists" ON public.parent_shortlists FOR ALL USING (
     EXISTS (SELECT 1 FROM public.profiles WHERE id = parent_shortlists.user_id AND auth_user_id = auth.uid())
 );
+
