@@ -4840,7 +4840,7 @@ const Modals = {
             <form id="form-admin-auth-login">
               <div class="form-group" style="margin-bottom: 0.95rem;">
                 <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Email Address *</label>
-                <input type="email" id="admin-login-email" class="form-input" placeholder="e.g. admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="email" id="admin-login-email" class="form-input" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <div class="form-group" style="margin-bottom: 1.25rem;">
@@ -4848,7 +4848,7 @@ const Modals = {
                   <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password *</label>
                   <button type="button" id="btn-toggle-admin-login-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
                 </div>
-                <input type="password" id="admin-login-password" class="form-input" placeholder="Enter your password" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="password" id="admin-login-password" class="form-input" required style="width: 100%; padding: 0.75rem 0.95rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <button type="submit" id="btn-admin-login-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -4873,17 +4873,17 @@ const Modals = {
 
               <div class="form-group" style="margin-bottom: 0.9rem;">
                 <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Full Name *</label>
-                <input type="text" id="admin-reg-name" class="form-input" placeholder="e.g. Charles Duodu" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="text" id="admin-reg-name" class="form-input" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <div class="form-group" style="margin-bottom: 0.9rem;">
                 <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Email Address *</label>
-                <input type="email" id="admin-reg-email" class="form-input" placeholder="e.g. admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="email" id="admin-reg-email" class="form-input" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <div class="form-group" style="margin-bottom: 0.9rem;">
                 <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.35rem; display: block;">Phone Number *</label>
-                <input type="tel" id="admin-reg-phone" class="form-input" placeholder="e.g. +44 7911 123456 or 024 000 0000" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="tel" id="admin-reg-phone" class="form-input" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <div class="form-group" style="margin-bottom: 1.25rem;">
@@ -4891,7 +4891,7 @@ const Modals = {
                   <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password (Min 6 characters) *</label>
                   <button type="button" id="btn-toggle-admin-reg-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
                 </div>
-                <input type="password" id="admin-reg-password" class="form-input" placeholder="Create your administrator password" required minlength="6" style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="password" id="admin-reg-password" class="form-input" required minlength="6" style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <button type="submit" id="btn-admin-reg-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
