@@ -9,6 +9,7 @@ const isValidUUID = (id) => typeof id === 'string' && UUID_REGEX.test(id.trim())
 
 // In-memory linked wards store per user (synced with session)
 const userWardsStore = new Map();
+const userShortlistsStore = new Map();
 
 /**
  * GET /api/parents/overview & /api/parent/overview
@@ -298,6 +299,228 @@ router.get('/bookmarks', authenticate, async (req, res) => {
     return res.json(bookmarks || []);
   } catch (err) {
     return res.status(500).json({ error: 'Failed to fetch bookmarks' });
+  }
+});
+
+
+/**
+ * GET /api/parents/shortlists
+ * Blueprint v4.2 Phase 4: Retrieve 5-State Decision Board Shortlists
+ */
+router.get('/shortlists', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    let list = [];
+
+    // 1. Try fetching from Supabase table if available
+    if (isValidUUID(userId)) {
+      try {
+        const { data: dbItems, error: dbErr } = await supabaseAdmin
+          .from('parent_shortlists')
+          .select('*')
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false });
+
+        if (!dbErr && dbItems) {
+          list = dbItems.map(item => ({
+            id: item.id,
+            schoolId: item.school_id,
+            stage: item.stage || 'considering',
+            priority: Boolean(item.priority),
+            notes: item.notes || '',
+            createdAt: item.created_at,
+            updatedAt: item.updated_at
+          }));
+        }
+      } catch (e) {}
+    }
+
+    // 2. Fallback to in-memory store if DB query returned empty or table doesn't exist
+    if (list.length === 0) {
+      const memoryItems = userShortlistsStore.get(userId) || [];
+      if (memoryItems.length > 0) {
+        list = [...memoryItems];
+      }
+    }
+
+    // 3. Fallback to bookmarks if neither has records
+    if (list.length === 0 && isValidUUID(userId)) {
+      try {
+        const { data: bookmarks } = await supabaseAdmin
+          .from('bookmarks')
+          .select('listing_id, created_at')
+          .eq('user_id', userId)
+          .eq('listing_type', 'school');
+
+        if (bookmarks && bookmarks.length > 0) {
+          list = bookmarks.map(b => ({
+            schoolId: b.listing_id,
+            stage: 'considering',
+            priority: false,
+            notes: '',
+            createdAt: b.created_at || new Date().toISOString(),
+            updatedAt: b.created_at || new Date().toISOString()
+          }));
+          userShortlistsStore.set(userId, list);
+        }
+      } catch (e) {}
+    }
+
+    // 4. Enrich with school metadata
+    const schoolIds = list.map(item => item.schoolId).filter(Boolean);
+    const schoolMap = new Map();
+
+    if (schoolIds.length > 0) {
+      try {
+        const { data: schools } = await supabaseAdmin
+          .from('schools')
+          .select('id, name, slug, region, curriculum, ownership_type, featured_image, logo_url, rating, review_count')
+          .in('id', schoolIds.filter(isValidUUID));
+
+        if (schools) {
+          schools.forEach(s => schoolMap.set(s.id, s));
+        }
+      } catch (e) {}
+    }
+
+    const enriched = list.map(item => {
+      const sch = schoolMap.get(item.schoolId) || {};
+      return {
+        ...item,
+        schoolName: sch.name || `School (${item.schoolId})`,
+        region: sch.region || 'Greater Accra',
+        curriculum: sch.curriculum || 'Standard',
+        ownershipType: sch.ownership_type || 'Private',
+        imageUrl: sch.featured_image || sch.logo_url || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=400&q=80',
+        slug: sch.slug || item.schoolId
+      };
+    });
+
+    // Compute stage counts
+    const counts = {
+      considering: enriched.filter(s => s.stage === 'considering').length,
+      interested: enriched.filter(s => s.stage === 'interested').length,
+      preferred: enriched.filter(s => s.stage === 'preferred').length,
+      visit_planned: enriched.filter(s => s.stage === 'visit_planned').length,
+      not_suitable: enriched.filter(s => s.stage === 'not_suitable').length,
+      total: enriched.length
+    };
+
+    return res.json({
+      success: true,
+      shortlists: enriched,
+      counts
+    });
+  } catch (err) {
+    console.error('Fetch parent shortlists error:', err);
+    return res.status(500).json({ error: 'Failed to fetch shortlists' });
+  }
+});
+
+/**
+ * POST /api/parents/shortlists
+ * Blueprint v4.2 Phase 4: Save or Update School in 5-State Decision Board
+ */
+router.post('/shortlists', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { schoolId, stage = 'considering', priority = false, notes = '' } = req.body;
+
+    if (!schoolId) {
+      return res.status(400).json({ error: 'schoolId is required' });
+    }
+
+    const validStages = ['considering', 'interested', 'preferred', 'visit_planned', 'not_suitable'];
+    const sanitizedStage = validStages.includes(stage) ? stage : 'considering';
+
+    const updatedItem = {
+      schoolId,
+      stage: sanitizedStage,
+      priority: Boolean(priority),
+      notes: typeof notes === 'string' ? notes.trim() : '',
+      updatedAt: new Date().toISOString()
+    };
+
+    // Update in-memory store
+    const userItems = userShortlistsStore.get(userId) || [];
+    const existingIdx = userItems.findIndex(i => i.schoolId === schoolId);
+    if (existingIdx !== -1) {
+      userItems[existingIdx] = { ...userItems[existingIdx], ...updatedItem };
+    } else {
+      userItems.unshift({ ...updatedItem, createdAt: new Date().toISOString() });
+    }
+    userShortlistsStore.set(userId, userItems);
+
+    // Try persisting to Supabase table if valid UUIDs
+    if (isValidUUID(userId) && isValidUUID(schoolId)) {
+      try {
+        await supabaseAdmin
+          .from('parent_shortlists')
+          .upsert({
+            user_id: userId,
+            school_id: schoolId,
+            stage: sanitizedStage,
+            priority: Boolean(priority),
+            notes: typeof notes === 'string' ? notes.trim() : '',
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id,school_id' });
+      } catch (dbErr) {
+        console.warn('DB upsert parent_shortlist warning:', dbErr.message);
+      }
+    }
+
+    return res.json({
+      success: true,
+      item: updatedItem,
+      message: `Updated school stage to ${sanitizedStage}`
+    });
+  } catch (err) {
+    console.error('Save parent shortlist error:', err);
+    return res.status(500).json({ error: 'Failed to update shortlist' });
+  }
+});
+
+/**
+ * DELETE /api/parents/shortlists/:schoolId
+ */
+router.delete('/shortlists/:schoolId', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { schoolId } = req.params;
+
+    if (!schoolId) {
+      return res.status(400).json({ error: 'schoolId is required' });
+    }
+
+    // Remove from in-memory
+    const userItems = userShortlistsStore.get(userId) || [];
+    const filtered = userItems.filter(i => i.schoolId !== schoolId);
+    userShortlistsStore.set(userId, filtered);
+
+    // Remove from DB if valid UUIDs
+    if (isValidUUID(userId) && isValidUUID(schoolId)) {
+      try {
+        await supabaseAdmin
+          .from('parent_shortlists')
+          .delete()
+          .eq('user_id', userId)
+          .eq('school_id', schoolId);
+
+        await supabaseAdmin
+          .from('bookmarks')
+          .delete()
+          .eq('user_id', userId)
+          .eq('listing_id', schoolId);
+      } catch (e) {}
+    }
+
+    return res.json({
+      success: true,
+      message: 'Removed from shortlist'
+    });
+  } catch (err) {
+    console.error('Delete parent shortlist error:', err);
+    return res.status(500).json({ error: 'Failed to delete shortlist' });
   }
 });
 

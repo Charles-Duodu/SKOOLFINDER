@@ -2,7 +2,9 @@
  * SkoolFinder Ghana - Parent Admissions & Tracking Portal View
  */
 const ParentPortalView = {
-  activeTab: 'applications',
+  activeTab: 'overview',
+  shortlistsData: null,
+  shortlistFilter: 'all',
   overviewData: null,
 
   async render() {
@@ -12,9 +14,20 @@ const ParentPortalView = {
     }
 
     const user = State.currentUser;
-    // Fetch parent overview from API (with fallback if offline or demo)
+    // Fetch parent overview and 5-state shortlists from API
     try {
-      this.overviewData = await API.getParentOverview();
+      const [overview, shortlistsRes] = await Promise.all([
+        API.getParentOverview().catch(err => {
+          console.warn("Could not fetch remote parent overview:", err.message);
+          return null;
+        }),
+        API.getParentShortlists ? API.getParentShortlists().catch(err => {
+          console.warn("Could not fetch parent shortlists:", err.message);
+          return null;
+        }) : Promise.resolve(null)
+      ]);
+      this.overviewData = overview;
+      this.shortlistsData = shortlistsRes?.shortlists || [];
     } catch (e) {
       console.warn("Could not fetch remote parent overview, falling back to cached state", e);
       this.overviewData = {
@@ -188,61 +201,38 @@ const ParentPortalView = {
             </div>
           </div>
 
-          <!-- Navigation Tabs -->
-          <div style="display: flex; gap: 0.75rem; border-bottom: 2px solid var(--border-color); margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.25rem;">
-            <button class="parent-tab-btn ${this.activeTab === 'applications' ? 'active' : ''}" data-tab="applications" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'applications' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'applications' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              📝 My Admission Applications
-              <span class="badge" style="background: var(--primary-100); color: var(--primary-800);">${applications.length}</span>
+          <!-- Blueprint v4.2 Decision Engine Navigation Tabs -->
+          <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.35rem; scrollbar-width: thin;">
+            <button class="parent-tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-tab="overview" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'overview' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'overview' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🧭 Command Centre
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'invoices' ? 'active' : ''}" data-tab="invoices" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'invoices' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'invoices' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              💳 School Fees & MoMo Invoices
-              <span class="badge" style="background: ${totalOutstanding > 0 ? '#fee2e2' : '#dcfce7'}; color: ${totalOutstanding > 0 ? '#991b1b' : '#166534'};">${invoices.length}</span>
+            <button class="parent-tab-btn ${this.activeTab === 'shortlists' ? 'active' : ''}" data-tab="shortlists" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'shortlists' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'shortlists' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              📌 5-State Decision Board
+              <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">${(this.shortlistsData || savedSchools || []).length}</span>
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'reports' ? 'active' : ''}" data-tab="reports" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'reports' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'reports' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              📊 Terminal Report Cards & Academic Performance
-              <span class="badge" style="background: #ecfdf5; color: #065f46;">${reportCards.length}</span>
+            <button class="parent-tab-btn ${this.activeTab === 'journey' ? 'active' : ''}" data-tab="journey" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'journey' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'journey' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🛣️ My School Journey
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'transport' ? 'active' : ''}" data-tab="transport" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'transport' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'transport' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🚌 School Bus & Transit Pass
-              <span class="badge" style="background: #fef3c7; color: #92400e;">Route 01</span>
+            <button class="parent-tab-btn ${this.activeTab === 'planning' ? 'active' : ''}" data-tab="planning" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'planning' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'planning' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              📋 Planning Studio
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'alumni' ? 'active' : ''}" data-tab="alumni" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'alumni' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'alumni' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🎓 Alumni & Career Guidance
-              <span class="badge" style="background: #eff6ff; color: #1e40af;">${(this.overviewData?.alumniBookings || []).length} Booked</span>
+            <button class="parent-tab-btn ${this.activeTab === 'applications' ? 'active' : ''}" data-tab="applications" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'applications' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'applications' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              📝 Admissions &amp; Apps
+              <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700;">${applications.length}</span>
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'clubs' ? 'active' : ''}" data-tab="clubs" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'clubs' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'clubs' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🥋 Co-Curricular & Clubs
-              <span class="badge" style="background: #ecfdf5; color: #065f46;">${(this.overviewData?.clubMemberships || []).length} Active</span>
+            <button class="parent-tab-btn ${this.activeTab === 'invoices' ? 'active' : ''}" data-tab="invoices" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'invoices' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'invoices' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              💳 Fees &amp; MoMo Invoices
+              <span class="badge" style="background: ${totalOutstanding > 0 ? '#fee2e2' : '#dcfce7'}; color: ${totalOutstanding > 0 ? '#991b1b' : '#166534'}; font-weight: 700;">${invoices.length}</span>
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'health' ? 'active' : ''}" data-tab="health" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'health' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'health' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🩺 Sickbay & Medical Passport
-              <span class="badge" style="background: #fee2e2; color: #991b1b; font-weight: 800;">Allergy Alert O+</span>
+            <button class="parent-tab-btn ${this.activeTab === 'inquiries' ? 'active' : ''}" data-tab="inquiries" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'inquiries' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'inquiries' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              💬 Direct Messages
+              <span class="badge" style="background: var(--gold-100); color: var(--gold-800); font-weight: 700;">${inquiries.length}</span>
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'library' ? 'active' : ''}" data-tab="library" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'library' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'library' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              📚 Library & Textbooks
-              <span class="badge" style="background: #eef2ff; color: #3730a3; font-weight: 800;">${(this.overviewData?.borrowedBooks || []).length} Issued</span>
+            <button class="parent-tab-btn ${this.activeTab === 'tutors' ? 'active' : ''}" data-tab="tutors" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'tutors' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'tutors' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🧑‍🏫 Tutors
             </button>
-            <button class="parent-tab-btn ${this.activeTab === 'digital-id' ? 'active' : ''}" data-tab="digital-id" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'digital-id' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'digital-id' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🪪 Digital ID Badge
-              <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 800;">GIS-0842</span>
-            </button>
-            <button class="parent-tab-btn ${this.activeTab === 'inquiries' ? 'active' : ''}" data-tab="inquiries" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'inquiries' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'inquiries' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              📅 Campus Tour & Direct Inquiries
-              <span class="badge" style="background: var(--gold-100); color: var(--gold-800);">${inquiries.length}</span>
-            </button>
-            <button class="parent-tab-btn ${this.activeTab === 'bookmarks' ? 'active' : ''}" data-tab="bookmarks" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'bookmarks' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'bookmarks' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🔖 Shortlisted Campuses
-              <span class="badge" style="background: #f1f5f9; color: var(--text-dark);">${savedSchools.length}</span>
-            </button>
-
-            <button class="parent-tab-btn ${this.activeTab === 'tutors' ? 'active' : ''}" data-tab="tutors" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'tutors' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'tutors' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              🧑‍🏫 Hired Private Tutors
-              <span class="badge" style="background: #ecfdf5; color: #065f46;">1 Active</span>
-            </button>
-
-            <button class="parent-tab-btn ${this.activeTab === 'sms' ? 'active' : ''}" data-tab="sms" style="padding: 0.85rem 1.5rem; background: none; border: none; font-size: 0.95rem; font-weight: 700; color: ${this.activeTab === 'sms' ? 'var(--primary-900)' : 'var(--text-muted)'}; border-bottom: 3px solid ${this.activeTab === 'sms' ? 'var(--gold-500)' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; transition: all 0.2s;">
-              📲 SMS & WhatsApp Alerts
-              <span class="badge" style="background: #eff6ff; color: #1e40af;">${smsNotifications.length}</span>
+            <button class="parent-tab-btn ${this.activeTab === 'enrolled' ? 'active' : ''}" data-tab="enrolled" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'enrolled' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'enrolled' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🎒 Enrolled Hub (SIS)
             </button>
           </div>
 
@@ -256,7 +246,17 @@ const ParentPortalView = {
   },
 
   renderTabContent() {
-    if (this.activeTab === 'applications') {
+    if (this.activeTab === 'overview') {
+      return this.renderOverviewTab();
+    } else if (this.activeTab === 'shortlists') {
+      return this.renderShortlistsTab();
+    } else if (this.activeTab === 'journey') {
+      return this.renderJourneyTab();
+    } else if (this.activeTab === 'planning') {
+      return this.renderPlanningTab();
+    } else if (this.activeTab === 'enrolled') {
+      return this.renderEnrolledWardHubTab();
+    } else if (this.activeTab === 'applications') {
       return this.renderApplicationsTab();
     } else if (this.activeTab === 'invoices') {
       return this.renderInvoicesTab();
@@ -283,6 +283,542 @@ const ParentPortalView = {
     } else {
       return this.renderBookmarksTab();
     }
+  },
+
+  
+  // Next Best Step rule calculation
+  getNextBestStep(shortlists = [], applications = [], inquiries = []) {
+    const considering = shortlists.filter(s => s.stage === 'considering');
+    const interested = shortlists.filter(s => s.stage === 'interested');
+    const preferred = shortlists.filter(s => s.stage === 'preferred');
+    const visitPlanned = shortlists.filter(s => s.stage === 'visit_planned');
+
+    if (shortlists.length === 0) {
+      return {
+        badge: "STEP 1: DISCOVER",
+        badgeColor: "#1266C4",
+        icon: "🧭",
+        title: "Discover & Shortlist Your First Schools",
+        description: "Search 40+ accredited Ghanaian institutions by curriculum (Cambridge, GES, IB), region, and boarding options.",
+        ctaText: "Explore School Directory",
+        ctaAction: "directory",
+        actionType: "navigate"
+      };
+    }
+
+    if (considering.length > 0 && interested.length === 0 && preferred.length === 0) {
+      return {
+        badge: "STEP 2: EVALUATE & COMPARE",
+        badgeColor: "#D5A63B",
+        icon: "⚖️",
+        title: `Compare Your ${considering.length} Shortlisted School${considering.length > 1 ? 's' : ''}`,
+        description: "Evaluate your choices side-by-side across 9 dimensions in the 4-Way Comparison Matrix or run the Fit Matchmaker.",
+        ctaText: "Launch 4-Way Compare",
+        ctaAction: "compare",
+        actionType: "navigate"
+      };
+    }
+
+    if ((interested.length > 0 || preferred.length > 0) && visitPlanned.length === 0) {
+      const topSchool = preferred[0] || interested[0];
+      return {
+        badge: "STEP 3: CAMPUS EXPERIENCE",
+        badgeColor: "#059669",
+        icon: "🏫",
+        title: `Plan a Campus Visit to ${topSchool.schoolName || 'Your Preferred School'}`,
+        description: "Visiting in person is the most reliable way to evaluate teacher engagement, facilities, and school culture.",
+        ctaText: "Open Planning Studio",
+        ctaAction: "planning",
+        actionType: "tab"
+      };
+    }
+
+    if (visitPlanned.length > 0 && applications.length === 0) {
+      return {
+        badge: "STEP 4: ADMISSIONS PREPARATION",
+        badgeColor: "#7c3aed",
+        icon: "📝",
+        title: "Prepare Your Admissions Checklist",
+        description: "Gather previous terminal reports, certified birth certificates, and vaccination cards for submission.",
+        ctaText: "View Admissions Desk",
+        ctaAction: "applications",
+        actionType: "tab"
+      };
+    }
+
+    if (applications.length > 0) {
+      return {
+        badge: "STEP 5: TRACK JOURNEY",
+        badgeColor: "#0284c7",
+        icon: "🎯",
+        title: "Track Entrance Exams & Admissions Decisions",
+        description: "Monitor application review statuses and scheduled interview dates directly with school admissions officers.",
+        ctaText: "Open My School Journey",
+        ctaAction: "journey",
+        actionType: "tab"
+      };
+    }
+
+    return {
+      badge: "ACTION RECOMMENDED",
+      badgeColor: "#1266C4",
+      icon: "✨",
+      title: "Continue Your School Decision Process",
+      description: "Review your 5-state shortlist board, update school notes, or compare candidate institutions.",
+      ctaText: "View Decision Board",
+      ctaAction: "shortlists",
+      actionType: "tab"
+    };
+  },
+
+  // 1. Command Centre Overview Tab
+  renderOverviewTab() {
+    const shortlists = this.shortlistsData || [];
+    const applications = this.overviewData?.applications || [];
+    const inquiries = this.overviewData?.inquiries || [];
+    const nbs = this.getNextBestStep(shortlists, applications, inquiries);
+
+    const counts = {
+      considering: shortlists.filter(s => s.stage === 'considering').length,
+      interested: shortlists.filter(s => s.stage === 'interested').length,
+      preferred: shortlists.filter(s => s.stage === 'preferred').length,
+      visit_planned: shortlists.filter(s => s.stage === 'visit_planned').length,
+      not_suitable: shortlists.filter(s => s.stage === 'not_suitable').length
+    };
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Next Best Step Guidance Card -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 4px solid #D5A63B; box-shadow: 0 10px 25px -5px rgba(10,32,70,0.3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+          <div style="flex: 1; min-width: 280px;">
+            <div style="display: inline-block; background: rgba(213, 166, 59, 0.2); border: 1px solid #D5A63B; color: #D5A63B; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 6px; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+              ${nbs.badge}
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 0.4rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span>${nbs.icon}</span> ${nbs.title}
+            </h2>
+            <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; line-height: 1.5; max-width: 650px;">
+              ${nbs.description}
+            </p>
+          </div>
+          <div>
+            <button type="button" class="btn-pill btn-gold btn-nbs-action" data-action-type="${nbs.actionType}" data-action="${nbs.ctaAction}" style="padding: 0.85rem 1.6rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(213, 166, 59, 0.35);">
+              <span>${nbs.icon}</span> ${nbs.ctaText} &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- 5-State Decision Funnel Snapshot -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.2rem 0;">
+                📌 5-State School Decision Funnel
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+                Click any stage to filter candidate schools on your interactive decision board.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="shortlists" style="font-size: 0.84rem; font-weight: 700;">
+              Open Full Decision Board &rarr;
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem;">
+            <!-- Stage 1 -->
+            <div class="funnel-metric-card btn-filter-stage" data-stage="considering" style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">1. Considering</div>
+              <div style="font-size: 1.8rem; font-weight: 900; color: #0A2046; margin: 0.25rem 0;">${counts.considering}</div>
+              <div style="font-size: 0.75rem; color: #64748b;">Initial bookmarks</div>
+            </div>
+
+            <!-- Stage 2 -->
+            <div class="funnel-metric-card btn-filter-stage" data-stage="interested" style="background: #eff6ff; border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #1e40af; text-transform: uppercase;">2. Interested</div>
+              <div style="font-size: 1.8rem; font-weight: 900; color: #1266C4; margin: 0.25rem 0;">${counts.interested}</div>
+              <div style="font-size: 0.75rem; color: #1e40af;">Evaluating fit</div>
+            </div>
+
+            <!-- Stage 3 -->
+            <div class="funnel-metric-card btn-filter-stage" data-stage="preferred" style="background: #fefce8; border: 1.5px solid #fef08a; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #854d0e; text-transform: uppercase;">3. Preferred ⭐</div>
+              <div style="font-size: 1.8rem; font-weight: 900; color: #b45309; margin: 0.25rem 0;">${counts.preferred}</div>
+              <div style="font-size: 0.75rem; color: #854d0e;">Top admission choices</div>
+            </div>
+
+            <!-- Stage 4 -->
+            <div class="funnel-metric-card btn-filter-stage" data-stage="visit_planned" style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #166534; text-transform: uppercase;">4. Visit Planned</div>
+              <div style="font-size: 1.8rem; font-weight: 900; color: #15803d; margin: 0.25rem 0;">${counts.visit_planned}</div>
+              <div style="font-size: 0.75rem; color: #166534;">Campus tour queued</div>
+            </div>
+
+            <!-- Stage 5 -->
+            <div class="funnel-metric-card btn-filter-stage" data-stage="not_suitable" style="background: #f1f5f9; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1rem; cursor: pointer; transition: all 0.2s;">
+              <div style="font-size: 0.75rem; font-weight: 700; color: #94a3b8; text-transform: uppercase;">5. Not Suitable</div>
+              <div style="font-size: 1.8rem; font-weight: 900; color: #64748b; margin: 0.25rem 0;">${counts.not_suitable}</div>
+              <div style="font-size: 0.75rem; color: #94a3b8;">Archived choices</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Decision Tools Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">⚖️</div>
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">4-Way School Comparison</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Place up to 4 shortlisted schools side-by-side across tuition tiers, student-teacher ratio, and WASSCE/Cambridge curricula.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-primary" onclick="App.navigate('compare')" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+              Launch 4-Way Compare &rarr;
+            </button>
+          </div>
+
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🎯</div>
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">School Fit Matchmaker</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Answer 2 quick steps on level, region, boarding, and priority to receive evidence-backed school recommendations.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-gold" onclick="App.navigate('matchmaker')" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+              Run Fit Matchmaker &rarr;
+            </button>
+          </div>
+
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📋</div>
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">Admissions Planning Studio</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Checklist of required documentation, headteacher interview questions, and official fee assumptions.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="planning" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+              Open Planning Studio &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  // 2. 5-State Decision Board Tab
+  renderShortlistsTab() {
+    const shortlists = this.shortlistsData || [];
+    const filter = this.shortlistFilter || 'all';
+
+    const filtered = filter === 'all'
+      ? shortlists
+      : shortlists.filter(s => s.stage === filter);
+
+    const counts = {
+      all: shortlists.length,
+      considering: shortlists.filter(s => s.stage === 'considering').length,
+      interested: shortlists.filter(s => s.stage === 'interested').length,
+      preferred: shortlists.filter(s => s.stage === 'preferred').length,
+      visit_planned: shortlists.filter(s => s.stage === 'visit_planned').length,
+      not_suitable: shortlists.filter(s => s.stage === 'not_suitable').length
+    };
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Header & Stage Filter Bar -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0 0 0.2rem 0;">
+              📌 5-State School Shortlists &amp; Decision Board
+            </h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Move candidate schools through decision stages and record private family notes.
+            </p>
+          </div>
+          <button type="button" class="btn-pill btn-primary" onclick="App.navigate('directory')" style="font-size: 0.85rem; font-weight: 700;">
+            <span>➕</span> Add More Schools
+          </button>
+        </div>
+
+        <!-- Filter Stage Pills -->
+        <div style="display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.25rem; flex-wrap: wrap;">
+          <button type="button" class="btn-shortlist-filter ${filter === 'all' ? 'active' : ''}" data-stage="all" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'all' ? '#0A2046' : '#cbd5e1'}; background: ${filter === 'all' ? '#0A2046' : '#ffffff'}; color: ${filter === 'all' ? '#ffffff' : '#475569'};">
+            All Schools (${counts.all})
+          </button>
+          <button type="button" class="btn-shortlist-filter ${filter === 'considering' ? 'active' : ''}" data-stage="considering" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'considering' ? '#64748b' : '#cbd5e1'}; background: ${filter === 'considering' ? '#64748b' : '#ffffff'}; color: ${filter === 'considering' ? '#ffffff' : '#475569'};">
+            Considering (${counts.considering})
+          </button>
+          <button type="button" class="btn-shortlist-filter ${filter === 'interested' ? 'active' : ''}" data-stage="interested" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'interested' ? '#1266C4' : '#cbd5e1'}; background: ${filter === 'interested' ? '#1266C4' : '#ffffff'}; color: ${filter === 'interested' ? '#ffffff' : '#475569'};">
+            Interested (${counts.interested})
+          </button>
+          <button type="button" class="btn-shortlist-filter ${filter === 'preferred' ? 'active' : ''}" data-stage="preferred" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'preferred' ? '#D5A63B' : '#cbd5e1'}; background: ${filter === 'preferred' ? '#D5A63B' : '#ffffff'}; color: ${filter === 'preferred' ? '#0A2046' : '#475569'};">
+            Preferred ⭐ (${counts.preferred})
+          </button>
+          <button type="button" class="btn-shortlist-filter ${filter === 'visit_planned' ? 'active' : ''}" data-stage="visit_planned" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'visit_planned' ? '#059669' : '#cbd5e1'}; background: ${filter === 'visit_planned' ? '#059669' : '#ffffff'}; color: ${filter === 'visit_planned' ? '#ffffff' : '#475569'};">
+            Visit Planned (${counts.visit_planned})
+          </button>
+          <button type="button" class="btn-shortlist-filter ${filter === 'not_suitable' ? 'active' : ''}" data-stage="not_suitable" style="padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; border: 1.5px solid ${filter === 'not_suitable' ? '#94a3b8' : '#cbd5e1'}; background: ${filter === 'not_suitable' ? '#94a3b8' : '#ffffff'}; color: ${filter === 'not_suitable' ? '#ffffff' : '#475569'};">
+            Not Suitable (${counts.not_suitable})
+          </button>
+        </div>
+
+        <!-- School Cards Container -->
+        ${filtered.length === 0 ? `
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px dashed #cbd5e1; padding: 3.5rem 1.5rem; text-align: center;">
+            <div style="font-size: 2.8rem; margin-bottom: 0.75rem;">📌</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              ${filter === 'all' ? 'No Shortlisted Schools Yet' : `No schools currently in "${filter.replace('_', ' ')}"`}
+            </h3>
+            <p style="font-size: 0.88rem; color: #64748b; margin: 0 auto 1.25rem auto; max-width: 440px;">
+              Explore accredited schools across Ghana and bookmark them to organize your family admissions cockpit.
+            </p>
+            <button type="button" class="btn-pill btn-primary" onclick="App.navigate('directory')" style="font-size: 0.9rem; font-weight: 700;">
+              Explore Schools Directory &rarr;
+            </button>
+          </div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 1.25rem;">
+            ${filtered.map(s => `
+              <div class="card shortlist-school-card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid ${s.priority ? '#D5A63B' : '#e2e8f0'}; padding: 1.25rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                <div>
+                  <!-- Top Row: Thumbnail + Title + Priority Star -->
+                  <div style="display: flex; gap: 0.85rem; align-items: flex-start; margin-bottom: 0.85rem;">
+                    <img src="${s.imageUrl}" alt="${s.schoolName}" style="width: 52px; height: 52px; border-radius: 10px; object-fit: cover; border: 1px solid #e2e8f0; flex-shrink: 0;" />
+                    <div style="flex: 1; min-width: 0;">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <h4 style="font-family: var(--font-heading); font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          ${s.schoolName}
+                        </h4>
+                        <button type="button" class="btn-toggle-priority" data-school-id="${s.schoolId}" data-priority="${s.priority ? 'true' : 'false'}" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; padding: 0 0 0 0.4rem; color: ${s.priority ? '#D5A63B' : '#cbd5e1'};" title="${s.priority ? 'Top Choice Priority' : 'Mark as Top Choice'}">
+                          ★
+                        </button>
+                      </div>
+                      <div style="display: flex; gap: 0.35rem; align-items: center; margin-top: 0.3rem; flex-wrap: wrap;">
+                        <span style="font-size: 0.72rem; padding: 0.1rem 0.45rem; background: #f1f5f9; border-radius: 4px; color: #475569; font-weight: 600;">📍 ${s.region}</span>
+                        <span style="font-size: 0.72rem; padding: 0.1rem 0.45rem; background: #fef3c7; border-radius: 4px; color: #92400e; font-weight: 600;">📚 ${s.curriculum}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stage Selector Dropdown -->
+                  <div style="margin-bottom: 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.5rem 0.75rem; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.75rem; font-weight: 700; color: #475569; text-transform: uppercase;">Stage:</span>
+                    <select class="sel-shortlist-stage" data-school-id="${s.schoolId}" style="border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.3rem 0.5rem; font-size: 0.82rem; font-weight: 700; background: #ffffff; color: #0A2046; cursor: pointer;">
+                      <option value="considering" ${s.stage === 'considering' ? 'selected' : ''}>1. Considering</option>
+                      <option value="interested" ${s.stage === 'interested' ? 'selected' : ''}>2. Interested</option>
+                      <option value="preferred" ${s.stage === 'preferred' ? 'selected' : ''}>3. Preferred ⭐</option>
+                      <option value="visit_planned" ${s.stage === 'visit_planned' ? 'selected' : ''}>4. Visit Planned</option>
+                      <option value="not_suitable" ${s.stage === 'not_suitable' ? 'selected' : ''}>5. Not Suitable</option>
+                    </select>
+                  </div>
+
+                  <!-- Private Parent Notes Area -->
+                  <div style="margin-bottom: 0.85rem;">
+                    <label style="font-size: 0.74rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 0.25rem; display: flex; justify-content: space-between;">
+                      <span>📝 Private Family Notes</span>
+                      <span class="notes-status-hint" id="notes-status-${s.schoolId}" style="font-size: 0.7rem; color: #16a34a; font-weight: 600;"></span>
+                    </label>
+                    <textarea class="txt-shortlist-notes form-textarea" data-school-id="${s.schoolId}" rows="2" placeholder="Record admission impressions, tuition notes, or open day details..." style="width: 100%; font-size: 0.82rem; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 6px; line-height: 1.4; resize: vertical;">${s.notes || ''}</textarea>
+                  </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f5f9; padding-top: 0.75rem; margin-top: 0.5rem;">
+                  <button type="button" class="btn-shortlist-compare" data-school-id="${s.schoolId}" style="background: none; border: none; font-size: 0.78rem; font-weight: 700; color: #1266C4; cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">
+                    <span>⚖️</span> Compare
+                  </button>
+                  <button type="button" onclick="App.navigate('schools', '${s.slug}')" style="background: none; border: none; font-size: 0.78rem; font-weight: 700; color: #475569; cursor: pointer;">
+                    View Profile &rarr;
+                  </button>
+                  <button type="button" class="btn-remove-shortlist" data-school-id="${s.schoolId}" style="background: none; border: none; font-size: 0.78rem; font-weight: 700; color: #dc2626; cursor: pointer;">
+                    Remove
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
+  },
+
+  // 3. My School Journey Timeline Tab
+  renderJourneyTab() {
+    const shortlists = this.shortlistsData || [];
+    const applications = this.overviewData?.applications || [];
+    const inquiries = this.overviewData?.inquiries || [];
+
+    return `
+      <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+        <div style="margin-bottom: 2rem;">
+          <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
+            🛣️ My School Decision Journey
+          </h2>
+          <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
+            Chronological roadmap of your admissions milestones across Ghanaian institutions.
+          </p>
+        </div>
+
+        <div class="journey-timeline" style="display: flex; flex-direction: column; gap: 1.75rem; position: relative; padding-left: 1.5rem; border-left: 3px solid #e2e8f0; margin-left: 0.75rem;">
+          <!-- Milestone 1: Discovery & Shortlisting -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: #1266C4; border: 3px solid #ffffff; box-shadow: 0 0 0 2px #1266C4;"></div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Milestone 1 &bull; Discovery &amp; Evaluation</div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
+              ${shortlists.length} School(s) in Decision Funnel
+            </h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              ${shortlists.length > 0 ? `Active choices: ${shortlists.slice(0, 3).map(s => s.schoolName).join(', ')}` : 'No schools bookmarked yet. Explore schools to begin.'}
+            </p>
+          </div>
+
+          <!-- Milestone 2: Enquiries & Messaging -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'};"></div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: ${inquiries.length > 0 ? '#059669' : '#64748b'}; text-transform: uppercase;">Milestone 2 &bull; Direct School Inquiries</div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
+              ${inquiries.length} Inquiries Logged
+            </h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              ${inquiries.length > 0 ? 'Official school admissions desks notified.' : 'Connect directly with school heads for prospectus details.'}
+            </p>
+          </div>
+
+          <!-- Milestone 3: Campus Visits -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'};"></div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase;">Milestone 3 &bull; Campus Tours &amp; Open Days</div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
+              ${shortlists.filter(s => s.stage === 'visit_planned').length} Visit(s) Scheduled
+            </h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              In-person evaluation of learning facilities, science labs, and campus security.
+            </p>
+          </div>
+
+          <!-- Milestone 4: Admissions Applications -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${applications.length > 0 ? '#D5A63B' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${applications.length > 0 ? '#D5A63B' : '#cbd5e1'};"></div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">Milestone 4 &bull; Admissions Applications</div>
+            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
+              ${applications.length} Official Application(s) Submitted
+            </h4>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Track candidate dossiers, entrance examination dates, and official acceptance letters.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  // 4. Parent Planning Studio Tab
+  renderPlanningTab() {
+    return `
+      <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+        <!-- Banner -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 3px solid #D5A63B; box-shadow: var(--shadow-sm);">
+          <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+            Blueprint v4.2 &bull; Family Admissions Readiness
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.4rem 0;">
+            Parent Admissions Planning Studio
+          </h2>
+          <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; max-width: 650px; line-height: 1.5;">
+            Equip your family with essential document preparedness, critical questions for school principals, and realistic budget assumptions.
+          </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+          <!-- Section 1: Document Checklist -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
+            <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📁</span> Admissions Document Readiness
+            </h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">
+              Tick off documents you have prepared to streamline school application submissions:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.88rem; color: #334155; cursor: pointer;">
+                <input type="checkbox" class="chk-plan-doc" data-doc="birth_cert" style="width: 1.1rem; height: 1.1rem; accent-color: #1266C4;" />
+                Certified Copy of Child's Birth Certificate
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.88rem; color: #334155; cursor: pointer;">
+                <input type="checkbox" class="chk-plan-doc" data-doc="terminal_reports" style="width: 1.1rem; height: 1.1rem; accent-color: #1266C4;" />
+                Terminal Report Cards from Previous 2 Terms
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.88rem; color: #334155; cursor: pointer;">
+                <input type="checkbox" class="chk-plan-doc" data-doc="immunisation" style="width: 1.1rem; height: 1.1rem; accent-color: #1266C4;" />
+                Updated Child Health &amp; Immunisation Record
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.88rem; color: #334155; cursor: pointer;">
+                <input type="checkbox" class="chk-plan-doc" data-doc="photos" style="width: 1.1rem; height: 1.1rem; accent-color: #1266C4;" />
+                Passport-Size Student Photographs (White Background)
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.65rem; font-size: 0.88rem; color: #334155; cursor: pointer;">
+                <input type="checkbox" class="chk-plan-doc" data-doc="ghana_card" style="width: 1.1rem; height: 1.1rem; accent-color: #1266C4;" />
+                Ghana Card / National ID of Parent or Guardian
+              </label>
+            </div>
+          </div>
+
+          <!-- Section 2: Questions for Campus Visits -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
+            <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.5rem;">
+              <span>❓</span> Open Day Questions for Headmasters
+            </h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">
+              High-impact questions to assess school quality during campus visits:
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.85rem; color: #475569; line-height: 1.45;">
+              <div style="padding: 0.65rem 0.85rem; background: #f8fafc; border-left: 3px solid #1266C4; border-radius: 6px;">
+                <strong>Academic Support:</strong> "What is your average student-to-teacher ratio in early years and JHS classes?"
+              </div>
+              <div style="padding: 0.65rem 0.85rem; background: #f8fafc; border-left: 3px solid #D5A63B; border-radius: 6px;">
+                <strong>Fee Structure:</strong> "Are feeding, textbooks, uniforms, and extracurricular clubs included or billed separately?"
+              </div>
+              <div style="padding: 0.65rem 0.85rem; background: #f8fafc; border-left: 3px solid #059669; border-radius: 6px;">
+                <strong>Safety &amp; Health:</strong> "Is there a resident nurse in the sickbay, and how is campus access controlled during school hours?"
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  // 5. Enrolled Ward Hub (SIS Campus Sync) for Legacy Features
+  renderEnrolledWardHubTab() {
+    return `
+      <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+        <div style="margin-bottom: 1.5rem;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Campus OS Live Sync</span>
+          <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+            🎒 Enrolled Ward Academic &amp; Campus Services
+          </h2>
+          <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+            Access terminal report cards, school bus routes, and sickbay passport for enrolled children.
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="reports" style="font-size: 0.82rem; font-weight: 700;">📊 Terminal Reports</button>
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="transport" style="font-size: 0.82rem; font-weight: 700;">🚌 Bus Transit</button>
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="health" style="font-size: 0.82rem; font-weight: 700;">🩺 Sickbay Passport</button>
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="library" style="font-size: 0.82rem; font-weight: 700;">📚 Library</button>
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="clubs" style="font-size: 0.82rem; font-weight: 700;">🥋 Clubs</button>
+          <button type="button" class="btn-pill btn-outline btn-enrolled-subtab" data-subtab="digital-id" style="font-size: 0.82rem; font-weight: 700;">🪪 Student ID</button>
+        </div>
+
+        <div id="enrolled-subtab-content">
+          ${this.renderReportCardsTab()}
+        </div>
+      </div>
+    `;
   },
 
   renderTutorsTab() {
@@ -2349,6 +2885,192 @@ const ParentPortalView = {
   },
 
   attachTabChildEvents() {
+    // Phase 4: Next Best Step CTA Action Buttons
+    document.querySelectorAll('.btn-nbs-action').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const actionType = e.currentTarget.dataset.actionType;
+        const target = e.currentTarget.dataset.action;
+        if (actionType === 'navigate') {
+          App.navigate(target);
+        } else if (actionType === 'tab') {
+          this.activeTab = target;
+          const container = document.getElementById('parent-portal-tab-content');
+          if (container) {
+            container.innerHTML = this.renderTabContent();
+            this.attachTabChildEvents();
+          }
+          document.querySelectorAll('.parent-tab-btn').forEach(b => {
+            const isActive = b.dataset.tab === target;
+            b.style.color = isActive ? '#0A2046' : '#64748b';
+            b.style.borderBottom = isActive ? '3px solid #D5A63B' : 'transparent';
+          });
+        }
+      });
+    });
+
+    // Phase 4: Stage Filter Buttons (in Funnel and Shortlists board)
+    document.querySelectorAll('.btn-filter-stage, .btn-shortlist-filter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const stage = e.currentTarget.dataset.stage;
+        this.shortlistFilter = stage;
+        this.activeTab = 'shortlists';
+        const container = document.getElementById('parent-portal-tab-content');
+        if (container) {
+          container.innerHTML = this.renderTabContent();
+          this.attachTabChildEvents();
+        }
+        document.querySelectorAll('.parent-tab-btn').forEach(b => {
+          const isActive = b.dataset.tab === 'shortlists';
+          b.style.color = isActive ? '#0A2046' : '#64748b';
+          b.style.borderBottom = isActive ? '3px solid #D5A63B' : 'transparent';
+        });
+      });
+    });
+
+    // Phase 4: Switch Tab button
+    document.querySelectorAll('.btn-switch-tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const targetTab = e.currentTarget.dataset.targetTab;
+        this.activeTab = targetTab;
+        const container = document.getElementById('parent-portal-tab-content');
+        if (container) {
+          container.innerHTML = this.renderTabContent();
+          this.attachTabChildEvents();
+        }
+        document.querySelectorAll('.parent-tab-btn').forEach(b => {
+          const isActive = b.dataset.tab === targetTab;
+          b.style.color = isActive ? '#0A2046' : '#64748b';
+          b.style.borderBottom = isActive ? '3px solid #D5A63B' : 'transparent';
+        });
+      });
+    });
+
+    // Phase 4: 5-State Shortlist Stage Dropdown Selector
+    document.querySelectorAll('.sel-shortlist-stage').forEach(sel => {
+      sel.addEventListener('change', async (e) => {
+        const schoolId = e.currentTarget.dataset.schoolId;
+        const newStage = e.currentTarget.value;
+        try {
+          if (API.updateParentShortlist) {
+            await API.updateParentShortlist(schoolId, { stage: newStage });
+          }
+          const item = (this.shortlistsData || []).find(s => s.schoolId === schoolId);
+          if (item) item.stage = newStage;
+          State.showToast(`School moved to ${newStage.replace('_', ' ').toUpperCase()}`, 'success');
+        } catch (err) {
+          State.showToast(err.message || "Failed to update stage", 'error');
+        }
+      });
+    });
+
+    // Phase 4: Priority Star Toggle
+    document.querySelectorAll('.btn-toggle-priority').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const schoolId = e.currentTarget.dataset.schoolId;
+        const currentPriority = e.currentTarget.dataset.priority === 'true';
+        const newPriority = !currentPriority;
+        try {
+          if (API.updateParentShortlist) {
+            await API.updateParentShortlist(schoolId, { priority: newPriority });
+          }
+          const item = (this.shortlistsData || []).find(s => s.schoolId === schoolId);
+          if (item) item.priority = newPriority;
+          e.currentTarget.dataset.priority = newPriority ? 'true' : 'false';
+          e.currentTarget.style.color = newPriority ? '#D5A63B' : '#cbd5e1';
+          State.showToast(newPriority ? "Marked as Top Choice Priority ⭐" : "Removed from Top Choices", 'info');
+        } catch (err) {
+          State.showToast(err.message || "Failed to toggle priority", 'error');
+        }
+      });
+    });
+
+    // Phase 4: Private Notes Auto-Save
+    document.querySelectorAll('.txt-shortlist-notes').forEach(txt => {
+      txt.addEventListener('blur', async (e) => {
+        const schoolId = e.currentTarget.dataset.schoolId;
+        const notes = e.currentTarget.value.trim();
+        const hintEl = document.getElementById(`notes-status-${schoolId}`);
+        try {
+          if (API.updateParentShortlist) {
+            await API.updateParentShortlist(schoolId, { notes });
+          }
+          const item = (this.shortlistsData || []).find(s => s.schoolId === schoolId);
+          if (item) item.notes = notes;
+          if (hintEl) {
+            hintEl.textContent = 'Saved ✓';
+            setTimeout(() => { if (hintEl) hintEl.textContent = ''; }, 2500);
+          }
+        } catch (err) {
+          if (hintEl) hintEl.textContent = 'Save error';
+        }
+      });
+    });
+
+    // Phase 4: Remove Shortlist Button
+    document.querySelectorAll('.btn-remove-shortlist').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const schoolId = e.currentTarget.dataset.schoolId;
+        if (!confirm("Are you sure you want to remove this school from your shortlists?")) return;
+        try {
+          if (API.removeParentShortlist) {
+            await API.removeParentShortlist(schoolId);
+          }
+          this.shortlistsData = (this.shortlistsData || []).filter(s => s.schoolId !== schoolId);
+          State.bookmarkedSchoolIds = (State.bookmarkedSchoolIds || []).filter(id => id !== schoolId);
+          try {
+            localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(State.bookmarkedSchoolIds));
+          } catch (e) {}
+          State.showToast("Removed school from shortlists", "info");
+          const container = document.getElementById('parent-portal-tab-content');
+          if (container) {
+            container.innerHTML = this.renderTabContent();
+            this.attachTabChildEvents();
+          }
+        } catch (err) {
+          State.showToast(err.message || "Failed to remove school", "error");
+        }
+      });
+    });
+
+    // Phase 4: Compare from shortlist
+    document.querySelectorAll('.btn-shortlist-compare').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const schoolId = e.currentTarget.dataset.schoolId;
+        const item = (this.shortlistsData || []).find(s => s.schoolId === schoolId);
+        const schoolObj = item ? { id: item.schoolId, name: item.schoolName, region: item.region, curriculum: item.curriculum } : { id: schoolId };
+        State.toggleCompare(schoolObj);
+      });
+    });
+
+    // Phase 4: Planning checklist checkboxes
+    document.querySelectorAll('.chk-plan-doc').forEach(chk => {
+      const docKey = chk.dataset.doc;
+      try {
+        const saved = localStorage.getItem(`skoolfinder_doc_${docKey}`);
+        if (saved === 'true') chk.checked = true;
+      } catch (e) {}
+      chk.addEventListener('change', (e) => {
+        try {
+          localStorage.setItem(`skoolfinder_doc_${docKey}`, e.currentTarget.checked ? 'true' : 'false');
+        } catch (e) {}
+      });
+    });
+
+    // Enrolled Ward Subtab Switching
+    document.querySelectorAll('.btn-enrolled-subtab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const subtab = e.currentTarget.dataset.subtab;
+        const subContent = document.getElementById('enrolled-subtab-content');
+        if (!subContent) return;
+        if (subtab === 'reports') subContent.innerHTML = this.renderReportCardsTab();
+        else if (subtab === 'transport') subContent.innerHTML = this.renderTransportTab();
+        else if (subtab === 'health') subContent.innerHTML = this.renderHealthTab();
+        else if (subtab === 'library') subContent.innerHTML = this.renderLibraryTab();
+        else if (subtab === 'clubs') subContent.innerHTML = this.renderClubsTab();
+        else if (subtab === 'digital-id') subContent.innerHTML = this.renderDigitalIDTab();
+      });
+    });
+
     // Add Secondary Ward
     document.getElementById('btn-add-secondary-ward')?.addEventListener('click', () => {
       Modals.openAddWardModal(() => {

@@ -1057,6 +1057,37 @@ const API = {
     return result;
   },
 
+  // Blueprint v4.2 Phase 4: 5-State Decision Board & Private Shortlists
+  async getParentShortlists() {
+    const res = await fetch(`${this.baseUrl}/parents/shortlists`, {
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to load shortlists");
+    return result;
+  },
+
+  async updateParentShortlist(schoolId, data = {}) {
+    const res = await fetch(`${this.baseUrl}/parents/shortlists`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ schoolId, ...data })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update shortlist");
+    return result;
+  },
+
+  async removeParentShortlist(schoolId) {
+    const res = await fetch(`${this.baseUrl}/parents/shortlists/${schoolId}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to remove from shortlist");
+    return result;
+  },
+
   // Digital School Fee Invoicing & MoMo Payment Collection (Feature 6)
   async getInvoices(filters = {}) {
     const query = new URLSearchParams();
