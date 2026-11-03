@@ -64,9 +64,14 @@ const Navbar = {
 
           <!-- Main Nav Links: Public Directory & 5 Dedicated Portals -->
           <ul class="nav-links">
-            <!-- Public School Discovery -->
+            <!-- Home & Public School Discovery -->
             <li>
-              <a href="#" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
+              <a href="/" id="nav-link-home" class="nav-link-direct ${State.currentView === 'home' ? 'active' : ''}">
+                <span>🏠</span> Home
+              </a>
+            </li>
+            <li>
+              <a href="/directory" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
               </a>
             </li>
@@ -195,7 +200,10 @@ const Navbar = {
             <!-- Category 1: Public Discovery -->
             <div class="mob-category-card">
               <div class="mob-category-header">🔍 Public Discovery</div>
-              <a href="#" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
+              <a href="/" id="mob-link-home" class="mobile-nav-item ${State.currentView === 'home' ? 'active' : ''}">
+                <span>🏠</span> Home
+              </a>
+              <a href="/directory" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
               </a>
               ${State.comparisonList.length > 0 ? `
@@ -260,6 +268,14 @@ const Navbar = {
     });
 
     // Desktop Nav Links
+    const handleHomeNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('home');
+    };
+    document.getElementById('nav-link-home')?.addEventListener('click', handleHomeNav);
+    document.getElementById('mob-link-home')?.addEventListener('click', handleHomeNav);
+
     document.getElementById('nav-link-directory')?.addEventListener('click', (e) => {
       e.preventDefault();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
