@@ -356,11 +356,11 @@ const Navbar = {
 
     // Auth Action Buttons
     document.getElementById('btn-nav-login')?.addEventListener('click', () => {
-      Modals.openLoginModal({ initialTab: 'signin' });
+      Modals.openParentAuthModal({ initialTab: 'signin' });
     });
 
     document.getElementById('btn-nav-parent-signup')?.addEventListener('click', () => {
-      Modals.openLoginModal({ initialTab: 'signup' });
+      Modals.openParentAuthModal({ initialTab: 'signup' });
     });
 
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
@@ -397,14 +397,14 @@ const Navbar = {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
-      Modals.openLoginModal({ initialTab: 'signin' });
+      Modals.openParentAuthModal({ initialTab: 'signin' });
     });
 
     document.getElementById('mob-btn-parent-signup')?.addEventListener('click', () => {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
-      Modals.openLoginModal({ initialTab: 'signup' });
+      Modals.openParentAuthModal({ initialTab: 'signup' });
     });
 
     document.getElementById('mob-btn-logout')?.addEventListener('click', () => {

@@ -1046,6 +1046,17 @@ const API = {
     return res.json();
   },
 
+  async importGuestContext(data) {
+    const res = await fetch(`${this.baseUrl}/parents/import-guest-context`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to import guest context");
+    return result;
+  },
+
   // Digital School Fee Invoicing & MoMo Payment Collection (Feature 6)
   async getInvoices(filters = {}) {
     const query = new URLSearchParams();

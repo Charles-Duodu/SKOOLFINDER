@@ -5009,21 +5009,7 @@ const Modals = {
 
       try {
         const res = await API.login(login, password);
-        State.setCurrentUser(res.user, res.token);
-        this.close();
-
-        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
-          document.getElementById('header-root').innerHTML = Navbar.render();
-          Navbar.attachEvents();
-        }
-
-        State.showToast(`Welcome back, ${res.user.name}! Super Admin HQ active.`, 'success');
-
-        if (options.onSuccess) {
-          options.onSuccess(res.user);
-        } else {
-          App.navigate('admin');
-        }
+        handlePostAuthSuccess(res, res.user.role === 'parent' ? 'parents' : State.getUserPortal());
       } catch (err) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>🔑</span> Sign In to Cockpit &rarr;';
@@ -5178,20 +5164,20 @@ const Modals = {
           <!-- PANE 2: Create New Parent Account (Sign Up)               -->
           <!-- ========================================================= -->
           <div id="auth-pane-signup" style="display: ${initialTab === 'signup' ? 'block' : 'none'};">
-            <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 1.15rem; font-size: 0.82rem; color: #1e40af; line-height: 1.45;">
-              👨‍👩‍👧 <strong>New Parent Registration:</strong> Set up your parent account to submit admissions, monitor entrance exams, and settle term fees via MoMo.
+            <div style="background: #eff6ff; border-left: 4px solid #1266C4; border-radius: 8px; padding: 0.75rem 0.9rem; margin-bottom: 1.15rem; font-size: 0.82rem; color: #0A2046; line-height: 1.45;">
+              👨‍👩‍👧 <strong>Progressive Parent Registration:</strong> Set up your private family cockpit to save shortlists, plan admissions, and track school journeys. <em>(Zero child DOB or household income fields required &bull; Data Protection Act 2012 compliant)</em>
             </div>
 
             <form id="form-modal-parent-register">
               <div class="form-group" style="margin-bottom: 0.75rem;">
                 <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Parent / Guardian Full Name *</label>
-                <input type="text" id="mreg-parent-name" class="form-input" placeholder="e.g. Mrs. Vivian Arthur" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                <input type="text" id="mreg-parent-name" class="form-input" placeholder="e.g. Vivian Arthur" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Ghana Mobile Phone *</label>
-                  <input type="tel" id="mreg-parent-phone" class="form-input" placeholder="e.g. 024 412 3456" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Mobile Phone (Ghana or Intl) *</label>
+                  <input type="tel" id="mreg-parent-phone" class="form-input" placeholder="e.g. 024 412 3456 or +44..." required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Email Address *</label>
@@ -5199,44 +5185,45 @@ const Modals = {
                 </div>
               </div>
 
-              <div class="form-group" style="margin-bottom: 0.75rem;">
-                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Create Password (Min 6 characters) *</label>
-                <input type="password" id="mreg-parent-password" class="form-input" placeholder="Create a secure password" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
-              </div>
-
-              <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Child / Ward Full Name *</label>
-                  <input type="text" id="mreg-child-name" class="form-input" placeholder="e.g. Kwame Mensah" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Create Password *</label>
+                  <input type="password" id="mreg-parent-password" class="form-input" placeholder="Min 6 characters" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
-                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Academic Level *</label>
-                  <select id="mreg-child-level" class="form-select" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                    <option value="Primary (Class 1-6)" selected>Primary (Class 1-6)</option>
-                    <option value="Kindergarten / Nursery">Kindergarten / Nursery</option>
-                    <option value="Junior High (JHS 1-3 / BECE)">Junior High (JHS 1-3 / BECE)</option>
-                    <option value="Senior High (SHS 1-3 / WASSCE)">Senior High (SHS 1-3 / WASSCE)</option>
-                    <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
-                  </select>
+                  <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Confirm Password *</label>
+                  <input type="password" id="mreg-parent-password-confirm" class="form-input" placeholder="Re-enter password" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
               </div>
+              <div id="mreg-password-match-hint" style="font-size: 0.76rem; margin-top: -0.4rem; margin-bottom: 0.75rem; display: none;"></div>
 
-              <div class="form-group" style="margin-bottom: 1.15rem;">
-                <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Target School for Admission *</label>
-                <select id="mreg-target-school" class="form-select" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
-                  <option value="sch-gis-accra" selected>Ghana International School (GIS) - Cantonments, Accra</option>
-                  <option value="sch-sos-tema">SOS-Hermann Gmeiner International College - Tema</option>
-                  <option value="sch-morning-star-cantonments">Morning Star School - Cantonments, Accra</option>
-                  <option value="sch-achimota-accra">Achimota Basic & Senior High School - Achimota</option>
-                  <option value="sch-tema-intl">Tema International School (TIS) - Tema</option>
-                  <option value="sch-roman-ridge">The Roman Ridge School - Roman Ridge, Accra</option>
-                  <option value="sch-alpha-beta-dansoman">Alpha Beta Education Centres - Dansoman</option>
-                </select>
+              <!-- Optional Child Details Section (Blueprint v4.2 Progressive Disclosure: Zero Mandatory DOB/Income) -->
+              <div style="background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 0.75rem 0.85rem; margin-bottom: 1rem;">
+                <div style="font-size: 0.78rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem; display: flex; justify-content: space-between;">
+                  <span>👶 Child / Ward Details</span>
+                  <span style="font-weight: 400; color: #64748b;">(Optional &bull; add later in Planning Studio)</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <input type="text" id="mreg-child-name" class="form-input" placeholder="Child's first name (optional)" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;" />
+                  </div>
+                  <div class="form-group" style="margin-bottom: 0;">
+                    <select id="mreg-child-level" class="form-select" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                      <option value="">Academic Level (Optional)</option>
+                      <option value="Kindergarten / Nursery">Kindergarten / Nursery</option>
+                      <option value="Primary (Class 1-6)">Primary (Class 1-6)</option>
+                      <option value="Junior High (JHS 1-3 / BECE)">Junior High (JHS 1-3 / BECE)</option>
+                      <option value="Senior High (SHS 1-3 / WASSCE)">Senior High (SHS 1-3 / WASSCE)</option>
+                      <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
+                      <option value="International Baccalaureate (IB)">International Baccalaureate (IB)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
               <!-- High Visibility Prominent Sign Up Button -->
-              <button type="submit" id="btn-submit-mreg-parent" class="btn-pill btn-gold" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1.05rem; font-weight: 800; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 0.5rem;">
-                <span>✨</span> Create Parent Account & Register Ward &rarr;
+              <button type="submit" id="btn-submit-mreg-parent" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1.05rem; font-weight: 800; background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(10,32,70,0.3); display: flex; align-items: center; gap: 0.5rem;">
+                <span>✨</span> Create Parent Account &rarr;
               </button>
             </form>
 
@@ -5486,6 +5473,62 @@ const Modals = {
       }
     };
 
+    
+    // Blueprint v4.2 Phase 3: Unified Post-Auth Success with Smart Guest Context Import
+    const handlePostAuthSuccess = (res, defaultPortal = 'parents') => {
+      State.setCurrentUser(res.user, res.token);
+
+      if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+        document.getElementById('header-root').innerHTML = Navbar.render();
+        Navbar.attachEvents();
+      }
+
+      // Check for guest-accumulated bookmarks or comparison list
+      const guestBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
+      const guestCompare = Array.isArray(State.comparisonList) ? State.comparisonList.map(s => s.id) : [];
+      const allGuestIds = Array.from(new Set([...guestBookmarks, ...guestCompare].filter(Boolean)));
+
+      if (res.user && res.user.role === 'parent' && allGuestIds.length > 0) {
+        this.close();
+        this.openGuestImportModal({
+          schoolIds: allGuestIds,
+          user: res.user,
+          redirectView: options.redirectView || 'parents'
+        });
+      } else {
+        this.close();
+        State.showToast(`Welcome back, ${res.user.name || 'Parent'}!`, 'success');
+        if (options.onSuccess) {
+          options.onSuccess(res.user);
+        } else if (options.redirectView) {
+          App.navigate(options.redirectView, options.redirectParam || null);
+        } else {
+          App.navigate(res.user.role === 'parent' ? 'parents' : (defaultPortal || State.getUserPortal()));
+        }
+      }
+    };
+
+    // Live password matching indicator
+    const passInput1 = document.getElementById('mreg-parent-password');
+    const passInput2 = document.getElementById('mreg-parent-password-confirm');
+    const matchHint = document.getElementById('mreg-password-match-hint');
+    const checkPassMatch = () => {
+      if (!matchHint || !passInput2 || !passInput2.value) {
+        if (matchHint) matchHint.style.display = 'none';
+        return;
+      }
+      matchHint.style.display = 'block';
+      if (passInput1.value === passInput2.value) {
+        matchHint.style.color = '#16a34a';
+        matchHint.innerHTML = '✓ Passwords match';
+      } else {
+        matchHint.style.color = '#dc2626';
+        matchHint.innerHTML = '⚠ Passwords do not match';
+      }
+    };
+    passInput1?.addEventListener('input', checkPassMatch);
+    passInput2?.addEventListener('input', checkPassMatch);
+
     // Form 1: Email & Password Sign In
     document.getElementById('form-auth-login').onsubmit = async (e) => {
       e.preventDefault();
@@ -5585,57 +5628,221 @@ const Modals = {
     }
 
     // Form 2: New Parent Registration (Sign Up)
-    document.getElementById('form-modal-parent-register').onsubmit = async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('mreg-parent-name').value.trim();
-      const phone = document.getElementById('mreg-parent-phone').value.trim();
-      const email = document.getElementById('mreg-parent-email').value.trim();
-      const password = document.getElementById('mreg-parent-password').value;
-      const childName = document.getElementById('mreg-child-name').value.trim();
-      const childLevel = document.getElementById('mreg-child-level').value;
-      const targetSchoolId = document.getElementById('mreg-target-school').value;
-      const submitBtn = document.getElementById('btn-submit-mreg-parent');
+    const formParentReg = document.getElementById('form-modal-parent-register');
+    if (formParentReg) {
+      formParentReg.onsubmit = async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('mreg-parent-name').value.trim();
+        const phone = document.getElementById('mreg-parent-phone').value.trim();
+        const email = document.getElementById('mreg-parent-email').value.trim();
+        const password = document.getElementById('mreg-parent-password').value;
+        const confirmPassword = document.getElementById('mreg-parent-password-confirm')?.value;
+        const childName = document.getElementById('mreg-child-name')?.value.trim() || undefined;
+        const childLevel = document.getElementById('mreg-child-level')?.value || undefined;
+        const submitBtn = document.getElementById('btn-submit-mreg-parent');
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
-
-      try {
-        const res = await API.register({
-          role: 'parent',
-          name,
-          phone,
-          email,
-          password,
-          childName,
-          childLevel,
-          targetSchoolId,
-          suburb: 'Ghana'
-        });
-
-        State.setCurrentUser(res.user, res.token);
-        this.close();
-
-        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
-          document.getElementById('header-root').innerHTML = Navbar.render();
-          Navbar.attachEvents();
+        if (confirmPassword !== undefined && password !== confirmPassword) {
+          State.showToast("Passwords do not match. Please ensure both passwords match.", "error");
+          document.getElementById('mreg-parent-password-confirm')?.focus();
+          return;
         }
 
-        State.showToast(`🎉 Welcome, ${res.user.name}! Your parent account & admission tracking are active.`, 'success');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
 
-        if (options.onSuccess) {
-          options.onSuccess(res.user);
-        } else {
-          App.navigate('parents');
+        try {
+          const res = await API.register({
+            role: 'parent',
+            name,
+            fullName: name,
+            phone,
+            email,
+            password,
+            childName,
+            childLevel,
+            suburb: 'Ghana'
+          });
+
+          handlePostAuthSuccess(res, 'parents');
+        } catch (err) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>✨</span> Create Parent Account &rarr;';
+          State.showToast(err.message || 'Registration failed', 'error');
         }
-      } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>✨</span> Create Parent Account & Register Ward &rarr;';
-        State.showToast(err.message, 'error');
-      }
-    };
+      };
+    }
   },
 
   // Backward compatibility alias: openRegisterModal delegates to openLoginModal on the sign up tab
+  // Dedicated Blueprint v4.2 Progressive Parent Auth Modal
+  openParentAuthModal(options = {}) {
+    return this.openLoginModal({ ...options, initialTab: options.initialTab || 'signin' });
+  },
+
+  // Blueprint v4.2 Phase 3: Smart Guest Context Review & Import Modal
+  openGuestImportModal(options = {}) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+
+    const rawIds = Array.isArray(options.schoolIds) ? options.schoolIds : [];
+    const schoolIds = Array.from(new Set(rawIds.filter(Boolean)));
+    const user = options.user || State.currentUser;
+
+    const allKnownSchools = [
+      ...(Array.isArray(State.schools) ? State.schools : []),
+      ...(Array.isArray(State.comparisonList) ? State.comparisonList : [])
+    ];
+
+    const schoolMap = new Map();
+    allKnownSchools.forEach(s => { if (s && s.id) schoolMap.set(s.id, s); });
+
+    const resolvedSchools = schoolIds.map(id => {
+      const found = schoolMap.get(id);
+      return {
+        id,
+        name: found ? found.name : `School (${id})`,
+        region: found?.region || 'Ghana',
+        curriculum: found?.curriculum || 'Standard',
+        imageUrl: found?.featured_image || found?.image_url || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=400&q=80',
+        inCompare: (State.comparisonList || []).some(c => c.id === id),
+        inBookmarks: (State.bookmarkedSchoolIds || []).includes(id)
+      };
+    });
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 580px; border-radius: var(--radius-xl); overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <!-- Top Banner -->
+        <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
+              <span>📥</span> Blueprint v4.2 &bull; Smart Guest Context Import
+            </div>
+            <h3 class="modal-title" style="color: #fff; font-size: 1.3rem; margin-top: 0.2rem;">
+              Review &amp; Import Your Saved Schools
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #cbd5e1; font-size: 1.5rem;">&times;</button>
+        </div>
+
+        <div class="modal-body" style="padding: 1.3rem 1.5rem; max-height: 75vh; overflow-y: auto;">
+          <div style="background: #f0f7ff; border-left: 4px solid #1266C4; padding: 0.85rem 1rem; border-radius: 8px; margin-bottom: 1.15rem; font-size: 0.86rem; color: #0A2046; line-height: 1.5;">
+            Welcome <strong>${user?.name || 'Parent'}</strong>! You saved <strong>${resolvedSchools.length} school${resolvedSchools.length > 1 ? 's' : ''}</strong> while browsing as a guest. Select which ones you want to import into your personal Parent Space:
+          </div>
+
+          <!-- Selection Controls Bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e2e8f0;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #475569;">
+              <span id="import-selected-counter">${resolvedSchools.length}</span> of ${resolvedSchools.length} selected
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <button type="button" id="btn-import-select-all" style="background: none; border: none; font-size: 0.8rem; font-weight: 700; color: #1266C4; cursor: pointer; text-decoration: underline;">Select All</button>
+              <span style="color: #cbd5e1;">&bull;</span>
+              <button type="button" id="btn-import-deselect-all" style="background: none; border: none; font-size: 0.8rem; font-weight: 700; color: #64748b; cursor: pointer; text-decoration: underline;">Deselect All</button>
+            </div>
+          </div>
+
+          <!-- School List Checkboxes -->
+          <div id="guest-import-list" style="display: flex; flex-direction: column; gap: 0.65rem; margin-bottom: 1.25rem;">
+            ${resolvedSchools.map(s => `
+              <label class="guest-import-item" style="display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem; border-radius: 10px; border: 1.5px solid #cbd5e1; background: #ffffff; cursor: pointer; transition: all 0.2s;">
+                <input type="checkbox" class="chk-import-school" value="${s.id}" checked style="width: 1.15rem; height: 1.15rem; accent-color: #1266C4; cursor: pointer;" />
+                <img src="${s.imageUrl}" alt="${s.name}" style="width: 44px; height: 44px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0; flex-shrink: 0;" />
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-weight: 700; font-size: 0.9rem; color: #0A2046; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${s.name}</div>
+                  <div style="display: flex; gap: 0.35rem; align-items: center; margin-top: 0.15rem; flex-wrap: wrap;">
+                    <span style="font-size: 0.72rem; padding: 0.1rem 0.4rem; background: #f1f5f9; border-radius: 4px; color: #475569; font-weight: 600;">📍 ${s.region}</span>
+                    <span style="font-size: 0.72rem; padding: 0.1rem 0.4rem; background: #fef3c7; border-radius: 4px; color: #92400e; font-weight: 600;">📚 ${s.curriculum}</span>
+                    ${s.inCompare ? `<span style="font-size: 0.7rem; color: #1266C4; font-weight: 600;">⚖️ Compared</span>` : ''}
+                  </div>
+                </div>
+              </label>
+            `).join('')}
+          </div>
+
+          <!-- Actions Footer -->
+          <div style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <button type="button" id="btn-submit-import-context" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 0.98rem; font-weight: 800; background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(18,102,196,0.3); display: flex; align-items: center; gap: 0.5rem;">
+              <span>📥</span> Import Selected (${resolvedSchools.length}) to My Account
+            </button>
+            <button type="button" id="btn-skip-import-context" style="width: 100%; background: none; border: 1px solid #cbd5e1; padding: 0.65rem; border-radius: 10px; font-size: 0.86rem; font-weight: 700; color: #64748b; cursor: pointer;">
+              🧹 Skip / Start Fresh with Clean Account
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => {
+      this.close();
+      App.navigate(options.redirectView || 'parents');
+    };
+
+    // Checkbox toggling and counter update
+    const checkboxes = div.querySelectorAll('.chk-import-school');
+    const counterEl = document.getElementById('import-selected-counter');
+    const submitBtn = document.getElementById('btn-submit-import-context');
+    const updateCount = () => {
+      const selected = Array.from(checkboxes).filter(c => c.checked).length;
+      if (counterEl) counterEl.textContent = selected;
+      if (submitBtn) submitBtn.innerHTML = `<span>📥</span> Import Selected (${selected}) to My Account`;
+    };
+
+    checkboxes.forEach(c => c.addEventListener('change', updateCount));
+
+    document.getElementById('btn-import-select-all')?.addEventListener('click', () => {
+      checkboxes.forEach(c => { c.checked = true; });
+      updateCount();
+    });
+
+    document.getElementById('btn-import-deselect-all')?.addEventListener('click', () => {
+      checkboxes.forEach(c => { c.checked = false; });
+      updateCount();
+    });
+
+    // Skip
+    document.getElementById('btn-skip-import-context')?.addEventListener('click', () => {
+      this.close();
+      State.showToast("Starting fresh with a clean parent workspace.", "info");
+      App.navigate(options.redirectView || 'parents');
+    });
+
+    // Import Selected
+    document.getElementById('btn-submit-import-context')?.addEventListener('click', async () => {
+      const selectedIds = Array.from(checkboxes).filter(c => c.checked).map(c => c.value);
+      if (selectedIds.length === 0) {
+        State.showToast("Please select at least one school or click Skip", "warning");
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳</span> Importing to your account...';
+
+      try {
+        const res = await API.importGuestContext({ schoolIds: selectedIds });
+
+        // Merge into State bookmarks
+        const currentBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
+        const merged = Array.from(new Set([...currentBookmarks, ...selectedIds]));
+        State.bookmarkedSchoolIds = merged;
+        try {
+          localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(merged));
+        } catch (e) {}
+
+        this.close();
+        State.showToast(`🎉 ${res.message || `Imported ${selectedIds.length} schools to your account!`}`, 'success');
+        App.navigate(options.redirectView || 'parents');
+      } catch (err) {
+        submitBtn.disabled = false;
+        updateCount();
+        State.showToast(err.message || "Failed to import guest context", "error");
+      }
+    });
+  },
+
   openRegisterModal(options = {}) {
     this.openLoginModal({ ...options, initialTab: 'signup' });
   },
