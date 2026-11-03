@@ -70,16 +70,6 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             </li>
-            <li>
-              <a href="/parents" id="nav-link-direct-parents" class="nav-link-direct ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parents Portal
-              </a>
-            </li>
-            <li>
-              <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parents Portal
-              </a>
-            </li>
 
             <!-- The 5 Dedicated SaaS Portals -->
             <li class="nav-item-dropdown">
@@ -175,9 +165,6 @@ const Navbar = {
               <button id="btn-nav-login" class="btn-pill btn-outline nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.9rem; font-weight: 700;">
                 <span>🔑</span> Sign In
               </button>
-              <button id="btn-nav-parent-signup" class="btn-pill btn-gold nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 1rem; font-weight: 800; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);">
-                <span>👨‍👩‍👧</span> Parent Sign Up
-              </button>
               <button id="btn-nav-admin-signup" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
                 <span>🛡️</span> Admin Sign Up
               </button>
@@ -210,14 +197,6 @@ const Navbar = {
               <div class="mob-category-header">🔍 Public Discovery</div>
               <a href="#" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
-              </a>
-            <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parents Portal
-              </a>
-            </li>
-            <li>
-              <a href="/parents" id="mob-link-direct-parents" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parents Portal
               </a>
               ${State.comparisonList.length > 0 ? `
                 <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">
@@ -259,9 +238,6 @@ const Navbar = {
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
                   <button id="mob-btn-login" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 700;">
                     <span>🔑</span> Sign In to Account
-                  </button>
-                  <button id="mob-btn-parent-signup" class="btn-pill btn-gold" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800;">
-                    <span>👨‍👩‍👧</span> Parent Sign Up
                   </button>
                   <button id="mob-btn-admin-signup" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800; background: #091e42; color: #93c5fd; border: 1px solid #1e3a8a;">
                     <span>🛡️</span> Admin Sign Up

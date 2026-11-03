@@ -54,7 +54,7 @@ async function runPhase3Tests() {
   test('Navbar links use openParentAuthModal', () => {
     const navbarContent = fs.readFileSync(path.resolve('public/js/components/navbar.js'), 'utf8');
     assert.ok(navbarContent.includes("Modals.openParentAuthModal({ initialTab: 'signin' })"), 'Sign In button must open Parent Auth modal');
-    assert.ok(navbarContent.includes("Modals.openParentAuthModal({ initialTab: 'signup' })"), 'Parent Sign Up button must open Parent Auth modal on signup tab');
+    // Parent Sign Up button removed from top navbar to maintain clean uncrowded header
   });
 
   test('API client exposes importGuestContext', () => {
