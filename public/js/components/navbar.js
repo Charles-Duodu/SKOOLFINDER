@@ -282,9 +282,7 @@ const Navbar = {
       App.navigate('parents');
     };
     document.getElementById('nav-link-parents')?.addEventListener('click', handleParentsNav);
-    document.getElementById('nav-link-direct-parents')?.addEventListener('click', handleParentsNav);
-    document.getElementById('mob-link-direct-parents')?.addEventListener('click', handleParentsNav);
-    document.getElementById('nav-link-parent')?.addEventListener('click', handleParentsNav);
+            document.getElementById('nav-link-parent')?.addEventListener('click', handleParentsNav);
     document.getElementById('mob-link-parents')?.addEventListener('click', handleParentsNav);
     document.getElementById('mob-link-parent')?.addEventListener('click', handleParentsNav);
 
@@ -335,10 +333,7 @@ const Navbar = {
       Modals.openParentAuthModal({ initialTab: 'signin' });
     });
 
-    document.getElementById('btn-nav-parent-signup')?.addEventListener('click', () => {
-      Modals.openParentAuthModal({ initialTab: 'signup' });
-    });
-
+    
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
       Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
     });
