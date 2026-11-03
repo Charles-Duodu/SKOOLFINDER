@@ -205,20 +205,6 @@ const HomeView = {
               </div>
             </div>
 
-            <!-- Portal 5: Super Admin -->
-            <div class="home-portal-card" data-portal="admin" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(148,163,184,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <span style="font-size: 1.75rem;">🛡️</span>
-                <span style="font-size: 0.68rem; font-weight: 800; background: rgba(148,163,184,0.25); color: #cbd5e1; padding: 0.2rem 0.5rem; border-radius: 100px;">/admin</span>
-              </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Admin Console</h4>
-              <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
-                Platform governance: NaSIA accreditation audits, teacher NTC vetting & SaaS plans.
-              </p>
-              <div style="color: #94a3b8; font-size: 0.8rem; font-weight: 700; display: flex; align-items: center; gap: 0.3rem;">
-                Open Admin HQ &rarr;
-              </div>
-            </div>
           </div>
         </div>
       </section>
