@@ -210,8 +210,8 @@ button {
    Header & Navigation
    ======================================================== */
 .site-header {
-  position: sticky;
-  top: 0;
+  position: static;
+  top: auto;
   z-index: 100;
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
