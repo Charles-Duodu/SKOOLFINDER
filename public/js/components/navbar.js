@@ -101,8 +101,8 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-admin-signup" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
-                <span>🛡️</span> Admin Sign Up
+              <button id="btn-nav-admin-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
+                <span>🛡️</span> Admin Sign In
               </button>
             `}
 
@@ -186,8 +186,8 @@ const Navbar = {
                 </button>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
-                  <button id="mob-btn-admin-signup" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800; background: #091e42; color: #93c5fd; border: 1px solid #1e3a8a;">
-                    <span>🛡️</span> Admin Sign Up
+                  <button id="mob-btn-admin-signin" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.9rem; padding: 0.6rem; font-weight: 800; background: #091e42; color: #93c5fd; border: 1px solid #1e3a8a;">
+                    <span>🛡️</span> Admin Sign In
                   </button>
                 </div>
               `}
@@ -287,19 +287,23 @@ const Navbar = {
     document.getElementById('nav-link-admin')?.addEventListener('click', handleAdminNav);
     document.getElementById('mob-link-admin')?.addEventListener('click', handleAdminNav);
 
-    // Auth Action Buttons
-    
-    
-    document.getElementById('btn-nav-admin-signup')?.addEventListener('click', () => {
-      Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
-    });
+    // Admin Sign In Action Handlers (Desktop & Mobile)
+    const handleAdminSignInModal = () => {
+      Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
+    };
 
-    document.getElementById('mob-btn-admin-signup')?.addEventListener('click', () => {
+    document.getElementById('btn-nav-admin-signin')?.addEventListener('click', handleAdminSignInModal);
+    document.getElementById('btn-nav-admin-signup')?.addEventListener('click', handleAdminSignInModal);
+
+    const handleMobAdminSignInModal = () => {
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');
-      Modals.openAdminAuthModal({ initialMode: 'signup', redirectView: 'admin' });
-    });
+      Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
+    };
+
+    document.getElementById('mob-btn-admin-signin')?.addEventListener('click', handleMobAdminSignInModal);
+    document.getElementById('mob-btn-admin-signup')?.addEventListener('click', handleMobAdminSignInModal);
 
     document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {
       const role = State.currentUser?.role;
