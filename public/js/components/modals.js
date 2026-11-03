@@ -4886,12 +4886,20 @@ const Modals = {
                 <input type="tel" id="admin-reg-phone" class="form-input" required style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
-              <div class="form-group" style="margin-bottom: 1.25rem;">
+              <div class="form-group" style="margin-bottom: 0.9rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                   <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password (Min 6 characters) *</label>
                   <button type="button" id="btn-toggle-admin-reg-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
                 </div>
                 <input type="password" id="admin-reg-password" class="form-input" required minlength="6" style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Confirm Password *</label>
+                  <button type="button" id="btn-toggle-admin-reg-confirm-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
+                </div>
+                <input type="password" id="admin-reg-confirm-password" class="form-input" required minlength="6" style="width: 100%; padding: 0.72rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <button type="submit" id="btn-admin-reg-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.85rem; font-size: 1rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -4975,6 +4983,20 @@ const Modals = {
       };
     }
 
+    const regConfirmPass = document.getElementById('admin-reg-confirm-password');
+    const toggleRegConfirmBtn = document.getElementById('btn-toggle-admin-reg-confirm-pass');
+    if (toggleRegConfirmBtn && regConfirmPass) {
+      toggleRegConfirmBtn.onclick = () => {
+        if (regConfirmPass.type === 'password') {
+          regConfirmPass.type = 'text';
+          toggleRegConfirmBtn.innerText = 'Hide';
+        } else {
+          regConfirmPass.type = 'password';
+          toggleRegConfirmBtn.innerText = 'Show';
+        }
+      };
+    }
+
     // Handle Form 1: Admin Sign In
     document.getElementById('form-admin-auth-login').onsubmit = async (e) => {
       e.preventDefault();
@@ -5016,8 +5038,15 @@ const Modals = {
       const email = document.getElementById('admin-reg-email').value.trim();
       const phone = document.getElementById('admin-reg-phone').value.trim();
       const password = document.getElementById('admin-reg-password').value;
+      const confirmPassword = document.getElementById('admin-reg-confirm-password')?.value;
       const adminPasscode = document.getElementById('admin-reg-passcode').value;
       const submitBtn = document.getElementById('btn-admin-reg-submit');
+
+      if (password !== confirmPassword) {
+        State.showToast('Passwords do not match. Please ensure both passwords match.', 'error');
+        document.getElementById('admin-reg-confirm-password')?.focus();
+        return;
+      }
 
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span>⏳</span> Creating Super Admin Account...';

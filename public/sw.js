@@ -2,24 +2,24 @@
  * SkoolFinder Ghana - Progressive Web App (PWA) Service Worker
  * Strategy: Stale-While-Revalidate for Static Assets, Network-First for Navigation & APIs
  */
-const CACHE_NAME = 'skoolfinder-cache-v38';
+const CACHE_NAME = 'skoolfinder-cache-v39';
 
 // Critical core assets to precache during install for instant shell loading
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/css/style.css?v=38',
-  '/css/components.css?v=38',
-  '/js/api.js?v=38',
-  '/js/state.js?v=38',
-  '/js/components/navbar.js?v=38',
-  '/js/components/footer.js?v=38',
-  '/js/components/modals.js?v=38',
-  '/js/components/chatbot.js?v=38',
-  '/js/views/homeView.js?v=38',
-  '/js/views/directoryView.js?v=38',
-  '/js/app.js?v=38',
+  '/css/style.css?v=39',
+  '/css/components.css?v=39',
+  '/js/api.js?v=39',
+  '/js/state.js?v=39',
+  '/js/components/navbar.js?v=39',
+  '/js/components/footer.js?v=39',
+  '/js/components/modals.js?v=39',
+  '/js/components/chatbot.js?v=39',
+  '/js/views/homeView.js?v=39',
+  '/js/views/directoryView.js?v=39',
+  '/js/app.js?v=39',
   '/assets/images/campus_hero.webp',
   '/assets/images/icon-192.png',
   '/assets/images/icon-512.png'
