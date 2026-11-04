@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const EmailService = require('../services/emailService');
+const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 
 // In-Memory Applications Ledger for fast retrieval and persistence
 const ADMISSIONS_STORE = [
@@ -184,6 +185,22 @@ router.post('/apply', async (req, res) => {
     // Prepend to in-memory ledger
     ADMISSIONS_STORE.unshift(newApp);
 
+    // Register with AdmissionsSubscriptionService for Phase 2A state machine tracking
+    try {
+      await AdmissionsSubscriptionService.submitApplication({
+        id: applicationNumber,
+        trackingCode: applicationNumber,
+        applicationNumber,
+        schoolId,
+        student: { ...newApp.student, gradeApplying: gradeLevel, termApplied: newApp.termApplied },
+        parentGuardian: newApp.parentGuardian,
+        academicHistory: { previousSchool: newApp.previousSchool },
+        source: 'portal'
+      });
+    } catch (subErr) {
+      console.warn('[ADM] AdmissionsSubscriptionService submit sync warning:', subErr.message);
+    }
+
     // Also store in Supabase enquiries table for audit trail
     const isSchoolUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId);
     const targetRecipientId = isSchoolUuid ? schoolId : '00000000-0000-0000-0000-000000000001';
@@ -361,6 +378,61 @@ router.get('/applications/:id/offer-letter', async (req, res) => {
   } catch (err) {
     console.error('Error generating offer letter:', err);
     return res.status(500).json({ error: 'Failed to generate admission offer letter' });
+  }
+});
+
+/**
+ * GET /api/admissions/track/:trackingCode (ADM-010)
+ * Private parent tracking endpoint showing real-time authoritative admission status
+ */
+router.get('/track/:trackingCode', async (req, res) => {
+  try {
+    const { trackingCode } = req.params;
+    let details = await AdmissionsSubscriptionService.parentTrackApplication(trackingCode);
+
+    if (!details) {
+      // Fallback to legacy ADMISSIONS_STORE
+      const fallbackApp = await findApplication(trackingCode);
+      if (fallbackApp) {
+        details = {
+          trackingCode: fallbackApp.trackingCode || fallbackApp.applicationNumber,
+          studentName: fallbackApp.studentName,
+          gradeApplying: fallbackApp.gradeApplying,
+          termApplied: fallbackApp.termApplied,
+          status: fallbackApp.status,
+          statusLabel: fallbackApp.statusLabel,
+          submittedAt: fallbackApp.submittedAt,
+          assessment: fallbackApp.assessment,
+          offer: fallbackApp.offer || null,
+          timeline: [
+            { status: 'submitted', timestamp: fallbackApp.submittedAt, actor: 'Parent', note: 'Submitted via portal' }
+          ]
+        };
+      }
+    }
+
+    if (!details) {
+      return res.status(404).json({ error: 'Application record not found for tracking code' });
+    }
+
+    return res.json({ success: true, tracking: details });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/admissions/offers/:trackingCode/respond (ADM-009, ADM-010)
+ * Allows authenticated parent to accept or decline digital offer
+ */
+router.post('/offers/:trackingCode/respond', async (req, res) => {
+  try {
+    const { trackingCode } = req.params;
+    const { decision = 'accept' } = req.body;
+    const result = await AdmissionsSubscriptionService.parentRespondToOffer(trackingCode, decision);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

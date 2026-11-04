@@ -329,31 +329,58 @@ const DashboardView = {
     }
 
     let workspaceData = null;
+    let intakes = [];
+    let applications = [];
+    let enquiriesData = { enquiries: [], stats: {} };
+    let tourSlots = [];
+    let subscription = null;
+    let invoices = [];
+    let plans = [];
+
     try {
-      const res = await API.getSchoolWorkspace(schoolId);
-      workspaceData = res?.workspace;
+      const [res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes] = await Promise.allSettled([
+        API.getSchoolWorkspace(schoolId),
+        API.getSchoolIntakes(schoolId),
+        API.getSchoolApplications(schoolId),
+        API.getSchoolEnquiries(schoolId),
+        API.getSchoolTourSlots(schoolId),
+        API.getSchoolSubscription(schoolId),
+        API.getSchoolInvoices(schoolId),
+        API.getSubscriptionPlans()
+      ]);
+      if (res.status === 'fulfilled' && res.value?.workspace) workspaceData = res.value.workspace;
+      if (intakesRes.status === 'fulfilled' && intakesRes.value?.intakes) intakes = intakesRes.value.intakes;
+      if (appsRes.status === 'fulfilled' && appsRes.value?.applications) applications = appsRes.value.applications;
+      if (enqRes.status === 'fulfilled') enquiriesData = enqRes.value;
+      if (toursRes.status === 'fulfilled' && toursRes.value?.slots) tourSlots = toursRes.value.slots;
+      if (subRes.status === 'fulfilled' && subRes.value?.subscription) subscription = subRes.value.subscription;
+      if (invRes.status === 'fulfilled' && invRes.value?.invoices) invoices = invRes.value.invoices;
+      if (plansRes.status === 'fulfilled' && plansRes.value?.plans) plans = plansRes.value.plans;
     } catch (e) {
-      console.warn('Workspace load notice:', e.message);
+      console.warn('Workspace & Phase 2A load notice:', e.message);
     }
 
     const school = workspaceData?.school || {
+      id: schoolId,
       name: 'Ghana International School (GIS)',
       slug: 'ghana-international-school',
       suburb: 'Cantonments',
       region: 'Greater Accra',
-      active_tier: 'growth',
+      active_tier: subscription?.tier || 'growth',
       authority_status: 'verified',
       accreditation_status: 'verified',
       profile_completeness_score: 85
     };
 
-    const kpis = workspaceData?.kpis || { totalApplications: 14, totalEnquiries: 28, tourBookings: 8, profileScore: 85 };
-    const seatQuotas = workspaceData?.seatQuotas || { allocated: 2, total: 3, tier: 'growth' };
+    const kpis = workspaceData?.kpis || { totalApplications: applications.length || 14, totalEnquiries: enquiriesData?.stats?.total || 28, tourBookings: tourSlots.length || 8, profileScore: 85 };
+    const seatQuotas = workspaceData?.seatQuotas || { allocated: 2, total: subscription?.seatsIncluded || 3, tier: subscription?.tier || 'growth' };
     const revisions = workspaceData?.profileRevisions || { published: { name: school.name, description: '' }, draft: null };
     const staffList = workspaceData?.staff || [];
     const verificationDocs = workspaceData?.verificationDocs || [];
     const tasks = workspaceData?.tasks || [];
     const auditLogs = workspaceData?.auditLogs || [];
+
+    const phase2aData = { intakes, applications, enquiriesData, tourSlots, subscription, invoices, plans };
 
     return `
       <div class="owner-shell">
@@ -369,7 +396,7 @@ const DashboardView = {
               </div>
               <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
                 <span class="owner-nav-badge" style="background: rgba(213, 166, 59, 0.25); color: #fbbf24; text-transform: uppercase;">
-                  ${school.active_tier || 'Free'} Tier
+                  ${subscription?.tier || school.active_tier || 'Free'} Tier
                 </span>
                 <span class="owner-nav-badge" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7;">
                   ${school.authority_status === 'verified' ? '🛡️ Verified' : '⏳ Pending'}
@@ -404,19 +431,19 @@ const DashboardView = {
               <span>📋 Compliance Audit (SCH-010)</span>
             </button>
 
-            <!-- Group 4: Admissions & Growth (Active) -->
-            <div class="owner-nav-group-title">Admissions & Growth</div>
+            <!-- Group 4: Admissions & Growth (Active Phase 2A) -->
+            <div class="owner-nav-group-title">Admissions & Growth (Phase 2A)</div>
             <button class="owner-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-owner-tab="admissions">
               <span>🎓 Admissions Pipeline</span>
-              <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${kpis.totalApplications || 14}</span>
+              <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${applications.length || kpis.totalApplications || 14}</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'inquiries' ? 'active' : ''}" data-owner-tab="inquiries">
               <span>📬 Enquiries & Tours</span>
-              <span class="owner-nav-badge" style="background: #3b82f6; color: #fff;">${kpis.totalEnquiries || 28}</span>
+              <span class="owner-nav-badge" style="background: #3b82f6; color: #fff;">${enquiriesData?.stats?.total || kpis.totalEnquiries || 28}</span>
             </button>
 
-            <!-- Group 5: Commercial Subscriptions -->
-            <div class="owner-nav-group-title">Subscription & Billing</div>
+            <!-- Group 5: Commercial Subscriptions (Active Phase 2A) -->
+            <div class="owner-nav-group-title">Subscription & Billing (Phase 2A)</div>
             <button class="owner-nav-item ${this.activeTab === 'subscription' ? 'active' : ''}" data-owner-tab="subscription">
               <span>💳 Plan Tier & Seats</span>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">ACTIVE</span>
@@ -447,7 +474,7 @@ const DashboardView = {
 
         <!-- MAIN WORKSPACE CONTENT CONTAINER -->
         <main class="owner-main-content">
-          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs)}
+          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData)}
         </main>
       </div>
     `;
@@ -456,7 +483,7 @@ const DashboardView = {
   /**
    * Renders tab content based on activeTab
    */
-  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs) {
+  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}) {
     switch (this.activeTab) {
       case 'overview':
         return this.renderOverviewTab(school, kpis, seatQuotas, tasks);
@@ -467,13 +494,13 @@ const DashboardView = {
       case 'staff':
         return this.renderStaffTab(school, staffList, seatQuotas);
       case 'admissions':
-        return this.renderAdmissionsTab(school);
+        return this.renderAdmissionsTab(school, phase2a.intakes, phase2a.applications, phase2a.tourSlots);
       case 'inquiries':
-        return this.renderInquiriesTab(school);
+        return this.renderInquiriesTab(school, phase2a.enquiriesData, phase2a.tourSlots);
       case 'audit':
         return this.renderAuditTab(school, auditLogs);
       case 'subscription':
-        return this.renderSubscriptionTab(school, seatQuotas);
+        return this.renderSubscriptionTab(school, phase2a.subscription, phase2a.invoices, phase2a.plans, seatQuotas);
       case 'operations':
         return this.renderOperationsTab(school);
       default:
@@ -980,90 +1007,366 @@ const DashboardView = {
   },
 
   /**
-   * TAB 5: Admissions Pipeline (Active 5-Stage Board)
+   * Helper for Admission status badge styling
    */
-  renderAdmissionsTab(school) {
+  getAdmissionStatusBadgeClass(status = '') {
+    const s = (status || '').toLowerCase();
+    if (s.includes('enrolled')) return 'badge-emerald';
+    if (s.includes('offered') || s.includes('admitted')) return 'badge-primary';
+    if (s.includes('accepted')) return 'badge-gold';
+    if (s.includes('exam') || s.includes('assessment')) return 'badge-warning';
+    if (s.includes('declined') || s.includes('withdrawn') || s.includes('expired')) return 'badge-danger';
+    return 'badge-info';
+  },
+
+  /**
+   * TAB 5: Admissions Pipeline (Active 12-State Board & Capacity)
+   */
+  renderAdmissionsTab(school, intakes = [], applications = [], tourSlots = []) {
+    const activeIntake = intakes.find(i => i.status === 'open') || intakes[0] || {
+      name: '2026/2027 Main Academic Intake',
+      academic_year: '2026/2027',
+      term: 'Term 1 (September)',
+      grades_config: [
+        { grade: 'Primary 1', capacity: 30, advertised_seats: 30, offers_count: 5, enrolled_count: 2 },
+        { grade: 'Primary 4', capacity: 30, advertised_seats: 30, offers_count: 10, enrolled_count: 4 }
+      ]
+    };
+
+    const stageCounts = {
+      received: applications.filter(a => ['submitted', 'under_review', 'information_required'].includes(a.status)).length,
+      assessment: applications.filter(a => a.status === 'assessment_scheduled').length,
+      decision: applications.filter(a => ['decision_pending', 'waitlisted'].includes(a.status)).length,
+      offered: applications.filter(a => a.status === 'offered').length,
+      enrolled: applications.filter(a => ['accepted', 'enrolled'].includes(a.status)).length
+    };
+
     return `
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §10 &bull; Admissions Pipeline
+              Blueprint v2.0 §11 &bull; ADM-001 to ADM-012 &bull; Admissions Lifecycle Engine
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-              Admissions Lifecycle Board
+              Admissions Lifecycle Command
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Manage candidate submissions through 5 stages: Received, Exam Scheduled, Admitted, Enrolled, and Offer Extended.
+              12-state admissions workflow, intake class capacity, dossier reviews, walkthrough schedules and DEC-03 enrolment confirmation.
             </p>
           </div>
-          <button class="btn-pill btn-primary" onclick="App.navigate('parents')">
-            <span>👨‍👩‍👧</span> Open Parents Portal
-          </button>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="/api/schools/${school.id}/admissions/export" target="_blank" class="btn-pill btn-outline" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>📥</span> Export CSV (ADM-011)
+            </a>
+            <button id="btn-open-tour-modal" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>🧭</span> Schedule Tour / Exam (ADM-008)
+            </button>
+          </div>
         </div>
 
+        <!-- Class Capacity & Active Intake Banner (ADM-001, ADM-002) -->
+        <div class="owner-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">ACTIVE ACADEMIC INTAKE (ADM-001)</div>
+              <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0.2rem 0; color: #ffffff;">${activeIntake.name} &bull; ${activeIntake.academic_year || '2026/2027'}</h3>
+              <div style="font-size: 0.82rem; color: #cbd5e1;">${activeIntake.term || 'Term 1'} &bull; Status: <span class="badge badge-emerald" style="text-transform: uppercase; font-size: 0.7rem;">${activeIntake.status || 'Open'}</span></div>
+            </div>
+            <div style="font-size: 0.85rem; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.2);">
+              <span>DEC-03 Rule:</span> <strong>Admissions Active</strong> &bull; SIS Records Deferred
+            </div>
+          </div>
+
+          <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem;">
+            <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.65rem; color: #cbd5e1;">Class Capacity Allocations (ADM-002)</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+              ${(activeIntake.grades_config || []).map(g => `
+                <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem;">
+                  <div style="font-weight: 800; font-size: 0.9rem; color: #ffffff;">${g.grade}</div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: #94a3b8; margin-top: 0.25rem;">
+                    <span>Cap: <strong>${g.capacity}</strong></span>
+                    <span>Adv: <strong>${g.advertised_seats}</strong></span>
+                    <span>Off: <strong style="color: #fde68a;">${g.offers_count || 0}</strong></span>
+                    <span>Enr: <strong style="color: #86efac;">${g.enrolled_count || 0}</strong></span>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- 5-Stage Kanban KPI Cards (ADM-007) -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
             <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 1: RECEIVED</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">4</div>
-            <div style="font-size: 0.75rem; color: #64748b;">Pending Review</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.received}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Submitted & Review</div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #f59e0b;">
             <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 2: EXAM SET</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">3</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.assessment}</div>
             <div style="font-size: 0.75rem; color: #64748b;">Assessment Scheduled</div>
           </div>
-          <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 3: ADMITTED</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">5</div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #8b5cf6;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 3: DECISION</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.decision}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Decision Pending / Waitlist</div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #3b82f6;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 4: OFFERED</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.offered}</div>
             <div style="font-size: 0.75rem; color: #64748b;">Offer Letter Issued</div>
           </div>
-          <div class="owner-kpi-card" style="border-left: 3px solid #8b5cf6;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 4: ENROLLED</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">2</div>
-            <div style="font-size: 0.75rem; color: #64748b;">Deposit Received</div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 5: ENROLLED</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.enrolled}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Enrolment Confirmed (DEC-03)</div>
           </div>
         </div>
 
+        <!-- Candidate Applications Ledger (ADM-004, ADM-005, ADM-007, ADM-012) -->
         <div class="owner-card">
-          <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-            Candidates Roster
-          </h3>
-          <p style="font-size: 0.85rem; color: #64748b;">
-            Integrated with the Parents Portal (Phase 2A full wiring scheduled next).
-          </p>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
+                Candidate Applications Dossier (ADM-004, ADM-005)
+              </h3>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Review student records, transition 12-state admission machine, and confirm enrolment without requiring SIS.
+              </p>
+            </div>
+            <input type="text" id="input-search-admissions" class="form-input" placeholder="Search applicant, tracking code, parent..." style="max-width: 280px; font-size: 0.82rem; padding: 0.45rem 0.85rem;" />
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #64748b; font-size: 0.76rem; text-transform: uppercase;">
+                <tr>
+                  <th style="padding: 0.75rem 1rem;">Tracking Code</th>
+                  <th style="padding: 0.75rem 1rem;">Applicant & Grade</th>
+                  <th style="padding: 0.75rem 1rem;">Parent / Contact</th>
+                  <th style="padding: 0.75rem 1rem;">Current Status</th>
+                  <th style="padding: 0.75rem 1rem;">State Transition (ADM-007)</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${applications.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                      No admission applications received yet for this intake. Use the Parent Portal to submit an application.
+                    </td>
+                  </tr>
+                ` : applications.map(app => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;" id="row-app-${app.id}">
+                    <td style="padding: 0.85rem 1rem; font-family: monospace; font-weight: 700; color: #1266C4;">
+                      ${app.tracking_code || app.applicationNumber || app.id}
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 700; color: #0A2046;">${app.studentName}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${app.gradeApplying} &bull; ${app.termApplied || 'First Term'}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 600; color: #334155;">${app.parentGuardian?.primaryGuardianName || app.parentName || 'Parent'}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${app.parentGuardian?.phone || app.parentPhone || ''}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="badge ${this.getAdmissionStatusBadgeClass(app.status)}" style="font-size: 0.75rem; text-transform: uppercase;">
+                        ${(app.status || 'submitted').replace(/_/g, ' ')}
+                      </span>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <select class="form-input select-app-transition" data-app-id="${app.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem; border-radius: 6px;">
+                        <option value="">Transition to...</option>
+                        <option value="under_review">Under Review</option>
+                        <option value="information_required">Information Required</option>
+                        <option value="assessment_scheduled">Assessment Scheduled</option>
+                        <option value="decision_pending">Decision Pending</option>
+                        <option value="offered">Offered (Issue Letter)</option>
+                        <option value="waitlisted">Waitlisted</option>
+                        <option value="accepted">Accepted by Parent</option>
+                        <option value="enrolled">Enrolled (Confirm DEC-03)</option>
+                        <option value="declined">Declined</option>
+                        <option value="withdrawn">Withdrawn</option>
+                      </select>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      ${app.status === 'accepted' ? `
+                        <button class="btn-pill btn-emerald btn-confirm-enrolment" data-app-id="${app.id}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                          Confirm Enrolment (DEC-03)
+                        </button>
+                      ` : (app.status === 'decision_pending' ? `
+                        <button class="btn-pill btn-primary btn-issue-offer" data-app-id="${app.id}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                          Issue Digital Offer
+                        </button>
+                      ` : (app.status === 'under_review' ? `
+                        <button class="btn-pill btn-outline btn-schedule-exam" data-app-id="${app.id}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
+                          Set Exam Slot
+                        </button>
+                      ` : `
+                        <span style="font-size: 0.78rem; color: #94a3b8;">Authoritative</span>
+                      `))}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     `;
   },
 
   /**
-   * TAB 6: Inquiries & Campus Tours Desk
+   * TAB 6: Inquiries & Campus Tours Desk (ENQ-001 to ENQ-008)
    */
-  renderInquiriesTab(school) {
+  renderInquiriesTab(school, enquiriesData = {}, tourSlots = []) {
+    const enquiries = enquiriesData.enquiries || [];
+    const stats = enquiriesData.stats || {
+      total: enquiries.length,
+      new: enquiries.filter(e => e.status === 'new').length,
+      contacted: enquiries.filter(e => e.status === 'contacted').length,
+      qualified: enquiries.filter(e => e.status === 'qualified').length,
+      converted: enquiries.filter(e => e.status === 'converted').length,
+      closed: enquiries.filter(e => e.status === 'closed').length
+    };
+
     return `
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §10.2 &bull; Direct Communications
+              Blueprint v2.0 §10 &bull; ENQ-001 to ENQ-008 &bull; Direct Enquiry CRM
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-              Inquiries & Campus Tours Center
+              Enquiry CRM & Campus Tours Desk
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Respond to inbound admissions inquiries and confirm guided campus tours for prospective families.
+              Manage prospective parent leads, threaded conversations, staff assignments, walkthrough bookings, and conversion analytics.
             </p>
+          </div>
+          <button id="btn-create-tour-slot" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+            <span>🧭</span> Add Campus Walkthrough Slot
+          </button>
+        </div>
+
+        <!-- CRM Analytics Cards (ENQ-008) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+          <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">TOTAL LEADS (ENQ-003)</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">${stats.new} New &bull; ${stats.contacted} Contacted</div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CONVERSION RATE (ENQ-008)</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total > 0 ? ((stats.converted / stats.total) * 100).toFixed(1) : 28.5}%</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Leads Converted to Applications</div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #f59e0b;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">AVERAGE RESPONSE SLA</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">4.2 hrs</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Admissions Desk Turnaround</div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #8b5cf6;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CAMPUS TOURS BOOKED</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${tourSlots.reduce((a, s) => a + (s.booked_count || 0), 0)}</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Walkthrough Attendees</div>
           </div>
         </div>
 
+        <!-- CRM Inbox Ledger (ENQ-003, ENQ-004, ENQ-005, ENQ-006) -->
+        <div class="owner-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
+                Direct Enquiries Inbox (ENQ-003)
+              </h3>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Click any enquiry to open the conversation thread, reply officially to parents, or log internal staff notes.
+              </p>
+            </div>
+            <input type="text" id="input-search-enquiries" class="form-input" placeholder="Search parent, email, grade..." style="max-width: 260px; font-size: 0.82rem; padding: 0.45rem 0.85rem;" />
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #64748b; font-size: 0.76rem; text-transform: uppercase;">
+                <tr>
+                  <th style="padding: 0.75rem 1rem;">Parent Name</th>
+                  <th style="padding: 0.75rem 1rem;">Child & Grade</th>
+                  <th style="padding: 0.75rem 1rem;">Source (ENQ-002)</th>
+                  <th style="padding: 0.75rem 1rem;">Status (ENQ-006)</th>
+                  <th style="padding: 0.75rem 1rem;">Assigned Staff (ENQ-005)</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${enquiries.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                      No admissions enquiries received yet. Verified profiles in the directory automatically receive parent enquiries.
+                    </td>
+                  </tr>
+                ` : enquiries.map(enq => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;" id="row-enq-${enq.id}">
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 700; color: #0A2046;">${enq.parent_name}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${enq.parent_phone} &bull; ${enq.parent_email}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 600; color: #334155;">${enq.child_name || 'Prospective Student'}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${enq.child_grade || 'General'}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="badge" style="background: #f1f5f9; color: #475569; font-size: 0.74rem; text-transform: uppercase;">
+                        ${enq.source || 'directory'}
+                      </span>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="badge ${enq.status === 'new' ? 'badge-primary' : (enq.status === 'converted' ? 'badge-emerald' : 'badge-warning')}" style="font-size: 0.74rem; text-transform: uppercase;">
+                        ${enq.status}
+                      </span>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-size: 0.82rem; color: #334155;">
+                      ${enq.assigned_staff_name || '<span style="color: #94a3b8;">Unassigned</span>'}
+                    </td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      <button class="btn-pill btn-primary btn-open-enquiry-thread" data-enquiry-id="${enq.id}" data-parent-name="${enq.parent_name}" style="font-size: 0.75rem; padding: 0.35rem 0.85rem;">
+                        Open Thread &rarr;
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Campus Tour Slots List (ADM-008) -->
         <div class="owner-card">
-          <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-            📬 Recent Admissions Inquiries
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
+            🧭 Campus Walkthrough Sessions (ADM-008)
           </h3>
-          <p style="font-size: 0.85rem; color: #64748b;">
-            Connects directly to prospective parents on WhatsApp and the verified parent portal messaging stream.
-          </p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            ${tourSlots.map(s => `
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                  <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">${s.title}</div>
+                  <span class="badge badge-primary" style="font-size: 0.72rem;">${s.type}</span>
+                </div>
+                <div style="font-size: 0.82rem; color: #64748b; margin-bottom: 0.5rem;">
+                  📅 ${s.slot_date} at <strong>${s.slot_time}</strong> &bull; Venue: ${s.venue}
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
+                  <span style="color: #475569;">Booked: <strong>${s.booked_count} / ${s.capacity} families</strong></span>
+                  <span class="badge ${s.booked_count >= s.capacity ? 'badge-danger' : 'badge-emerald'}" style="font-size: 0.7rem;">
+                    ${s.booked_count >= s.capacity ? 'Fully Booked' : 'Available'}
+                  </span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
         </div>
       </div>
     `;
@@ -1130,76 +1433,208 @@ const DashboardView = {
   },
 
   /**
-   * TAB 8: Subscription Plans & Seats
+   * TAB 8: Subscription Plans & Seats (Approved GHS Pricing §6.1)
    */
-  renderSubscriptionTab(school, seatQuotas = {}) {
+  renderSubscriptionTab(school, subscription = null, invoices = [], plans = [], seatQuotas = {}) {
+    const sub = subscription || {
+      tier: school.active_tier || 'growth',
+      tier_name: 'Growth',
+      billing_interval: 'monthly',
+      status: 'active',
+      amount: 99.00
+    };
+
     return `
       <div>
+        <!-- Subscription Header -->
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §6 &bull; Commercial Subscription Plans
+              Blueprint v2.0 §6 &bull; SUB-001 to SUB-010 &bull; Commercial Subscriptions
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-              Subscription & Seat Capacity
+              Commercial Subscriptions & Quotas
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Approved commercial tiers with Ghana Cedis pricing and Mobile Money / Card billing.
+              Approved Ghana Cedis pricing, 16.67% annual discount, Paystack MoMo/Card billing, seat limits, and sequential invoices.
             </p>
+          </div>
+          <!-- Billing Interval Toggle (SUB-002) -->
+          <div style="display: flex; align-items: center; background: #e2e8f0; padding: 0.25rem; border-radius: 100px; gap: 0.25rem;">
+            <button id="btn-interval-monthly" class="btn-pill" style="font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 100px; background: #0A2046; color: #fff; font-weight: 800; border: none; cursor: pointer;">
+              Monthly Billing
+            </button>
+            <button id="btn-interval-annual" class="btn-pill" style="font-size: 0.8rem; padding: 0.4rem 1rem; border-radius: 100px; background: transparent; color: #475569; font-weight: 700; border: none; cursor: pointer;">
+              Annual (16.67% OFF)
+            </button>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
-          <!-- Free Tier -->
-          <div class="owner-card" style="border: ${school.active_tier === 'free' ? '2px solid #1266C4' : '1px solid #e2e8f0'};">
-            <div style="font-weight: 800; color: #0A2046; font-size: 1.1rem; margin-bottom: 0.5rem;">Free Tier</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">GH₵ 0 <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ month</span></div>
-            <ul style="font-size: 0.84rem; color: #64748b; line-height: 1.7; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-              <li>1 Team Seat (Proprietor)</li>
-              <li>Basic Directory Listing</li>
+        <!-- Active Plan Banner & Quotas (SUB-005, SUB-006, SUB-008) -->
+        <div class="owner-card" style="margin-bottom: 2rem; border-left: 4px solid #10b981; background: #f8fafc;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <span class="badge badge-emerald" style="font-size: 0.78rem; text-transform: uppercase; font-weight: 800;">ACTIVE PLAN: ${(sub.tier || 'Growth').toUpperCase()}</span>
+                <span class="badge badge-gold" style="font-size: 0.78rem;">${(sub.billing_interval || 'monthly').toUpperCase()}</span>
+                ${sub.status === 'grace' ? '<span class="badge badge-danger">GRACE PERIOD (7 Days)</span>' : ''}
+              </div>
+              <h3 style="font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.5rem 0 0.25rem 0;">
+                Current Plan: ${sub.tier_name || 'Growth Plan'} (GH₵${sub.amount || 99} / ${sub.billing_interval || 'mo'})
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+                Next billing renewal: <strong>${sub.next_billing_date ? new Date(sub.next_billing_date).toLocaleDateString() : 'Auto-renew active'}</strong> &bull; Non-destructive downgrade protection active.
+              </p>
+            </div>
+
+            <!-- Seat & Photo Quota Meters (SUB-006) -->
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+              <div style="text-align: center; background: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Team Staff Seats</div>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046;">${seatQuotas.allocated || 2} / ${sub.seatsIncluded || seatQuotas.total || 3}</div>
+                <div style="font-size: 0.72rem; color: #10b981;">Quota Available</div>
+              </div>
+              <div style="text-align: center; background: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Gallery Photos</div>
+                <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046;">12 / ${sub.galleryImageQuota || 20}</div>
+                <div style="font-size: 0.72rem; color: #10b981;">Quota Available</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Approved Commercial Tiers Grid (SUB-001, SUB-002) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+          
+          <!-- Free Starter -->
+          <div class="owner-card" style="border: ${sub.tier === 'free' ? '2.5px solid #1266C4' : '1px solid #e2e8f0'}; position: relative;">
+            ${sub.tier === 'free' ? '<span class="badge" style="position: absolute; top: -12px; right: 16px; background: #1266C4; color: #fff; font-weight: 800;">ACTIVE BASELINE</span>' : ''}
+            <div style="font-weight: 800; color: #0A2046; font-size: 1.15rem; margin-bottom: 0.25rem;">Free Starter</div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">Basic Directory Listing</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">
+              GH₵ 0 <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ mo</span>
+            </div>
+            <ul style="font-size: 0.84rem; color: #475569; line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+              <li><strong>1 Team Seat</strong> (Proprietor)</li>
               <li>5 Gallery Photos</li>
+              <li>Basic Email Enquiry Receipt</li>
+              <li style="color: #94a3b8; text-decoration: line-through;">No CRM Inbox</li>
+              <li style="color: #94a3b8; text-decoration: line-through;">No Admissions Pipeline</li>
             </ul>
-            <button class="btn-pill btn-outline" style="width: 100%; font-size: 0.82rem;" disabled>Current Baseline</button>
+            <button class="btn-pill btn-outline btn-downgrade-plan" data-tier="free" style="width: 100%; font-size: 0.82rem;" ${sub.tier === 'free' ? 'disabled' : ''}>
+              ${sub.tier === 'free' ? 'Current Baseline' : 'Downgrade (Safe)'}
+            </button>
           </div>
 
-          <!-- Growth Tier -->
-          <div class="owner-card" style="border: ${school.active_tier === 'growth' ? '2.5px solid #10b981' : '1px solid #e2e8f0'}; position: relative;">
-            ${school.active_tier === 'growth' ? '<span class="badge" style="position: absolute; top: -12px; right: 16px; background: #10b981; color: #fff; font-weight: 800;">ACTIVE PLAN</span>' : ''}
-            <div style="font-weight: 800; color: #0A2046; font-size: 1.1rem; margin-bottom: 0.5rem;">Growth Plan</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">GH₵ 450 <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ month</span></div>
-            <ul style="font-size: 0.84rem; color: #64748b; line-height: 1.7; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-              <li>3 Team Seats</li>
-              <li>Featured Placement in Suburb</li>
-              <li>20 Gallery Photos</li>
-              <li>Direct WhatsApp Click Analytics</li>
+          <!-- Growth (Approved GH₵99/mo or GH₵990/yr) -->
+          <div class="owner-card" style="border: ${sub.tier === 'growth' ? '2.5px solid #10b981' : '1.5px solid #3b82f6'}; position: relative; background: #ffffff;">
+            ${sub.tier === 'growth' ? '<span class="badge" style="position: absolute; top: -12px; right: 16px; background: #10b981; color: #fff; font-weight: 800;">CURRENT PLAN</span>' : '<span class="badge badge-gold" style="position: absolute; top: -12px; right: 16px; font-weight: 800;">POPULAR</span>'}
+            <div style="font-weight: 800; color: #0A2046; font-size: 1.15rem; margin-bottom: 0.25rem;">Growth Plan</div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">Admissions & Full CRM</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">
+              <span class="plan-price-val" data-monthly="99" data-annual="990">GH₵ 99</span>
+              <span class="plan-interval-label" style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ mo</span>
+            </div>
+            <ul style="font-size: 0.84rem; color: #475569; line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+              <li><strong>3 Team Seats</strong></li>
+              <li><strong>20 Gallery Photos</strong></li>
+              <li><strong>Full Enquiry CRM Inbox</strong></li>
+              <li><strong>Admissions Pipeline & Form Builder</strong></li>
+              <li><strong>Campus Tour Bookings</strong></li>
+              <li>3 Teacher Job Vacancies</li>
             </ul>
-            <button class="btn-pill ${school.active_tier === 'growth' ? 'btn-emerald' : 'btn-primary'}" style="width: 100%; font-size: 0.82rem;">${school.active_tier === 'growth' ? '✓ Active Plan' : 'Select Plan'}</button>
+            <button class="btn-pill ${sub.tier === 'growth' ? 'btn-emerald' : 'btn-primary'} btn-select-tier" data-tier="growth" style="width: 100%; font-size: 0.82rem;">
+              ${sub.tier === 'growth' ? '✓ Active Plan' : 'Select Growth'}
+            </button>
           </div>
 
-          <!-- Professional Tier -->
-          <div class="owner-card">
-            <div style="font-weight: 800; color: #0A2046; font-size: 1.1rem; margin-bottom: 0.5rem;">Professional</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">GH₵ 850 <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ month</span></div>
-            <ul style="font-size: 0.84rem; color: #64748b; line-height: 1.7; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-              <li>10 Team Seats</li>
-              <li>Full Admissions Lifecycle</li>
-              <li>50 Gallery Photos</li>
-              <li>SMS Notification Packs</li>
+          <!-- Professional (Approved GH₵249/mo or GH₵2,490/yr) -->
+          <div class="owner-card" style="border: ${sub.tier === 'professional' ? '2.5px solid #10b981' : '1px solid #e2e8f0'}; position: relative;">
+            ${sub.tier === 'professional' ? '<span class="badge" style="position: absolute; top: -12px; right: 16px; background: #10b981; color: #fff; font-weight: 800;">CURRENT PLAN</span>' : ''}
+            <div style="font-weight: 800; color: #0A2046; font-size: 1.15rem; margin-bottom: 0.25rem;">Professional</div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">High-Volume Campuses</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">
+              <span class="plan-price-val" data-monthly="249" data-annual="2490">GH₵ 249</span>
+              <span class="plan-interval-label" style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ mo</span>
+            </div>
+            <ul style="font-size: 0.84rem; color: #475569; line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+              <li><strong>10 Team Seats</strong></li>
+              <li><strong>50 Gallery Photos</strong></li>
+              <li><strong>Priority Directory Ranking</strong></li>
+              <li>CSV Telemetry Export</li>
+              <li>10 Teacher Job Vacancies</li>
+              <li>3 Included B2B RFQs / mo</li>
             </ul>
-            <button class="btn-pill btn-primary" style="width: 100%; font-size: 0.82rem;">Upgrade to Pro</button>
+            <button class="btn-pill btn-primary btn-select-tier" data-tier="professional" style="width: 100%; font-size: 0.82rem;">
+              ${sub.tier === 'professional' ? '✓ Active Plan' : 'Upgrade to Pro'}
+            </button>
           </div>
 
-          <!-- Enterprise Tier -->
-          <div class="owner-card">
-            <div style="font-weight: 800; color: #0A2046; font-size: 1.1rem; margin-bottom: 0.5rem;">Enterprise</div>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">GH₵ 1,800 <span style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ month</span></div>
-            <ul style="font-size: 0.84rem; color: #64748b; line-height: 1.7; padding-left: 1.25rem; margin-bottom: 1.5rem;">
-              <li>25 Team Seats</li>
-              <li>Multi-Campus Operations</li>
-              <li>Custom Domain Integration</li>
-              <li>Dedicated Account Manager</li>
+          <!-- Enterprise (Approved GH₵499/mo or GH₵4,990/yr) -->
+          <div class="owner-card" style="border: ${sub.tier === 'enterprise' ? '2.5px solid #10b981' : '1px solid #e2e8f0'}; position: relative;">
+            ${sub.tier === 'enterprise' ? '<span class="badge" style="position: absolute; top: -12px; right: 16px; background: #10b981; color: #fff; font-weight: 800;">CURRENT PLAN</span>' : ''}
+            <div style="font-weight: 800; color: #0A2046; font-size: 1.15rem; margin-bottom: 0.25rem;">Enterprise</div>
+            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">Premier Institutions</div>
+            <div style="font-size: 1.8rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">
+              <span class="plan-price-val" data-monthly="499" data-annual="4990">GH₵ 499</span>
+              <span class="plan-interval-label" style="font-size: 0.8rem; font-weight: 600; color: #64748b;">/ mo</span>
+            </div>
+            <ul style="font-size: 0.84rem; color: #475569; line-height: 1.8; padding-left: 1.25rem; margin-bottom: 1.5rem;">
+              <li><strong>25 Team Seats</strong></li>
+              <li><strong>100 Gallery Photos</strong></li>
+              <li><strong>Dedicated Account Manager</strong></li>
+              <li>30 Teacher Job Vacancies</li>
+              <li>10 Included B2B RFQs / mo</li>
             </ul>
-            <button class="btn-pill btn-gold" style="width: 100%; font-size: 0.82rem;">Contact Enterprise</button>
+            <button class="btn-pill btn-gold btn-select-tier" data-tier="enterprise" style="width: 100%; font-size: 0.82rem;">
+              ${sub.tier === 'enterprise' ? '✓ Active Plan' : 'Upgrade Enterprise'}
+            </button>
+          </div>
+        </div>
+
+        <!-- Sequential Billing Invoices Ledger (SUB-009) -->
+        <div class="owner-card">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
+            🧾 Digital Invoices & Receipts (SUB-009)
+          </h3>
+          <p style="font-size: 0.84rem; color: #64748b; margin-bottom: 1rem;">
+            Sequential, tamper-evident receipts in Ghana Cedis, strictly separated from student school fees.
+          </p>
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #64748b; font-size: 0.76rem; text-transform: uppercase;">
+                <tr>
+                  <th style="padding: 0.75rem 1rem;">Invoice Number</th>
+                  <th style="padding: 0.75rem 1rem;">Tier Plan</th>
+                  <th style="padding: 0.75rem 1rem;">Amount (GHS)</th>
+                  <th style="padding: 0.75rem 1rem;">Date Paid</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${invoices.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2rem; text-align: center; color: #94a3b8;">
+                      No billing invoices issued yet. Invoices generate automatically upon Paystack MoMo or Card settlement.
+                    </td>
+                  </tr>
+                ` : invoices.map(inv => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-family: monospace; font-weight: 700; color: #1266C4;">${inv.invoice_number}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 600;">${inv.tier_name || inv.tier} (${inv.billing_interval})</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">GH₵ ${(Number(inv.amount) || 0).toLocaleString()}</td>
+                    <td style="padding: 0.85rem 1rem; color: #64748b; font-size: 0.82rem;">${new Date(inv.paid_at || inv.created_at).toLocaleDateString()}</td>
+                    <td style="padding: 0.85rem 1rem;"><span class="badge badge-emerald" style="text-transform: uppercase; font-size: 0.72rem;">${inv.status}</span></td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      <button class="btn-pill btn-outline btn-view-receipt" data-inv-num="${inv.invoice_number}" data-amount="${inv.amount}" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+                        View Receipt
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1521,6 +1956,225 @@ const DashboardView = {
           State.showToast(err.message || 'Revocation failed', 'error');
         }
       };
+    });
+
+    // ========================================================================
+    // PHASE 2A: ADMISSIONS & SUBSCRIPTION INTERACTIVE HANDLERS
+    // ========================================================================
+
+    // 11. Billing Interval Toggle (SUB-002: 16.67% Annual Discount)
+    let currentInterval = 'monthly';
+    const btnMonthly = document.getElementById('btn-interval-monthly');
+    const btnAnnual = document.getElementById('btn-interval-annual');
+
+    const updateIntervalDisplay = (interval) => {
+      currentInterval = interval;
+      if (interval === 'annual') {
+        if (btnAnnual) {
+          btnAnnual.style.background = '#0A2046';
+          btnAnnual.style.color = '#fff';
+          btnAnnual.style.fontWeight = '800';
+        }
+        if (btnMonthly) {
+          btnMonthly.style.background = 'transparent';
+          btnMonthly.style.color = '#475569';
+          btnMonthly.style.fontWeight = '700';
+        }
+        document.querySelectorAll('.plan-price-val').forEach(el => {
+          el.textContent = `GH₵ ${Number(el.dataset.annual).toLocaleString()}`;
+        });
+        document.querySelectorAll('.plan-interval-label').forEach(el => {
+          el.textContent = ' / year (16.67% OFF)';
+        });
+      } else {
+        if (btnMonthly) {
+          btnMonthly.style.background = '#0A2046';
+          btnMonthly.style.color = '#fff';
+          btnMonthly.style.fontWeight = '800';
+        }
+        if (btnAnnual) {
+          btnAnnual.style.background = 'transparent';
+          btnAnnual.style.color = '#475569';
+          btnAnnual.style.fontWeight = '700';
+        }
+        document.querySelectorAll('.plan-price-val').forEach(el => {
+          el.textContent = `GH₵ ${el.dataset.monthly}`;
+        });
+        document.querySelectorAll('.plan-interval-label').forEach(el => {
+          el.textContent = ' / mo';
+        });
+      }
+    };
+
+    btnMonthly?.addEventListener('click', () => updateIntervalDisplay('monthly'));
+    btnAnnual?.addEventListener('click', () => updateIntervalDisplay('annual'));
+
+    // 12. Plan Checkout Trigger (SUB-003, SUB-004: Paystack MoMo / Card)
+    document.querySelectorAll('.btn-select-tier').forEach(btn => {
+      btn.onclick = async () => {
+        const tier = btn.dataset.tier;
+        const confirmMsg = `Initialize Paystack checkout for ${tier.toUpperCase()} (${currentInterval.toUpperCase()})?\n\nSupports MTN MoMo, Telecel Cash, AT Money, and Visa/Mastercard.`;
+        if (!confirm(confirmMsg)) return;
+
+        try {
+          const initRes = await API.initializeSubscriptionCheckout(schoolId, {
+            tier,
+            interval: currentInterval,
+            email: 'proprietor@skoolfinder.com.gh',
+            momoNetwork: 'mtn'
+          });
+
+          // Simulate Paystack payment verification
+          const verifyRes = await API.verifySubscriptionPayment(schoolId, {
+            reference: initRes.checkout?.reference || `SF-SUB-${Date.now()}`,
+            tier,
+            interval: currentInterval,
+            channel: 'mobile_money'
+          });
+
+          State.showToast(`🎉 Upgraded to ${tier.toUpperCase()} plan! Invoice ${verifyRes.invoice?.invoice_number} generated.`, 'success');
+          App.navigate('schools');
+        } catch (err) {
+          State.showToast(err.message || 'Checkout failed', 'error');
+        }
+      };
+    });
+
+    // 13. Safe Non-Destructive Downgrade (SUB-007)
+    document.querySelectorAll('.btn-downgrade-plan').forEach(btn => {
+      btn.onclick = async () => {
+        const targetTier = btn.dataset.tier || 'free';
+        if (!confirm('Downgrade to Free Starter tier?\n\nHistorical applications, leads and school data will remain intact and will not be deleted.')) return;
+        try {
+          await API.downgradeSubscription(schoolId, targetTier);
+          State.showToast('Subscription set to Free Starter. Historical data preserved.', 'info');
+          App.navigate('schools');
+        } catch (err) {
+          State.showToast(err.message || 'Downgrade failed', 'error');
+        }
+      };
+    });
+
+    // 14. View Receipt Notice (SUB-009)
+    document.querySelectorAll('.btn-view-receipt').forEach(btn => {
+      btn.onclick = () => {
+        const num = btn.dataset.invNum;
+        const amount = btn.dataset.amount;
+        alert(`SKOOLFINDER GHANA OFFICIAL RECEIPT\nInvoice: ${num}\nAmount Paid: GH₵ ${Number(amount).toLocaleString()}\nChannel: Paystack Mobile Money\nStatus: Settled & Reconciled\n\nAll records stored tamper-evident.`);
+      };
+    });
+
+    // 15. Admissions State Transition (ADM-007)
+    document.querySelectorAll('.select-app-transition').forEach(sel => {
+      sel.onchange = async () => {
+        const appId = sel.dataset.appId;
+        const newStatus = sel.value;
+        if (!newStatus) return;
+
+        try {
+          await API.transitionApplicationStatus(schoolId, appId, {
+            newStatus,
+            note: `State updated to ${newStatus.replace(/_/g, ' ')} via dashboard.`
+          });
+          State.showToast(`Application transitioned to ${newStatus.replace(/_/g, ' ')}`, 'success');
+          App.navigate('schools');
+        } catch (err) {
+          State.showToast(err.message || 'Transition rejected by state machine', 'error');
+          sel.value = '';
+        }
+      };
+    });
+
+    // 16. Confirm Enrolment (DEC-03: No SIS Dependency)
+    document.querySelectorAll('.btn-confirm-enrolment').forEach(btn => {
+      btn.onclick = async () => {
+        const appId = btn.dataset.appId;
+        if (!confirm('Confirm enrolment for this candidate?\n\nComplies with DEC-03 (Admissions Pipeline Active; SIS database records deferred).')) return;
+        try {
+          await API.transitionApplicationStatus(schoolId, appId, {
+            newStatus: 'enrolled',
+            note: 'Enrolment voucher confirmed by admissions office.'
+          });
+          State.showToast('🎉 Candidate enrolled! Intake class capacity updated.', 'success');
+          App.navigate('schools');
+        } catch (err) {
+          State.showToast(err.message || 'Enrolment confirmation failed', 'error');
+        }
+      };
+    });
+
+    // 17. Open Enquiry Thread Modal / Drawer (ENQ-004)
+    document.querySelectorAll('.btn-open-enquiry-thread').forEach(btn => {
+      btn.onclick = async () => {
+        const enquiryId = btn.dataset.enquiryId;
+        const parentName = btn.dataset.parentName;
+        try {
+          const res = await API.getEnquiryThread(schoolId, enquiryId);
+          const messages = res.messages || [];
+          const threadHtml = messages.map(m => `
+            <div style="margin-bottom: 0.75rem; padding: 0.75rem; border-radius: 8px; background: ${m.is_internal_note ? '#fef3c7; border: 1px dashed #d97706;' : (m.sender_type === 'parent' ? '#f1f5f9' : '#eff6ff')};">
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                <strong>${m.sender_name} ${m.is_internal_note ? '(Internal Staff Note)' : ''}</strong>
+                <span style="color: #64748b;">${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+              <div style="font-size: 0.85rem; color: #1e293b;">${m.message}</div>
+            </div>
+          `).join('');
+
+          const replyText = prompt(`CONVERSATION THREAD: ${parentName}\n\n${messages.map(m => `${m.sender_name}: ${m.message}`).join('\n')}\n\nEnter your response (or type [NOTE] at the start for internal note):`);
+          if (replyText && replyText.trim()) {
+            const isNote = replyText.startsWith('[NOTE]');
+            const cleanText = isNote ? replyText.replace('[NOTE]', '').trim() : replyText.trim();
+            await API.replyToEnquiry(schoolId, enquiryId, {
+              message: cleanText,
+              senderName: 'Admissions Officer',
+              isInternalNote: isNote
+            });
+            State.showToast(isNote ? 'Internal staff note saved.' : 'Reply delivered to parent!', 'success');
+            App.navigate('schools');
+          }
+        } catch (err) {
+          State.showToast(err.message || 'Failed to open enquiry thread', 'error');
+        }
+      };
+    });
+
+    // 18. Quick Schedule Tour Slot (ADM-008)
+    document.getElementById('btn-open-tour-modal')?.addEventListener('click', async () => {
+      const date = prompt('Enter campus tour or entrance assessment date (YYYY-MM-DD):', '2026-11-20');
+      if (!date) return;
+      const title = prompt('Session Title:', 'Weekly Guided Campus Walkthrough & STEM Lab Tour');
+      try {
+        await API.createSchoolTourSlot(schoolId, {
+          title: title || 'Guided Walkthrough',
+          slotDate: date,
+          slotTime: '10:00 AM',
+          venue: 'Main Administration Block',
+          capacity: 15
+        });
+        State.showToast('New walkthrough timeslot added to public calendar!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to create tour slot', 'error');
+      }
+    });
+
+    document.getElementById('btn-create-tour-slot')?.addEventListener('click', async () => {
+      const date = prompt('Enter campus tour date (YYYY-MM-DD):', '2026-11-20');
+      if (!date) return;
+      try {
+        await API.createSchoolTourSlot(schoolId, {
+          title: 'Campus Walkthrough & Admissions Q&A',
+          slotDate: date,
+          slotTime: '10:00 AM',
+          venue: 'Main Academic Hall',
+          capacity: 15
+        });
+        State.showToast('Walkthrough slot created!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to create slot', 'error');
+      }
     });
   }
 };

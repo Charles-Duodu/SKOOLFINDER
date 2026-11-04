@@ -5,6 +5,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, JWT_SECRET } = require('../middleware/auth');
 const AuditService = require('../services/auditService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
+const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 
 /**
  * Helper to generate URL-safe slugs
@@ -2407,6 +2408,43 @@ router.post('/verification-cases/:id/review', async (req, res) => {
     }
     const result = await SchoolOwnerService.reviewVerificationCase(id, decision, req.user, notes, reason);
     return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ----------------------------------------------------------------------------
+ * PHASE 2A: SUPER ADMIN COMMERCIAL & SUBSCRIPTIONS CONTROL (SUB-010)
+ * ----------------------------------------------------------------------------
+ */
+
+/**
+ * GET /api/admin/subscriptions (SUB-010)
+ * Super Admin overview of platform subscriptions, GMV in GHS, invoices and active tiers
+ */
+router.get('/subscriptions', async (req, res) => {
+  try {
+    const data = await AdmissionsSubscriptionService.adminListSubscriptions();
+    return res.json({ success: true, ...data });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/subscriptions/:schoolId/tier (SUB-010)
+ * Super Admin override of school subscription tier, custom validity days, or complimentary grace
+ */
+router.post('/subscriptions/:schoolId/tier', async (req, res) => {
+  try {
+    const { schoolId } = req.params;
+    const { tier, days = 30 } = req.body;
+    if (!tier) {
+      return res.status(400).json({ error: 'Target tier (free, growth, professional, enterprise) is required' });
+    }
+    const updated = await AdmissionsSubscriptionService.adminSetSchoolTier(schoolId, tier, Number(days) || 30);
+    return res.json({ success: true, subscription: updated });
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }

@@ -1748,6 +1748,237 @@ const API = {
       throw new Error(err.error || 'Failed to submit verification review');
     }
     return res.json();
+  },
+
+  // ==========================================================================
+  // PHASE 2A: COMMERCIAL SUBSCRIPTIONS API
+  // ==========================================================================
+  async getSubscriptionPlans() {
+    const res = await fetch(`${this.baseUrl}/schools/plans`, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async getSchoolSubscription(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/subscription`, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async initializeSubscriptionCheckout(schoolId, checkoutData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/subscribe/initialize`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(checkoutData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Checkout initialization failed');
+    }
+    return res.json();
+  },
+
+  async verifySubscriptionPayment(schoolId, verifyData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/subscribe/verify`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(verifyData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Payment verification failed');
+    }
+    return res.json();
+  },
+
+  async downgradeSubscription(schoolId, targetTier) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/subscribe/downgrade`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ targetTier })
+    });
+    return res.json();
+  },
+
+  async getSchoolInvoices(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/invoices`, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  // ==========================================================================
+  // PHASE 2A: ENQUIRY CRM API
+  // ==========================================================================
+  async createGuestEnquiry(schoolId, enquiryData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(enquiryData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to submit enquiry');
+    }
+    return res.json();
+  },
+
+  async getSchoolEnquiries(schoolId, filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries?${query}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getEnquiryAnalytics(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries/analytics`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getEnquiryThread(schoolId, enquiryId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries/${encodeURIComponent(enquiryId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async replyToEnquiry(schoolId, enquiryId, replyData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries/${encodeURIComponent(enquiryId)}/reply`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(replyData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to submit reply');
+    }
+    return res.json();
+  },
+
+  async assignEnquiryStaff(schoolId, enquiryId, assignData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries/${encodeURIComponent(enquiryId)}/assign`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(assignData)
+    });
+    return res.json();
+  },
+
+  async updateEnquiryStatus(schoolId, enquiryId, statusData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries/${encodeURIComponent(enquiryId)}/status`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(statusData)
+    });
+    return res.json();
+  },
+
+  // ==========================================================================
+  // PHASE 2A: ADMISSIONS LIFECYCLE API
+  // ==========================================================================
+  async getSchoolIntakes(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/intakes`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createSchoolIntake(schoolId, intakeData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/intakes`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(intakeData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to create academic intake');
+    }
+    return res.json();
+  },
+
+  async getSchoolAdmissionsForm(schoolId, intakeId = '') {
+    const q = intakeId ? `?intakeId=${encodeURIComponent(intakeId)}` : '';
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/admissions/form${q}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async saveSchoolAdmissionsForm(schoolId, formData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/admissions/form`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(formData)
+    });
+    return res.json();
+  },
+
+  async getSchoolApplications(schoolId, filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/admissions/applications?${query}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getSchoolApplicationById(schoolId, appId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/admissions/applications/${encodeURIComponent(appId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async transitionApplicationStatus(schoolId, appId, transitionData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/admissions/applications/${encodeURIComponent(appId)}/transition`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(transitionData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to transition application status');
+    }
+    return res.json();
+  },
+
+  async getSchoolTourSlots(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createSchoolTourSlot(schoolId, slotData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(slotData)
+    });
+    return res.json();
+  },
+
+  async bookSchoolTourSlot(schoolId, slotId, bookingData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots/${encodeURIComponent(slotId)}/book`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData)
+    });
+    return res.json();
+  },
+
+  async trackParentAdmission(trackingCode) {
+    const res = await fetch(`${this.baseUrl}/admissions/track/${encodeURIComponent(trackingCode)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async respondToAdmissionOffer(trackingCode, decision) {
+    const res = await fetch(`${this.baseUrl}/admissions/offers/${encodeURIComponent(trackingCode)}/respond`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ decision })
+    });
+    return res.json();
   }
 
 };

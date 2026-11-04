@@ -4,6 +4,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, requireRole } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
+const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -272,6 +273,15 @@ router.get('/', async (req, res) => {
     console.error('GET /api/schools error:', err);
     return res.status(500).json({ error: 'Internal server error while searching schools' });
   }
+});
+
+/**
+ * GET /api/schools/plans (SUB-001, SUB-002)
+ * Approved Ghana Cedis pricing catalogue with annual 16.67% discount
+ */
+router.get('/plans', (req, res) => {
+  const plans = AdmissionsSubscriptionService.getPlansCatalogue();
+  return res.json({ success: true, plans });
 });
 
 /**
@@ -572,34 +582,6 @@ router.post('/register-vetting', async (req, res) => {
   }
 });
 
-/**
- * POST /api/schools/:id/subscribe/initialize
- */
-router.post('/:id/subscribe/initialize', async (req, res) => {
-  const { id } = req.params;
-  const { plan = 'Growth', billingCycle = 'monthly' } = req.body;
-  const amount = plan === 'Enterprise' ? 1200 : plan === 'Growth' ? 450 : 150;
-  const reference = `SF_SUB_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-
-  return res.json({
-    success: true,
-    authorization_url: `https://checkout.paystack.com/pay/${reference}`,
-    reference,
-    amount,
-    currency: 'GHS'
-  });
-});
-
-/**
- * POST /api/schools/:id/subscribe/verify
- */
-router.post('/:id/subscribe/verify', async (req, res) => {
-  return res.json({
-    success: true,
-    message: 'Subscription successfully activated',
-    status: 'active'
-  });
-});
 
 
 function optionalAuth(req, res, next) {
@@ -800,6 +782,378 @@ router.delete('/:id/staff/:membershipId', optionalAuth, async (req, res) => {
     const user = req.user || { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh' };
     const result = await SchoolOwnerService.revokeStaffMember(id, membershipId, user);
     return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * PHASE 2A: COMMERCIAL SUBSCRIPTIONS (SUB-001 TO SUB-010)
+ * ============================================================================
+ */
+
+/**
+ * GET /api/schools/plans (SUB-001, SUB-002)
+ * Approved Ghana Cedis pricing catalogue with annual 16.67% discount
+ */
+router.get('/plans', (req, res) => {
+  const plans = AdmissionsSubscriptionService.getPlansCatalogue();
+  return res.json({ success: true, plans });
+});
+
+/**
+ * GET /api/schools/:id/subscription (SUB-005, SUB-006, SUB-008)
+ * School subscription status, active entitlements and grace state
+ */
+router.get('/:id/subscription', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sub = await AdmissionsSubscriptionService.getSchoolSubscription(id);
+    return res.json({ success: true, subscription: sub });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/subscribe/initialize (SUB-003)
+ * Paystack Mobile Money / Card checkout initiation
+ */
+router.post('/:id/subscribe/initialize', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const checkout = await AdmissionsSubscriptionService.initializeSubscriptionCheckout(id, req.body);
+    return res.json({ success: true, checkout });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/subscribe/verify (SUB-004)
+ * Server-side idempotent Paystack transaction verification and subscription activation
+ */
+router.post('/:id/subscribe/verify', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01' };
+    const result = await AdmissionsSubscriptionService.verifySubscriptionPayment(id, {
+      ...req.body,
+      operator: user.id
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/subscribe/downgrade (SUB-007)
+ * Non-destructive plan downgrade preserving historical school records
+ */
+router.post('/:id/subscribe/downgrade', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { targetTier = 'free' } = req.body;
+    const updated = await AdmissionsSubscriptionService.downgradeSubscription(id, targetTier);
+    return res.json({ success: true, subscription: updated });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/invoices (SUB-009)
+ * Sequential subscription billing receipts & invoices
+ */
+router.get('/:id/invoices', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const invoices = await AdmissionsSubscriptionService.getSchoolInvoices(id);
+    return res.json({ success: true, invoices });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * PHASE 2A: ENQUIRY CRM MODULE (ENQ-001 TO ENQ-008)
+ * ============================================================================
+ */
+
+/**
+ * POST /api/schools/:id/enquiries (ENQ-001, ENQ-002, ENQ-007)
+ * Guest enquiry submission with rate limiting, anti-spam honeypot and attribution
+ */
+router.post('/:id/enquiries', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await AdmissionsSubscriptionService.createGuestEnquiry({
+      schoolId: id,
+      ...req.body
+    });
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/enquiries (ENQ-003)
+ * School CRM inbox scoped to school ID with filters and entitlement check
+ */
+router.get('/:id/enquiries', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await AdmissionsSubscriptionService.getSchoolEnquiries(id, req.query);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/enquiries/analytics (ENQ-008)
+ * Source breakdown, response time SLA and conversion analytics
+ */
+router.get('/:id/enquiries/analytics', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const analytics = await AdmissionsSubscriptionService.getEnquiryAnalytics(id);
+    return res.json({ success: true, analytics });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/enquiries/:inquiryId (ENQ-004)
+ * Detailed enquiry dossier with message conversation thread
+ */
+router.get('/:id/enquiries/:inquiryId', optionalAuth, async (req, res) => {
+  try {
+    const { id, inquiryId } = req.params;
+    const result = await AdmissionsSubscriptionService.getEnquiryWithThread(id, inquiryId);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(404).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/enquiries/:inquiryId/reply (ENQ-004)
+ * Sends staff reply or internal notes
+ */
+router.post('/:id/enquiries/:inquiryId/reply', optionalAuth, async (req, res) => {
+  try {
+    const { id, inquiryId } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', name: 'Admissions Desk' };
+    const result = await AdmissionsSubscriptionService.replyToEnquiry(id, inquiryId, {
+      ...req.body,
+      senderId: user.id,
+      senderName: req.body.senderName || user.name || 'Admissions Officer'
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/enquiries/:inquiryId/assign (ENQ-005)
+ * Assigns enquiry to a specific staff member and schedules follow-up
+ */
+router.patch('/:id/enquiries/:inquiryId/assign', optionalAuth, async (req, res) => {
+  try {
+    const { id, inquiryId } = req.params;
+    const result = await AdmissionsSubscriptionService.assignEnquiryStaff(id, inquiryId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/enquiries/:inquiryId/status (ENQ-006)
+ * Updates enquiry status or closes with audit reason
+ */
+router.patch('/:id/enquiries/:inquiryId/status', optionalAuth, async (req, res) => {
+  try {
+    const { id, inquiryId } = req.params;
+    const result = await AdmissionsSubscriptionService.updateEnquiryStatus(id, inquiryId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * PHASE 2A: ADMISSIONS LIFECYCLE (ADM-001 TO ADM-012)
+ * ============================================================================
+ */
+
+/**
+ * GET /api/schools/:id/intakes (ADM-001, ADM-002)
+ * Lists academic intakes and grade capacity configurations
+ */
+router.get('/:id/intakes', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const intakes = await AdmissionsSubscriptionService.getIntakes(id);
+    return res.json({ success: true, intakes });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/intakes (ADM-001, ADM-002)
+ * Creates new intake with class capacity allocations
+ */
+router.post('/:id/intakes', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const intake = await AdmissionsSubscriptionService.createIntake(id, req.body);
+    return res.status(201).json({ success: true, intake });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/admissions/form (ADM-003)
+ * Retrieves active versioned admission form builder schema
+ */
+router.get('/:id/admissions/form', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { intakeId } = req.query;
+    const formDef = await AdmissionsSubscriptionService.getFormDefinition(id, intakeId);
+    return res.json({ success: true, formDef });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/admissions/form (ADM-003)
+ * Updates admission form schema with version increment
+ */
+router.post('/:id/admissions/form', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const formDef = await AdmissionsSubscriptionService.saveFormDefinition(id, req.body);
+    return res.status(201).json({ success: true, formDef });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/admissions/applications (ADM-005)
+ * Retrieves applications list filtered by status and grade
+ */
+router.get('/:id/admissions/applications', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const applications = await AdmissionsSubscriptionService.getApplications(id, req.query);
+    return res.json({ success: true, applications });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/admissions/applications/:appId (ADM-005, ADM-006)
+ * Retrieves complete candidate application dossier
+ */
+router.get('/:id/admissions/applications/:appId', optionalAuth, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+    const application = await AdmissionsSubscriptionService.getApplicationById(id, appId);
+    if (!application) {
+      return res.status(404).json({ error: 'Application dossier not found' });
+    }
+    return res.json({ success: true, application });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/admissions/applications/:appId/transition (ADM-007, ADM-008, ADM-009, ADM-012)
+ * Validates 12-state admission machine transitions, tour/exam schedules, offer issuance and DEC-03 enrolment
+ */
+router.patch('/:id/admissions/applications/:appId/transition', optionalAuth, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+    const user = req.user || { name: 'Admissions Officer' };
+    const result = await AdmissionsSubscriptionService.transitionApplicationStatus(id, appId, {
+      ...req.body,
+      actorName: req.body.actorName || user.name || 'Admissions Officer'
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/admissions/export (ADM-011)
+ * Exports admissions pipeline telemetry to CSV
+ */
+router.get('/:id/admissions/export', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const exportData = await AdmissionsSubscriptionService.getAdmissionsExport(id);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="${exportData.filename}"`);
+    return res.send(exportData.csvContent);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/tours/slots (ADM-008)
+ * Retrieves scheduled campus walkthrough and assessment timeslots
+ */
+router.get('/:id/tours/slots', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const slots = await AdmissionsSubscriptionService.getTourSlots(id);
+    return res.json({ success: true, slots });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tours/slots (ADM-008)
+ * Creates new campus walkthrough or entrance assessment slot
+ */
+router.post('/:id/tours/slots', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const slot = await AdmissionsSubscriptionService.createTourSlot(id, req.body);
+    return res.status(201).json({ success: true, slot });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tours/slots/:slotId/book (ADM-008)
+ * Parents book a tour or assessment slot
+ */
+router.post('/:id/tours/slots/:slotId/book', async (req, res) => {
+  try {
+    const { id, slotId } = req.params;
+    const result = await AdmissionsSubscriptionService.bookTourSlot(id, slotId, req.body);
+    return res.status(201).json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
