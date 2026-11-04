@@ -5,7 +5,8 @@ const API = {
   baseUrl: '/api',
 
   getHeaders(customHeaders = {}) {
-    return this.getAuthHeaders(customHeaders);
+    const defaults = { 'Content-Type': 'application/json' };
+    return this.getAuthHeaders({ ...defaults, ...customHeaders });
   },
 
   getAuthHeaders(customHeaders = {}) {

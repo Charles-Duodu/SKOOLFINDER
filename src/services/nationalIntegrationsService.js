@@ -6,6 +6,7 @@
 
 const crypto = require('crypto');
 const AuditService = require('./auditService');
+const { supabaseAdmin } = require('../config/supabase');
 
 // ============================================================================
 // IN-MEMORY STORAGE FOR REGULATORY RECORDS
@@ -534,6 +535,51 @@ const NationalIntegrationsService = {
 
     const smsId = `SMS-GW-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`;
     const provider = IN_MEMORY_SMS_GATEWAY_CONFIG.active_provider;
+    const senderId = IN_MEMORY_SMS_GATEWAY_CONFIG[provider]?.registered_sender_id || 'SKOOLFINDER';
+
+    const hubtelClientId = process.env.HUBTEL_CLIENT_ID;
+    const hubtelSecret = process.env.HUBTEL_CLIENT_SECRET;
+    const isLiveHubtel = provider === 'hubtel' && hubtelClientId && hubtelSecret &&
+                         !hubtelClientId.includes('demo') && !hubtelClientId.includes('staged');
+
+    let deliveryStatus = 'delivered';
+    let externalMsgId = null;
+    let errorMessage = null;
+
+    if (isLiveHubtel) {
+      try {
+        const authHeader = 'Basic ' + Buffer.from(`${hubtelClientId}:${hubtelSecret}`).toString('base64');
+        const hubtelRes = await fetch('https://smsc.hubtel.com/v1/messages/send', {
+          method: 'POST',
+          headers: {
+            'Authorization': authHeader,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            From: senderId,
+            To: phoneInfo.normalized,
+            Content: message.trim(),
+            RegisteredDelivery: true
+          })
+        });
+
+        const data = await hubtelRes.json();
+        if (hubtelRes.ok && (data.Status === 0 || data.status === 'success' || data.MessageId)) {
+          deliveryStatus = 'delivered';
+          externalMsgId = data.MessageId || data.messageId;
+        } else {
+          deliveryStatus = 'failed';
+          errorMessage = data.Message || data.message || `Hubtel gateway returned HTTP ${hubtelRes.status}`;
+        }
+      } catch (err) {
+        deliveryStatus = 'failed';
+        errorMessage = err.message;
+      }
+    } else {
+      // Staged Driver execution
+      deliveryStatus = 'delivered';
+      externalMsgId = `HUBTEL-MSG-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
+    }
 
     const logRecord = {
       id: smsId,
@@ -543,9 +589,11 @@ const NationalIntegrationsService = {
       network: phoneInfo.network,
       units,
       cost_ghs: costGhs,
-      sender_id: IN_MEMORY_SMS_GATEWAY_CONFIG[provider]?.registered_sender_id || 'SKOOLFINDER',
-      provider: provider === 'hubtel' ? 'Hubtel Ghana SMS API' : provider === 'arkesel' ? 'Arkesel SMS Gateway' : 'SkoolFinder Simulated SMS',
-      delivery_status: 'delivered',
+      sender_id: senderId,
+      provider: provider === 'hubtel' ? (isLiveHubtel ? 'Hubtel Ghana SMS API (Live)' : 'Hubtel Ghana SMS API') : provider === 'arkesel' ? 'Arkesel SMS Gateway' : 'SkoolFinder Simulated SMS',
+      delivery_status: deliveryStatus,
+      external_id: externalMsgId,
+      error_message: errorMessage,
       message: message.trim(),
       dispatched_at: new Date().toISOString()
     };
@@ -562,7 +610,7 @@ const NationalIntegrationsService = {
       action: 'SMS_GATEWAY_DISPATCHED',
       targetType: 'sms_dispatch',
       targetId: smsId,
-      details: { schoolId, phone: phoneInfo.international, units, costGhs, provider }
+      details: { schoolId, phone: phoneInfo.international, units, costGhs, provider, isLive: Boolean(isLiveHubtel) }
     });
 
     console.log(`\n📡 [LIVE GHANA SMS GATEWAY DISPATCH]`);
@@ -570,10 +618,10 @@ const NationalIntegrationsService = {
     console.log(`Recipient: ${recipientName} (${phoneInfo.international}) [${phoneInfo.network}]`);
     console.log(`Units: ${units} (${message.length} chars) | Cost: GH₵ ${costGhs.toFixed(3)}`);
     console.log(`Message: "${message}"`);
-    console.log(`Status: 200 OK Delivered\n`);
+    console.log(`Status: ${deliveryStatus === 'delivered' ? '200 OK Delivered' : 'Failed'}\n`);
 
     return {
-      success: true,
+      success: deliveryStatus === 'delivered',
       sms: logRecord,
       remainingBalanceGhs: Number(IN_MEMORY_SMS_GATEWAY_CONFIG.account_balance_ghs.toFixed(2))
     };

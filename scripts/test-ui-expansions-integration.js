@@ -7,6 +7,8 @@
  */
 const assert = require('assert');
 const http = require('http');
+const jwt = require('jsonwebtoken');
+const { JWT_SECRET } = require('../src/middleware/auth');
 
 function fetchJson(url, options = {}) {
   return new Promise((resolve, reject) => {
@@ -74,6 +76,11 @@ async function run() {
 
   // Test 4: Webhook Preferences Update
   try {
+    const token = jwt.sign(
+      { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh', role: 'school_admin', school_id: 'sch-gis-accra' },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
     const payload = JSON.stringify({
       whatsapp: true,
       sms: true,
@@ -84,7 +91,10 @@ async function run() {
     });
     const res = await fetchJson('http://localhost:3000/api/webhooks/school/sch-gis-accra/preferences', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: payload
     });
     assert.strictEqual(res.status, 200);
@@ -103,3 +113,4 @@ async function run() {
 }
 
 run();
+
