@@ -1750,6 +1750,55 @@ const API = {
     return res.json();
   },
 
+  async adminOverrideSchoolTier(schoolId, tier, days = 30) {
+    const res = await fetch(`${this.baseUrl}/admin/subscriptions/${encodeURIComponent(schoolId)}/tier`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ tier, days })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to override subscription tier');
+    }
+    return res.json();
+  },
+
+  async adminResolveEscrowDispute(tenderId, resolutionData) {
+    const res = await fetch(`${this.baseUrl}/admin/marketplace/escrow/${encodeURIComponent(tenderId)}/resolve`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(resolutionData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to resolve escrow dispute');
+    }
+    return res.json();
+  },
+
+  async getAdminMarketplaceAuditLogs(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${this.baseUrl}/admin/marketplace/audit-log?${query}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch marketplace audit logs');
+    }
+    return res.json();
+  },
+
+  async getAdminEscrowDisputes() {
+    const res = await fetch(`${this.baseUrl}/admin/marketplace/escrow/disputes`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to fetch escrow disputes');
+    }
+    return res.json();
+  },
+
   // ==========================================================================
   // PHASE 2A: COMMERCIAL SUBSCRIPTIONS API
   // ==========================================================================

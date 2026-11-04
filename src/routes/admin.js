@@ -2458,6 +2458,19 @@ router.post('/subscriptions/:schoolId/tier', async (req, res) => {
  */
 
 /**
+ * GET /api/admin/marketplace/escrow/disputes (ESC-003)
+ * Super Admin review queue of disputed MoMo escrow contracts
+ */
+router.get('/marketplace/escrow/disputes', async (req, res) => {
+  try {
+    const disputes = MarketplaceService.getDisputedEscrows();
+    return res.json({ success: true, disputes, count: disputes.length });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
  * POST /api/admin/marketplace/escrow/:tenderId/resolve (ESC-003)
  * Super Admin arbitration and resolution of escrow disputes
  */

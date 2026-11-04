@@ -1246,6 +1246,31 @@ class MarketplaceService {
   }
 
   /**
+   * Super Admin retrieval of active escrow disputes (ESC-003)
+   */
+  static getDisputedEscrows() {
+    const disputes = [];
+    IN_MEMORY_TENDERS.forEach((tender, tenderId) => {
+      if (tender.escrow_status === 'disputed') {
+        const milestones = IN_MEMORY_ESCROWS.get(tenderId) || [];
+        disputes.push({
+          tenderId,
+          schoolId: tender.school_id,
+          tenderTitle: tender.title,
+          category: tender.category,
+          budgetGhs: tender.budget_max_ghs || tender.budget_ghs,
+          supplierName: tender.awarded_supplier_name || 'Educational Supplier',
+          disputedMilestones: milestones.filter(m => m.status === 'disputed'),
+          milestones,
+          disputeReason: milestones.find(m => m.dispute_reason)?.dispute_reason || 'Defective / non-delivered goods',
+          disputedAt: milestones.find(m => m.disputed_at)?.disputed_at || tender.updated_at
+        });
+      }
+    });
+    return disputes;
+  }
+
+  /**
    * Super Admin arbitration and resolution of an escrow dispute (ESC-003)
    */
   static async resolveEscrowDispute(adminUser, tenderId, payload = {}) {

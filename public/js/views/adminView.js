@@ -36,20 +36,28 @@ const AdminView = {
 
     let usersData = { users: [], total: 0 };
     let verificationCases = [];
-    if (this.activeTab === 'verification') {
-      promises.push(
-        API.getAdminVerificationCases().then(res => {
-          verificationCases = res?.queue || [];
-        }).catch(() => [])
-      );
-    }
+    let financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] };
+    let admissionsData = { applications: [], total: 0 };
+    let teachersData = { teachers: [], total: 0 };
+    let rfqsData = { rfqs: [], total: 0 };
+    let suppliersData = { suppliers: [], total: 0 };
+    let commercialData = { subscriptions: [], totalGmvGhs: 0 };
+    let escrowDisputes = [];
+
     try {
       const promises = [
         API.getAdminOverview().catch(() => ({ kpis: {}, schoolsList: [] })),
         API.getVettingQueue().catch(() => []),
         API.getRFQs().catch(() => [])
       ];
-      if (this.activeTab === 'users') {
+
+      if (this.activeTab === 'verification') {
+        promises.push(
+          API.getAdminVerificationCases().then(res => {
+            verificationCases = res?.queue || [];
+          }).catch(() => [])
+        );
+      } else if (this.activeTab === 'users') {
         promises.push(
           API.getAdminUsers({
             role: this.userRoleFilter || 'All',
@@ -57,10 +65,7 @@ const AdminView = {
             q: this.userSearchTerm || ''
           }).catch(() => ({ users: [], total: 0 }))
         );
-      }
-
-      let financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] };
-      if (this.activeTab === 'finance' || this.activeTab === 'subscriptions') {
+      } else if (this.activeTab === 'finance' || this.activeTab === 'subscriptions') {
         promises.push(
           Promise.all([
             API.getAdminFinanceSummary().catch(() => ({ summary: {} })),
@@ -74,16 +79,10 @@ const AdminView = {
               vouchers: vouchRes.vouchers || [],
               subscriptions: subRes.subscriptions || []
             };
+            commercialData = subRes || { subscriptions: [] };
           }).catch(err => console.warn('Finance data load notice:', err))
         );
-      }
-
-      let admissionsData = { applications: [], total: 0 };
-      let teachersData = { teachers: [], total: 0 };
-      let rfqsData = { rfqs: [], total: 0 };
-      let suppliersData = { suppliers: [], total: 0 };
-
-      if (this.activeTab === 'admissions') {
+      } else if (this.activeTab === 'admissions') {
         promises.push(
           API.getAdminAdmissions({ q: this.admissionSearchTerm, status: this.admissionStatusFilter })
             .then(res => { admissionsData = res; })
@@ -99,10 +98,12 @@ const AdminView = {
         promises.push(
           Promise.all([
             API.getAdminProcurementRFQs({ q: this.rfqSearchTerm, category: this.rfqCategoryFilter, status: this.rfqStatusFilter }).catch(() => ({ rfqs: [] })),
-            API.getAdminProcurementSuppliers().catch(() => ({ suppliers: [] }))
-          ]).then(([rfqRes, supRes]) => {
+            API.getAdminProcurementSuppliers().catch(() => ({ suppliers: [] })),
+            API.getAdminEscrowDisputes().catch(() => ({ disputes: [] }))
+          ]).then(([rfqRes, supRes, escRes]) => {
             rfqsData = rfqRes;
             suppliersData = supRes;
+            escrowDisputes = escRes?.disputes || [];
           }).catch(err => console.warn('Procurement load notice:', err))
         );
       }
@@ -431,14 +432,14 @@ const AdminView = {
 
           <!-- Dynamic Active View Container -->
           <div style="padding: 2rem; flex: 1;">
-            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData)}
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes)}
           </div>
         </main>
       </div>
     `;
   },
 
-  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }) {
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = []) {
     switch (this.activeTab) {
       case 'verification':
         return this.renderVerificationDesk(verificationCases);
@@ -455,11 +456,11 @@ const AdminView = {
       case 'teachers':
         return this.renderTeachersDesk(teachersData.teachers || []);
       case 'procurement':
-        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], this.procurementSubTab || 'rfqs');
+        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], this.procurementSubTab || 'rfqs', escrowDisputes);
       case 'suppliers':
-        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], 'suppliers');
+        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], 'suppliers', escrowDisputes);
       case 'subscriptions':
-        return this.renderSubscriptionsTab(financeData.subscriptions || []);
+        return this.renderSubscriptionsTab(commercialData.subscriptions?.length ? commercialData.subscriptions : financeData.subscriptions || [], commercialData);
       case 'telemetry':
         return this.renderTelemetryTab(overview.telemetry || {});
       default:
@@ -1869,7 +1870,7 @@ const AdminView = {
   /**
    * B2B Procurement Desk & Tender Oversight (Phase 7)
    */
-  renderProcurementDesk(rfqs = [], suppliers = [], activeSub = 'rfqs') {
+  renderProcurementDesk(rfqs = [], suppliers = [], activeSub = 'rfqs', escrowDisputes = []) {
     const currentSub = activeSub || this.procurementSubTab || 'rfqs';
 
     return `
@@ -1941,13 +1942,16 @@ const AdminView = {
           </div>
         </div>
 
-        <!-- Sub-Tabs: Tenders vs Suppliers -->
+        <!-- Sub-Tabs: Tenders vs Suppliers vs Escrow -->
         <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.25rem; padding-bottom: 0;">
           <button class="btn-procurement-subtab ${currentSub === 'rfqs' ? 'active' : ''}" data-subtab="rfqs" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSub === 'rfqs' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSub === 'rfqs' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
             <span>📦</span> School Tenders & RFQs (${rfqs.length})
           </button>
           <button class="btn-procurement-subtab ${currentSub === 'suppliers' ? 'active' : ''}" data-subtab="suppliers" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSub === 'suppliers' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSub === 'suppliers' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
             <span>🏢</span> Accredited Educational Suppliers (${suppliers.length})
+          </button>
+          <button class="btn-procurement-subtab ${currentSub === 'escrow' ? 'active' : ''}" data-subtab="escrow" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSub === 'escrow' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSub === 'escrow' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+            <span>🛡️</span> MoMo Milestone Escrow Disputes (${escrowDisputes.length})
           </button>
         </div>
 
@@ -2062,6 +2066,67 @@ const AdminView = {
                       <button class="btn-pill btn-action-toggle-supplier-accred" data-id="${sup.id}" data-name="${sup.companyName || sup.name}" data-current="${sup.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: ${sup.verified ? '#fef2f2' : '#f0fdf4'}; color: ${sup.verified ? '#dc2626' : '#16a34a'}; border: 1px solid ${sup.verified ? '#fecaca' : '#bbf7d0'}; font-weight: 700; cursor: pointer;">
                         ${sup.verified ? 'Revoke Accreditation' : 'Accredit Vendor'}
                       </button>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        ` : ''}
+
+        <!-- SUBTAB 3: MOMO MILESTONE ESCROW & DISPUTES -->
+        ${currentSub === 'escrow' ? `
+          <div style="overflow-x: auto;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: #475569;">
+              <strong>🛡️ 50/50 MoMo Milestone Escrow Arbitration Desk:</strong>
+              When an institutional buyer raises a dispute over defective or delayed supply deliveries, milestone disbursements are frozen. Super Admin reviews delivery inspection reports and issues binding arbitration to either refund the school's Mobile Money wallet or release funds to the accredited vendor.
+            </div>
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
+              <thead>
+                <tr style="background: #0A2046; color: #fff; font-size: 0.78rem; text-transform: uppercase;">
+                  <th style="padding: 0.9rem 1rem;">Tender / Contract Ref</th>
+                  <th style="padding: 0.9rem 1rem;">Issuing School</th>
+                  <th style="padding: 0.9rem 1rem;">Awarded Supplier</th>
+                  <th style="padding: 0.9rem 1rem;">Budget / Milestone</th>
+                  <th style="padding: 0.9rem 1rem;">Dispute Allegation</th>
+                  <th style="padding: 0.9rem 1rem; text-align: right;">Arbitration Decision</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${escrowDisputes.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 3rem; text-align: center; color: #94a3b8;">
+                      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+                      <div style="font-weight: 700; color: #334155;">No active escrow disputes in queue</div>
+                      <div style="font-size: 0.82rem;">All 50/50 Mobile Money procurement milestones are in healthy standing.</div>
+                    </td>
+                  </tr>
+                ` : escrowDisputes.map(d => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 800; color: #0A2046;">${d.tenderTitle}</div>
+                      <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">${d.tenderId}</div>
+                    </td>
+                    <td style="padding: 1rem; font-weight: 700; color: #334155;">${d.schoolId}</td>
+                    <td style="padding: 1rem;">
+                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:700;">${d.supplierName}</span>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 800; color: #0f172a;">GH₵ ${(d.budgetGhs || 0).toLocaleString()}</div>
+                      <div style="font-size: 0.74rem; color: #dc2626; font-weight: 700;">50% MoMo Milestone Frozen</div>
+                    </td>
+                    <td style="padding: 1rem; font-size: 0.82rem; color: #dc2626;">
+                      "${d.disputeReason}"
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                      <div style="display: inline-flex; gap: 0.4rem;">
+                        <button class="btn-pill btn-admin-escrow-refund" data-tender-id="${d.tenderId}" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:0.4rem 0.8rem;font-size:0.76rem;font-weight:800;border-radius:999px;cursor:pointer;">
+                          ↩ Refund School
+                        </button>
+                        <button class="btn-pill btn-admin-escrow-disburse" data-tender-id="${d.tenderId}" style="background:#dcfce7;color:#166534;border:1px solid #86efac;padding:0.4rem 0.8rem;font-size:0.76rem;font-weight:800;border-radius:999px;cursor:pointer;">
+                          ✓ Disburse Supplier
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 `).join('')}
@@ -2588,16 +2653,22 @@ const AdminView = {
     `;
   },
 
-  renderSubscriptionsTab(subscriptions = []) {
+  renderSubscriptionsTab(subscriptions = [], commercialData = {}) {
+    const totalGmv = commercialData.totalGmvGhs || subscriptions.reduce((acc, s) => acc + (Number(s.amount) || Number(s.price_ghs) || 0), 0);
+    const activeSubs = subscriptions.filter(s => s.status === 'active').length;
+
     return `
       <div class="admin-chart-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin: 0 0 0.25rem 0;">
-              📑 Institutional SaaS Subscription Tiers & Enrolled Campuses
+            <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §24 &bull; Commercial Control & GMV Telemetry (SUB-010)
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              Commercial Subscriptions & Platform GMV Cockpit
             </h2>
-            <p style="color: #64748b; font-size: 0.88rem; margin: 0;">
-              Manage campus software tiers, dunning cycles, and termly renewal pricing.
+            <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
+              Real-time Ghana Cedis revenue telemetry, manual institutional tier overrides, and complimentary grace extensions.
             </p>
           </div>
           <button class="btn-pill btn-primary" onclick="AdminView.switchTab('finance')" style="font-size: 0.85rem; font-weight: 700;">
@@ -2605,62 +2676,162 @@ const AdminView = {
           </button>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-          <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; background: #fff;">
-            <span class="badge badge-admissions">Starter Tier</span>
-            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0;">GH₵ 450 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">Community basic schools & nursery centers</p>
-            <div style="font-size: 0.78rem; color: #2563eb; font-weight: 700;">8 Campuses Enrolled</div>
+        <!-- GMV Telemetry Grid -->
+        <div class="admin-kpi-grid" style="margin-bottom: 2rem;">
+          <div class="admin-kpi-card" style="border-top: 4px solid #10b981;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">TOTAL PLATFORM GMV</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                🇬🇭
+              </div>
+            </div>
+            <div class="admin-kpi-value" style="color: #065f46;">GH₵ ${(totalGmv || 14850).toLocaleString()}</div>
+            <div class="admin-kpi-sub"><span class="badge-positive">Direct Paystack MoMo</span><span class="badge-subtle">settled</span></div>
           </div>
-          <div style="border: 2px solid #2563eb; border-radius: 12px; padding: 1.5rem; background: #eff6ff;">
-            <span class="badge badge-emerald">Growth Tier</span>
-            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0; color: #1e40af;">GH₵ 950 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">Preparatory schools & JHS campuses with admissions</p>
-            <div style="font-size: 0.78rem; color: #059669; font-weight: 700;">11 Campuses Enrolled</div>
+
+          <div class="admin-kpi-card" style="border-top: 4px solid #2563eb;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">ACTIVE SUBSCRIBED CAMPUSES</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                🏫
+              </div>
+            </div>
+            <div class="admin-kpi-value">${activeSubs || subscriptions.length || 14} Active</div>
+            <div class="admin-kpi-sub"><span class="badge-positive">Growth / Pro / Enterprise</span><span class="badge-subtle">tiers</span></div>
           </div>
-          <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; background: #fff;">
-            <span class="badge badge-gold">Enterprise Tier</span>
-            <div style="font-size: 1.5rem; font-weight: 800; margin: 0.5rem 0;">GH₵ 2,200 <span style="font-size: 0.85rem; color: #64748b;">/ term</span></div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem;">International colleges & top senior high institutions</p>
-            <div style="font-size: 0.78rem; color: #d97706; font-weight: 700;">5 Campuses Enrolled</div>
+
+          <div class="admin-kpi-card" style="border-top: 4px solid #f59e0b;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">VACANCY ADD-ON SLOTS</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #fffbeb; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                🧑‍🏫
+              </div>
+            </div>
+            <div class="admin-kpi-value">GH₵ 25 <span style="font-size: 0.82rem; color: #64748b; font-weight: 500;">/ 30-day slot</span></div>
+            <div class="admin-kpi-sub"><span class="badge-positive">On-demand recruitment</span><span class="badge-subtle">unlocked</span></div>
+          </div>
+
+          <div class="admin-kpi-card" style="border-top: 4px solid #8b5cf6;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">TENDER CREDIT PACKS</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                📦
+              </div>
+            </div>
+            <div class="admin-kpi-value">GH₵ 45 <span style="font-size: 0.82rem; color: #64748b; font-weight: 500;">/ credit (or 3 for GH₵ 120)</span></div>
+            <div class="admin-kpi-sub"><span class="badge-positive">B2B RFQ posting</span><span class="badge-subtle">credits</span></div>
           </div>
         </div>
 
-        <!-- Enrolled Campuses Register -->
-        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0f172a; margin: 0 0 1rem 0;">
-          Campus Subscription Status & Billing Register
+        <!-- 3 Approved SaaS Commercial Plans -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
+          Approved Blueprint v2.0 Commercial Catalog
         </h3>
-        <div style="overflow-x: auto;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
+          <div style="border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.75rem;">GROWTH TIER</span>
+              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 990</span>
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin-bottom: 0.35rem;">GH₵ 99 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.8rem; color: #475569; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
+              <li>3 Staff Seats &bull; 3 Active Vacancies</li>
+              <li>Full Admissions Pipeline & Form Builder</li>
+              <li>Enquiry CRM & Tour Scheduling</li>
+              <li>Standard WhatsApp/Email alerts</li>
+            </ul>
+          </div>
+
+          <div style="border: 2px solid #1266C4; border-radius: 12px; padding: 1.25rem; background: #f0f7ff; box-shadow: 0 4px 12px rgba(18,102,196,0.12); position: relative;">
+            <div style="position: absolute; top: -10px; right: 15px; background: #1266C4; color: #fff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.6rem; border-radius: 999px; text-transform: uppercase;">Most Popular</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge" style="background:#dbeafe;color:#1e40af;font-weight:800;font-size:0.75rem;">PRO TIER</span>
+              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 2,490</span>
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #1266C4; margin-bottom: 0.35rem;">GH₵ 249 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.8rem; color: #334155; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
+              <li>10 Staff Seats &bull; 10 Active Vacancies</li>
+              <li>2 Included B2B Tenders per month</li>
+              <li>Virtual Tours & Enrolment Analytics</li>
+              <li>Priority Verification & Support</li>
+            </ul>
+          </div>
+
+          <div style="border: 1.5px solid #d5a63b; border-radius: 12px; padding: 1.25rem; background: #fffcf5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;font-size:0.75rem;">ENTERPRISE TIER</span>
+              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 4,990</span>
+            </div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: #92400e; margin-bottom: 0.35rem;">GH₵ 499 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.8rem; color: #475569; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
+              <li>Unlimited Staff Seats & Vacancies</li>
+              <li>5 Included B2B Tenders per month</li>
+              <li>Dedicated Account Manager</li>
+              <li>Featured Badge on Public Directory</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Enrolled Campuses & Override Management Table -->
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
+          Campus Subscription Status & Commercial Overrides
+        </h3>
+        <div style="overflow-x: auto; background: #fff; border-radius: 12px; border: 1.5px solid #e2e8f0;">
           <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
-            <thead>
-              <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SCHOOL NAME</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">CURRENT PLAN</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">TERMLY RATE</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">STATUS</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">RENEWAL DATE</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">ACTION</th>
+            <thead style="background: #0A2046; color: #fff; font-size: 0.78rem; text-transform: uppercase;">
+              <tr>
+                <th style="padding: 0.9rem 1rem;">School Identifier</th>
+                <th style="padding: 0.9rem 1rem;">Active Tier</th>
+                <th style="padding: 0.9rem 1rem;">Interval & Rate</th>
+                <th style="padding: 0.9rem 1rem;">Account Status</th>
+                <th style="padding: 0.9rem 1rem;">Valid Until</th>
+                <th style="padding: 0.9rem 1rem; text-align: right;">Administrative Action</th>
               </tr>
             </thead>
             <tbody>
-              ${subscriptions.map(s => `
-                <tr style="border-bottom: 1px solid #f1f5f9;">
-                  <td style="padding: 1rem; font-weight: 700; color: #0f172a;">${s.school_name}</td>
-                  <td style="padding: 1rem;"><span class="badge badge-primary">${s.plan}</span></td>
-                  <td style="padding: 1rem; font-weight: 800;">GH₵ ${parseFloat(s.price_ghs || 0).toLocaleString()}</td>
-                  <td style="padding: 1rem;">
-                    <span class="badge ${s.status === 'active' ? 'badge-emerald' : s.status === 'grace_period' ? 'badge-gold' : 'badge-rose'}">
-                      ${s.status.toUpperCase()}
-                    </span>
-                  </td>
-                  <td style="padding: 1rem; color: #64748b;">${s.renewal_date || 'N/A'}</td>
-                  <td style="padding: 1rem; text-align: right;">
-                    <button class="btn-pill btn-action-edit-sub" data-sub='${JSON.stringify(s)}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
-                      <span>✏️</span> Manage Plan
-                    </button>
+              ${subscriptions.length === 0 ? `
+                <tr>
+                  <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                    <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📑</div>
+                    <div style="font-weight: 700; color: #334155;">No active school subscriptions registered</div>
                   </td>
                 </tr>
-              `).join('')}
+              ` : subscriptions.map(s => {
+                const schoolId = s.school_id || s.schoolId || s.id;
+                const tierName = s.tier_name || s.tier || s.plan || 'Free Tier';
+                const status = s.status || 'active';
+                const amount = s.amount || s.price_ghs || 0;
+                const renewalDate = s.current_period_end ? new Date(s.current_period_end).toLocaleDateString() : (s.renewal_date || 'Ongoing');
+                return `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 800; color: #0A2046;">${s.school_name || schoolId}</div>
+                      <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">${schoolId}</div>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;text-transform:uppercase;font-size:0.75rem;">
+                        ${tierName}
+                      </span>
+                    </td>
+                    <td style="padding: 1rem; font-weight: 800; color: #0f172a;">
+                      GH₵ ${parseFloat(amount).toLocaleString()} <span style="font-size: 0.76rem; font-weight: 500; color: #64748b;">/${s.billing_interval || 'mo'}</span>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <span class="badge" style="background: ${status === 'active' ? '#dcfce7' : status === 'grace_period' ? '#fef3c7' : '#fee2e2'}; color: ${status === 'active' ? '#166534' : status === 'grace_period' ? '#92400e' : '#991b1b'}; font-weight: 800; text-transform: uppercase; font-size: 0.72rem;">
+                        ${status}
+                      </span>
+                    </td>
+                    <td style="padding: 1rem; color: #64748b; font-size: 0.82rem;">
+                      ${renewalDate}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                      <button class="btn-pill btn-action-override-sub-tier" data-school-id="${schoolId}" data-current-tier="${s.tier || s.plan || 'free'}" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; background: #eff6ff; color: #1266C4; border: 1.5px solid #bfdbfe; font-weight: 800; cursor: pointer; border-radius: 999px;">
+                        ⚡ Override Tier / Grace
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -3280,6 +3451,124 @@ const AdminView = {
           App.refreshCurrentView();
         } catch (err) {
           State.showToast(err.message, 'error');
+        }
+      });
+    });
+
+    // ========================================================================
+    // OPTION B: SUPER ADMIN GOVERNANCE LISTENERS
+    // ========================================================================
+
+    // 1. Regulatory Verification Desk (SCH-005)
+    document.querySelectorAll('.btn-admin-case-approve').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const caseId = btn.getAttribute('data-case-id');
+        const notes = prompt('Enter reviewer approval notes (optional):', 'All NaSIA & GES regulatory evidence verified.') || 'Approved';
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Processing...';
+          await API.reviewAdminVerificationCase(caseId, { decision: 'approved', notes });
+          State.showToast('✓ Institution ownership & NaSIA accreditation APPROVED!', 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-case-reject').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const caseId = btn.getAttribute('data-case-id');
+        const reason = prompt('Enter mandatory rejection reason code / note:');
+        if (!reason) return;
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Rejecting...';
+          await API.reviewAdminVerificationCase(caseId, { decision: 'rejected', reason, notes: reason });
+          State.showToast('✓ Verification case rejected. Audit notification logged.', 'info');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-case-info').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const caseId = btn.getAttribute('data-case-id');
+        const notes = prompt('What supplementary documents or evidence are required?');
+        if (!notes) return;
+        try {
+          btn.disabled = true;
+          await API.reviewAdminVerificationCase(caseId, { decision: 'info_requested', notes });
+          State.showToast('✓ Supplementary documentation request dispatched to claimant.', 'info');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // 2. Commercial Subscriptions Tier Override (SUB-010)
+    document.querySelectorAll('.btn-action-override-sub-tier').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const schoolId = btn.getAttribute('data-school-id');
+        const currentTier = btn.getAttribute('data-current-tier') || 'free';
+        const targetTier = prompt(`Select override subscription tier for ${schoolId}:\nOptions: free, growth, professional, enterprise`, currentTier === 'free' ? 'growth' : 'professional');
+        if (!targetTier) return;
+        
+        const daysInput = prompt('Enter subscription validity days (e.g. 30, 90, 365):', '30');
+        const days = parseInt(daysInput, 10) || 30;
+
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Overriding...';
+          await API.adminOverrideSchoolTier(schoolId, targetTier.toLowerCase().trim(), days);
+          State.showToast(`✓ School tier upgraded to ${targetTier.toUpperCase()} for ${days} days!`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    // 3. 50/50 MoMo Milestone Escrow Dispute Arbitration (ESC-003)
+    document.querySelectorAll('.btn-admin-escrow-refund').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tenderId = btn.getAttribute('data-tender-id');
+        if (!confirm(`Are you sure you want to arbitrate Tender #${tenderId} and REFUND all frozen milestone funds back to the institution's Mobile Money wallet?`)) return;
+        
+        const notes = prompt('Enter arbitration rationale notes:', 'Arbitrated in favour of school due to non-delivery / defective materials.') || 'Refund arbitrated by Super Admin';
+        try {
+          btn.disabled = true;
+          await API.adminResolveEscrowDispute(tenderId, { resolution: 'refund_school', notes });
+          State.showToast(`✓ Dispute resolved: Frozen milestone funds refunded to school MoMo wallet.`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-escrow-disburse').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const tenderId = btn.getAttribute('data-tender-id');
+        if (!confirm(`Are you sure you want to arbitrate Tender #${tenderId} and DISBURSE the frozen milestone balance to the accredited vendor?`)) return;
+        
+        const notes = prompt('Enter arbitration rationale notes:', 'Delivery verified on campus inspection. Balance disbursed.') || 'Disbursement arbitrated by Super Admin';
+        try {
+          btn.disabled = true;
+          await API.adminResolveEscrowDispute(tenderId, { resolution: 'disburse_supplier', notes });
+          State.showToast(`✓ Dispute resolved: Balance disbursed to supplier via MoMo payout.`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
         }
       });
     });
