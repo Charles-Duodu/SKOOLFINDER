@@ -270,6 +270,14 @@ router.get('/', async (req, res) => {
       }
     }
 
+    if (req.query.categoryA === 'true' || req.query.categoryA === true) {
+      const catKeywords = ['achimota', 'presec', 'prempeh', 'opoku ware', 'mfantsipim', 'wesley girls', 'adisadel', 'gsts', 'archbishop porter', 'apex'];
+      filtered = filtered.filter(s => {
+        const nameLower = (s.name || '').toLowerCase();
+        return catKeywords.some(kw => nameLower.includes(kw));
+      });
+    }
+
     return res.json(filtered.map(formatSchool));
   } catch (err) {
     console.error('GET /api/schools error:', err);

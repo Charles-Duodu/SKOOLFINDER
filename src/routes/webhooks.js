@@ -71,6 +71,15 @@ router.put('/school/:schoolId/preferences', async (req, res, next) => {
   }
 });
 
+router.post('/school/:schoolId/preferences', async (req, res, next) => {
+  try {
+    const result = await WebhookService.updateNotificationPreferences(req.params.schoolId, req.body, req.user);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Generate WhatsApp preview payload
 router.post('/whatsapp/preview', (req, res) => {
   const { phone, template, vars } = req.body;
@@ -79,3 +88,4 @@ router.post('/whatsapp/preview', (req, res) => {
 });
 
 module.exports = router;
+

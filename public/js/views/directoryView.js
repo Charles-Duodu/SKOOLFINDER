@@ -7,11 +7,21 @@ const DirectoryView = {
 
   async render() {
     let schools = [];
+    let activePromo = null;
     try {
-      const res = await API.getSchools(State.filters);
-      schools = Array.isArray(res) ? res : [];
+      const [schoolsRes, promoRes] = await Promise.allSettled([
+        API.getSchools(State.filters),
+        API.getActivePromotions('directory_top')
+      ]);
+      if (schoolsRes.status === 'fulfilled') {
+        schools = Array.isArray(schoolsRes.value) ? schoolsRes.value : [];
+      }
+      if (promoRes.status === 'fulfilled' && promoRes.value?.success && promoRes.value?.promotions?.length > 0) {
+        activePromo = promoRes.value.promotions[0];
+        API.trackPromotionImpression(activePromo.id).catch(() => {});
+      }
     } catch (e) {
-      console.warn('Failed to fetch schools:', e);
+      console.warn('Failed to fetch schools or promo:', e);
       schools = [];
     }
 
@@ -26,10 +36,10 @@ const DirectoryView = {
             <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div>
                 <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900);">
-                  School Directory: Greater Accra & Kumasi
+                  Nationwide School Directory & Regional Hubs
                 </h1>
                 <p id="dir-count-text" style="color: var(--text-muted); font-size: 0.95rem;">
-                  Showing <strong>${schools.length}</strong> accredited schools matching your criteria.
+                  Showing <strong>${schools.length}</strong> accredited schools across Greater Accra, Kumasi, Cape Coast & Takoradi.
                 </p>
               </div>
 
@@ -51,6 +61,36 @@ const DirectoryView = {
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Regional Hub Quick Selector Bar & Category A Filter -->
+          <div class="dir-regional-bar" style="display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 0 1.25rem; align-items: center; border-bottom: 1px solid var(--border-light); margin-bottom: 1.5rem; flex-wrap: wrap;">
+            <span style="font-size: 0.76rem; font-weight: 800; color: var(--primary-800); text-transform: uppercase; margin-right: 0.25rem;">
+              🇬🇭 Regional Hubs:
+            </span>
+            <button class="btn-pill btn-dir-region ${(!State.filters.region || State.filters.region === 'All') ? 'btn-primary' : 'btn-outline'}" data-region="All" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              All Ghana
+            </button>
+            <button class="btn-pill btn-dir-region ${State.filters.region === 'Greater Accra' ? 'btn-primary' : 'btn-outline'}" data-region="Greater Accra" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              Greater Accra
+            </button>
+            <button class="btn-pill btn-dir-region ${State.filters.region === 'Ashanti' ? 'btn-primary' : 'btn-outline'}" data-region="Ashanti" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              Kumasi (Ashanti)
+            </button>
+            <button class="btn-pill btn-dir-region ${State.filters.region === 'Central' ? 'btn-primary' : 'btn-outline'}" data-region="Central" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              Cape Coast (Central)
+            </button>
+            <button class="btn-pill btn-dir-region ${State.filters.region === 'Western' ? 'btn-primary' : 'btn-outline'}" data-region="Western" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              Sekondi-Takoradi (Western)
+            </button>
+            <button class="btn-pill btn-dir-region ${State.filters.region === 'Eastern' ? 'btn-primary' : 'btn-outline'}" data-region="Eastern" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              Eastern (Koforidua)
+            </button>
+
+            <!-- 1-Click GES Category A Placement Filter -->
+            <button id="btn-toggle-cat-a" class="btn-pill" style="margin-left: auto; background: ${State.filters.categoryA ? '#0A2046' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}; color: ${State.filters.categoryA ? '#fbbf24' : '#000'}; font-weight: 800; font-size: 0.78rem; padding: 0.4rem 0.95rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: var(--shadow-sm);">
+              <span>🏆</span> ${State.filters.categoryA ? '✓ Showing GES Category A' : 'Filter GES Category A SHS'}
+            </button>
           </div>
 
           <!-- Main Layout: Sidebar Filters + Content Area -->
@@ -78,8 +118,11 @@ const DirectoryView = {
                 <label class="filter-group-label">Region</label>
                 <select id="filter-region" class="filter-select">
                   <option value="All" ${State.filters.region === 'All' ? 'selected' : ''}>All Regions</option>
-                  <option value="Greater Accra" ${State.filters.region === 'Greater Accra' ? 'selected' : ''}>Greater Accra</option>
+                  <option value="Greater Accra" ${State.filters.region === 'Greater Accra' ? 'selected' : ''}>Greater Accra (Accra, Tema)</option>
                   <option value="Ashanti" ${State.filters.region === 'Ashanti' ? 'selected' : ''}>Ashanti (Kumasi)</option>
+                  <option value="Central" ${State.filters.region === 'Central' ? 'selected' : ''}>Central (Cape Coast)</option>
+                  <option value="Western" ${State.filters.region === 'Western' ? 'selected' : ''}>Western (Sekondi-Takoradi)</option>
+                  <option value="Eastern" ${State.filters.region === 'Eastern' ? 'selected' : ''}>Eastern (Koforidua)</option>
                 </select>
               </div>
 
@@ -101,6 +144,14 @@ const DirectoryView = {
                     <option value="Nhyiaeso" ${State.filters.suburb === 'Nhyiaeso' ? 'selected' : ''}>Nhyiaeso</option>
                     <option value="Ridge" ${State.filters.suburb === 'Ridge' ? 'selected' : ''}>Ridge Residential</option>
                     <option value="KNUST Enclave" ${State.filters.suburb === 'KNUST Enclave' ? 'selected' : ''}>KNUST Enclave</option>
+                  </optgroup>
+                  <optgroup label="Central (Cape Coast)">
+                    <option value="Pedu" ${State.filters.suburb === 'Pedu' ? 'selected' : ''}>Pedu / Kotokuraba</option>
+                    <option value="Cape Coast Ridge" ${State.filters.suburb === 'Cape Coast Ridge' ? 'selected' : ''}>Ridge / Adisadel Hill</option>
+                  </optgroup>
+                  <optgroup label="Western (Sekondi-Takoradi)">
+                    <option value="Beach Road" ${State.filters.suburb === 'Beach Road' ? 'selected' : ''}>Beach Road / Chapel Hill</option>
+                    <option value="Airport Ridge" ${State.filters.suburb === 'Airport Ridge' ? 'selected' : ''}>Takoradi Airport Ridge</option>
                   </optgroup>
                 </select>
               </div>
@@ -185,12 +236,18 @@ const DirectoryView = {
                     <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">
                       📍 Click any school crest marker to view details and admissions:
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                       <button id="btn-zoom-accra" class="btn-pill btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
                         🇬🇭 Focus Accra
                       </button>
                       <button id="btn-zoom-kumasi" class="btn-pill btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
                         🇬🇭 Focus Kumasi
+                      </button>
+                      <button id="btn-zoom-capecoast" class="btn-pill btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
+                        🇬🇭 Focus Cape Coast
+                      </button>
+                      <button id="btn-zoom-takoradi" class="btn-pill btn-outline" style="padding: 0.25rem 0.75rem; font-size: 0.75rem;">
+                        🇬🇭 Focus Takoradi
                       </button>
                     </div>
                   </div>
@@ -198,6 +255,33 @@ const DirectoryView = {
                 </div>
               ` : `
                 <!-- CARDS GRID VIEW -->
+                ${activePromo ? `
+                  <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                      <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4);">
+                        ⭐
+                      </div>
+                      <div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                          <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+                            Sponsored Spotlight
+                          </span>
+                          <span style="font-size: 0.8rem; color: #93c5fd; font-weight: 700;">${activePromo.school_name || 'Accredited Institution'}</span>
+                        </div>
+                        <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
+                          ${activePromo.headline || 'Premier Admissions & Cambridge Academic Excellence'}
+                        </h3>
+                        <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
+                          📍 ${activePromo.suburb || 'Accra'}, ${activePromo.region || 'Greater Accra'} &bull; Verified Accreditation
+                        </p>
+                      </div>
+                    </div>
+                    <button class="btn-pill btn-gold" id="btn-dir-promo-cta" data-campaign-id="${activePromo.id}" data-target-url="${activePromo.target_url || `/school/${activePromo.school_id}`}" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap;">
+                      ${activePromo.cta_label || 'Explore Admissions'} &rarr;
+                    </button>
+                  </div>
+                ` : ''}
+
                 ${schools.length === 0 ? `
                   <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px dashed var(--border-light); padding: 4rem 2rem; text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
@@ -268,6 +352,12 @@ const DirectoryView = {
       });
       document.getElementById('btn-zoom-kumasi')?.addEventListener('click', () => {
         this.mapInstance.flyTo([6.6872, -1.6280], 13);
+      });
+      document.getElementById('btn-zoom-capecoast')?.addEventListener('click', () => {
+        this.mapInstance.flyTo([5.1054, -1.2466], 13);
+      });
+      document.getElementById('btn-zoom-takoradi')?.addEventListener('click', () => {
+        this.mapInstance.flyTo([4.8931, -1.7554], 13);
       });
 
     } catch (err) {
@@ -412,6 +502,40 @@ const DirectoryView = {
     // Reset Filters Buttons
     document.getElementById('btn-reset-filters')?.addEventListener('click', () => this.resetFilters());
     document.getElementById('btn-empty-reset')?.addEventListener('click', () => this.resetFilters());
+
+    // Regional Quick Filter Hub Buttons
+    document.querySelectorAll('.btn-dir-region').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const reg = btn.dataset.region;
+        State.filters.region = reg;
+        App.navigate('directory');
+      });
+    });
+
+    // 1-Click Category A Placement Toggle
+    document.getElementById('btn-toggle-cat-a')?.addEventListener('click', () => {
+      State.filters.categoryA = !State.filters.categoryA;
+      App.navigate('directory');
+    });
+
+    // Sponsored Promotion Spotlight CTA Click Handler
+    document.getElementById('btn-dir-promo-cta')?.addEventListener('click', (e) => {
+      const campaignId = e.currentTarget.dataset.campaignId;
+      const targetUrl = e.currentTarget.dataset.targetUrl;
+      if (campaignId) {
+        API.trackPromotionClick(campaignId).catch(() => {});
+      }
+      if (targetUrl) {
+        if (targetUrl.startsWith('http')) {
+          window.open(targetUrl, '_blank');
+        } else if (targetUrl.startsWith('/school/')) {
+          const schoolId = targetUrl.replace('/school/', '');
+          App.navigate('school-detail', schoolId);
+        } else {
+          window.location.href = targetUrl;
+        }
+      }
+    });
 
     // If in map mode, initialize Leaflet map
     if (this.viewMode === 'map') {

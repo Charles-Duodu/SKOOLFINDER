@@ -6,6 +6,14 @@ const HomeView = {
     const stats = await API.getStats();
     const featuredSchools = await API.getSchools({ region: 'All' });
     const topFeatured = featuredSchools.filter(s => s.featured).slice(0, 3);
+    let heroPromo = null;
+    try {
+      const promoRes = await API.getActivePromotions('homepage_hero');
+      if (promoRes?.success && promoRes?.promotions?.length > 0) {
+        heroPromo = promoRes.promotions[0];
+        API.trackPromotionImpression(heroPromo.id).catch(() => {});
+      }
+    } catch(e) {}
 
     return `
       <!-- Hero Section with 4-Image Crossfade Slideshow -->
@@ -87,8 +95,23 @@ const HomeView = {
               </button>
             </div>
 
-
           </div>
+
+          ${heroPromo ? `
+            <div id="hero-sponsored-spotlight" style="margin-top: 1.25rem; background: rgba(10, 32, 70, 0.75); backdrop-filter: blur(12px); border: 1.5px solid #fbbf24; border-radius: 14px; padding: 0.85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span style="background: #fbbf24; color: #000; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+                  Featured Spotlight
+                </span>
+                <span style="color: #fff; font-size: 0.92rem; font-weight: 700;">
+                  ${heroPromo.headline || heroPromo.school_name}
+                </span>
+              </div>
+              <button class="btn-pill btn-gold" id="btn-hero-promo-cta" data-campaign-id="${heroPromo.id}" data-target-url="${heroPromo.target_url || `/school/${heroPromo.school_id}`}" style="font-size: 0.76rem; padding: 0.35rem 0.95rem; font-weight: 800;">
+                ${heroPromo.cta_label || 'View Admissions'} &rarr;
+              </button>
+            </div>
+          ` : ''}
         </div>
 
         <!-- Slide Switcher Indicators -->
@@ -686,6 +709,23 @@ const HomeView = {
         const role = card.dataset.role || 'parent';
         Modals.openRoleTourModal(role);
       });
+    });
+
+    // Hero Sponsored Promotion Spotlight CTA
+    document.getElementById('btn-hero-promo-cta')?.addEventListener('click', (e) => {
+      const campaignId = e.currentTarget.dataset.campaignId;
+      const targetUrl = e.currentTarget.dataset.targetUrl;
+      if (campaignId) API.trackPromotionClick(campaignId).catch(() => {});
+      if (targetUrl) {
+        if (targetUrl.startsWith('http')) {
+          window.open(targetUrl, '_blank');
+        } else if (targetUrl.startsWith('/school/')) {
+          const schoolId = targetUrl.replace('/school/', '');
+          App.navigate('school-detail', schoolId);
+        } else {
+          window.location.href = targetUrl;
+        }
+      }
     });
   }
 };

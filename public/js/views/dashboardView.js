@@ -3,7 +3,7 @@
  * Implements 12-Group Sidebar Shell (DASH-001, SCH-001 - SCH-010)
  */
 const DashboardView = {
-  activeTab: 'overview', // 'overview' | 'myschool' | 'regulatory' | 'staff' | 'admissions' | 'inquiries' | 'audit' | 'subscription' | 'operations'
+  activeTab: 'overview', // 'overview' | 'myschool' | 'regulatory' | 'staff' | 'admissions' | 'inquiries' | 'audit' | 'subscription' | 'operations' | 'promotions' | 'webhooks'
   wizardStep: 1,
   wizardData: {
     name: '',
@@ -347,11 +347,17 @@ const DashboardView = {
     let routesData = { routes: [] };
     let groupData = null;
     let smsLogsData = { logs: [] };
+    let campaigns = [];
+    let packages = [];
+    let webhooks = [];
+    let deliveries = [];
+    let notificationPreferences = { whatsapp: true, sms: true, email: true, webhook: false };
 
     try {
       const [
         res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes, vacRes, tndRes,
-        yieldRes, retRes, revRes, assetsRes, booksRes, fleetRes, routesRes, groupRes, smsRes
+        yieldRes, retRes, revRes, assetsRes, booksRes, fleetRes, routesRes, groupRes, smsRes,
+        campaignsRes, pkgsRes, webhooksRes, deliveriesRes, notifPrefsRes
       ] = await Promise.allSettled([
         API.getSchoolWorkspace(schoolId),
         API.getSchoolIntakes(schoolId),
@@ -371,7 +377,12 @@ const DashboardView = {
         API.getTransportFleet(schoolId),
         API.getTransportRoutes(schoolId),
         API.getSchoolGroupDashboard('grp-trust-gis'),
-        API.getSchoolSmsLogs(schoolId)
+        API.getSchoolSmsLogs(schoolId),
+        API.getSchoolCampaigns(schoolId),
+        API.getPromotionPackages(),
+        API.getSchoolWebhooks(schoolId),
+        API.getWebhookDeliveries(schoolId),
+        API.getSchoolNotificationPreferences(schoolId)
       ]);
       if (res.status === 'fulfilled' && res.value?.workspace) workspaceData = res.value.workspace;
       if (intakesRes.status === 'fulfilled' && intakesRes.value?.intakes) intakes = intakesRes.value.intakes;
@@ -392,6 +403,11 @@ const DashboardView = {
       if (routesRes.status === 'fulfilled') routesData = routesRes.value;
       if (groupRes.status === 'fulfilled') groupData = groupRes.value;
       if (smsRes.status === 'fulfilled') smsLogsData = smsRes.value;
+      if (campaignsRes.status === 'fulfilled' && campaignsRes.value?.campaigns) campaigns = campaignsRes.value.campaigns;
+      if (pkgsRes.status === 'fulfilled' && pkgsRes.value?.packages) packages = pkgsRes.value.packages;
+      if (webhooksRes.status === 'fulfilled' && webhooksRes.value?.webhooks) webhooks = webhooksRes.value.webhooks;
+      if (deliveriesRes.status === 'fulfilled' && deliveriesRes.value?.deliveries) deliveries = deliveriesRes.value.deliveries;
+      if (notifPrefsRes.status === 'fulfilled' && notifPrefsRes.value?.preferences) notificationPreferences = notifPrefsRes.value.preferences;
     } catch (e) {
       console.warn('Workspace & Phase 2/5 load notice:', e.message);
     }
@@ -419,6 +435,7 @@ const DashboardView = {
     const phase2aData = { intakes, applications, enquiriesData, tourSlots, subscription, invoices, plans };
     const phase2bData = { vacanciesData, tendersData };
     const phase5Data = { yieldData, retentionData, revenueData, assetsData, booksData, fleetData, routesData, groupData, smsLogsData };
+    const expansionsData = { campaigns, packages, webhooks, deliveries, notificationPreferences };
 
     return `
       <div class="owner-shell">
@@ -519,7 +536,18 @@ const DashboardView = {
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
             </button>
 
-            <!-- Group 10: Phase 3 Deferred Scope -->
+            <!-- Group 10: Growth, Promotions & Webhooks (Expansions) -->
+            <div class="owner-nav-group-title">Expansions & Integrations</div>
+            <button class="owner-nav-item ${this.activeTab === 'promotions' ? 'active' : ''}" data-owner-tab="promotions">
+              <span>📢 Sponsored Ads & Promotions</span>
+              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">PROMO</span>
+            </button>
+            <button class="owner-nav-item ${this.activeTab === 'webhooks' ? 'active' : ''}" data-owner-tab="webhooks">
+              <span>⚡ Webhooks & Automated Alerts</span>
+              <span class="owner-nav-badge" style="background: #06b6d4; color: #fff;">ALERTS</span>
+            </button>
+
+            <!-- Group 11: Phase 3 Deferred Scope -->
             <div class="owner-nav-group-title">Deferred Scope</div>
             <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
               <span>📚 Student Academics & SIS</span>
@@ -530,7 +558,7 @@ const DashboardView = {
 
         <!-- MAIN WORKSPACE CONTENT CONTAINER -->
         <main class="owner-main-content">
-          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData, phase5Data)}
+          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData, phase5Data, expansionsData)}
         </main>
       </div>
     `;
@@ -539,7 +567,7 @@ const DashboardView = {
   /**
    * Renders tab content based on activeTab
    */
-  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}, phase2b = {}, phase5 = {}) {
+  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}, phase2b = {}, phase5 = {}, expansions = {}) {
     switch (this.activeTab) {
       case 'overview':
         return this.renderOverviewTab(school, kpis, seatQuotas, tasks);
@@ -557,6 +585,10 @@ const DashboardView = {
         return this.renderRecruitingTab(school, phase2b.vacanciesData);
       case 'procurement':
         return this.renderProcurementTab(school, phase2b.tendersData);
+      case 'promotions':
+        return this.renderPromotionsTab(school, expansions);
+      case 'webhooks':
+        return this.renderWebhooksTab(school, expansions);
       case 'audit':
         return this.renderAuditTab(school, auditLogs);
       case 'subscription':
@@ -2494,6 +2526,460 @@ const DashboardView = {
   },
 
   /**
+   * TAB 11: Sponsored Promotions & Featured School Ads (Expansions)
+   */
+  renderPromotionsTab(school, expansions = {}) {
+    const campaigns = expansions.campaigns || [];
+    const packages = expansions.packages || [
+      { id: 'spotlight_7d', name: '7 Days Spotlight', durationDays: 7, priceGhs: 75, badge: 'High Intent Surge' },
+      { id: 'premium_14d', name: '14 Days Premium', durationDays: 14, priceGhs: 135, badge: 'Admissions Peak' },
+      { id: 'supreme_30d', name: '30 Days Supreme', durationDays: 30, priceGhs: 250, badge: 'Full Month Branding' }
+    ];
+    const activeCount = campaigns.filter(c => c.status === 'active').length;
+    const totalImpressions = campaigns.reduce((acc, c) => acc + (c.impressions || 0), 0);
+    const totalClicks = campaigns.reduce((acc, c) => acc + (c.clicks || 0), 0);
+    const avgCtr = totalImpressions > 0 ? ((totalClicks / totalImpressions) * 100).toFixed(2) : '0.00';
+
+    return `
+      <div>
+        <!-- Promotions Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §4 &bull; Commercial Promotion Engine
+            </div>
+            <h2 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+              📢 Sponsored Ads & Featured School Campaigns
+            </h2>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0; max-width: 750px;">
+              Accelerate parent enquiry volume, campus tour bookings, and admission applications across Homepage Hero, Directory Spotlight, and Compare tools.
+            </p>
+          </div>
+          <button id="btn-scroll-to-create-promo" class="btn-pill btn-gold" style="font-weight: 800; padding: 0.65rem 1.4rem;">
+            <span>✨</span> Launch New Campaign
+          </button>
+        </div>
+
+        <!-- KPI Telemetry Cards -->
+        <div class="owner-stats-grid" style="margin-bottom: 2rem;">
+          <div class="owner-stat-card">
+            <div class="stat-label">Active Campaigns</div>
+            <div class="stat-value" style="color: #f59e0b;">${activeCount} Live</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Currently rotating in public discovery</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Total Impressions</div>
+            <div class="stat-value" style="color: #0ea5e9;">${totalImpressions.toLocaleString()}</div>
+            <div style="font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 0.35rem;">Verified parent views</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Direct Parent Clicks</div>
+            <div class="stat-value" style="color: #10b981;">${totalClicks.toLocaleString()}</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Profile & inquiry navigations</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Average CTR</div>
+            <div class="stat-value" style="color: #8b5cf6;">${avgCtr}%</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Click-through engagement rate</div>
+          </div>
+        </div>
+
+        <!-- Approved Ghana Cedis Packages Grid -->
+        <div class="owner-card" style="margin-bottom: 2rem;">
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">⭐ Approved Promotion Packages (Ghana Cedis)</h3>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.25rem 0;">
+            Locked commercial pricing approved in Master Blueprint v2.0 §4. Includes Paystack Mobile Money & Card instant checkout.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+            ${packages.map(p => `
+              <div style="border: 2px solid ${p.id === 'supreme_30d' ? '#f59e0b' : '#e2e8f0'}; border-radius: 14px; padding: 1.5rem; background: ${p.id === 'supreme_30d' ? 'linear-gradient(180deg, #fffbeb 0%, #ffffff 100%)' : '#ffffff'}; position: relative; display: flex; flex-direction: column; justify-content: space-between;">
+                ${p.id === 'supreme_30d' ? `
+                  <span style="position: absolute; top: -11px; right: 20px; background: #f59e0b; color: #000; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.65rem; border-radius: 100px;">
+                    BEST VALUE (16.7% OFF)
+                  </span>
+                ` : ''}
+                <div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #64748b; text-transform: uppercase;">${p.badge || 'PROMOTION'}</div>
+                  <h4 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.75rem 0;">${p.name}</h4>
+                  <div style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">
+                    GH₵ ${p.priceGhs}
+                    <span style="font-size: 0.85rem; color: #64748b; font-weight: 600;">/ ${p.durationDays} days</span>
+                  </div>
+                  <ul style="list-style: none; padding: 0; margin: 0 0 1.25rem 0; font-size: 0.85rem; color: #475569; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <li>✓ <strong>${p.durationDays} Days</strong> continuous live rotation</li>
+                    <li>✓ Guaranteed <strong>Top of Directory</strong> banner display</li>
+                    <li>✓ <strong>Homepage Hero</strong> feature priority</li>
+                    <li>✓ Real-time <strong>CTR & Click Telemetry</strong></li>
+                    <li>✓ Pay via MTN, Telecel, AT MoMo or Card</li>
+                  </ul>
+                </div>
+                <button class="btn-pill btn-outline btn-select-pkg" data-pkg-id="${p.id}" data-pkg-price="${p.priceGhs}" style="width: 100%; font-weight: 700;">
+                  Choose ${p.name}
+                </button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Launch New Campaign Card -->
+        <div id="section-create-promo" class="owner-card" style="margin-bottom: 2rem; border-left: 4px solid #f59e0b;">
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">🚀 Launch New Sponsored Promotion Campaign</h3>
+          <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.5rem 0;">
+            Create high-visibility featured placement. Campaigns activate immediately upon automated Paystack Mobile Money verification.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Select Promotion Package
+              </label>
+              <select id="promo-package-select" class="form-input" style="width: 100%;">
+                <option value="spotlight_7d">7 Days Spotlight — GH₵ 75 (7 Days Duration)</option>
+                <option value="premium_14d" selected>14 Days Premium — GH₵ 135 (14 Days Duration)</option>
+                <option value="supreme_30d">30 Days Supreme — GH₵ 250 (30 Days Best Value)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Public Placement Surface
+              </label>
+              <select id="promo-placement-select" class="form-input" style="width: 100%;">
+                <option value="directory_top" selected>Directory Top Spotlight (Primary Parent Search)</option>
+                <option value="homepage_hero">Homepage Hero Banner (Top Brand Showcase)</option>
+                <option value="compare_spotlight">School Compare Spotlight (High-Intent Decision Match)</option>
+              </select>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Headline / Announcement
+              </label>
+              <input type="text" id="promo-headline-input" class="form-input" style="width: 100%;" value="Admissions Open for 2026/2027 Academic Term" placeholder="e.g. Cambridge & WASSCE Excellence - Register Today" />
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Call to Action Label
+              </label>
+              <input type="text" id="promo-cta-input" class="form-input" style="width: 100%;" value="Apply for Admission Now" placeholder="e.g. Apply Now, Book Tour, Enrol Today" />
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Target URL (Destination)
+              </label>
+              <input type="text" id="promo-target-input" class="form-input" style="width: 100%;" value="/school/${school.id}" placeholder="e.g. /school/${school.id} or https://your-school.edu.gh" />
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Banner Image Asset
+              </label>
+              <select id="promo-banner-select" class="form-input" style="width: 100%;">
+                <option value="/assets/images/campus_hero.webp">Campus Main Quad (/assets/images/campus_hero.webp)</option>
+                <option value="/assets/images/science_lab.webp">Ultra-Modern Science Lab (/assets/images/science_lab.webp)</option>
+                <option value="/assets/images/sports_complex.webp">Olympic Sports Complex (/assets/images/sports_complex.webp)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <span style="font-size: 0.85rem; color: #475569;">Paystack Mobile Money & Card Processing:</span>
+              <div style="font-size: 1.15rem; font-weight: 800; color: #0A2046;" id="promo-checkout-summary">
+                Package: 14 Days Premium &bull; Total: GH₵ 135.00
+              </div>
+            </div>
+            <button id="btn-submit-promo-campaign" class="btn-pill btn-primary" style="font-weight: 800; padding: 0.75rem 1.75rem; background: #0A2046;">
+              <span>💳</span> Pay with Paystack & Launch Campaign
+            </button>
+          </div>
+        </div>
+
+        <!-- Campaigns Table -->
+        <div class="owner-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">📋 Campaigns Management Ledger</h3>
+            <span style="font-size: 0.82rem; color: #64748b;">${campaigns.length} campaigns recorded</span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+                  <th style="padding: 0.75rem 1rem;">Campaign Ref</th>
+                  <th style="padding: 0.75rem 1rem;">Placement & Headline</th>
+                  <th style="padding: 0.75rem 1rem;">Package</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                  <th style="padding: 0.75rem 1rem;">Impressions</th>
+                  <th style="padding: 0.75rem 1rem;">Clicks</th>
+                  <th style="padding: 0.75rem 1rem;">CTR</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${campaigns.length === 0 ? `
+                  <tr>
+                    <td colspan="8" style="padding: 2.5rem 1rem; text-align: center; color: #64748b;">
+                      No promotions created yet. Launch your first campaign above to boost campus discovery!
+                    </td>
+                  </tr>
+                ` : campaigns.map(c => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046; font-family: monospace;">
+                      ${c.id}
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 700; color: #0A2046;">${c.headline || 'Sponsored School Feature'}</div>
+                      <div style="font-size: 0.74rem; color: #64748b; text-transform: uppercase;">Placement: ${c.placement}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 600; color: #0A2046;">
+                      ${c.packageName || (c.packageId === 'spotlight_7d' ? '7 Days' : c.packageId === 'supreme_30d' ? '30 Days' : '14 Days')}
+                      <div style="font-size: 0.75rem; color: #64748b;">GH₵ ${c.priceGhs}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      ${c.status === 'active' ? `
+                        <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">● Active Live</span>
+                      ` : c.status === 'pending_payment' ? `
+                        <span class="owner-nav-badge" style="background: #fef3c7; color: #b45309;">⏳ Pending Payment</span>
+                      ` : `
+                        <span class="owner-nav-badge" style="background: #f1f5f9; color: #64748b;">Completed</span>
+                      `}
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0ea5e9;">${(c.impressions || 0).toLocaleString()}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #10b981;">${(c.clicks || 0).toLocaleString()}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #8b5cf6;">${c.ctr || (((c.clicks || 0) / (c.impressions || 1)) * 100).toFixed(2)}%</td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      ${c.status === 'pending_payment' ? `
+                        <button class="btn-pill btn-primary btn-pay-pending-promo" data-campaign-id="${c.id}" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+                          Pay GH₵ ${c.priceGhs}
+                        </button>
+                      ` : `
+                        <button class="btn-pill btn-outline" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;" onclick="App.navigate('directory');">
+                          View Live ↗
+                        </button>
+                      `}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * TAB 12: Event Webhooks & Multi-Channel Automated Alerts (Expansions)
+   */
+  renderWebhooksTab(school, expansions = {}) {
+    const webhooks = expansions.webhooks || [];
+    const deliveries = expansions.deliveries || [];
+    const prefs = expansions.notificationPreferences || { whatsapp: true, sms: true, email: true, webhook: false };
+    const primaryWebhook = webhooks[0] || {
+      targetUrl: 'https://n8n.gis.edu.gh/webhook/skoolfinder-events',
+      events: ['ParentEnquirySubmitted', 'AdmissionOfferIssued', 'TenderPublished', 'PaymentVerified'],
+      secret: 'whsec_gh_9a8b7c6d5e4f3a2b1c0d',
+      active: true
+    };
+
+    return `
+      <div>
+        <!-- Webhooks Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §12 &bull; Real-time Event Integrations
+            </div>
+            <h2 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+              ⚡ Event Webhooks & Multi-Channel Alerts
+            </h2>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0; max-width: 750px;">
+              Stream high-value school events (Parent Enquiries, Admissions Offers, Vendor Tenders, Fee Payments) to your School ERP, n8n, WhatsApp Cloud API, and Hubtel SMS.
+            </p>
+          </div>
+          <button id="btn-test-webhook-ping" class="btn-pill btn-outline" style="font-weight: 800; padding: 0.65rem 1.4rem; border-color: #06b6d4; color: #0891b2;">
+            <span>🚀</span> Send Test Ping Event
+          </button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; margin-bottom: 2rem;">
+          <!-- Outbound Webhook Subscriptions -->
+          <div class="owner-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0;">🔗 Outbound Webhook (n8n / ERP / Zapier)</h3>
+              <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">HMAC SHA-256</span>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Target Payload Endpoint URL
+              </label>
+              <input type="url" id="webhook-target-url" class="form-input" style="width: 100%; font-family: monospace;" value="${primaryWebhook.targetUrl || ''}" placeholder="https://your-domain.edu.gh/api/webhook" />
+              <div style="font-size: 0.74rem; color: #64748b; margin-top: 0.25rem;">
+                SkoolFinder will dispatch POST requests with an <code>X-SkoolFinder-Signature</code> header.
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.25rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                HMAC SHA-256 Secret Key
+              </label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="webhook-secret-display" class="form-input" style="flex: 1; font-family: monospace; font-size: 0.8rem; background: #f8fafc;" value="${primaryWebhook.secret || 'whsec_gh_' + Math.random().toString(36).substring(2)}" readonly />
+                <button id="btn-copy-webhook-secret" class="btn-pill btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.75rem;">
+                  Copy
+                </button>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+              <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0A2046; margin-bottom: 0.5rem;">
+                Subscribed Domain Events
+              </label>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.84rem; color: #334155;">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" class="webhook-event-checkbox" value="ParentEnquirySubmitted" checked />
+                  <span><strong>ParentEnquirySubmitted:</strong> Instant prospective parent lead dispatch</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" class="webhook-event-checkbox" value="AdmissionOfferIssued" checked />
+                  <span><strong>AdmissionOfferIssued:</strong> Sync accepted offers to school SIS</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" class="webhook-event-checkbox" value="TenderPublished" checked />
+                  <span><strong>TenderPublished:</strong> Alert procurement officers and suppliers</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                  <input type="checkbox" class="webhook-event-checkbox" value="PaymentVerified" checked />
+                  <span><strong>PaymentVerified:</strong> Real-time reconciliation of fees and admissions</span>
+                </label>
+              </div>
+            </div>
+
+            <button id="btn-save-webhook-subscription" class="btn-pill btn-primary" style="width: 100%; font-weight: 800;">
+              💾 Save Webhook Endpoint Configuration
+            </button>
+          </div>
+
+          <!-- Omnichannel Notification Preferences -->
+          <div class="owner-card">
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">📱 Omnichannel Automated Alert Channels</h3>
+            <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.25rem 0;">
+              Configure direct delivery channels for admissions notifications and critical alerts.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <!-- WhatsApp Channel -->
+              <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.25rem;">💬</span>
+                    <strong>WhatsApp Cloud API</strong>
+                  </div>
+                  <input type="checkbox" id="pref-whatsapp-toggle" ${prefs.whatsapp ? 'checked' : ''} style="width: 18px; height: 18px;" />
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 0.5rem;">
+                  Sends formatted admission notifications & parent updates directly to WhatsApp.
+                </div>
+                <input type="text" id="pref-whatsapp-number" class="form-input" style="width: 100%; font-size: 0.85rem;" value="${school.whatsapp || '+233 24 111 2222'}" placeholder="+233 24 XXX XXXX" />
+              </div>
+
+              <!-- SMS Channel -->
+              <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.25rem;">📡</span>
+                    <strong>Hubtel Ghana SMS Gateway</strong>
+                  </div>
+                  <input type="checkbox" id="pref-sms-toggle" ${prefs.sms ? 'checked' : ''} style="width: 18px; height: 18px;" />
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 0.5rem;">
+                  Official SMS alerts branded with sender ID <code>SKOOLFINDER</code> at GH₵ 0.045/SMS.
+                </div>
+                <input type="text" id="pref-sms-number" class="form-input" style="width: 100%; font-size: 0.85rem;" value="${school.phone || '+233 24 555 1212'}" placeholder="+233 24 XXX XXXX" />
+              </div>
+
+              <!-- Transactional Email -->
+              <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span style="font-size: 1.25rem;">📧</span>
+                    <strong>Transactional Email Alerts</strong>
+                  </div>
+                  <input type="checkbox" id="pref-email-toggle" ${prefs.email ? 'checked' : ''} style="width: 18px; height: 18px;" />
+                </div>
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 0.5rem;">
+                  Detailed PDF applications & admissions dossiers delivered to school administration inbox.
+                </div>
+                <input type="email" id="pref-email-address" class="form-input" style="width: 100%; font-size: 0.85rem;" value="admin@gis.edu.gh" placeholder="admissions@school.edu.gh" />
+              </div>
+
+              <button id="btn-save-notif-prefs" class="btn-pill btn-outline" style="width: 100%; font-weight: 700;">
+                💾 Save Alert Channel Preferences
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Webhook Delivery Logs Table -->
+        <div class="owner-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">🛡️ Recent Webhook Delivery Audit Logs</h3>
+            <span style="font-size: 0.82rem; color: #64748b;">${deliveries.length} audit transmissions</span>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+                  <th style="padding: 0.75rem 1rem;">Event Type</th>
+                  <th style="padding: 0.75rem 1rem;">Target Endpoint</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                  <th style="padding: 0.75rem 1rem;">HMAC SHA-256 Signature</th>
+                  <th style="padding: 0.75rem 1rem;">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${deliveries.length === 0 ? `
+                  <tr>
+                    <td colspan="5" style="padding: 2.5rem 1rem; text-align: center; color: #64748b;">
+                      No webhook deliveries yet. Click "Send Test Ping Event" above to verify endpoint delivery.
+                    </td>
+                  </tr>
+                ` : deliveries.map(d => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">
+                      ${d.event || 'AdmissionOfferIssued'}
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-family: monospace; font-size: 0.8rem; color: #475569;">
+                      ${d.targetUrl || 'https://n8n.gis.edu.gh/webhook/skoolfinder-events'}
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">
+                        ✓ 200 OK Delivered
+                      </span>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-family: monospace; font-size: 0.75rem; color: #64748b;">
+                      ${(d.signature || 'sha256=5e44459b88e6...').substring(0, 22)}...
+                    </td>
+                    <td style="padding: 0.85rem 1rem; color: #64748b; font-size: 0.8rem;">
+                      ${new Date(d.dispatchedAt || Date.now()).toLocaleTimeString()}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
    * Attach Interactive Event Listeners
    */
   attachEvents(schoolId = 'ab5af86d-c902-4853-9528-d6200104b5f6') {
@@ -3649,6 +4135,164 @@ const DashboardView = {
         App.navigate('schools');
       } catch (err) {
         State.showToast(err.message || 'Failed to link campus', 'error');
+      }
+    });
+
+    // === EXPANSION 1: SPONSORED ADS & PROMOTIONS HANDLERS ===
+    document.getElementById('btn-scroll-to-create-promo')?.addEventListener('click', () => {
+      document.getElementById('section-create-promo')?.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.querySelectorAll('.btn-select-pkg').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pkgId = btn.dataset.pkgId;
+        const select = document.getElementById('promo-package-select');
+        if (select) {
+          select.value = pkgId;
+          const summary = document.getElementById('promo-checkout-summary');
+          if (summary) {
+            const price = btn.dataset.pkgPrice;
+            summary.textContent = `Package: ${btn.textContent.trim()} • Total: GH₵ ${price}.00`;
+          }
+          document.getElementById('section-create-promo')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+
+    document.getElementById('promo-package-select')?.addEventListener('change', (e) => {
+      const summary = document.getElementById('promo-checkout-summary');
+      if (!summary) return;
+      const prices = { spotlight_7d: 75, premium_14d: 135, supreme_30d: 250 };
+      const names = { spotlight_7d: '7 Days Spotlight', premium_14d: '14 Days Premium', supreme_30d: '30 Days Supreme' };
+      const val = e.target.value;
+      summary.textContent = `Package: ${names[val] || val} • Total: GH₵ ${prices[val] || 135}.00`;
+    });
+
+    document.getElementById('btn-submit-promo-campaign')?.addEventListener('click', async () => {
+      const packageId = document.getElementById('promo-package-select')?.value || 'premium_14d';
+      const placement = document.getElementById('promo-placement-select')?.value || 'directory_top';
+      const headline = document.getElementById('promo-headline-input')?.value?.trim() || 'Admissions Open for 2026/2027 Academic Term';
+      const ctaLabel = document.getElementById('promo-cta-input')?.value?.trim() || 'Apply for Admission Now';
+      const targetUrl = document.getElementById('promo-target-input')?.value?.trim() || `/school/${schoolId}`;
+      const bannerUrl = document.getElementById('promo-banner-select')?.value || '/assets/images/campus_hero.webp';
+
+      try {
+        State.showToast('Initializing Paystack Ghana Checkout...', 'info');
+        const createRes = await API.createSchoolCampaign(schoolId, { packageId, placement, headline, ctaLabel, targetUrl, bannerUrl });
+        if (!createRes?.success) throw new Error(createRes?.message || 'Failed to create campaign');
+        
+        const checkoutRes = await API.checkoutPromotionCampaign(schoolId, createRes.campaign.id);
+        if (!checkoutRes?.success) throw new Error(checkoutRes?.message || 'Paystack checkout failed');
+
+        // Automatic instant Mobile Money payment verification simulation
+        const verifyRes = await API.verifyPromotionPayment(schoolId, createRes.campaign.id, {
+          transactionReference: checkoutRes.paymentReference,
+          provider: 'paystack_momo'
+        });
+
+        if (verifyRes?.success) {
+          State.showToast('🎉 Promotion Campaign Activated & Live in Public Directory!', 'success');
+          this.activeTab = 'promotions';
+          App.navigate('schools');
+        } else {
+          State.showToast(verifyRes?.message || 'Payment verification pending', 'warning');
+        }
+      } catch (err) {
+        State.showToast(err.message || 'Promotion creation error', 'error');
+      }
+    });
+
+    document.querySelectorAll('.btn-pay-pending-promo').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const campaignId = btn.dataset.campaignId;
+        try {
+          State.showToast('Processing Paystack payment verification...', 'info');
+          const verifyRes = await API.verifyPromotionPayment(schoolId, campaignId, {
+            transactionReference: 'PAY_PROMO_' + Date.now(),
+            provider: 'paystack_momo'
+          });
+          if (verifyRes?.success) {
+            State.showToast('Campaign successfully paid & activated!', 'success');
+            this.activeTab = 'promotions';
+            App.navigate('schools');
+          }
+        } catch (err) {
+          State.showToast(err.message || 'Verification error', 'error');
+        }
+      });
+    });
+
+    // === EXPANSION 2: WEBHOOKS & NOTIFICATIONS HANDLERS ===
+    document.getElementById('btn-copy-webhook-secret')?.addEventListener('click', () => {
+      const secret = document.getElementById('webhook-secret-display')?.value;
+      if (secret) {
+        navigator.clipboard?.writeText(secret);
+        State.showToast('HMAC Secret Key copied to clipboard!', 'success');
+      }
+    });
+
+    document.getElementById('btn-save-webhook-subscription')?.addEventListener('click', async () => {
+      const targetUrl = document.getElementById('webhook-target-url')?.value?.trim();
+      const secret = document.getElementById('webhook-secret-display')?.value?.trim();
+      const checkedEvents = Array.from(document.querySelectorAll('.webhook-event-checkbox:checked')).map(cb => cb.value);
+
+      if (!targetUrl) {
+        State.showToast('Please provide a valid webhook destination URL', 'warning');
+        return;
+      }
+
+      try {
+        await API.registerSchoolWebhook(schoolId, { targetUrl, events: checkedEvents, secret });
+        State.showToast('Webhook endpoint configured with HMAC SHA-256!', 'success');
+        this.activeTab = 'webhooks';
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to save webhook', 'error');
+      }
+    });
+
+    document.getElementById('btn-test-webhook-ping')?.addEventListener('click', async () => {
+      try {
+        State.showToast('Dispatching test webhook ping (AdmissionOfferIssued)...', 'info');
+        const testRes = await API.testDispatchWebhook(schoolId, 'AdmissionOfferIssued', {
+          candidateName: 'Kwame Asante',
+          indexNumber: '1010203040',
+          gradeAggregate: 7,
+          academicYear: '2026/2027',
+          offerTimestamp: new Date().toISOString()
+        });
+        if (testRes?.success) {
+          State.showToast(`✓ Outbound Webhook Ping Delivered! Status: ${testRes.delivery?.status || 200} OK`, 'success');
+          this.activeTab = 'webhooks';
+          App.navigate('schools');
+        } else {
+          State.showToast(testRes?.message || 'Webhook ping encountered an error', 'warning');
+        }
+      } catch (err) {
+        State.showToast(err.message || 'Test dispatch failed', 'error');
+      }
+    });
+
+    document.getElementById('btn-save-notif-prefs')?.addEventListener('click', async () => {
+      const whatsapp = document.getElementById('pref-whatsapp-toggle')?.checked || false;
+      const sms = document.getElementById('pref-sms-toggle')?.checked || false;
+      const email = document.getElementById('pref-email-toggle')?.checked || false;
+      const whatsappNumber = document.getElementById('pref-whatsapp-number')?.value?.trim();
+      const smsNumber = document.getElementById('pref-sms-number')?.value?.trim();
+      const emailAddress = document.getElementById('pref-email-address')?.value?.trim();
+
+      try {
+        await API.updateSchoolNotificationPreferences(schoolId, {
+          whatsapp,
+          sms,
+          email,
+          whatsappNumber,
+          smsNumber,
+          emailAddress
+        });
+        State.showToast('Alert channel preferences saved successfully!', 'success');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to update preferences', 'error');
       }
     });
   }

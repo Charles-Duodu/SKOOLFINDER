@@ -319,3 +319,4 @@ module.exports = {
   PROMOTION_PACKAGES,
   IN_MEMORY_CAMPAIGNS
 };
+
