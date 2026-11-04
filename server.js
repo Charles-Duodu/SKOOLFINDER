@@ -140,11 +140,15 @@ module.exports = app;
 
 // Start Server locally when run directly
 if (require.main === module) {
+  const { WebhookService } = require('./src/services/webhookService');
+  WebhookService.startQueueWorker(30000);
+
   app.listen(PORT, () => {
     console.log(`====================================================`);
     console.log(`🚀 SkoolFinder Server running on port ${PORT}`);
     console.log(`🌐 Local URL: http://localhost:${PORT}`);
     console.log(`📡 Supabase: ${process.env.SUPABASE_URL}`);
+    console.log(`⚡ Webhook Retry Queue Worker: Active (30s interval)`);
     console.log(`====================================================`);
   });
 }

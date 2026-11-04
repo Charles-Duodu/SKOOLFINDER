@@ -2809,6 +2809,17 @@ const DashboardView = {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; margin-bottom: 2rem;">
           <!-- Outbound Webhook Subscriptions -->
           <div class="owner-card">
+            ${primaryWebhook.disabled_reason || (!primaryWebhook.is_active && primaryWebhook.disabled_reason) ? `
+              <div style="background: #fef2f2; border: 1px solid #f87171; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                <div>
+                  <div style="font-weight: 800; color: #991b1b; font-size: 0.85rem;">⚠️ Circuit Breaker Tripped (Suspended)</div>
+                  <div style="font-size: 0.76rem; color: #b91c1c;">${primaryWebhook.disabled_reason}</div>
+                </div>
+                <button id="btn-reset-circuit-breaker" class="btn-pill" data-sub-id="${primaryWebhook.id || ''}" style="background: #dc2626; color: #fff; font-size: 0.75rem; padding: 0.35rem 0.85rem; font-weight: 700; border: none; cursor: pointer;">
+                  Reset Circuit Breaker
+                </button>
+              </div>
+            ` : ''}
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
               <h3 style="font-weight: 800; color: #0A2046; margin: 0;">🔗 Outbound Webhook (n8n / ERP / Zapier)</h3>
               <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">HMAC SHA-256</span>
@@ -2941,33 +2952,53 @@ const DashboardView = {
                   <th style="padding: 0.75rem 1rem;">Status</th>
                   <th style="padding: 0.75rem 1rem;">HMAC SHA-256 Signature</th>
                   <th style="padding: 0.75rem 1rem;">Timestamp</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
                 </tr>
               </thead>
               <tbody>
                 ${deliveries.length === 0 ? `
                   <tr>
-                    <td colspan="5" style="padding: 2.5rem 1rem; text-align: center; color: #64748b;">
+                    <td colspan="6" style="padding: 2.5rem 1rem; text-align: center; color: #64748b;">
                       No webhook deliveries yet. Click "Send Test Ping Event" above to verify endpoint delivery.
                     </td>
                   </tr>
                 ` : deliveries.map(d => `
                   <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">
-                      ${d.event || 'AdmissionOfferIssued'}
+                      ${d.event || d.event_type || 'AdmissionOfferIssued'}
                     </td>
                     <td style="padding: 0.85rem 1rem; font-family: monospace; font-size: 0.8rem; color: #475569;">
-                      ${d.targetUrl || 'https://n8n.gis.edu.gh/webhook/skoolfinder-events'}
+                      ${d.targetUrl || d.target_url || 'https://n8n.gis.edu.gh/webhook/skoolfinder-events'}
                     </td>
                     <td style="padding: 0.85rem 1rem;">
-                      <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">
-                        ✓ 200 OK Delivered
-                      </span>
+                      ${(d.delivery_status === 'delivered' || (d.http_status >= 200 && d.http_status < 300) || d.response_http_status === 200) ? `
+                        <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">
+                          ✓ ${d.response_http_status || d.http_status || 200} OK Delivered
+                        </span>
+                      ` : d.delivery_status === 'retrying' ? `
+                        <span class="owner-nav-badge" style="background: #fef3c7; color: #b45309;">
+                          ⏳ Retrying (${d.attempts || 1}/3)
+                        </span>
+                      ` : `
+                        <span class="owner-nav-badge" style="background: #fee2e2; color: #b91c1c;">
+                          ✗ ${d.response_http_status || d.http_status || 'Failed'}
+                        </span>
+                      `}
                     </td>
                     <td style="padding: 0.85rem 1rem; font-family: monospace; font-size: 0.75rem; color: #64748b;">
                       ${(d.signature || 'sha256=5e44459b88e6...').substring(0, 22)}...
                     </td>
                     <td style="padding: 0.85rem 1rem; color: #64748b; font-size: 0.8rem;">
-                      ${new Date(d.dispatchedAt || Date.now()).toLocaleTimeString()}
+                      ${new Date(d.dispatchedAt || d.dispatched_at || Date.now()).toLocaleTimeString()}
+                    </td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      ${(d.delivery_status === 'failed' || d.delivery_status === 'retrying') && d.id ? `
+                        <button class="btn-redeliver-webhook btn-pill btn-outline" data-delivery-id="${d.id}" style="padding: 0.25rem 0.65rem; font-size: 0.72rem; border-color: #06b6d4; color: #0891b2; cursor: pointer;">
+                          🔄 Retry
+                        </button>
+                      ` : `
+                        <span style="color: #94a3b8; font-size: 0.75rem;">—</span>
+                      `}
                     </td>
                   </tr>
                 `).join('')}
@@ -4293,6 +4324,43 @@ const DashboardView = {
         State.showToast('Alert channel preferences saved successfully!', 'success');
       } catch (err) {
         State.showToast(err.message || 'Failed to update preferences', 'error');
+      }
+    });
+
+    // 1-Click Dead-Letter Redelivery Listeners
+    document.querySelectorAll('.btn-redeliver-webhook').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const deliveryId = e.currentTarget.getAttribute('data-delivery-id');
+        if (!deliveryId) return;
+        try {
+          State.showToast('Re-dispatching outbound webhook...', 'info');
+          const res = await API.redeliverWebhook(schoolId, deliveryId);
+          if (res?.success) {
+            State.showToast('Webhook re-delivered successfully!', 'success');
+            this.activeTab = 'webhooks';
+            App.navigate('schools');
+          } else {
+            State.showToast(res?.message || 'Redelivery attempt finished', 'warning');
+          }
+        } catch (err) {
+          State.showToast(err.message || 'Redelivery failed', 'error');
+        }
+      });
+    });
+
+    // 1-Click Circuit Breaker Reset Listener
+    document.getElementById('btn-reset-circuit-breaker')?.addEventListener('click', async (e) => {
+      const subId = e.currentTarget.getAttribute('data-sub-id');
+      try {
+        State.showToast('Resetting circuit breaker and re-activating webhook...', 'info');
+        const res = await API.resetWebhookCircuitBreaker(schoolId, subId);
+        if (res?.success) {
+          State.showToast('Circuit breaker reset! Webhook is active again.', 'success');
+          this.activeTab = 'webhooks';
+          App.navigate('schools');
+        }
+      } catch (err) {
+        State.showToast(err.message || 'Failed to reset circuit breaker', 'error');
       }
     });
   }

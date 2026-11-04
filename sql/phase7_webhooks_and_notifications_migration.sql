@@ -1,6 +1,7 @@
 -- ============================================================================
 -- SKOOLFINDER GHANA: PHASE 7 PRODUCTION WEBHOOKS & NOTIFICATIONS MIGRATION
 -- Baseline: Master Blueprint v2.0 §12, Module 15, and Production Runbook
+-- Includes Phase 3: Outbound Dispatcher Engine, Delivery Queue & Retries
 -- ============================================================================
 
 -- 1. School Webhook Subscriptions Table
@@ -14,6 +15,7 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_subscriptions (
     subscribed_events TEXT[] NOT NULL DEFAULT '{"ParentEnquirySubmitted","AdmissionOfferIssued"}',
     is_active BOOLEAN NOT NULL DEFAULT true,
     failure_count INTEGER NOT NULL DEFAULT 0,
+    disabled_reason TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -21,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_subscriptions (
 CREATE INDEX IF NOT EXISTS idx_wh_subs_school ON public.school_webhook_subscriptions(school_id);
 CREATE INDEX IF NOT EXISTS idx_wh_subs_active ON public.school_webhook_subscriptions(is_active);
 
--- 2. Outbound Webhook Deliveries & Audit Logs Table
+-- 2. Outbound Webhook Deliveries & Audit Logs Table (With Exponential Backoff Queue)
 CREATE TABLE IF NOT EXISTS public.school_webhook_deliveries (
     id VARCHAR(100) PRIMARY KEY,
     subscription_id VARCHAR(100) NOT NULL,
@@ -35,6 +37,8 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_deliveries (
     response_body TEXT,
     delivery_status TEXT NOT NULL DEFAULT 'delivered' CHECK (delivery_status IN ('delivered', 'failed', 'retrying')),
     attempts INTEGER NOT NULL DEFAULT 1,
+    max_attempts INTEGER NOT NULL DEFAULT 3,
+    next_retry_at TIMESTAMPTZ,
     execution_time_ms INTEGER NOT NULL DEFAULT 0,
     error_message TEXT,
     dispatched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -43,6 +47,7 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_deliveries (
 CREATE INDEX IF NOT EXISTS idx_wh_deliveries_school ON public.school_webhook_deliveries(school_id);
 CREATE INDEX IF NOT EXISTS idx_wh_deliveries_sub ON public.school_webhook_deliveries(subscription_id);
 CREATE INDEX IF NOT EXISTS idx_wh_deliveries_dispatched ON public.school_webhook_deliveries(dispatched_at DESC);
+CREATE INDEX IF NOT EXISTS idx_wh_deliveries_retry ON public.school_webhook_deliveries(delivery_status, next_retry_at);
 
 -- 3. School Notification Preferences Table
 CREATE TABLE IF NOT EXISTS public.school_notification_preferences (
@@ -100,7 +105,12 @@ CREATE POLICY "Allow authenticated access to notification preferences"
 CREATE POLICY "Allow authenticated access to whatsapp dispatch logs"
     ON public.whatsapp_dispatch_logs FOR ALL USING (true);
 
--- 7. Seed Initial Default Preferences for Pilot School
+-- 7. Ensure additive columns exist on existing databases (Phase 3 Idempotency)
+ALTER TABLE public.school_webhook_subscriptions ADD COLUMN IF NOT EXISTS disabled_reason TEXT;
+ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS max_attempts INTEGER NOT NULL DEFAULT 3;
+ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMPTZ;
+
+-- 8. Seed Initial Default Preferences for Pilot School
 INSERT INTO public.school_notification_preferences (
     school_id, whatsapp_enabled, whatsapp_phone_number, sms_enabled, sms_alert_phone, email_enabled, email_alert_address, webhook_enabled
 ) VALUES (

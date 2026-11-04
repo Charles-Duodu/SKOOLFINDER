@@ -201,4 +201,48 @@ router.post('/school/:schoolId/whatsapp/dispatch', authenticate, requireSchoolAc
   }
 });
 
+// ============================================================================
+// PHASE 3: EXPONENTIAL BACKOFF QUEUE & CIRCUIT BREAKER ENDPOINTS
+// ============================================================================
+
+// 1-Click Dead-Letter Redelivery
+router.post('/school/:schoolId/deliveries/:deliveryId/retry', authenticate, requireSchoolAccess, async (req, res, next) => {
+  try {
+    const result = await WebhookService.redeliverEvent(req.params.schoolId, req.params.deliveryId, req.user);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// 1-Click Reset Circuit Breaker for auto-suspended webhook
+router.post('/school/:schoolId/subscriptions/:subscriptionId/reset-circuit-breaker', authenticate, requireSchoolAccess, async (req, res, next) => {
+  try {
+    const result = await WebhookService.resetCircuitBreaker(req.params.schoolId, req.params.subscriptionId, req.user);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Manual trigger for retry queue processor
+router.post('/school/:schoolId/process-queue', authenticate, requireSchoolAccess, async (req, res, next) => {
+  try {
+    const result = await WebhookService.processRetryQueue();
+    res.json({ success: true, ...result });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Get queue health and circuit breaker telemetry
+router.get('/school/:schoolId/queue-stats', authenticate, requireSchoolAccess, async (req, res, next) => {
+  try {
+    const result = await WebhookService.getQueueStats(req.params.schoolId);
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

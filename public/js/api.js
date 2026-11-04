@@ -2610,6 +2610,37 @@ const API = {
     return res.json();
   },
 
+  async redeliverWebhook(schoolId, deliveryId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/deliveries/${encodeURIComponent(deliveryId)}/retry`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async resetWebhookCircuitBreaker(schoolId, subscriptionId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/subscriptions/${encodeURIComponent(subscriptionId)}/reset-circuit-breaker`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async processWebhookRetryQueue(schoolId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/process-queue`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getWebhookQueueStats(schoolId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/queue-stats`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
   // ==========================================================================
   // EXPANSION 3: MULTI-REGION DIRECTORY & CSSPS (ASHANTI, CENTRAL, WESTERN)
   // ==========================================================================

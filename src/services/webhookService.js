@@ -4,6 +4,9 @@
  * 
  * Functional Deliverables:
  * - Real Outbound Webhook Dispatcher with HMAC SHA-256 Signatures & SSRF Protection
+ * - Exponential Backoff Retry Engine (Attempts 1-3: +30s, +120s, +600s)
+ * - Circuit Breaker Pattern (Automatic suspension at 20 consecutive failures)
+ * - Dead-Letter Queue & 1-Click Administrative Redelivery
  * - Supabase Persistence with Resilient In-Memory Fallback
  * - Meta WhatsApp Cloud API Driver (Staged/Live Graph API)
  * - Omnichannel Notification Routing (WhatsApp, Hubtel SMS, Resend Transactional Email)
@@ -13,6 +16,35 @@
 const crypto = require('crypto');
 const AuditService = require('./auditService');
 const { supabaseAdmin } = require('../config/supabase');
+
+// ============================================================================
+// CONFIGURATION: RETRIES & CIRCUIT BREAKER
+// ============================================================================
+
+const RETRY_CONFIG = {
+  maxAttempts: 3,
+  circuitBreakerThreshold: 20,
+  // Standard backoff intervals (in seconds) for attempt 1, 2, 3:
+  // Can be configured to fast backoff in test mode (TEST_FAST_BACKOFF=true)
+  getBackoffSeconds(attempt) {
+    if (process.env.TEST_FAST_BACKOFF === 'true') {
+      const fast = [0.05, 0.1, 0.2];
+      return fast[Math.min(attempt - 1, fast.length - 1)];
+    }
+    const standard = [30, 120, 600];
+    return standard[Math.min(attempt - 1, standard.length - 1)];
+  }
+};
+
+function isTransientError(httpStatus) {
+  // 0 indicates network timeout / connection refused / DNS failure
+  if (httpStatus === 0) return true;
+  // 429 Too Many Requests
+  if (httpStatus === 429) return true;
+  // 5xx Server Errors (500 Internal Error, 502 Bad Gateway, 503 Unavailable, 504 Gateway Timeout)
+  if (httpStatus >= 500 && httpStatus <= 599) return true;
+  return false;
+}
 
 // ============================================================================
 // SECRET ENCRYPTION & SSRF SECURITY HELPERS
@@ -55,7 +87,8 @@ function decryptSecret(encSecret) {
 }
 
 function isPrivateOrLoopbackIP(ip) {
-  const parts = ip.split('.').map(Number);
+  const cleanIp = ip.toLowerCase().replace(/^\[|\]$/g, '');
+  const parts = cleanIp.split('.').map(Number);
   if (parts.length === 4 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
     if (parts[0] === 127) return true; // Loopback 127.0.0.0/8
     if (parts[0] === 10) return true; // RFC1918 Private 10.0.0.0/8
@@ -64,8 +97,7 @@ function isPrivateOrLoopbackIP(ip) {
     if (parts[0] === 169 && parts[1] === 254) return true; // Cloud Instance Metadata 169.254.0.0/16
     if (parts[0] === 0) return true;
   }
-  const lower = ip.toLowerCase();
-  if (lower === '::1' || lower === '::' || lower.startsWith('fe80:') || lower.startsWith('fc00:') || lower.startsWith('fd00:')) {
+  if (cleanIp === '::1' || cleanIp === '::' || cleanIp.startsWith('fe80:') || cleanIp.startsWith('fc00:') || cleanIp.startsWith('fd00:')) {
     return true;
   }
   return false;
@@ -132,6 +164,7 @@ const IN_MEMORY_WEBHOOK_SUBSCRIPTIONS = [
     ],
     is_active: true,
     failure_count: 0,
+    disabled_reason: null,
     created_at: new Date(Date.now() - 10 * 86400000).toISOString()
   }
 ];
@@ -167,6 +200,8 @@ const IN_MEMORY_NOTIFICATION_PREFERENCES = {
   }
 };
 
+let queueWorkerInterval = null;
+
 // ============================================================================
 // WEBHOOK & NOTIFICATION SERVICE CONTROLLER
 // ============================================================================
@@ -175,6 +210,8 @@ const WebhookService = {
   validateTargetUrl,
   encryptSecret,
   decryptSecret,
+  RETRY_CONFIG,
+  isTransientError,
 
   getSupportedEvents() {
     return [
@@ -222,6 +259,7 @@ const WebhookService = {
       subscribed_events: effectiveEvents,
       is_active: true,
       failure_count: 0,
+      disabled_reason: null,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };
@@ -246,7 +284,6 @@ const WebhookService = {
       events: effectiveEvents
     };
 
-    // Update in-memory cache
     IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.push(runtimeSub);
 
     await AuditService.log({
@@ -267,7 +304,7 @@ const WebhookService = {
   },
 
   async getSchoolWebhooks(schoolId) {
-    let subs = [];
+    let cloudSubs = [];
 
     try {
       const { data, error } = await supabaseAdmin
@@ -276,8 +313,8 @@ const WebhookService = {
         .eq('school_id', schoolId)
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(data) && data.length > 0) {
-        subs = data.map(row => ({
+      if (!error && Array.isArray(data)) {
+        cloudSubs = data.map(row => ({
           ...row,
           targetUrl: row.target_url,
           events: row.subscribed_events,
@@ -287,16 +324,20 @@ const WebhookService = {
       }
     } catch (dbErr) {}
 
-    if (subs.length === 0) {
-      subs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS
-        .filter(s => s.school_id === schoolId)
-        .map(s => ({
-          ...s,
-          targetUrl: s.target_url || s.targetUrl,
-          events: s.subscribed_events || s.events,
-          secret: s.secret_key || s.secret
-        }));
-    }
+    const inMemSubs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS
+      .filter(s => s.school_id === schoolId)
+      .map(s => ({
+        ...s,
+        targetUrl: s.target_url || s.targetUrl,
+        events: s.subscribed_events || s.events,
+        secret: s.secret_key || s.secret
+      }));
+
+    const mergedMap = new Map();
+    for (const s of cloudSubs) mergedMap.set(s.id, s);
+    for (const s of inMemSubs) mergedMap.set(s.id, { ...(mergedMap.get(s.id) || {}), ...s });
+
+    const subs = Array.from(mergedMap.values());
 
     return {
       success: true,
@@ -305,6 +346,10 @@ const WebhookService = {
       webhooks: subs
     };
   },
+
+  // --------------------------------------------------------------------------
+  // OUTBOUND DISPATCHER WITH RETRY QUEUE & CIRCUIT BREAKER
+  // --------------------------------------------------------------------------
 
   async dispatchEvent(schoolId, eventName, payload, user = null) {
     let activeSubs = [];
@@ -357,7 +402,8 @@ const WebhookService = {
         'X-SkoolFinder-Event': eventName,
         'X-SkoolFinder-Delivery': deliveryId,
         'X-SkoolFinder-Signature': `sha256=${signature}`,
-        'X-SkoolFinder-Timestamp': timestamp
+        'X-SkoolFinder-Timestamp': timestamp,
+        'X-SkoolFinder-Attempt': '1'
       };
 
       let httpStatus = 200;
@@ -406,6 +452,47 @@ const WebhookService = {
         responseBody = JSON.stringify({ status: 'delivered', event: eventName, acknowledged: true });
       }
 
+      // Exponential Backoff Queue & Circuit Breaker Logic
+      let nextRetryAt = null;
+
+      if (deliveryStatus === 'delivered') {
+        // Reset consecutive failures on success
+        sub.failure_count = 0;
+        await this._updateSubscriptionFailure(sub.id, 0);
+      } else {
+        const isTransient = isTransientError(httpStatus);
+        if (isTransient && RETRY_CONFIG.maxAttempts > 1) {
+          // Schedule Attempt 2
+          deliveryStatus = 'retrying';
+          const backoffSec = RETRY_CONFIG.getBackoffSeconds(1);
+          nextRetryAt = new Date(Date.now() + backoffSec * 1000).toISOString();
+        } else {
+          // Non-transient client error or exhausted retries
+          deliveryStatus = 'failed';
+          const newFailCount = (sub.failure_count || 0) + 1;
+          sub.failure_count = newFailCount;
+          let disabledReason = null;
+
+          if (newFailCount >= RETRY_CONFIG.circuitBreakerThreshold) {
+            sub.is_active = false;
+            disabledReason = `Endpoint suspended after ${newFailCount} consecutive delivery failures (Circuit Breaker Tripped).`;
+            sub.disabled_reason = disabledReason;
+
+            await AuditService.log({
+              actorId: 'webhook-engine',
+              actorEmail: 'system@skoolfinder.com.gh',
+              actorRole: 'system',
+              action: 'CIRCUIT_BREAKER_TRIPPED',
+              targetType: 'webhook_subscription',
+              targetId: sub.id,
+              details: { schoolId, failureCount: newFailCount, targetUrl }
+            });
+          }
+
+          await this._updateSubscriptionFailure(sub.id, newFailCount, disabledReason);
+        }
+      }
+
       const deliveryRecord = {
         id: deliveryId,
         subscription_id: sub.id,
@@ -419,10 +506,13 @@ const WebhookService = {
         signature: `sha256=${signature}`,
         http_status: httpStatus || 200,
         response_http_status: httpStatus || 200,
-        status: httpStatus || 200,
+        status: httpStatus || (deliveryStatus === 'delivered' ? 200 : 500),
         response_body: responseBody,
         delivery_status: deliveryStatus,
         attempts: 1,
+        max_attempts: RETRY_CONFIG.maxAttempts,
+        next_retry_at: nextRetryAt,
+        nextRetryAt: nextRetryAt,
         execution_time_ms: executionTimeMs,
         error_message: errorMessage,
         delivered_at: timestamp,
@@ -430,43 +520,12 @@ const WebhookService = {
         dispatchedAt: timestamp
       };
 
-      // Persist to Supabase Deliveries Table
-      try {
-        await supabaseAdmin.from('school_webhook_deliveries').insert([{
-          id: deliveryId,
-          subscription_id: sub.id,
-          school_id: schoolId,
-          event_type: eventName,
-          target_url: targetUrl,
-          request_headers: requestHeaders,
-          request_payload: eventEnvelope,
-          signature: `sha256=${signature}`,
-          response_http_status: httpStatus || 200,
-          response_body: responseBody,
-          delivery_status: deliveryStatus,
-          attempts: 1,
-          execution_time_ms: executionTimeMs,
-          error_message: errorMessage,
-          dispatched_at: timestamp
-        }]);
-
-        if (deliveryStatus === 'failed') {
-          await supabaseAdmin
-            .from('school_webhook_subscriptions')
-            .update({
-              failure_count: (sub.failure_count || 0) + 1,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', sub.id);
-        }
-      } catch (e) {}
-
-      IN_MEMORY_WEBHOOK_DELIVERIES.unshift(deliveryRecord);
+      await this._saveDeliveryRecord(deliveryRecord);
       deliveryResults.push(deliveryRecord);
 
       console.log(`\n🔔 [OUTBOUND WEBHOOK DISPATCHED]`);
       console.log(`Event: ${eventName} | Target: ${targetUrl}`);
-      console.log(`Signature: sha256=${signature.substring(0, 16)}... | Status: ${httpStatus || 200} OK Delivered\n`);
+      console.log(`Signature: sha256=${signature.substring(0, 16)}... | Status: ${httpStatus || 200} (${deliveryStatus})\n`);
     }
 
     return {
@@ -476,6 +535,365 @@ const WebhookService = {
       deliveries: deliveryResults,
       delivery: deliveryResults[0] || null
     };
+  },
+
+  // --------------------------------------------------------------------------
+  // BACKGROUND RETRY QUEUE PROCESSOR
+  // --------------------------------------------------------------------------
+
+  async processRetryQueue() {
+    const now = new Date();
+    let pendingDeliveries = [];
+
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('school_webhook_deliveries')
+        .select('*')
+        .eq('delivery_status', 'retrying')
+        .lte('next_retry_at', now.toISOString());
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        pendingDeliveries = data;
+      }
+    } catch (e) {}
+
+    const inMemPending = IN_MEMORY_WEBHOOK_DELIVERIES.filter(
+      d => d.delivery_status === 'retrying' && (!d.next_retry_at || new Date(d.next_retry_at) <= now)
+    );
+
+    const allMap = new Map();
+    for (const d of pendingDeliveries) allMap.set(d.id, d);
+    for (const d of inMemPending) {
+      if (!allMap.has(d.id)) allMap.set(d.id, d);
+    }
+
+    const queue = Array.from(allMap.values());
+    const stats = { processed: queue.length, delivered: 0, retrying: 0, failed: 0 };
+
+    for (const delivery of queue) {
+      const schoolId = delivery.school_id;
+      const targetUrl = delivery.target_url || delivery.targetUrl;
+      const payload = delivery.request_payload;
+      const headers = delivery.request_headers || {};
+      const currentAttempts = (delivery.attempts || 1) + 1;
+      const maxAttempts = delivery.max_attempts || RETRY_CONFIG.maxAttempts;
+
+      // Check subscription active status
+      const sub = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.find(s => s.id === delivery.subscription_id);
+      if (sub && sub.is_active === false) {
+        delivery.delivery_status = 'failed';
+        delivery.error_message = `Subscription suspended: ${sub.disabled_reason || 'Circuit breaker tripped'}`;
+        delivery.next_retry_at = null;
+        stats.failed++;
+        await this._saveDeliveryRecord(delivery);
+        continue;
+      }
+
+      let httpStatus = 0;
+      let responseBody = '';
+      let deliveryStatus = 'delivered';
+      let errorMessage = null;
+      let executionTimeMs = 0;
+
+      const isSimulatedTestDomain = targetUrl.includes('.gis.edu.gh') || targetUrl.includes('example.com');
+
+      if (!isSimulatedTestDomain) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const startTime = Date.now();
+
+        try {
+          const res = await fetch(targetUrl, {
+            method: 'POST',
+            headers: {
+              ...headers,
+              'X-SkoolFinder-Attempt': String(currentAttempts)
+            },
+            body: typeof payload === 'string' ? payload : JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
+
+          httpStatus = res.status;
+          try {
+            const bodyText = await res.text();
+            responseBody = bodyText.substring(0, 500);
+          } catch (e) {}
+
+          if (res.ok) {
+            deliveryStatus = 'delivered';
+          } else {
+            deliveryStatus = 'failed';
+            errorMessage = `Remote endpoint responded with HTTP ${res.status}`;
+          }
+        } catch (fetchErr) {
+          clearTimeout(timeoutId);
+          httpStatus = 0;
+          deliveryStatus = 'failed';
+          errorMessage = fetchErr.name === 'AbortError' ? 'Connection timed out after 5000ms' : fetchErr.message;
+        }
+
+        executionTimeMs = Date.now() - startTime;
+      } else {
+        httpStatus = 200;
+        deliveryStatus = 'delivered';
+        responseBody = JSON.stringify({ status: 'delivered_on_retry', attempt: currentAttempts });
+      }
+
+      let nextRetryAt = null;
+      if (deliveryStatus === 'delivered') {
+        stats.delivered++;
+        if (sub) {
+          sub.failure_count = 0;
+          await this._updateSubscriptionFailure(sub.id, 0);
+        }
+      } else {
+        const isTransient = isTransientError(httpStatus);
+        if (isTransient && currentAttempts < maxAttempts) {
+          deliveryStatus = 'retrying';
+          const backoffSec = RETRY_CONFIG.getBackoffSeconds(currentAttempts);
+          nextRetryAt = new Date(Date.now() + backoffSec * 1000).toISOString();
+          stats.retrying++;
+        } else {
+          deliveryStatus = 'failed';
+          stats.failed++;
+          if (sub) {
+            const newFailCount = (sub.failure_count || 0) + 1;
+            sub.failure_count = newFailCount;
+            let disabledReason = null;
+            if (newFailCount >= RETRY_CONFIG.circuitBreakerThreshold) {
+              sub.is_active = false;
+              disabledReason = `Endpoint suspended after ${newFailCount} consecutive delivery failures (Circuit Breaker Tripped).`;
+              sub.disabled_reason = disabledReason;
+            }
+            await this._updateSubscriptionFailure(sub.id, newFailCount, disabledReason);
+          }
+        }
+      }
+
+      delivery.attempts = currentAttempts;
+      delivery.delivery_status = deliveryStatus;
+      delivery.response_http_status = httpStatus;
+      delivery.http_status = httpStatus;
+      delivery.status = httpStatus || (deliveryStatus === 'delivered' ? 200 : 500);
+      delivery.response_body = responseBody;
+      delivery.execution_time_ms = executionTimeMs;
+      delivery.error_message = errorMessage;
+      delivery.next_retry_at = nextRetryAt;
+      delivery.nextRetryAt = nextRetryAt;
+
+      await this._saveDeliveryRecord(delivery);
+    }
+
+    return stats;
+  },
+
+  startQueueWorker(intervalMs = 30000) {
+    if (queueWorkerInterval) clearInterval(queueWorkerInterval);
+    queueWorkerInterval = setInterval(() => {
+      this.processRetryQueue().catch(err => {
+        console.error('[WEBHOOK QUEUE WORKER ERROR]', err);
+      });
+    }, intervalMs);
+    if (queueWorkerInterval.unref) queueWorkerInterval.unref();
+    return queueWorkerInterval;
+  },
+
+  stopQueueWorker() {
+    if (queueWorkerInterval) {
+      clearInterval(queueWorkerInterval);
+      queueWorkerInterval = null;
+    }
+  },
+
+  // --------------------------------------------------------------------------
+  // DEAD-LETTER REDELIVERY & CIRCUIT BREAKER RESET
+  // --------------------------------------------------------------------------
+
+  async redeliverEvent(schoolId, deliveryId, user = null) {
+    let delivery = IN_MEMORY_WEBHOOK_DELIVERIES.find(d => d.id === deliveryId && d.school_id === schoolId);
+    if (!delivery) {
+      try {
+        const { data } = await supabaseAdmin
+          .from('school_webhook_deliveries')
+          .select('*')
+          .eq('id', deliveryId)
+          .eq('school_id', schoolId)
+          .maybeSingle();
+        if (data) delivery = data;
+      } catch (e) {}
+    }
+
+    if (!delivery) {
+      throw new Error(`Delivery record "${deliveryId}" not found for this school institution.`);
+    }
+
+    // Reset attempts and queue for immediate retry
+    delivery.delivery_status = 'retrying';
+    delivery.attempts = 1;
+    delivery.next_retry_at = new Date(Date.now() - 1000).toISOString();
+
+    await this.processRetryQueue();
+
+    await AuditService.log({
+      actorId: user?.id || 'school-admin',
+      actorEmail: user?.email || 'admin@skoolfinder.com.gh',
+      actorRole: user?.role || 'school_admin',
+      action: 'WEBHOOK_DELIVERY_REDELIVERED',
+      targetType: 'webhook_delivery',
+      targetId: deliveryId,
+      details: { schoolId, deliveryId }
+    });
+
+    return {
+      success: true,
+      message: 'Webhook redelivery processed.',
+      delivery
+    };
+  },
+
+  async resetCircuitBreaker(schoolId, subscriptionId, user = null) {
+    let sub = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.find(s => s.id === subscriptionId && s.school_id === schoolId);
+    if (!sub) {
+      try {
+        const { data } = await supabaseAdmin
+          .from('school_webhook_subscriptions')
+          .select('*')
+          .eq('id', subscriptionId)
+          .eq('school_id', schoolId)
+          .maybeSingle();
+        if (data) {
+          sub = {
+            ...data,
+            targetUrl: data.target_url,
+            events: data.subscribed_events,
+            is_active: true,
+            failure_count: 0,
+            disabled_reason: null
+          };
+          IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.push(sub);
+        }
+      } catch (e) {}
+    }
+
+    if (sub) {
+      sub.is_active = true;
+      sub.failure_count = 0;
+      sub.disabled_reason = null;
+    }
+
+    try {
+      await supabaseAdmin
+        .from('school_webhook_subscriptions')
+        .update({
+          is_active: true,
+          failure_count: 0,
+          disabled_reason: null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', subscriptionId)
+        .eq('school_id', schoolId);
+    } catch (e) {}
+
+    await AuditService.log({
+      actorId: user?.id || 'school-admin',
+      actorEmail: user?.email || 'admin@skoolfinder.com.gh',
+      actorRole: user?.role || 'school_admin',
+      action: 'CIRCUIT_BREAKER_RESET',
+      targetType: 'webhook_subscription',
+      targetId: subscriptionId,
+      details: { schoolId, subscriptionId }
+    });
+
+    return {
+      success: true,
+      message: 'Circuit breaker reset successfully. Webhook re-activated.',
+      subscription: sub
+    };
+  },
+
+  async getQueueStats(schoolId) {
+    const deliveries = IN_MEMORY_WEBHOOK_DELIVERIES.filter(d => !schoolId || d.school_id === schoolId);
+    const retrying = deliveries.filter(d => d.delivery_status === 'retrying').length;
+    const failed = deliveries.filter(d => d.delivery_status === 'failed').length;
+    const delivered = deliveries.filter(d => d.delivery_status === 'delivered').length;
+
+    const subs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.filter(s => !schoolId || s.school_id === schoolId);
+    const suspendedSubs = subs.filter(s => s.is_active === false && s.disabled_reason);
+
+    return {
+      success: true,
+      schoolId,
+      stats: {
+        totalDeliveries: deliveries.length,
+        delivered,
+        retrying,
+        failed,
+        activeSubscriptions: subs.filter(s => s.is_active).length,
+        suspendedSubscriptions: suspendedSubs.length
+      }
+    };
+  },
+
+  async _saveDeliveryRecord(record) {
+    const existingIndex = IN_MEMORY_WEBHOOK_DELIVERIES.findIndex(d => d.id === record.id);
+    if (existingIndex >= 0) {
+      IN_MEMORY_WEBHOOK_DELIVERIES[existingIndex] = record;
+    } else {
+      IN_MEMORY_WEBHOOK_DELIVERIES.unshift(record);
+    }
+
+    try {
+      await supabaseAdmin.from('school_webhook_deliveries').upsert([{
+        id: record.id,
+        subscription_id: record.subscription_id,
+        school_id: record.school_id,
+        event_type: record.event_type || record.event,
+        target_url: record.target_url || record.targetUrl,
+        request_headers: record.request_headers,
+        request_payload: record.request_payload,
+        signature: record.signature,
+        response_http_status: record.response_http_status || record.http_status,
+        response_body: record.response_body,
+        delivery_status: record.delivery_status,
+        attempts: record.attempts,
+        max_attempts: record.max_attempts,
+        next_retry_at: record.next_retry_at,
+        execution_time_ms: record.execution_time_ms,
+        error_message: record.error_message,
+        dispatched_at: record.dispatched_at
+      }], { onConflict: 'id' });
+    } catch (e) {}
+  },
+
+  async _updateSubscriptionFailure(subId, failureCount, disabledReason = null) {
+    const sub = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.find(s => s.id === subId);
+    if (sub) {
+      sub.failure_count = failureCount;
+      if (disabledReason !== null) {
+        sub.disabled_reason = disabledReason;
+        sub.is_active = false;
+      } else if (failureCount === 0) {
+        sub.disabled_reason = null;
+      }
+    }
+
+    try {
+      const updates = {
+        failure_count: failureCount,
+        updated_at: new Date().toISOString()
+      };
+      if (disabledReason !== null) {
+        updates.disabled_reason = disabledReason;
+        updates.is_active = false;
+      } else if (failureCount === 0) {
+        updates.disabled_reason = null;
+      }
+      await supabaseAdmin
+        .from('school_webhook_subscriptions')
+        .update(updates)
+        .eq('id', subId);
+    } catch (e) {}
   },
 
   async getWebhookDeliveries(schoolId) {
@@ -584,7 +1002,6 @@ const WebhookService = {
         errorMessage = err.message;
       }
     } else {
-      // Staged Driver Execution: Queues ready for token insertion
       wamid = `wamid.HBgL${crypto.randomBytes(8).toString('hex')}`;
       deliveryStatus = 'sent';
       console.log(`📱 [WHATSAPP STAGED DRIVER] School: ${schoolId} -> Recipient: ${formatted.recipientPhone} (WAMID: ${wamid})`);
@@ -640,7 +1057,6 @@ const WebhookService = {
 
     IN_MEMORY_NOTIFICATION_PREFERENCES[schoolId] = updated;
 
-    // Asynchronous background Supabase synchronization
     (async () => {
       try {
         await supabaseAdmin
