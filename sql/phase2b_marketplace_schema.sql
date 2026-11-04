@@ -266,3 +266,4 @@ CREATE POLICY "School staff view audit log" ON public.marketplace_audit_logs FOR
     school_id IN (SELECT school_id FROM public.school_memberships WHERE user_id = auth.uid() AND status = 'active')
     OR auth.role() = 'service_role'
 );
+

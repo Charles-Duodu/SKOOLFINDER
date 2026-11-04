@@ -1237,13 +1237,13 @@ const DashboardView = {
    */
   renderInquiriesTab(school, enquiriesData = {}, tourSlots = []) {
     const enquiries = enquiriesData.enquiries || [];
-    const stats = enquiriesData.stats || {
-      total: enquiries.length,
-      new: enquiries.filter(e => e.status === 'new').length,
-      contacted: enquiries.filter(e => e.status === 'contacted').length,
-      qualified: enquiries.filter(e => e.status === 'qualified').length,
-      converted: enquiries.filter(e => e.status === 'converted').length,
-      closed: enquiries.filter(e => e.status === 'closed').length
+    const stats = (enquiriesData.stats && enquiriesData.stats.total !== undefined) ? enquiriesData.stats : {
+      total: enquiries.length || 0,
+      new: enquiries.filter(e => e.status === 'new').length || 0,
+      contacted: enquiries.filter(e => e.status === 'contacted').length || 0,
+      qualified: enquiries.filter(e => e.status === 'qualified').length || 0,
+      converted: enquiries.filter(e => e.status === 'converted').length || 0,
+      closed: enquiries.filter(e => e.status === 'closed').length || 0
     };
 
     return `
@@ -1431,7 +1431,7 @@ const DashboardView = {
             <div class="owner-kpi-label">Active Vacancies Quota</div>
             <div class="owner-kpi-value">${quota.currentActive} <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 600;">/ ${quota.totalAllowed}</span></div>
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
-              ${quota.baseQuota} base on ${quota.planTier.toUpperCase()} + ${quota.activeAddonSlots} add-on slots
+              ${quota.baseQuota} base on ${(quota.planTier || 'Growth').toUpperCase()} + ${quota.activeAddonSlots || 0} add-on slots
             </div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
@@ -1590,14 +1590,14 @@ const DashboardView = {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div class="owner-kpi-card" style="border-left: 3px solid #0ea5e9;">
             <div class="owner-kpi-label">Monthly Tender Quota</div>
-            <div class="owner-kpi-value">${quota.usedThisMonth} <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 600;">/ ${quota.includedMonthlyQuota}</span></div>
+            <div class="owner-kpi-value">${quota.usedThisMonth || 0} <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 600;">/ ${quota.includedMonthlyQuota || 0}</span></div>
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
-              Included on ${quota.planTier.toUpperCase()} Plan (resets monthly)
+              Included on ${(quota.planTier || 'Growth').toUpperCase()} Plan (resets monthly)
             </div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
             <div class="owner-kpi-label">Purchased Tender Credits</div>
-            <div class="owner-kpi-value" style="color: #10b981;">${quota.purchasedCreditsRemaining}</div>
+            <div class="owner-kpi-value" style="color: #10b981;">${quota.purchasedCreditsRemaining || 0}</div>
             <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
               Non-expiring credits across billing cycles
             </div>
