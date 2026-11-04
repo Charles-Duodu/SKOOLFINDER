@@ -551,6 +551,28 @@ const SchoolOwnerService = {
 
     IN_MEMORY_EVIDENCE_DOCS.push(newDoc);
 
+    // Ensure an admin verification case exists for this institution
+    let vCase = IN_MEMORY_VERIFICATION_CASES.find(c => c.school_id === schoolId);
+    if (!vCase) {
+      vCase = {
+        id: `vcase-${schoolId}`,
+        school_id: schoolId,
+        school_name: docData.school_name || 'Institution Verification',
+        claimant_user_id: user?.id || 'usr-proprietor-01',
+        claimant_name: user?.name || user?.full_name || 'School Administrator',
+        claimant_email: user?.email || 'proprietor@skoolfinder.com.gh',
+        claimant_role: 'school_admin',
+        authority_status: 'pending',
+        evidence_documents: [newDoc],
+        submitted_at: new Date().toISOString(),
+        created_at: new Date().toISOString()
+      };
+      IN_MEMORY_VERIFICATION_CASES.push(vCase);
+    } else {
+      if (!vCase.evidence_documents) vCase.evidence_documents = [];
+      vCase.evidence_documents.push(newDoc);
+    }
+
     try {
       await supabaseAdmin.from('evidence_documents').insert({
         id: docId,
