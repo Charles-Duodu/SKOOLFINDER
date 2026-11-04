@@ -674,3 +674,217 @@ CREATE POLICY "Staff view tender bids" ON public.tender_bids FOR ALL USING (true
 CREATE POLICY "Staff read credits ledger" ON public.marketplace_credits_ledger FOR SELECT USING (true);
 CREATE POLICY "Staff view escrow milestones" ON public.tender_escrow_milestones FOR ALL USING (true);
 CREATE POLICY "Staff view marketplace audit log" ON public.marketplace_audit_logs FOR SELECT USING (true);
+
+
+-- ============================================================================
+-- PART 5: CAMPUS PHYSICAL OPERATIONS, MULTI-CAMPUS GROUPS & NATIONAL INTEGRATIONS
+-- (Phase 5 School OS & Phase 6 National Regulatory Ecosystem)
+-- ============================================================================
+
+-- 5.1 Campus Fixed Assets Registry (Module 19)
+CREATE TABLE IF NOT EXISTS public.campus_assets (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    category TEXT NOT NULL DEFAULT 'General Campus Asset',
+    building TEXT NOT NULL DEFAULT 'Main Campus',
+    room TEXT NOT NULL DEFAULT 'General Storage',
+    purchase_date DATE DEFAULT CURRENT_DATE,
+    purchase_value_ghs NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
+    condition TEXT NOT NULL DEFAULT 'operational' CHECK (condition IN ('operational', 'needs_maintenance', 'decommissioned')),
+    assigned_custodian TEXT NOT NULL DEFAULT 'Campus Facilities Manager',
+    warranty_expiry DATE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_campus_assets_school ON public.campus_assets(school_id);
+CREATE INDEX IF NOT EXISTS idx_campus_assets_condition ON public.campus_assets(condition);
+
+-- 5.2 Library Management System (LMS) Books & Student Loans
+CREATE TABLE IF NOT EXISTS public.library_books (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    title TEXT NOT NULL,
+    author TEXT NOT NULL,
+    isbn TEXT,
+    category TEXT NOT NULL DEFAULT 'General Reading',
+    total_copies INTEGER NOT NULL DEFAULT 1 CHECK (total_copies >= 0),
+    available_copies INTEGER NOT NULL DEFAULT 1 CHECK (available_copies >= 0),
+    shelf_location TEXT NOT NULL DEFAULT 'Main Library',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_lib_books_school ON public.library_books(school_id);
+CREATE INDEX IF NOT EXISTS idx_lib_books_category ON public.library_books(category);
+
+CREATE TABLE IF NOT EXISTS public.library_loans (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    book_id VARCHAR(100) NOT NULL REFERENCES public.library_books(id) ON DELETE CASCADE,
+    borrower_name TEXT NOT NULL,
+    borrower_role TEXT NOT NULL DEFAULT 'student' CHECK (borrower_role IN ('student', 'teacher', 'staff')),
+    borrower_id TEXT NOT NULL,
+    borrowed_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    due_date DATE NOT NULL,
+    returned_date DATE,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'returned', 'overdue', 'lost')),
+    return_condition TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_lib_loans_school ON public.library_loans(school_id);
+CREATE INDEX IF NOT EXISTS idx_lib_loans_status ON public.library_loans(status);
+
+-- 5.3 Campus Transport Fleet & Scheduled GPS Routes
+CREATE TABLE IF NOT EXISTS public.transport_fleet (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    plate_number TEXT NOT NULL UNIQUE,
+    model TEXT NOT NULL,
+    capacity INTEGER NOT NULL DEFAULT 30 CHECK (capacity > 0),
+    driver_name TEXT NOT NULL,
+    driver_phone TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'operational' CHECK (status IN ('operational', 'in_service', 'out_of_service')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transport_fleet_school ON public.transport_fleet(school_id);
+
+CREATE TABLE IF NOT EXISTS public.transport_routes (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    assigned_bus_id VARCHAR(100) REFERENCES public.transport_fleet(id) ON DELETE SET NULL,
+    capacity INTEGER NOT NULL DEFAULT 30,
+    enrolled_students INTEGER NOT NULL DEFAULT 0,
+    stops JSONB NOT NULL DEFAULT '[]'::jsonb,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_transport_routes_school ON public.transport_routes(school_id);
+
+-- 5.4 Multi-Campus Educational Trust Groups (DEC-02)
+CREATE TABLE IF NOT EXISTS public.school_groups (
+    id VARCHAR(100) PRIMARY KEY,
+    name TEXT NOT NULL,
+    headquarters TEXT NOT NULL DEFAULT 'Accra, Ghana',
+    proprietor_user_id UUID,
+    trust_lead TEXT NOT NULL DEFAULT 'Executive Director',
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.group_schools (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    group_id VARCHAR(100) NOT NULL REFERENCES public.school_groups(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
+    name TEXT NOT NULL,
+    campus_type TEXT NOT NULL DEFAULT 'Main Campus',
+    location TEXT NOT NULL DEFAULT 'Accra, Ghana',
+    students_count INTEGER NOT NULL DEFAULT 0,
+    staff_count INTEGER NOT NULL DEFAULT 0,
+    accreditation_status TEXT NOT NULL DEFAULT 'verified',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(group_id, school_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_group_schools_group ON public.group_schools(group_id);
+
+-- 5.5 National Regulatory Integrations: MoE/GES EMIS Submissions
+CREATE TABLE IF NOT EXISTS public.emis_census_submissions (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_name TEXT NOT NULL,
+    emis_code TEXT NOT NULL,
+    district TEXT NOT NULL,
+    region TEXT NOT NULL DEFAULT 'Greater Accra',
+    academic_year TEXT NOT NULL,
+    reporting_cycle TEXT NOT NULL DEFAULT 'Annual Census',
+    submission_status TEXT NOT NULL DEFAULT 'draft' CHECK (submission_status IN ('draft', 'validated', 'verified_and_exported', 'acknowledged')),
+    census_data JSONB NOT NULL DEFAULT '{}'::jsonb,
+    certification_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_emis_submissions_school ON public.emis_census_submissions(school_id);
+CREATE INDEX IF NOT EXISTS idx_emis_submissions_year ON public.emis_census_submissions(academic_year);
+
+-- 5.6 WAEC Examination Verifications Archive
+CREATE TABLE IF NOT EXISTS public.waec_verification_records (
+    id VARCHAR(100) PRIMARY KEY,
+    index_number VARCHAR(10) NOT NULL,
+    exam_type TEXT NOT NULL CHECK (exam_type IN ('BECE', 'WASSCE', 'NOVDEC')),
+    exam_year VARCHAR(4) NOT NULL,
+    candidate_name TEXT NOT NULL,
+    center_name TEXT NOT NULL,
+    verification_status TEXT NOT NULL DEFAULT 'verified',
+    raw_score_aggregate INTEGER NOT NULL DEFAULT 0,
+    distinction_grade TEXT,
+    subjects JSONB NOT NULL DEFAULT '[]'::jsonb,
+    verified_by TEXT NOT NULL DEFAULT 'Admissions Officer',
+    verified_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_waec_verifications_index ON public.waec_verification_records(index_number);
+CREATE INDEX IF NOT EXISTS idx_waec_verifications_type_year ON public.waec_verification_records(exam_type, exam_year);
+
+-- 5.7 Omnichannel SMS Gateway Configurations & Dispatch Logs
+CREATE TABLE IF NOT EXISTS public.sms_gateway_configurations (
+    id VARCHAR(50) PRIMARY KEY DEFAULT 'primary_gateway',
+    active_provider TEXT NOT NULL DEFAULT 'hubtel' CHECK (active_provider IN ('hubtel', 'arkesel', 'mock')),
+    hubtel_client_id TEXT,
+    hubtel_client_secret TEXT,
+    hubtel_sender_id VARCHAR(11) NOT NULL DEFAULT 'SKOOLFINDER',
+    arkesel_api_key TEXT,
+    arkesel_sender_id VARCHAR(11) NOT NULL DEFAULT 'SKOOLFINDER',
+    cost_per_sms_ghs NUMERIC(6, 4) NOT NULL DEFAULT 0.0450,
+    account_balance_ghs NUMERIC(10, 2) NOT NULL DEFAULT 0.00,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.sms_dispatch_logs (
+    id VARCHAR(100) PRIMARY KEY,
+    school_id VARCHAR(100),
+    recipient_phone VARCHAR(30) NOT NULL,
+    recipient_name TEXT NOT NULL,
+    network TEXT,
+    units INTEGER NOT NULL DEFAULT 1,
+    cost_ghs NUMERIC(8, 4) NOT NULL DEFAULT 0.0450,
+    sender_id VARCHAR(11) NOT NULL DEFAULT 'SKOOLFINDER',
+    provider TEXT NOT NULL,
+    delivery_status TEXT NOT NULL DEFAULT 'delivered' CHECK (delivery_status IN ('delivered', 'pending', 'failed')),
+    message TEXT NOT NULL,
+    dispatched_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sms_dispatch_school ON public.sms_dispatch_logs(school_id);
+CREATE INDEX IF NOT EXISTS idx_sms_dispatch_phone ON public.sms_dispatch_logs(recipient_phone);
+CREATE INDEX IF NOT EXISTS idx_sms_dispatch_dispatched ON public.sms_dispatch_logs(dispatched_at DESC);
+
+-- Enable RLS on New Tables
+ALTER TABLE public.campus_assets ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.library_books ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.library_loans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transport_fleet ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transport_routes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.school_groups ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.group_schools ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.emis_census_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.waec_verification_records ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sms_gateway_configurations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.sms_dispatch_logs ENABLE ROW LEVEL SECURITY;
+
+-- Allow Staff and Authorized Users Access
+CREATE POLICY "Staff manage campus assets" ON public.campus_assets FOR ALL USING (true);
+CREATE POLICY "Staff manage library books" ON public.library_books FOR ALL USING (true);
+CREATE POLICY "Staff manage library loans" ON public.library_loans FOR ALL USING (true);
+CREATE POLICY "Staff manage transport fleet" ON public.transport_fleet FOR ALL USING (true);
+CREATE POLICY "Staff manage transport routes" ON public.transport_routes FOR ALL USING (true);
+CREATE POLICY "Staff view groups" ON public.school_groups FOR ALL USING (true);
+CREATE POLICY "Staff view group schools" ON public.group_schools FOR ALL USING (true);
+CREATE POLICY "Staff manage emis submissions" ON public.emis_census_submissions FOR ALL USING (true);
+CREATE POLICY "Staff read waec verifications" ON public.waec_verification_records FOR ALL USING (true);
+CREATE POLICY "Super admin configure sms" ON public.sms_gateway_configurations FOR ALL USING (true);
+CREATE POLICY "Staff view sms dispatch logs" ON public.sms_dispatch_logs FOR ALL USING (true);
+

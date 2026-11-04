@@ -2392,6 +2392,86 @@ const API = {
       headers: this.getHeaders()
     });
     return res.json();
+  },
+
+  // ==========================================================================
+  // NATIONAL ECOSYSTEM & EXTERNAL REGULATORY INTEGRATIONS
+  // ==========================================================================
+
+  async generateEmisCensus(censusData = {}) {
+    const res = await fetch(`${this.baseUrl}/integrations/emis/generate`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(censusData)
+    });
+    return res.json();
+  },
+
+  async validateEmisCensus(censusData = {}) {
+    const res = await fetch(`${this.baseUrl}/integrations/emis/validate`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ censusData })
+    });
+    return res.json();
+  },
+
+  async exportEmisPayload(censusId, format = 'json') {
+    const res = await fetch(`${this.baseUrl}/integrations/emis/export/${encodeURIComponent(censusId)}?format=${encodeURIComponent(format)}`, {
+      headers: this.getHeaders()
+    });
+    if (format === 'csv') {
+      return res.text();
+    }
+    return res.json();
+  },
+
+  async getEmisSubmissions(schoolId) {
+    const res = await fetch(`${this.baseUrl}/integrations/emis/submissions/${encodeURIComponent(schoolId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async verifyWaecCandidate(candidateData = {}) {
+    const res = await fetch(`${this.baseUrl}/integrations/waec/verify`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(candidateData)
+    });
+    return res.json();
+  },
+
+  async getSchoolWaecAnalytics(schoolId, year = '2025') {
+    const res = await fetch(`${this.baseUrl}/integrations/waec/analytics/${encodeURIComponent(schoolId)}?year=${encodeURIComponent(year)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async dispatchIntegrationSms(smsData = {}) {
+    const res = await fetch(`${this.baseUrl}/integrations/sms/dispatch`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(smsData)
+    });
+    return res.json();
+  },
+
+  async configureIntegrationSmsGateway(configData = {}) {
+    const res = await fetch(`${this.baseUrl}/integrations/sms/configure`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(configData)
+    });
+    return res.json();
+  },
+
+  async getIntegrationSmsStats(schoolId = 'all') {
+    const res = await fetch(`${this.baseUrl}/integrations/sms/stats/${encodeURIComponent(schoolId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
   }
 
 };
