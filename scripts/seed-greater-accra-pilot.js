@@ -251,6 +251,46 @@ async function seedPilot() {
       console.log(`[SUPABASE] When live table is ready, run SQL migration: sql/master_school_owner_blueprint_v2_migration.sql`);
     } else {
       console.log(`[SUPABASE] Connection established. Found ${data.length} sample record(s).`);
+      console.log(`[SUPABASE] Upserting 10 Greater Accra anchor schools into Supabase...\n`);
+
+      for (const school of PILOT_SCHOOLS) {
+        const payload = {
+          name: school.name,
+          slug: school.slug,
+          ownership_type: school.category,
+          region: school.region,
+          district: school.district,
+          locality: school.suburb,
+          address: school.address,
+          phone: school.phone,
+          email: school.email,
+          website: school.website,
+          description: school.description,
+          tuition_min: school.tuition_min,
+          tuition_max: school.tuition_max,
+          currency: 'GHS',
+          is_verified: true,
+          verification_status: school.authority_status,
+          claim_status: 'unclaimed',
+          nasia_registered: true,
+          nasia_licence_number: school.accreditation_number,
+          active_tier: school.active_tier,
+          curriculum: [school.curriculum],
+          education_level: [school.level]
+        };
+
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(school.id);
+        if (isUUID) {
+          payload.id = school.id;
+        }
+
+        const { error: upsertErr } = await supabase.from('schools').upsert(payload, { onConflict: 'slug' });
+        if (upsertErr) {
+          console.log(`  ⚠️ Notice for ${school.name}: ${upsertErr.message}`);
+        } else {
+          console.log(`  ✅ Synced to Cloud: ${school.name.padEnd(44)} [${school.suburb}]`);
+        }
+      }
     }
   } catch (err) {
     console.log(`[SUPABASE] Live connection note: ${err.message}`);
@@ -262,3 +302,4 @@ async function seedPilot() {
 }
 
 seedPilot().catch(console.error);
+
