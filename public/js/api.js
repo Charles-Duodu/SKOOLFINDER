@@ -2472,6 +2472,166 @@ const API = {
       headers: this.getHeaders()
     });
     return res.json();
+  },
+
+  // ==========================================================================
+  // EXPANSION 1: SPONSORED PROMOTIONS & FEATURED ADS (MODULE 9)
+  // ==========================================================================
+
+  async getPromotionPackages() {
+    const res = await fetch(`${this.baseUrl}/promotions/packages`);
+    return res.json();
+  },
+
+  async getActivePromotions(placement = null) {
+    const query = placement ? `?placement=${encodeURIComponent(placement)}` : '';
+    const res = await fetch(`${this.baseUrl}/promotions/active${query}`);
+    return res.json();
+  },
+
+  async createSchoolCampaign(schoolId, campaignData = {}) {
+    const res = await fetch(`${this.baseUrl}/promotions/school/${encodeURIComponent(schoolId)}/create`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(campaignData)
+    });
+    return res.json();
+  },
+
+  async checkoutPromotionCampaign(schoolId, campaignId) {
+    const res = await fetch(`${this.baseUrl}/promotions/school/${encodeURIComponent(schoolId)}/${encodeURIComponent(campaignId)}/checkout`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async verifyPromotionPayment(schoolId, campaignId, paymentInfo = {}) {
+    const res = await fetch(`${this.baseUrl}/promotions/school/${encodeURIComponent(schoolId)}/${encodeURIComponent(campaignId)}/verify`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(paymentInfo)
+    });
+    return res.json();
+  },
+
+  async getSchoolCampaigns(schoolId) {
+    const res = await fetch(`${this.baseUrl}/promotions/school/${encodeURIComponent(schoolId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getCampaignAnalytics(campaignId) {
+    const res = await fetch(`${this.baseUrl}/promotions/${encodeURIComponent(campaignId)}/analytics`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async trackPromotionImpression(campaignId) {
+    const res = await fetch(`${this.baseUrl}/promotions/${encodeURIComponent(campaignId)}/track-impression`, {
+      method: 'POST'
+    });
+    return res.json();
+  },
+
+  async trackPromotionClick(campaignId) {
+    const res = await fetch(`${this.baseUrl}/promotions/${encodeURIComponent(campaignId)}/track-click`, {
+      method: 'POST'
+    });
+    return res.json();
+  },
+
+  // ==========================================================================
+  // EXPANSION 2: EVENT WEBHOOKS & AUTOMATED NOTIFICATIONS (MODULE 15)
+  // ==========================================================================
+
+  async getSupportedWebhookEvents() {
+    const res = await fetch(`${this.baseUrl}/webhooks/events`);
+    return res.json();
+  },
+
+  async registerSchoolWebhook(schoolId, subscriptionData = {}) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/subscribe`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(subscriptionData)
+    });
+    return res.json();
+  },
+
+  async getSchoolWebhooks(schoolId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async testDispatchWebhook(schoolId, eventName, data = {}) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/test-dispatch`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ eventName, data })
+    });
+    return res.json();
+  },
+
+  async getWebhookDeliveries(schoolId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/deliveries`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getSchoolNotificationPreferences(schoolId) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/preferences`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async updateSchoolNotificationPreferences(schoolId, preferences = {}) {
+    const res = await fetch(`${this.baseUrl}/webhooks/school/${encodeURIComponent(schoolId)}/preferences`, {
+      method: 'PUT',
+      headers: this.getHeaders(),
+      body: JSON.stringify(preferences)
+    });
+    return res.json();
+  },
+
+  async previewWhatsAppNotification(phone, template, vars = {}) {
+    const res = await fetch(`${this.baseUrl}/webhooks/whatsapp/preview`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ phone, template, vars })
+    });
+    return res.json();
+  },
+
+  // ==========================================================================
+  // EXPANSION 3: MULTI-REGION DIRECTORY & CSSPS (ASHANTI, CENTRAL, WESTERN)
+  // ==========================================================================
+
+  async getRegions() {
+    const res = await fetch(`${this.baseUrl}/regions`);
+    return res.json();
+  },
+
+  async getRegionalOverview(regionId) {
+    const res = await fetch(`${this.baseUrl}/regions/${encodeURIComponent(regionId)}`);
+    return res.json();
+  },
+
+  async searchRegionalSchools(filters = {}) {
+    const query = new URLSearchParams(filters).toString();
+    const res = await fetch(`${this.baseUrl}/regions/schools?${query}`);
+    return res.json();
+  },
+
+  async getCsspsDirectory() {
+    const res = await fetch(`${this.baseUrl}/regions/cssps-categories`);
+    return res.json();
   }
 
 };
