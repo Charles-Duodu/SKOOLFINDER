@@ -2664,6 +2664,47 @@ const API = {
   async getCsspsDirectory() {
     const res = await fetch(`${this.baseUrl}/regions/cssps-categories`);
     return res.json();
+  },
+
+  // ==========================================================================
+  // SUPER ADMIN UNIVERSAL TELEMETRY & MULTI-CHANNEL WEBHOOKS (PATHWAY 3)
+  // ==========================================================================
+
+  async getAdminWebhookTelemetry() {
+    const res = await fetch(`${this.baseUrl}/admin/webhooks/telemetry`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getAdminSmsBalance() {
+    const res = await fetch(`${this.baseUrl}/admin/sms/balance`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getAdminGlobalWebhookDeliveries() {
+    const res = await fetch(`${this.baseUrl}/admin/webhooks/global-deliveries`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async adminRedeliverWebhook(deliveryId) {
+    const res = await fetch(`${this.baseUrl}/admin/webhooks/deliveries/${encodeURIComponent(deliveryId)}/redeliver`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async adminResetCircuitBreaker(subscriptionId) {
+    const res = await fetch(`${this.baseUrl}/admin/webhooks/subscriptions/${encodeURIComponent(subscriptionId)}/reset`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    return res.json();
   }
 
 };

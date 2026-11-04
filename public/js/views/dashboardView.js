@@ -3015,8 +3015,18 @@ const DashboardView = {
    */
   attachEvents(schoolId = 'ab5af86d-c902-4853-9528-d6200104b5f6') {
     // 1. Demo Mode Launcher
-    document.getElementById('btn-launch-demo-os')?.addEventListener('click', () => {
+    document.getElementById('btn-launch-demo-os')?.addEventListener('click', async () => {
       this.isDemoMode = true;
+      try {
+        const demoRes = await fetch('/api/auth/demo-login', { method: 'POST' });
+        const data = await demoRes.json();
+        if (data.token) {
+          State.authToken = data.token;
+          State.user = data.user;
+          localStorage.setItem('skoolfinder_token', data.token);
+          localStorage.setItem('skoolfinder_user', JSON.stringify(data.user));
+        }
+      } catch (e) {}
       App.navigate('schools');
     });
 
@@ -4272,6 +4282,19 @@ const DashboardView = {
         return;
       }
 
+      if (!State.authToken && !localStorage.getItem('skoolfinder_token')) {
+        try {
+          const demoRes = await fetch('/api/auth/demo-login', { method: 'POST' });
+          const data = await demoRes.json();
+          if (data.token) {
+            State.authToken = data.token;
+            State.user = data.user;
+            localStorage.setItem('skoolfinder_token', data.token);
+            localStorage.setItem('skoolfinder_user', JSON.stringify(data.user));
+          }
+        } catch (e) {}
+      }
+
       try {
         await API.registerSchoolWebhook(schoolId, { targetUrl, events: checkedEvents, secret });
         State.showToast('Webhook endpoint configured with HMAC SHA-256!', 'success');
@@ -4285,6 +4308,18 @@ const DashboardView = {
     document.getElementById('btn-test-webhook-ping')?.addEventListener('click', async () => {
       try {
         State.showToast('Dispatching test webhook ping (AdmissionOfferIssued)...', 'info');
+        if (!State.authToken && !localStorage.getItem('skoolfinder_token')) {
+          try {
+            const demoRes = await fetch('/api/auth/demo-login', { method: 'POST' });
+            const data = await demoRes.json();
+            if (data.token) {
+              State.authToken = data.token;
+              State.user = data.user;
+              localStorage.setItem('skoolfinder_token', data.token);
+              localStorage.setItem('skoolfinder_user', JSON.stringify(data.user));
+            }
+          } catch (e) {}
+        }
         const testRes = await API.testDispatchWebhook(schoolId, 'AdmissionOfferIssued', {
           candidateName: 'Kwame Asante',
           indexNumber: '1010203040',
@@ -4293,11 +4328,12 @@ const DashboardView = {
           offerTimestamp: new Date().toISOString()
         });
         if (testRes?.success) {
-          State.showToast(`✓ Outbound Webhook Ping Delivered! Status: ${testRes.delivery?.status || 200} OK`, 'success');
+          const statusText = testRes.deliveries?.[0]?.status || testRes.delivery?.status || '200 OK';
+          State.showToast(`✓ Outbound Webhook Ping Dispatched! Status: ${statusText}`, 'success');
           this.activeTab = 'webhooks';
           App.navigate('schools');
         } else {
-          State.showToast(testRes?.message || 'Webhook ping encountered an error', 'warning');
+          State.showToast(testRes?.error || testRes?.message || 'Webhook ping encountered an error', 'warning');
         }
       } catch (err) {
         State.showToast(err.message || 'Test dispatch failed', 'error');
@@ -4305,6 +4341,18 @@ const DashboardView = {
     });
 
     document.getElementById('btn-save-notif-prefs')?.addEventListener('click', async () => {
+      if (!State.authToken && !localStorage.getItem('skoolfinder_token')) {
+        try {
+          const demoRes = await fetch('/api/auth/demo-login', { method: 'POST' });
+          const data = await demoRes.json();
+          if (data.token) {
+            State.authToken = data.token;
+            State.user = data.user;
+            localStorage.setItem('skoolfinder_token', data.token);
+            localStorage.setItem('skoolfinder_user', JSON.stringify(data.user));
+          }
+        } catch (e) {}
+      }
       const whatsapp = document.getElementById('pref-whatsapp-toggle')?.checked || false;
       const sms = document.getElementById('pref-sms-toggle')?.checked || false;
       const email = document.getElementById('pref-email-toggle')?.checked || false;

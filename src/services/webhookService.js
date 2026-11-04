@@ -136,6 +136,14 @@ function validateTargetUrl(urlStr) {
   return parsed.toString();
 }
 
+function getCandidateSchoolIds(schoolId) {
+  if (!schoolId) return [];
+  if (schoolId === 'sch-gis-accra' || schoolId === 'ab5af86d-c902-4853-9528-d6200104b5f6' || schoolId === 'ghana-international-school') {
+    return ['ab5af86d-c902-4853-9528-d6200104b5f6', 'sch-gis-accra', 'ghana-international-school'];
+  }
+  return [schoolId];
+}
+
 // ============================================================================
 // RESILIENT IN-MEMORY STORAGE (FALLBACK & SEED DATA)
 // ============================================================================
@@ -305,12 +313,13 @@ const WebhookService = {
 
   async getSchoolWebhooks(schoolId) {
     let cloudSubs = [];
+    const candidateIds = getCandidateSchoolIds(schoolId);
 
     try {
       const { data, error } = await supabaseAdmin
         .from('school_webhook_subscriptions')
         .select('*')
-        .eq('school_id', schoolId)
+        .in('school_id', candidateIds)
         .order('created_at', { ascending: false });
 
       if (!error && Array.isArray(data)) {
@@ -325,7 +334,7 @@ const WebhookService = {
     } catch (dbErr) {}
 
     const inMemSubs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS
-      .filter(s => s.school_id === schoolId)
+      .filter(s => candidateIds.includes(s.school_id))
       .map(s => ({
         ...s,
         targetUrl: s.target_url || s.targetUrl,
@@ -353,12 +362,13 @@ const WebhookService = {
 
   async dispatchEvent(schoolId, eventName, payload, user = null) {
     let activeSubs = [];
+    const candidateIds = getCandidateSchoolIds(schoolId);
 
     try {
       const { data, error } = await supabaseAdmin
         .from('school_webhook_subscriptions')
         .select('*')
-        .eq('school_id', schoolId)
+        .in('school_id', candidateIds)
         .eq('is_active', true);
 
       if (!error && Array.isArray(data) && data.length > 0) {
@@ -374,7 +384,7 @@ const WebhookService = {
 
     if (activeSubs.length === 0) {
       activeSubs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.filter(
-        s => s.school_id === schoolId && s.is_active && (s.subscribed_events || s.events || []).includes(eventName)
+        s => candidateIds.includes(s.school_id) && s.is_active && (s.subscribed_events || s.events || []).includes(eventName)
       );
     }
 
@@ -812,24 +822,55 @@ const WebhookService = {
     };
   },
 
-  async getQueueStats(schoolId) {
-    const deliveries = IN_MEMORY_WEBHOOK_DELIVERIES.filter(d => !schoolId || d.school_id === schoolId);
-    const retrying = deliveries.filter(d => d.delivery_status === 'retrying').length;
-    const failed = deliveries.filter(d => d.delivery_status === 'failed').length;
-    const delivered = deliveries.filter(d => d.delivery_status === 'delivered').length;
+  async getQueueStats(schoolId = null) {
+    let cloudDeliveries = [];
+    let cloudSubs = [];
 
-    const subs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.filter(s => !schoolId || s.school_id === schoolId);
-    const suspendedSubs = subs.filter(s => s.is_active === false && s.disabled_reason);
+    try {
+      let qD = supabaseAdmin.from('school_webhook_deliveries').select('id, school_id, delivery_status, attempts, max_attempts');
+      if (schoolId) {
+        const candidateIds = getCandidateSchoolIds(schoolId);
+        qD = qD.in('school_id', candidateIds);
+      }
+      const { data: dData } = await qD;
+      if (Array.isArray(dData)) cloudDeliveries = dData;
+
+      let qS = supabaseAdmin.from('school_webhook_subscriptions').select('id, school_id, is_active, failure_count, disabled_reason');
+      if (schoolId) {
+        const candidateIds = getCandidateSchoolIds(schoolId);
+        qS = qS.in('school_id', candidateIds);
+      }
+      const { data: sData } = await qS;
+      if (Array.isArray(sData)) cloudSubs = sData;
+    } catch (e) {}
+
+    const inMemDeliveries = IN_MEMORY_WEBHOOK_DELIVERIES.filter(d => !schoolId || d.school_id === schoolId);
+    const delivMap = new Map();
+    for (const d of cloudDeliveries) delivMap.set(d.id, d);
+    for (const d of inMemDeliveries) if (!delivMap.has(d.id)) delivMap.set(d.id, d);
+    const allDeliveries = Array.from(delivMap.values());
+
+    const inMemSubs = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.filter(s => !schoolId || s.school_id === schoolId);
+    const subMap = new Map();
+    for (const s of cloudSubs) subMap.set(s.id, s);
+    for (const s of inMemSubs) if (!subMap.has(s.id)) subMap.set(s.id, s);
+    const allSubs = Array.from(subMap.values());
+
+    const retrying = allDeliveries.filter(d => d.delivery_status === 'retrying').length;
+    const failed = allDeliveries.filter(d => d.delivery_status === 'failed').length;
+    const delivered = allDeliveries.filter(d => d.delivery_status === 'delivered').length;
+    const suspendedSubs = allSubs.filter(s => s.is_active === false && s.disabled_reason);
 
     return {
       success: true,
       schoolId,
       stats: {
-        totalDeliveries: deliveries.length,
+        totalDeliveries: allDeliveries.length,
         delivered,
         retrying,
         failed,
-        activeSubscriptions: subs.filter(s => s.is_active).length,
+        successRate: allDeliveries.length > 0 ? Number(((delivered / allDeliveries.length) * 100).toFixed(1)) : 100,
+        activeSubscriptions: allSubs.filter(s => s.is_active).length,
         suspendedSubscriptions: suspendedSubs.length
       }
     };
@@ -898,12 +939,18 @@ const WebhookService = {
 
   async getWebhookDeliveries(schoolId) {
     let logs = [];
+    const candidateIds = getCandidateSchoolIds(schoolId);
 
     try {
-      const { data, error } = await supabaseAdmin
+      let query = supabaseAdmin
         .from('school_webhook_deliveries')
-        .select('*')
-        .eq('school_id', schoolId)
+        .select('*');
+
+      if (schoolId) {
+        query = query.in('school_id', candidateIds);
+      }
+
+      const { data, error } = await query
         .order('dispatched_at', { ascending: false })
         .limit(50);
 
@@ -919,7 +966,7 @@ const WebhookService = {
     } catch (e) {}
 
     if (logs.length === 0) {
-      logs = IN_MEMORY_WEBHOOK_DELIVERIES.filter(d => !schoolId || d.school_id === schoolId);
+      logs = IN_MEMORY_WEBHOOK_DELIVERIES.filter(d => !schoolId || candidateIds.includes(d.school_id));
     }
 
     return {
@@ -1116,24 +1163,35 @@ const WebhookService = {
   },
 
   getNotificationPreferences(schoolId) {
-    const prefs = IN_MEMORY_NOTIFICATION_PREFERENCES[schoolId] || {
-      school_id: schoolId,
-      whatsapp: true,
-      sms: true,
-      email: true,
-      webhook: true,
-      enquiry_alerts: { email: true, sms: true, whatsapp: true, webhook: true },
-      admission_alerts: { email: true, sms: true, whatsapp: true, webhook: true },
-      tender_bid_alerts: { email: true, sms: false, whatsapp: false, webhook: true },
-      billing_alerts: { email: true, sms: true, whatsapp: false, webhook: true },
-      channel_event_matrix: {
-        ParentEnquirySubmitted: { whatsapp: true, sms: true, email: true, webhook: true },
-        AdmissionOfferIssued: { whatsapp: true, sms: true, email: true, webhook: true },
-        AdmissionOfferAccepted: { whatsapp: false, sms: true, email: true, webhook: true },
-        PaymentVerified: { whatsapp: false, sms: true, email: true, webhook: true },
-        TenderPublished: { whatsapp: false, sms: false, email: true, webhook: true }
+    const candidateIds = getCandidateSchoolIds(schoolId);
+    let prefs = null;
+    for (const cid of candidateIds) {
+      if (IN_MEMORY_NOTIFICATION_PREFERENCES[cid]) {
+        prefs = IN_MEMORY_NOTIFICATION_PREFERENCES[cid];
+        break;
       }
-    };
+    }
+
+    if (!prefs) {
+      prefs = {
+        school_id: schoolId,
+        whatsapp: true,
+        sms: true,
+        email: true,
+        webhook: true,
+        enquiry_alerts: { email: true, sms: true, whatsapp: true, webhook: true },
+        admission_alerts: { email: true, sms: true, whatsapp: true, webhook: true },
+        tender_bid_alerts: { email: true, sms: false, whatsapp: false, webhook: true },
+        billing_alerts: { email: true, sms: true, whatsapp: false, webhook: true },
+        channel_event_matrix: {
+          ParentEnquirySubmitted: { whatsapp: true, sms: true, email: true, webhook: true },
+          AdmissionOfferIssued: { whatsapp: true, sms: true, email: true, webhook: true },
+          AdmissionOfferAccepted: { whatsapp: false, sms: true, email: true, webhook: true },
+          PaymentVerified: { whatsapp: false, sms: true, email: true, webhook: true },
+          TenderPublished: { whatsapp: false, sms: false, email: true, webhook: true }
+        }
+      };
+    }
 
     return {
       success: true,

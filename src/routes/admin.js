@@ -7,6 +7,8 @@ const AuditService = require('../services/auditService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
 const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 const MarketplaceService = require('../services/marketplaceService');
+const { WebhookService, IN_MEMORY_WEBHOOK_DELIVERIES, IN_MEMORY_WEBHOOK_SUBSCRIPTIONS } = require('../services/webhookService');
+const { NationalIntegrationsService } = require('../services/nationalIntegrationsService');
 
 /**
  * Helper to generate URL-safe slugs
@@ -2494,6 +2496,184 @@ router.get('/marketplace/audit-log', async (req, res) => {
     return res.json({ success: true, logs });
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// SUPER ADMIN UNIVERSAL WEBHOOK & MULTI-CHANNEL TELEMETRY DESK (PATHWAY 3)
+// ============================================================================
+
+/**
+ * GET /api/admin/webhooks/telemetry
+ * Cross-school outbound webhook & alert telemetry metrics
+ */
+router.get('/webhooks/telemetry', async (req, res) => {
+  try {
+    const statsResult = await WebhookService.getQueueStats(null);
+    const smsStats = await NationalIntegrationsService.getSmsDeliveryStats(null);
+
+    let waCount = 0;
+    try {
+      const { count } = await supabaseAdmin
+        .from('whatsapp_dispatch_logs')
+        .select('*', { count: 'exact', head: true });
+      waCount = count || 0;
+    } catch (e) {}
+
+    const telemetry = {
+      totalDispatched: statsResult.stats?.totalDeliveries || 0,
+      delivered: statsResult.stats?.delivered || 0,
+      retrying: statsResult.stats?.retrying || 0,
+      failed: statsResult.stats?.failed || 0,
+      successRatePct: statsResult.stats?.successRate ?? (
+        (statsResult.stats?.totalDeliveries || 0) > 0
+          ? Number((((statsResult.stats?.delivered || 0) / statsResult.stats.totalDeliveries) * 100).toFixed(1))
+          : 100
+      ),
+      activeSubscriptions: statsResult.stats?.activeSubscriptions || 0,
+      trippedCircuitBreakers: statsResult.stats?.suspendedSubscriptions || 0,
+      whatsappCount: waCount,
+      smsTotalSent: smsStats.totalSent || 0,
+      smsUnitsUsed: smsStats.totalUnitsUsed || 0,
+      smsTotalSpentGhs: smsStats.totalSpentGhs || 0,
+      smsAccountBalanceGhs: smsStats.accountBalanceGhs || 450.00,
+      timestamp: new Date().toISOString()
+    };
+
+    return res.json({ success: true, telemetry });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/admin/sms/balance
+ * Queries Master Hubtel SMS ledger balance and consumption across all schools
+ */
+router.get('/sms/balance', async (req, res) => {
+  try {
+    const smsStats = await NationalIntegrationsService.getSmsDeliveryStats(null);
+    return res.json({
+      success: true,
+      balanceGhs: smsStats.accountBalanceGhs,
+      totalUnitsUsed: smsStats.totalUnitsUsed,
+      totalSpentGhs: smsStats.totalSpentGhs,
+      deliverySuccessRatePct: smsStats.deliverySuccessRatePct,
+      recentDispatches: smsStats.recentLogs
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * GET /api/admin/webhooks/global-deliveries
+ * Global outbound webhook delivery audit feed across all registered schools
+ */
+router.get('/webhooks/global-deliveries', async (req, res) => {
+  try {
+    let cloudDeliveries = [];
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('school_webhook_deliveries')
+        .select('*')
+        .order('dispatched_at', { ascending: false })
+        .limit(50);
+      if (!error && Array.isArray(data)) {
+        cloudDeliveries = data.map(d => ({
+          ...d,
+          event: d.event_type,
+          targetUrl: d.target_url,
+          status: d.response_http_status || 200,
+          dispatchedAt: d.dispatched_at
+        }));
+      }
+    } catch (e) {}
+
+    const mergedMap = new Map();
+    for (const d of cloudDeliveries) mergedMap.set(d.id, d);
+    for (const d of IN_MEMORY_WEBHOOK_DELIVERIES) {
+      if (!mergedMap.has(d.id)) mergedMap.set(d.id, d);
+    }
+
+    const allDeliveries = Array.from(mergedMap.values())
+      .sort((a, b) => new Date(b.dispatchedAt || b.dispatched_at) - new Date(a.dispatchedAt || a.dispatched_at))
+      .slice(0, 50);
+
+    return res.json({
+      success: true,
+      count: allDeliveries.length,
+      deliveries: allDeliveries
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/webhooks/deliveries/:deliveryId/redeliver
+ * Super Admin 1-Click Forced Redelivery for any school delivery
+ */
+router.post('/webhooks/deliveries/:deliveryId/redeliver', async (req, res) => {
+  try {
+    const { deliveryId } = req.params;
+    // Find delivery to get school_id
+    let schoolId = null;
+    try {
+      const { data } = await supabaseAdmin
+        .from('school_webhook_deliveries')
+        .select('school_id')
+        .eq('id', deliveryId)
+        .maybeSingle();
+      if (data) schoolId = data.school_id;
+    } catch (e) {}
+
+    if (!schoolId) {
+      const inMem = IN_MEMORY_WEBHOOK_DELIVERIES.find(d => d.id === deliveryId);
+      if (inMem) schoolId = inMem.school_id;
+    }
+
+    if (!schoolId) {
+      return res.status(404).json({ success: false, error: 'Delivery record not found' });
+    }
+
+    const result = await WebhookService.redeliverEvent(schoolId, deliveryId, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/webhooks/subscriptions/:subscriptionId/reset
+ * Super Admin 1-Click Circuit Breaker Reset for any school subscription
+ */
+router.post('/webhooks/subscriptions/:subscriptionId/reset', async (req, res) => {
+  try {
+    const { subscriptionId } = req.params;
+    let schoolId = null;
+    try {
+      const { data } = await supabaseAdmin
+        .from('school_webhook_subscriptions')
+        .select('school_id')
+        .eq('id', subscriptionId)
+        .maybeSingle();
+      if (data) schoolId = data.school_id;
+    } catch (e) {}
+
+    if (!schoolId) {
+      const inMem = IN_MEMORY_WEBHOOK_SUBSCRIPTIONS.find(s => s.id === subscriptionId);
+      if (inMem) schoolId = inMem.school_id;
+    }
+
+    if (!schoolId) {
+      return res.status(404).json({ success: false, error: 'Webhook subscription record not found' });
+    }
+
+    const result = await WebhookService.resetCircuitBreaker(schoolId, subscriptionId, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 
