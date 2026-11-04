@@ -133,7 +133,7 @@ const HomeView = {
                 <span>🇬🇭</span> Dedicated Educational Ecosystem
               </div>
               <h3 style="color: #ffffff; font-size: 1.6rem; font-family: var(--font-heading); margin-top: 0.2rem; margin-bottom: 0.25rem;">
-                Enter Your SkoolFinder Portal
+                Who Are You
               </h3>
               <p style="color: #cbd5e1; font-size: 0.88rem; margin: 0; max-width: 650px;">
                 Access your specialized workspace with live Mobile Money payments, verified directories, and administration tools.
@@ -144,14 +144,14 @@ const HomeView = {
             </button>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem;">
             <!-- Portal 1: Parents -->
             <div class="home-portal-card" data-portal="parents" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(59,130,246,0.3); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
               <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
                 <span style="font-size: 1.75rem;">👨‍👩‍👧</span>
                 <span style="font-size: 0.68rem; font-weight: 800; background: rgba(59,130,246,0.25); color: #93c5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">/parents</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Parents Portal</h4>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Parent</h4>
               <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
                 Pay fees via MoMo, track school bus live GPS, view student ID & hire home tutors.
               </p>
@@ -166,7 +166,7 @@ const HomeView = {
                 <span style="font-size: 1.75rem;">🧑‍🏫</span>
                 <span style="font-size: 0.68rem; font-weight: 800; background: rgba(16,185,129,0.25); color: #6ee7b7; padding: 0.2rem 0.5rem; border-radius: 100px;">/teachers</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Teachers Portal</h4>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Teacher</h4>
               <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
                 Educator marketplace: advertise home tuition, NTC vetting & school job openings.
               </p>
@@ -181,7 +181,7 @@ const HomeView = {
                 <span style="font-size: 1.75rem;">📦</span>
                 <span style="font-size: 0.68rem; font-weight: 800; background: rgba(245,158,11,0.25); color: #fde68a; padding: 0.2rem 0.5rem; border-radius: 100px;">/suppliers</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Suppliers Portal</h4>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Supplier</h4>
               <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
                 B2B procurement: bid on school RFQs for textbooks, uniforms, ICT gear & lab items.
               </p>
@@ -196,7 +196,7 @@ const HomeView = {
                 <span style="font-size: 1.75rem;">🏫</span>
                 <span style="font-size: 0.68rem; font-weight: 800; background: rgba(139,92,246,0.25); color: #c4b5fd; padding: 0.2rem 0.5rem; border-radius: 100px;">/schools</span>
               </div>
-              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">Schools Portal</h4>
+              <h4 style="color: #ffffff; font-size: 1.05rem; margin: 0 0 0.35rem 0;">School Owner / Proprietor</h4>
               <p style="color: #94a3b8; font-size: 0.78rem; line-height: 1.4; margin: 0 0 0.85rem 0;">
                 School Management OS: admissions pipeline, bursar MoMo ledger & bus fleet dispatch.
               </p>
