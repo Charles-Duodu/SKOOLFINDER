@@ -19,6 +19,7 @@ const admissionsRoutes = require('./src/routes/admissions');
 const uploadRoutes = require('./src/routes/upload');
 const notificationsRoutes = require('./src/routes/notifications');
 const jobsRoutes = require('./src/routes/jobs');
+const groupsRoutes = require('./src/routes/groups');
 const { strictLimiter, standardLimiter } = require('./src/middleware/rateLimiter');
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -68,6 +69,7 @@ app.use('/api/payments', paymentsRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/jobs', jobsRoutes);
+app.use('/api/groups', groupsRoutes);
 app.use('/api', rfqsRoutes);
 
 // Helpful reviews upvote and reply

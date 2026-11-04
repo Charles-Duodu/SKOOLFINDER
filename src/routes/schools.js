@@ -6,6 +6,7 @@ const EmailService = require('../services/emailService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
 const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 const MarketplaceService = require('../services/marketplaceService');
+const { IntelligenceOperationsService } = require('../services/intelligenceOperationsService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -1464,6 +1465,184 @@ router.get('/:id/vacancies/:vacancyId/applicants/:appId/offer', optionalAuth, as
     const offer = MarketplaceService.getTeacherOfferLetter(appId);
     if (!offer) return res.status(404).json({ error: 'Offer letter not found' });
     return res.json({ success: true, offer });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// PHASE 5: ADVANCED INTELLIGENCE & CAMPUS OPERATIONS (Module 15 & 19)
+// ============================================================================
+
+/**
+ * GET /api/schools/:id/analytics/predictive-yield
+ */
+router.get('/:id/analytics/predictive-yield', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getPredictiveYield(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/analytics/cohort-retention
+ */
+router.get('/:id/analytics/cohort-retention', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getCohortRetention(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/analytics/revenue-projections
+ */
+router.get('/:id/analytics/revenue-projections', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getRevenueProjections(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * Fixed Assets: GET & POST & PATCH
+ */
+router.get('/:id/operations/assets', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getAssets(req.params.id, req.query.category);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/operations/assets', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.createAsset(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.patch('/:id/operations/assets/:assetId', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.updateAsset(req.params.id, req.params.assetId, req.body, req.user);
+    return res.json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Library (LMS): Books & Loans
+ */
+router.get('/:id/operations/library/books', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getLibraryBooks(req.params.id, req.query.q);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/operations/library/books', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.addLibraryBook(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/:id/operations/library/loans', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getLibraryLoans(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/operations/library/loans', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.issueBookLoan(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.patch('/:id/operations/library/loans/:loanId/return', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.returnBookLoan(req.params.id, req.params.loanId, req.body, req.user);
+    return res.json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Transport Fleet & Routes
+ */
+router.get('/:id/operations/transport/fleet', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getFleet(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/operations/transport/fleet', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.addFleetVehicle(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/:id/operations/transport/routes', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getTransportRoutes(req.params.id);
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/:id/operations/transport/routes', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.createTransportRoute(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * Communications & SMS
+ */
+router.post('/:id/communications/sms/dispatch', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.dispatchSms(req.params.id, req.body, req.user);
+    return res.status(201).json(data);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.get('/:id/communications/sms/logs', optionalAuth, async (req, res) => {
+  try {
+    const data = await IntelligenceOperationsService.getSmsLogs(req.params.id);
+    return res.json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

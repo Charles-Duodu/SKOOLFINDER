@@ -4,6 +4,10 @@
 const API = {
   baseUrl: '/api',
 
+  getHeaders(customHeaders = {}) {
+    return this.getAuthHeaders(customHeaders);
+  },
+
   getAuthHeaders(customHeaders = {}) {
     const headers = { ...customHeaders };
     const token = typeof State !== 'undefined' && State.authToken ? State.authToken : localStorage.getItem('skoolfinder_token');
@@ -1600,7 +1604,7 @@ const API = {
       body: JSON.stringify({ code: codeOrIndex, indexNumber: codeOrIndex })
     });
     return res.json();
-  }
+  },
 
   // ============================================================================
   // BLUEPRINT v2.0: SCHOOL OWNER & PROPRIETOR PORTAL API (PHASE 1: SCH-001 - SCH-010)
@@ -2229,4 +2233,169 @@ const API = {
     return res.json();
   }
 
+,
+
+  // ==========================================================================
+  // PHASE 5: ADVANCED INTELLIGENCE & CAMPUS OPERATIONS
+  // ==========================================================================
+
+  async getPredictiveYield(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/analytics/predictive-yield`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getCohortRetention(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/analytics/cohort-retention`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getRevenueProjections(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/analytics/revenue-projections`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getCampusAssets(schoolId, category = '') {
+    const url = category
+      ? `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/assets?category=${encodeURIComponent(category)}`
+      : `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/assets`;
+    const res = await fetch(url, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async createCampusAsset(schoolId, assetData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/assets`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(assetData)
+    });
+    return res.json();
+  },
+
+  async updateCampusAsset(schoolId, assetId, updates = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/assets/${encodeURIComponent(assetId)}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(updates)
+    });
+    return res.json();
+  },
+
+  async getLibraryBooks(schoolId, query = '') {
+    const url = query
+      ? `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/library/books?q=${encodeURIComponent(query)}`
+      : `${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/library/books`;
+    const res = await fetch(url, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async addLibraryBook(schoolId, bookData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/library/books`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(bookData)
+    });
+    return res.json();
+  },
+
+  async issueLibraryLoan(schoolId, loanData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/library/loans`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(loanData)
+    });
+    return res.json();
+  },
+
+  async returnLibraryLoan(schoolId, loanId, returnData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/library/loans/${encodeURIComponent(loanId)}/return`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(returnData)
+    });
+    return res.json();
+  },
+
+  async getTransportFleet(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/transport/fleet`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async addTransportVehicle(schoolId, vehicleData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/transport/fleet`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(vehicleData)
+    });
+    return res.json();
+  },
+
+  async getTransportRoutes(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/transport/routes`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createTransportRoute(schoolId, routeData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/operations/transport/routes`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(routeData)
+    });
+    return res.json();
+  },
+
+  async createSchoolGroup(groupData = {}) {
+    const res = await fetch(`${this.baseUrl}/groups/create`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(groupData)
+    });
+    return res.json();
+  },
+
+  async linkSchoolToGroup(groupId, schoolData = {}) {
+    const res = await fetch(`${this.baseUrl}/groups/${encodeURIComponent(groupId)}/link-school`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(schoolData)
+    });
+    return res.json();
+  },
+
+  async getSchoolGroupDashboard(groupId) {
+    const res = await fetch(`${this.baseUrl}/groups/${encodeURIComponent(groupId)}/dashboard`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async dispatchSchoolSms(schoolId, smsData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/communications/sms/dispatch`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(smsData)
+    });
+    return res.json();
+  },
+
+  async getSchoolSmsLogs(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/communications/sms/logs`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  }
+
 };
+
+if (typeof window !== "undefined") {
+  window.API = API;
+}

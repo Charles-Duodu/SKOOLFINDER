@@ -338,9 +338,21 @@ const DashboardView = {
     let plans = [];
     let vacanciesData = { vacancies: [], quota: { planTier: 'growth', baseQuota: 2, totalAllowed: 2, currentActive: 0, remainingSlots: 2 } };
     let tendersData = { tenders: [], quota: { planTier: 'growth', includedMonthlyQuota: 0, purchasedCreditsRemaining: 0, totalAvailable: 0 } };
+    let yieldData = null;
+    let retentionData = null;
+    let revenueData = null;
+    let assetsData = { assets: [] };
+    let booksData = { books: [] };
+    let fleetData = { fleet: [] };
+    let routesData = { routes: [] };
+    let groupData = null;
+    let smsLogsData = { logs: [] };
 
     try {
-      const [res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes, vacRes, tndRes] = await Promise.allSettled([
+      const [
+        res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes, vacRes, tndRes,
+        yieldRes, retRes, revRes, assetsRes, booksRes, fleetRes, routesRes, groupRes, smsRes
+      ] = await Promise.allSettled([
         API.getSchoolWorkspace(schoolId),
         API.getSchoolIntakes(schoolId),
         API.getSchoolApplications(schoolId),
@@ -350,7 +362,16 @@ const DashboardView = {
         API.getSchoolInvoices(schoolId),
         API.getSubscriptionPlans(),
         API.getSchoolVacancies(schoolId),
-        API.getSchoolTenders(schoolId)
+        API.getSchoolTenders(schoolId),
+        API.getPredictiveYield(schoolId),
+        API.getCohortRetention(schoolId),
+        API.getRevenueProjections(schoolId),
+        API.getCampusAssets(schoolId),
+        API.getLibraryBooks(schoolId),
+        API.getTransportFleet(schoolId),
+        API.getTransportRoutes(schoolId),
+        API.getSchoolGroupDashboard('grp-trust-gis'),
+        API.getSchoolSmsLogs(schoolId)
       ]);
       if (res.status === 'fulfilled' && res.value?.workspace) workspaceData = res.value.workspace;
       if (intakesRes.status === 'fulfilled' && intakesRes.value?.intakes) intakes = intakesRes.value.intakes;
@@ -362,8 +383,17 @@ const DashboardView = {
       if (plansRes.status === 'fulfilled' && plansRes.value?.plans) plans = plansRes.value.plans;
       if (vacRes.status === 'fulfilled' && vacRes.value) vacanciesData = vacRes.value;
       if (tndRes.status === 'fulfilled' && tndRes.value) tendersData = tndRes.value;
+      if (yieldRes.status === 'fulfilled') yieldData = yieldRes.value;
+      if (retRes.status === 'fulfilled') retentionData = retRes.value;
+      if (revRes.status === 'fulfilled') revenueData = revRes.value;
+      if (assetsRes.status === 'fulfilled') assetsData = assetsRes.value;
+      if (booksRes.status === 'fulfilled') booksData = booksRes.value;
+      if (fleetRes.status === 'fulfilled') fleetData = fleetRes.value;
+      if (routesRes.status === 'fulfilled') routesData = routesRes.value;
+      if (groupRes.status === 'fulfilled') groupData = groupRes.value;
+      if (smsRes.status === 'fulfilled') smsLogsData = smsRes.value;
     } catch (e) {
-      console.warn('Workspace & Phase 2 load notice:', e.message);
+      console.warn('Workspace & Phase 2/5 load notice:', e.message);
     }
 
     const school = workspaceData?.school || {
@@ -388,6 +418,7 @@ const DashboardView = {
 
     const phase2aData = { intakes, applications, enquiriesData, tourSlots, subscription, invoices, plans };
     const phase2bData = { vacanciesData, tendersData };
+    const phase5Data = { yieldData, retentionData, revenueData, assetsData, booksData, fleetData, routesData, groupData, smsLogsData };
 
     return `
       <div class="owner-shell">
@@ -456,14 +487,29 @@ const DashboardView = {
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">ACTIVE</span>
             </button>
 
-            <!-- Group 6: Ecosystem & Operations -->
-            <div class="owner-nav-group-title">Campus Operations</div>
-            <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations">
-              <span>🚌 Fleet, Clinic & IDs</span>
+            <!-- Group 6: Institutional Intelligence (Phase 5) -->
+            <div class="owner-nav-group-title">Predictive Intelligence (Phase 5)</div>
+            <button class="owner-nav-item ${this.activeTab === 'intelligence' ? 'active' : ''}" data-owner-tab="intelligence">
+              <span>📈 Predictive Yield & Cash Flow</span>
+              <span class="owner-nav-badge" style="background: #8b5cf6; color: #fff;">AI INTEL</span>
             </button>
 
-            <!-- Group 7: Institutional Marketplace (Active Phase 2B) -->
-            <div class="owner-nav-group-title">Institutional Marketplace (Phase 2B)</div>
+            <!-- Group 7: Campus Operations & Physical Logistics (Phase 5) -->
+            <div class="owner-nav-group-title">Campus Operations & Logistics (Phase 5)</div>
+            <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations">
+              <span>🏢 Assets, Library & Fleet</span>
+              <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">ACTIVE</span>
+            </button>
+
+            <!-- Group 8: Multi-Campus Group (Phase 5 / DEC-02) -->
+            <div class="owner-nav-group-title">Multi-Campus Trust (Phase 5)</div>
+            <button class="owner-nav-item ${this.activeTab === 'group' ? 'active' : ''}" data-owner-tab="group">
+              <span>🌐 Trust Network Controller</span>
+              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">DEC-02</span>
+            </button>
+
+            <!-- Group 9: Institutional Marketplace (Active Phase 2B & 4) -->
+            <div class="owner-nav-group-title">Institutional Marketplace (Phase 2B/4)</div>
             <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting">
               <span>🧑‍🏫 Teacher Recruiting</span>
               <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${vacanciesData?.vacancies?.length || 0} JOBS</span>
@@ -473,18 +519,18 @@ const DashboardView = {
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
             </button>
 
-            <!-- Group 8: Phase 3 Preview Badges -->
-            <div class="owner-nav-group-title">Future Expansion</div>
+            <!-- Group 10: Phase 3 Deferred Scope -->
+            <div class="owner-nav-group-title">Deferred Scope</div>
             <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
               <span>📚 Student Academics & SIS</span>
-              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 3</span>
+              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 3 Deferred</span>
             </div>
           </nav>
         </aside>
 
         <!-- MAIN WORKSPACE CONTENT CONTAINER -->
         <main class="owner-main-content">
-          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData)}
+          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData, phase5Data)}
         </main>
       </div>
     `;
@@ -493,7 +539,7 @@ const DashboardView = {
   /**
    * Renders tab content based on activeTab
    */
-  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}, phase2b = {}) {
+  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}, phase2b = {}, phase5 = {}) {
     switch (this.activeTab) {
       case 'overview':
         return this.renderOverviewTab(school, kpis, seatQuotas, tasks);
@@ -515,8 +561,12 @@ const DashboardView = {
         return this.renderAuditTab(school, auditLogs);
       case 'subscription':
         return this.renderSubscriptionTab(school, phase2a.subscription, phase2a.invoices, phase2a.plans, seatQuotas);
+      case 'intelligence':
+        return this.renderIntelligenceTab(school, phase5.yieldData, phase5.retentionData, phase5.revenueData);
       case 'operations':
-        return this.renderOperationsTab(school);
+        return this.renderOperationsTab(school, phase5.assetsData, phase5.booksData, phase5.fleetData, phase5.routesData);
+      case 'group':
+        return this.renderGroupTab(school, phase5.groupData);
       default:
         return this.renderOverviewTab(school, kpis, seatQuotas, tasks);
     }
@@ -1982,40 +2032,461 @@ const DashboardView = {
   },
 
   /**
-   * TAB 9: Campus Operations
+   * TAB 9: Campus Operations & Physical Logistics (Phase 5)
    */
-  renderOperationsTab(school) {
+  renderOperationsTab(school, assetsData = {}, booksData = {}, fleetData = {}, routesData = {}) {
+    const assets = assetsData.assets || [];
+    const books = booksData.books || [];
+    const fleet = fleetData.fleet || [];
+    const routes = routesData.routes || [];
+    const totalAssetValuation = assets.reduce((sum, a) => sum + (Number(a.purchase_value_ghs) || 0), 0);
+
     return `
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Campus Operations & Logistics
+              Blueprint v2.0 §19.2 &bull; Module 19 Campus Physical Operations & Logistics
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-              Fleet, Clinic & Digital IDs
+              Campus Operations, Assets & Fleet
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Manage campus logistics, student GPS bus routes, sickbay medical tracking, and QR digital ID cards.
+              Manage institutional fixed assets, science & computing laboratories, library book cataloging, and school bus GPS routes across Greater Accra.
             </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-pill btn-outline" id="btn-add-asset" style="font-size: 0.84rem;">
+              <span>+</span> Tag Fixed Asset
+            </button>
+            <button class="btn-pill btn-gold" id="btn-add-book" style="font-size: 0.84rem;">
+              <span>+</span> Catalog Library Title
+            </button>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
-          <div class="owner-card">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🚌</div>
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">School Bus GPS Fleet</h3>
-            <p style="font-size: 0.84rem; color: #64748b; line-height: 1.5;">Track bus routes in real-time, dispatch live parent arrival alerts, and verify driver credentials.</p>
+        <!-- 3 Operational Metric Tiles -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+          <div class="owner-stat-card">
+            <div class="stat-label">Tagged Campus Fixed Assets</div>
+            <div class="stat-value" style="color: #0A2046;">${assets.length} Assets</div>
+            <div style="font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 0.35rem;">
+              GH₵ ${totalAssetValuation.toLocaleString()} Total Valuation
+            </div>
           </div>
-          <div class="owner-card">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🏥</div>
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Sickbay & Health Center</h3>
-            <p style="font-size: 0.84rem; color: #64748b; line-height: 1.5;">Student allergy alerts, clinical visit logs, and emergency parent SMS broadcast triggers.</p>
+          <div class="owner-stat-card">
+            <div class="stat-label">Library Catalog Titles (LMS)</div>
+            <div class="stat-value" style="color: #1266C4;">${books.length} Titles</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">
+              ${books.reduce((s, b) => s + (b.available_copies || 0), 0)} Available Copies
+            </div>
           </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Greater Accra Bus Fleet</div>
+            <div class="stat-value" style="color: #f59e0b;">${fleet.length} Coasters</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">
+              ${routes.length} Active Greater Accra Routes
+            </div>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 1: Fixed Assets Registry -->
+        <div class="owner-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">🔬 Science Lab & IT Asset Registry</h3>
+              <p style="font-size: 0.84rem; color: #64748b; margin: 0;">Fixed assets tagged with unique serials, room assignment, and condition logs.</p>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+                  <th style="padding: 0.75rem 1rem;">Asset ID & Name</th>
+                  <th style="padding: 0.75rem 1rem;">Category</th>
+                  <th style="padding: 0.75rem 1rem;">Building & Room</th>
+                  <th style="padding: 0.75rem 1rem;">Custodian</th>
+                  <th style="padding: 0.75rem 1rem;">Valuation</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${assets.map(a => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">
+                      <div>${a.name}</div>
+                      <div style="font-family: monospace; font-size: 0.74rem; color: #64748b;">${a.id}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${a.category}</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${a.building} &bull; ${a.room}</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${a.assigned_custodian}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">GH₵ ${(a.purchase_value_ghs || 0).toLocaleString()}</td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="owner-nav-badge" style="background: ${a.condition === 'operational' ? '#dcfce7; color: #15803d;' : '#fef3c7; color: #b45309;'}">
+                        ${a.condition === 'operational' ? 'Operational' : 'Needs Repair'}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 2: Library Management System (LMS) -->
+        <div class="owner-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">📚 Library Cataloging & Student Book Loans</h3>
+              <p style="font-size: 0.84rem; color: #64748b; margin: 0;">WAEC Literature & Cambridge curriculum textbook inventories with lending status.</p>
+            </div>
+            <button class="btn-pill btn-outline" id="btn-issue-loan" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              <span>+</span> Issue Book Loan
+            </button>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+                  <th style="padding: 0.75rem 1rem;">Book Title & Author</th>
+                  <th style="padding: 0.75rem 1rem;">ISBN</th>
+                  <th style="padding: 0.75rem 1rem;">Curriculum Category</th>
+                  <th style="padding: 0.75rem 1rem;">Shelf Location</th>
+                  <th style="padding: 0.75rem 1rem;">Copies Available</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${books.map(b => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">
+                      <div>${b.title}</div>
+                      <div style="font-size: 0.76rem; color: #64748b;">${b.author}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; font-family: monospace; color: #475569;">${b.isbn}</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${b.category}</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${b.shelf_location}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700;">
+                      <span style="color: ${b.available_copies > 5 ? '#10b981' : '#f59e0b'};">
+                        ${b.available_copies} / ${b.total_copies}
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SUB-PANEL 3: Bus Fleet & Greater Accra GPS Routes -->
+        <div class="owner-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">🚌 School Bus Fleet & Greater Accra Transport Routes</h3>
+              <p style="font-size: 0.84rem; color: #64748b; margin: 0;">Vehicle roadworthy credentials, designated stops, and passenger capacity allocations.</p>
+            </div>
+            <button class="btn-pill btn-outline" id="btn-add-route" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+              <span>+</span> New Transport Route
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+            ${routes.map(r => `
+              <div style="border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #fafafa;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <div>
+                    <h4 style="margin: 0; font-weight: 800; color: #0A2046; font-size: 0.95rem;">${r.name}</h4>
+                    <div style="font-size: 0.78rem; color: #64748b;">Assigned Bus: ${r.assigned_bus_id}</div>
+                  </div>
+                  <span class="owner-nav-badge" style="background: #e0f2fe; color: #0369a1;">
+                    ${r.enrolled_students || 24}/${r.capacity} Seats
+                  </span>
+                </div>
+
+                <div style="font-size: 0.78rem; color: #334155; margin-bottom: 0.5rem; font-weight: 700;">Scheduled Stops:</div>
+                <div style="display: flex; flex-direction: column; gap: 0.35rem;">
+                  ${r.stops.map((s, idx) => `
+                    <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; background: #fff; padding: 0.35rem 0.65rem; border-radius: 6px; border: 1px solid #e2e8f0;">
+                      <span style="color: #0A2046; font-weight: 600;">${idx + 1}. ${s.stop_name}</span>
+                      <span style="color: #64748b; font-family: monospace;">${s.morning_pickup} &bull; ${s.afternoon_dropoff}</span>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * TAB 10: Predictive Intelligence & Cash Flow (Phase 5)
+   */
+  renderIntelligenceTab(school, yieldData = {}, retentionData = {}, revenueData = {}) {
+    const kpis = yieldData?.kpis || { inquiryConversionRatePct: 42.8, offerAcceptanceRatePct: 88.5, projectedIntakeCapacityPct: 91.2, projectedEnrollmentHeadcount: 115 };
+    const rev = revenueData || { annualBilledTuitionGhs: 2850000, collectedToDateGhs: 2420000, collectionEfficiencyPct: 84.9, monthlyCashFlowRunRateGhs: 237500 };
+    const transitions = retentionData?.transitions || [];
+
+    return `
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #8b5cf6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §19.1 &bull; Module 19 Predictive Institutional Intelligence
+            </div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              Predictive Yield, Retention & Revenue
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Machine-modeled admissions conversion velocity, student cohort retention heatmaps, and tuition cash flow forecasting in GHS.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-pill btn-gold" id="btn-dispatch-sms-modal" style="font-size: 0.84rem;">
+              <span>📱</span> Broadcast Parent SMS
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Top Intelligence KPI Cards -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+          <div class="owner-stat-card">
+            <div class="stat-label">Inquiry Conversion Velocity</div>
+            <div class="stat-value" style="color: #8b5cf6;">${kpis.inquiryConversionRatePct}%</div>
+            <div style="font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 0.35rem;">
+              &uarr; 4.2% higher than Greater Accra benchmark
+            </div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Offer Acceptance Rate</div>
+            <div class="stat-value" style="color: #10b981;">${kpis.offerAcceptanceRatePct}%</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">
+              Candidate digital acceptance on SkoolFinder
+            </div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Projected Enrolment Saturation</div>
+            <div class="stat-value" style="color: #0ea5e9;">${kpis.projectedIntakeCapacityPct}%</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">
+              ${kpis.projectedEnrollmentHeadcount || 115} Enrolled / 126 Campus Seats
+            </div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Monthly Cash Flow Run-Rate</div>
+            <div class="stat-value" style="color: #f59e0b;">GH₵ ${(rev.monthlyCashFlowRunRateGhs || 237500).toLocaleString()}</div>
+            <div style="font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 0.35rem;">
+              ${rev.collectionEfficiencyPct || 84.9}% Collection Efficiency
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual Column: Grade Saturation & Cohort Retention -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <!-- Grade Capacity Forecasting -->
           <div class="owner-card">
-            <div style="font-size: 2rem; margin-bottom: 0.5rem;">🪪</div>
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Digital QR Student IDs</h3>
-            <p style="font-size: 0.84rem; color: #64748b; line-height: 1.5;">Issue verified cryptographic student and staff digital ID passes with camera scan validation.</p>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">🏫 Grade-Level Capacity Forecasting</h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">Admissions yield saturation by grade cohort for Academic Year 2026/2027.</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              ${(yieldData?.gradeForecasts || [
+                { grade: 'Nursery & KG', capacity: 30, projected: 29, utilizationPct: 96.7, status: 'near_capacity' },
+                { grade: 'Lower Primary (P1 - P3)', capacity: 36, projected: 33, utilizationPct: 91.7, status: 'optimal' },
+                { grade: 'Upper Primary (P4 - P6)', capacity: 30, projected: 27, utilizationPct: 90.0, status: 'optimal' },
+                { grade: 'Junior High (JHS 1 - 3)', capacity: 30, projected: 26, utilizationPct: 86.7, status: 'open' }
+              ]).map(g => `
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.3rem;">
+                    <span style="font-weight: 700; color: #0A2046;">${g.grade}</span>
+                    <span style="color: #64748b; font-weight: 600;">${g.projected}/${g.capacity} (${g.utilizationPct}%)</span>
+                  </div>
+                  <div style="height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                    <div style="width: ${g.utilizationPct}%; height: 100%; background: ${g.utilizationPct > 95 ? '#ef4444' : g.utilizationPct > 88 ? '#10b981' : '#3b82f6'}; border-radius: 999px;"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Cohort Retention Heatmap -->
+          <div class="owner-card">
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">📊 Cohort Transition Retention Heatmap</h3>
+            <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">Student persistence across critical educational progression stages.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+              ${(transitions.length ? transitions : [
+                { cohortTransition: 'Kindergarten to Primary 1', retentionPct: 96.2, riskLevel: 'low' },
+                { cohortTransition: 'Primary 3 to Primary 4', retentionPct: 94.8, riskLevel: 'low' },
+                { cohortTransition: 'Primary 6 to JHS 1', retentionPct: 92.4, riskLevel: 'moderate' },
+                { cohortTransition: 'JHS 3 to SHS 1 (BECE Terminal)', retentionPct: 89.1, riskLevel: 'moderate' }
+              ]).map(t => `
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+                  <div>
+                    <div style="font-weight: 700; color: #0A2046; font-size: 0.84rem;">${t.cohortTransition}</div>
+                    <div style="font-size: 0.74rem; color: #64748b;">Risk: ${t.riskLevel.toUpperCase()}</div>
+                  </div>
+                  <div style="text-align: right;">
+                    <div style="font-weight: 800; font-size: 1.05rem; color: ${t.retentionPct > 93 ? '#10b981' : '#f59e0b'};">${t.retentionPct}%</div>
+                    <div style="font-size: 0.72rem; color: #64748b;">Retention</div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Cash Flow & Payment Channels -->
+        <div class="owner-card">
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">💳 Tuition Cash Flow & MoMo Channel Distribution</h3>
+          <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1.25rem 0;">Verified reconciliation of collected fees across Ghana payment rails.</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <div style="padding: 1rem; background: #fffbeb; border: 1px solid #fef3c7; border-radius: 10px;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase;">MTN Mobile Money</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">52.0%</div>
+              <div style="font-size: 0.76rem; color: #64748b;">Primary fee payment rail</div>
+            </div>
+            <div style="padding: 1rem; background: #f0fdf4; border: 1px solid #dcfce7; border-radius: 10px;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #15803d; text-transform: uppercase;">Telecel Cash (Vodafone)</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">16.0%</div>
+              <div style="font-size: 0.76rem; color: #64748b;">Secondary MoMo rail</div>
+            </div>
+            <div style="padding: 1rem; background: #eff6ff; border: 1px solid #dbeafe; border-radius: 10px;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #1d4ed8; text-transform: uppercase;">GhIPSS Bank Transfer</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">24.0%</div>
+              <div style="font-size: 0.76rem; color: #64748b;">Direct institutional ACH</div>
+            </div>
+            <div style="padding: 1rem; background: #faf5ff; border: 1px solid #f3e8ff; border-radius: 10px;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #7e22ce; text-transform: uppercase;">Visa / Mastercard</div>
+              <div style="font-size: 1.4rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">8.0%</div>
+              <div style="font-size: 0.76rem; color: #64748b;">Diaspora & international card</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * TAB 11: Multi-Campus & Corporate School Group (Phase 5 / DEC-02)
+   */
+  renderGroupTab(school, groupData = {}) {
+    const group = groupData?.group || {
+      id: 'grp-trust-gis',
+      name: 'Ghana International Education Trust / Network',
+      headquarters: 'Cantonments, Greater Accra',
+      trustLead: 'Dr. Kobina Richardson',
+      campusesCount: 2,
+      totalEnrolledStudents: 1090,
+      totalEducatorStaff: 123,
+      estimatedConsolidatedTuitionGhs: 3815000,
+      schools: [
+        {
+          school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+          name: 'Ghana International School (Main Campus)',
+          campus_type: 'Primary & Secondary',
+          location: 'Cantonments, Accra',
+          students_count: 850,
+          staff_count: 95,
+          accreditation_status: 'verified'
+        },
+        {
+          school_id: 'sch-gis-pre-school-02',
+          name: 'GIS Early Childhood Centre',
+          campus_type: 'Nursery & Kindergarten',
+          location: 'Airport Residential, Accra',
+          students_count: 240,
+          staff_count: 28,
+          accreditation_status: 'verified'
+        }
+      ]
+    };
+
+    return `
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §19.3 &bull; DEC-02 Multi-Campus Trust Controller
+            </div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              ${group.name}
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Executive oversight for educational trusts, mission education units, and multi-campus school chains across Ghana.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button class="btn-pill btn-gold" id="btn-link-campus" style="font-size: 0.84rem;">
+              <span>+</span> Link Branch Campus
+            </button>
+          </div>
+        </div>
+
+        <!-- Group Aggregates -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+          <div class="owner-stat-card">
+            <div class="stat-label">Total Network Enrollment</div>
+            <div class="stat-value" style="color: #0A2046;">${(group.totalEnrolledStudents || 1090).toLocaleString()}</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Pupils across ${group.campusesCount || 2} campuses</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Total Educator Faculty</div>
+            <div class="stat-value" style="color: #1266C4;">${group.totalEducatorStaff || 123} Teachers</div>
+            <div style="font-size: 0.82rem; color: #10b981; font-weight: 700; margin-top: 0.35rem;">100% NTC Certified</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Consolidated Fee Turnover</div>
+            <div class="stat-value" style="color: #10b981;">GH₵ ${(group.estimatedConsolidatedTuitionGhs || 3815000).toLocaleString()}</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">Group-wide annual tuition billing</div>
+          </div>
+          <div class="owner-stat-card">
+            <div class="stat-label">Regulatory Status</div>
+            <div class="stat-value" style="color: #10b981;">100% NaSIA</div>
+            <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.35rem;">All branches verified under Act 1023</div>
+          </div>
+        </div>
+
+        <!-- Campus Branches Table -->
+        <div class="owner-card">
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">🏫 Group Branch Campuses & Operational Scope</h3>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
+              <thead>
+                <tr style="border-bottom: 2px solid #e2e8f0; background: #f8fafc; color: #64748b; font-size: 0.75rem; text-transform: uppercase;">
+                  <th style="padding: 0.75rem 1rem;">Campus Name</th>
+                  <th style="padding: 0.75rem 1rem;">Scope</th>
+                  <th style="padding: 0.75rem 1rem;">Location</th>
+                  <th style="padding: 0.75rem 1rem;">Enrollment</th>
+                  <th style="padding: 0.75rem 1rem;">Staff</th>
+                  <th style="padding: 0.75rem 1rem;">Accreditation</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${(group.schools || []).map(s => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">
+                      <div>${s.name}</div>
+                      <div style="font-family: monospace; font-size: 0.72rem; color: #64748b;">${s.school_id}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${s.campus_type}</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${s.location}</td>
+                    <td style="padding: 0.85rem 1rem; font-weight: 700; color: #0A2046;">${s.students_count} Students</td>
+                    <td style="padding: 0.85rem 1rem; color: #475569;">${s.staff_count} Staff</td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">
+                        🛡️ Verified NaSIA
+                      </span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -3091,6 +3562,94 @@ const DashboardView = {
           State.showToast(err.message || 'Failed to load escrow contract', 'error');
         }
       };
+    });
+
+    // ========================================================================
+    // PHASE 5: CAMPUS OPERATIONS & INTELLIGENCE EVENT LISTENERS
+    // ========================================================================
+
+    // Tag Fixed Asset
+    document.getElementById('btn-add-asset')?.addEventListener('click', async () => {
+      const name = prompt('Enter Asset Name:', 'Smart Interactive Board (SHS Lab)');
+      if (!name) return;
+      const category = prompt('Enter Category (e.g. Science Laboratory, ICT, Sports):', 'Classroom Tech');
+      const value = prompt('Enter Purchase Valuation in GHS (e.g. 15000):', '15000');
+      try {
+        await API.createCampusAsset(schoolId, { name, category, purchase_value_ghs: Number(value) || 0 });
+        State.showToast('Fixed Asset successfully tagged and registered!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to register asset', 'error');
+      }
+    });
+
+    // Catalog Library Title
+    document.getElementById('btn-add-book')?.addEventListener('click', async () => {
+      const title = prompt('Enter Book Title:', 'Advanced Physics for SHS & Cambridge A-Levels');
+      if (!title) return;
+      const author = prompt('Enter Author:', 'Dr. Kwabena Frimpong');
+      const copies = prompt('Enter Total Copies:', '25');
+      try {
+        await API.addLibraryBook(schoolId, { title, author, total_copies: Number(copies) || 1, category: 'Science & Physics' });
+        State.showToast('Library book cataloged successfully!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to catalog book', 'error');
+      }
+    });
+
+    // Issue Book Loan
+    document.getElementById('btn-issue-loan')?.addEventListener('click', async () => {
+      const borrowerName = prompt('Enter Student Borrower Full Name:', 'Kwabena Duodu');
+      if (!borrowerName) return;
+      try {
+        await API.issueLibraryLoan(schoolId, { bookId: 'BK-2026-001', borrowerName });
+        State.showToast(`Book loan issued to ${borrowerName}!`, 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to issue book loan', 'error');
+      }
+    });
+
+    // New Transport Route
+    document.getElementById('btn-add-route')?.addEventListener('click', async () => {
+      const name = prompt('Enter Route Name:', 'Route D: Tema Community & Spintex Express');
+      if (!name) return;
+      try {
+        await API.createTransportRoute(schoolId, { name, capacity: 30 });
+        State.showToast('New Transport Route created!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to create route', 'error');
+      }
+    });
+
+    // Dispatch SMS Broadcast
+    document.getElementById('btn-dispatch-sms-modal')?.addEventListener('click', async () => {
+      const recipientPhone = prompt('Enter Recipient Phone (+233...):', '+233 24 555 1212');
+      if (!recipientPhone) return;
+      const message = prompt('Enter Message Body:', 'Notice to Parents: Academic term report cards and fee statements are now live on SkoolFinder.');
+      if (!message) return;
+      try {
+        await API.dispatchSchoolSms(schoolId, { recipientPhone, message });
+        State.showToast('SMS dispatched via Hubtel Ghana Gateway!', 'success');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to dispatch SMS', 'error');
+      }
+    });
+
+    // Link Campus to Trust
+    document.getElementById('btn-link-campus')?.addEventListener('click', async () => {
+      const name = prompt('Enter Branch Campus Name:', 'GIS East Legon Campus');
+      if (!name) return;
+      const location = prompt('Enter Location:', 'East Legon, Accra');
+      try {
+        await API.linkSchoolToGroup('grp-trust-gis', { name, location, students_count: 320, staff_count: 35 });
+        State.showToast('Branch Campus linked to Educational Trust!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to link campus', 'error');
+      }
     });
   }
 };
