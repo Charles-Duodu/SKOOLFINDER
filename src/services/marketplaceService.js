@@ -748,6 +748,22 @@ class MarketplaceService {
       details: { title: tender.title, category: tender.category, creditSource }
     });
 
+    // Phase 4: Dispatch TenderPublished event via NotificationEventBus
+    try {
+      const { NotificationEventBus } = require('./notificationEventBus');
+      NotificationEventBus.publish('TenderPublished', schoolId, {
+        tenderId,
+        referenceCode: refCode,
+        title: tender.title,
+        category: tender.category,
+        estimatedBudgetGhs: tender.estimated_budget_ghs,
+        deadline: tender.submission_deadline,
+        publishedAt: tender.created_at
+      }, {
+        user: { id: payload.actorId, name: payload.actorName }
+      }).catch(err => console.error('[EVENT_BUS] TenderPublished dispatch error:', err.message));
+    } catch (e) {}
+
     return {
       success: true,
       tender,

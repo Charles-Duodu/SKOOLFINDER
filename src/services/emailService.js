@@ -270,6 +270,48 @@ const EmailService = {
     });
   },
 
+  /**
+   * Parent: Admission Offer & Application Status Notification
+   */
+  async sendApplicationStatusNotification({ to, parentName, studentName, schoolName, referenceCode, status, statusLabel, note, trackingUrl }) {
+    const isOffer = status === 'offered';
+    const title = isOffer ? 'Admission Offer Issued' : `Application Status: ${statusLabel || status}`;
+    const contentHtml = `
+      <p style="font-size: 16px; line-height: 1.6; margin-top: 0;">
+        Dear <strong>${parentName}</strong>,
+      </p>
+      <p style="font-size: 15px; line-height: 1.6; color: #475569;">
+        ${isOffer ? `Congratulations! <strong>${schoolName}</strong> has extended an official admission placement offer for <strong>${studentName}</strong>.` : `An update is available on the admission application for <strong>${studentName}</strong> at <strong>${schoolName}</strong>.`}
+      </p>
+
+      <div class="voucher-card">
+        <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: #b45309; font-weight: 800;">
+          ${isOffer ? 'Official Admission Offer Reference' : 'Application Reference'}
+        </div>
+        <div class="voucher-ref">${referenceCode}</div>
+        <div style="font-size: 13px; color: #1e293b; margin-top: 8px;">Status: <strong>${statusLabel || status}</strong></div>
+      </div>
+
+      ${note ? `<p style="font-size: 14px; line-height: 1.6; color: #334155;"><strong>Admissions Note:</strong> ${note}</p>` : ''}
+
+      <div style="margin-top: 24px; text-align: center;">
+        <a href="${trackingUrl || 'https://skoolfinder.com.gh/parent-portal'}" style="display: inline-block; background-color: #047857; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600;">
+          ${isOffer ? 'Review & Accept Digital Offer Letter' : 'View Application Dossier'}
+        </a>
+      </div>
+    `;
+
+    return dispatchEmail({
+      to,
+      recipientName: parentName,
+      portal: 'parents',
+      templateType: isOffer ? 'admission_offer' : 'application_status_update',
+      referenceCode,
+      subject: `[SkoolFinder] ${title}: Ref ${referenceCode} — ${studentName}`,
+      html: wrapInEmailTemplate(title, `Application Ref ${referenceCode}`, contentHtml)
+    });
+  },
+
   // ==========================================
   // PORTAL 2: SCHOOLS NOTIFICATIONS
   // ==========================================

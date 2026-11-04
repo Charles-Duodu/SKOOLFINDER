@@ -1282,6 +1282,45 @@ class AdmissionsSubscriptionService {
       note: note || `Status transitioned to ${app.statusLabel}`
     });
 
+    // Trigger Phase 4 Domain Event Dispatch via NotificationEventBus
+    try {
+      const { NotificationEventBus } = require('./notificationEventBus');
+      if (newStatus === 'offered') {
+        NotificationEventBus.publish('AdmissionOfferIssued', schoolId, {
+          applicationId: app.id,
+          trackingCode: app.tracking_code,
+          offerReference: app.offer?.referenceNumber || `OFFER-${app.tracking_code}`,
+          studentName: app.studentName,
+          gradeApplying: app.gradeApplying,
+          termApplied: app.termApplied,
+          parentName: app.parentGuardian?.primaryGuardianName || 'Parent / Guardian',
+          parentPhone: app.parentGuardian?.phone,
+          parentEmail: app.parentGuardian?.email,
+          expiryDate: app.offer?.expiryDate,
+          schoolName: app.schoolName || 'SkoolFinder Partner School'
+        }, {
+          recipientPhone: app.parentGuardian?.phone,
+          recipientEmail: app.parentGuardian?.email,
+          recipientName: app.parentGuardian?.primaryGuardianName
+        }).catch(err => console.error('[EVENT_BUS] AdmissionOfferIssued dispatch error:', err.message));
+      } else if (newStatus === 'accepted') {
+        NotificationEventBus.publish('AdmissionOfferAccepted', schoolId, {
+          applicationId: app.id,
+          trackingCode: app.tracking_code,
+          studentName: app.studentName,
+          gradeApplying: app.gradeApplying,
+          parentName: app.parentGuardian?.primaryGuardianName || 'Parent / Guardian',
+          parentPhone: app.parentGuardian?.phone,
+          parentEmail: app.parentGuardian?.email,
+          schoolName: app.schoolName || 'SkoolFinder Partner School'
+        }, {
+          recipientPhone: app.parentGuardian?.phone,
+          recipientEmail: app.parentGuardian?.email,
+          recipientName: app.parentGuardian?.primaryGuardianName
+        }).catch(err => console.error('[EVENT_BUS] AdmissionOfferAccepted dispatch error:', err.message));
+      }
+    } catch (e) {}
+
     return {
       success: true,
       message: `Application transitioned to ${app.statusLabel}.`,

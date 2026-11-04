@@ -266,6 +266,28 @@ router.post('/verify', async (req, res) => {
     };
 
     console.log(`[PAYMENT VERIFIED] Ref: ${reference} | Amount: GHS ${finalAmount} | Receipt: ${receiptNumber}`);
+    try {
+      const { NotificationEventBus } = require('../services/notificationEventBus');
+      const schoolTargetId = orderRecord?.metadata?.schoolId || (targetId && targetId !== 'ghana-international-school' ? targetId : 'ab5af86d-c902-4853-9528-d6200104b5f6');
+      NotificationEventBus.publish('PaymentVerified', schoolTargetId, {
+        reference,
+        receiptNumber,
+        amount: finalAmount,
+        currency: 'GHS',
+        channel: finalChannel,
+        purpose,
+        payerName,
+        payerEmail,
+        payerPhone: orderRecord?.payer_phone,
+        voucherCode,
+        paidAt
+      }, {
+        recipientPhone: orderRecord?.payer_phone,
+        recipientEmail: payerEmail,
+        recipientName: payerName,
+        user: req.user
+      }).catch(err => console.error('[EVENT_BUS] PaymentVerified dispatch error:', err.message));
+    } catch (e) {}
 
     return res.json({
       success: true,

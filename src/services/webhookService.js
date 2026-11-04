@@ -234,9 +234,9 @@ const WebhookService = {
   },
 
   async registerWebhook(schoolId, subscriptionData, user = null) {
-    const { name, targetUrl, target_url, subscribedEvents, events, secret, secret_key } = subscriptionData;
+    const { name, targetUrl, target_url, subscribedEvents, subscribed_events, events, secret, secret_key } = subscriptionData;
     const effectiveUrl = targetUrl || target_url;
-    const effectiveEvents = subscribedEvents || events;
+    const effectiveEvents = subscribedEvents || subscribed_events || events;
 
     const validatedUrl = validateTargetUrl(effectiveUrl);
 
@@ -934,12 +934,35 @@ const WebhookService = {
   // --------------------------------------------------------------------------
 
   formatWhatsAppPayload(recipientPhone, templateType, templateVars = {}) {
-    const { parentName = 'Parent', schoolName = 'SkoolFinder Partner School', link = 'https://skoolfinder.vercel.app' } = templateVars;
+    const {
+      parentName = 'Parent',
+      studentName = 'Student',
+      grade = 'Admission Intake',
+      schoolName = 'SkoolFinder Partner School',
+      offerRef = '',
+      amount = '',
+      reference = '',
+      tenderTitle = '',
+      link = 'https://skoolfinder.com.gh'
+    } = templateVars;
     
     let messageText = '';
     switch (templateType) {
       case 'admission_offer':
-        messageText = `🇬🇭 *${schoolName}*\n\nDear ${parentName},\nWe are pleased to inform you that your child has been offered admission! 🎓\n\nReview and accept your digital offer letter here:\n👉 ${link}\n\n_Powered by SkoolFinder Ghana_`;
+      case 'admission_offer_issued':
+        messageText = `🎓 *${schoolName}*\n\nDear ${parentName},\nWe are pleased to inform you that an admission offer has been issued for ${studentName}! ${offerRef ? `(Ref: ${offerRef})` : ''}\n\nReview and accept your digital offer letter here:\n👉 ${link}\n\n_Powered by SkoolFinder Ghana_`;
+        break;
+      case 'parent_enquiry_submitted':
+        messageText = `🔔 *${schoolName} - Admissions Desk*\n\nNew prospective enquiry submitted for ${studentName || 'Student'} (${grade}).\nParent: ${parentName}\n\nReview enquiry dossier:\n👉 ${link}`;
+        break;
+      case 'admission_offer_accepted':
+        messageText = `✅ *${schoolName} - Admissions Notification*\n\nGreat news! The admission offer for ${studentName} has been officially accepted by parent ${parentName}.\n\nManage enrollment:\n👉 ${link}`;
+        break;
+      case 'payment_verified':
+        messageText = `💳 *${schoolName} - Payment Confirmation*\n\nPayment of ${amount || 'fees'} has been successfully verified (Ref: ${reference}).\n\nView official receipt:\n👉 ${link}`;
+        break;
+      case 'tender_published':
+        messageText = `📢 *${schoolName} - B2B Procurement Notice*\n\nA new procurement tender "${tenderTitle}" has been published.\n\nView tender specifications:\n👉 ${link}`;
         break;
       case 'enquiry_reply':
         messageText = `🇬🇭 *${schoolName}*\n\nHello ${parentName},\nOur admissions office has responded to your inquiry regarding upcoming intake vacancies:\n👉 ${link}`;

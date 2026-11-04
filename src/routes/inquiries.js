@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const EmailService = require('../services/emailService');
+const { NotificationEventBus } = require('../services/notificationEventBus');
 
 /**
  * POST /api/inquiries
@@ -44,6 +45,7 @@ router.post('/', async (req, res) => {
 
     // Resolve school name
     let schoolName = 'Accredited Institution';
+    let targetSchoolId = schoolId;
     if (schoolId) {
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId);
       const { data: sch } = await supabaseAdmin
@@ -53,6 +55,7 @@ router.post('/', async (req, res) => {
         .maybeSingle();
       if (sch) {
         schoolName = sch.name;
+        targetSchoolId = sch.id;
       }
     }
 
@@ -107,7 +110,31 @@ Ref: ${referenceNumber}
 
     console.log(`[ADMISSIONS DESK] Inquiry ${referenceNumber} submitted for ${schoolName} by ${parentName}`);
 
-    // Dispatch email notifications (Parent Confirmation + School Admissions Alert)
+    // Dispatch multi-channel notifications (Outbound Webhooks, WhatsApp Cloud API, Hubtel SMS, Email)
+    const effectiveSchoolId = targetSchoolId || schoolId;
+    const schoolAlertEmail = process.env.SCHOOL_ALERT_EMAIL || 'admissions@gis.edu.gh';
+    NotificationEventBus.publish('ParentEnquirySubmitted', effectiveSchoolId, {
+      inquiryId: responseInquiry.id,
+      referenceNumber,
+      schoolName,
+      parentName,
+      parentPhone: parentPhone || '+233 24 000 0000',
+      parentEmail: parentEmail || '',
+      studentName: studentName || 'Prospective Student',
+      gradeApplying: gradeApplying || 'Class Admission',
+      message,
+      tourRequested: !!tourRequested,
+      preferredTourDate
+    }, {
+      recipientPhone: parentPhone,
+      recipientEmail: parentEmail,
+      recipientName: parentName,
+      schoolAlertPhone: process.env.SCHOOL_ALERT_PHONE || '+233245551212',
+      schoolAlertEmail: schoolAlertEmail,
+      user: req.user
+    }).catch(err => console.error('[EVENT_BUS] ParentEnquirySubmitted dispatch error:', err.message));
+
+    // Dispatch direct parent confirmation email
     if (parentEmail && parentEmail.includes('@')) {
       EmailService.sendParentInquiryConfirmation({
         to: parentEmail,
@@ -121,21 +148,6 @@ Ref: ${referenceNumber}
         schoolWhatsapp: '+233 24 412 3456'
       }).catch(err => console.error('Parent inquiry email error:', err.message));
     }
-
-    const schoolAlertEmail = process.env.SCHOOL_ALERT_EMAIL || 'admissions@gis.edu.gh';
-    EmailService.sendSchoolNewInquiryAlert({
-      to: schoolAlertEmail,
-      schoolName,
-      parentName,
-      parentPhone: parentPhone || '+233 24 000 0000',
-      parentEmail: parentEmail || 'parent@example.com',
-      studentName: studentName || 'Candidate',
-      grade: gradeApplying || 'Class Admission',
-      message,
-      referenceCode: referenceNumber,
-      tourRequested: !!tourRequested,
-      tourDate: preferredTourDate
-    }).catch(err => console.error('School alert email error:', err.message));
 
     return res.status(201).json({
       success: true,
