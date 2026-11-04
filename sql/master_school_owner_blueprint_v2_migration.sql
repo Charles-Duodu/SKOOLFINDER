@@ -48,6 +48,13 @@ CREATE TABLE IF NOT EXISTS public.schools (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure required columns exist on schools table if table already pre-existed
+ALTER TABLE public.schools ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'unverified';
+ALTER TABLE public.schools ADD COLUMN IF NOT EXISTS claim_status TEXT DEFAULT 'unclaimed';
+ALTER TABLE public.schools ADD COLUMN IF NOT EXISTS nasia_registered BOOLEAN DEFAULT false;
+ALTER TABLE public.schools ADD COLUMN IF NOT EXISTS nasia_licence_number TEXT;
+ALTER TABLE public.schools ADD COLUMN IF NOT EXISTS active_tier TEXT DEFAULT 'free';
+
 CREATE INDEX IF NOT EXISTS idx_schools_slug ON public.schools(slug);
 CREATE INDEX IF NOT EXISTS idx_schools_region ON public.schools(region);
 CREATE INDEX IF NOT EXISTS idx_schools_verification_status ON public.schools(verification_status);
@@ -684,7 +691,7 @@ CREATE POLICY "Staff view marketplace audit log" ON public.marketplace_audit_log
 -- 5.1 Campus Fixed Assets Registry (Module 19)
 CREATE TABLE IF NOT EXISTS public.campus_assets (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     name TEXT NOT NULL,
     category TEXT NOT NULL DEFAULT 'General Campus Asset',
     building TEXT NOT NULL DEFAULT 'Main Campus',
@@ -704,7 +711,7 @@ CREATE INDEX IF NOT EXISTS idx_campus_assets_condition ON public.campus_assets(c
 -- 5.2 Library Management System (LMS) Books & Student Loans
 CREATE TABLE IF NOT EXISTS public.library_books (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     title TEXT NOT NULL,
     author TEXT NOT NULL,
     isbn TEXT,
@@ -720,7 +727,7 @@ CREATE INDEX IF NOT EXISTS idx_lib_books_category ON public.library_books(catego
 
 CREATE TABLE IF NOT EXISTS public.library_loans (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     book_id VARCHAR(100) NOT NULL REFERENCES public.library_books(id) ON DELETE CASCADE,
     borrower_name TEXT NOT NULL,
     borrower_role TEXT NOT NULL DEFAULT 'student' CHECK (borrower_role IN ('student', 'teacher', 'staff')),
@@ -739,7 +746,7 @@ CREATE INDEX IF NOT EXISTS idx_lib_loans_status ON public.library_loans(status);
 -- 5.3 Campus Transport Fleet & Scheduled GPS Routes
 CREATE TABLE IF NOT EXISTS public.transport_fleet (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     plate_number TEXT NOT NULL UNIQUE,
     model TEXT NOT NULL,
     capacity INTEGER NOT NULL DEFAULT 30 CHECK (capacity > 0),
@@ -753,7 +760,7 @@ CREATE INDEX IF NOT EXISTS idx_transport_fleet_school ON public.transport_fleet(
 
 CREATE TABLE IF NOT EXISTS public.transport_routes (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     name TEXT NOT NULL,
     assigned_bus_id VARCHAR(100) REFERENCES public.transport_fleet(id) ON DELETE SET NULL,
     capacity INTEGER NOT NULL DEFAULT 30,
@@ -794,7 +801,7 @@ CREATE INDEX IF NOT EXISTS idx_group_schools_group ON public.group_schools(group
 -- 5.5 National Regulatory Integrations: MoE/GES EMIS Submissions
 CREATE TABLE IF NOT EXISTS public.emis_census_submissions (
     id VARCHAR(100) PRIMARY KEY,
-    school_id VARCHAR(100) NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
+    school_id VARCHAR(100) NOT NULL,
     school_name TEXT NOT NULL,
     emis_code TEXT NOT NULL,
     district TEXT NOT NULL,
