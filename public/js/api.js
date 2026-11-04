@@ -1601,6 +1601,153 @@ const API = {
     });
     return res.json();
   }
+
+  // ============================================================================
+  // BLUEPRINT v2.0: SCHOOL OWNER & PROPRIETOR PORTAL API (PHASE 1: SCH-001 - SCH-010)
+  // ============================================================================
+
+  async lookupSchoolClaim(query) {
+    const res = await fetch(`${this.baseUrl}/schools/lookup-claim`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ query })
+    });
+    return res.json();
+  },
+
+  async registerSchoolWizard(data) {
+    const res = await fetch(`${this.baseUrl}/schools/register-wizard`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to complete school registration wizard');
+    }
+    return res.json();
+  },
+
+  async getProprietorSchoolMembership() {
+    const res = await fetch(`${this.baseUrl}/schools/my-membership`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getSchoolWorkspace(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/workspace`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to load school workspace');
+    }
+    return res.json();
+  },
+
+  async submitSchoolVerificationDoc(schoolId, docData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/verification-docs`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(docData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to upload verification document');
+    }
+    return res.json();
+  },
+
+  async getSchoolVerificationDocs(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/verification-docs`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getSchoolProfileRevisions(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/profile-revisions`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async saveSchoolProfileDraft(schoolId, profileData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/profile-draft`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(profileData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to save profile draft');
+    }
+    return res.json();
+  },
+
+  async publishSchoolProfile(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/profile-publish`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to publish profile revision');
+    }
+    return res.json();
+  },
+
+  async getSchoolStaff(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/staff`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async inviteSchoolStaff(schoolId, inviteData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/staff/invite`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(inviteData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send staff invitation');
+    }
+    return res.json();
+  },
+
+  async revokeSchoolStaff(schoolId, membershipId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/staff/${encodeURIComponent(membershipId)}`, {
+      method: 'DELETE',
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to revoke staff membership');
+    }
+    return res.json();
+  },
+
+  async getAdminVerificationCases() {
+    const res = await fetch(`${this.baseUrl}/admin/verification-cases`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async reviewAdminVerificationCase(caseId, reviewData) {
+    const res = await fetch(`${this.baseUrl}/admin/verification-cases/${encodeURIComponent(caseId)}/review`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(reviewData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to submit verification review');
+    }
+    return res.json();
+  }
+
 };
-
-

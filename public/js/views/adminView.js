@@ -35,6 +35,14 @@ const AdminView = {
     let procurementLogs = [];
 
     let usersData = { users: [], total: 0 };
+    let verificationCases = [];
+    if (this.activeTab === 'verification') {
+      promises.push(
+        API.getAdminVerificationCases().then(res => {
+          verificationCases = res?.queue || [];
+        }).catch(() => [])
+      );
+    }
     try {
       const promises = [
         API.getAdminOverview().catch(() => ({ kpis: {}, schoolsList: [] })),
@@ -333,6 +341,10 @@ const AdminView = {
               <span class="icon-label"><span>📊</span> Overview</span>
             </button>
 
+            <button class="admin-nav-item ${this.activeTab === 'verification' ? 'active' : ''}" data-admin-tab="verification">
+              <span class="icon-label"><span>🛡️</span> Verification Desk</span>
+              <span class="admin-badge-count" style="background:#d97706;color:#fff;">SCH-005</span>
+            </button>
             <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
               <span class="icon-label"><span>🏫</span> Schools (CRUD)</span>
               <span class="admin-badge-count">${kpis.totalSchools || schools.length || 12}</span>
@@ -428,6 +440,8 @@ const AdminView = {
 
   renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }) {
     switch (this.activeTab) {
+      case 'verification':
+        return this.renderVerificationDesk(verificationCases);
       case 'overview':
         return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
       case 'schools':
@@ -456,6 +470,106 @@ const AdminView = {
   /**
    * Executive Command Center Overview (TalentPros Style)
    */
+  
+  /**
+   * Blueprint v2.0 §7.3 & SCH-005: Super Admin Verification Desk
+   */
+  renderVerificationDesk(cases = []) {
+    return `
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §7.3 &bull; Work Package SCH-005
+            </div>
+            <h1 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              School Ownership & Regulatory Verification Desk
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Inspect proprietor authority claims, review uploaded NaSIA / GES regulatory evidence, and record immutable audit decisions.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 700; padding: 0.4rem 0.85rem; border-radius: 999px;">
+              ${cases.length} Verification Cases in Queue
+            </span>
+          </div>
+        </div>
+
+        <div style="background: #ffffff; border-radius: 12px; border: 1.5px solid #e2e8f0; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem;">
+              <thead style="background: #0A2046; color: #ffffff; font-size: 0.78rem; text-transform: uppercase;">
+                <tr>
+                  <th style="padding: 0.9rem 1rem;">Case Ref / Institution</th>
+                  <th style="padding: 0.9rem 1rem;">Claimant Details</th>
+                  <th style="padding: 0.9rem 1rem;">Authority Status</th>
+                  <th style="padding: 0.9rem 1rem;">Accreditation Evidence</th>
+                  <th style="padding: 0.9rem 1rem;">Submitted</th>
+                  <th style="padding: 0.9rem 1rem; text-align: right;">Review Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cases.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 3rem; text-align: center; color: #94a3b8;">
+                      <div style="font-size: 2rem; margin-bottom: 0.5rem;">🛡️</div>
+                      <div style="font-weight: 700; color: #334155;">No pending verification cases</div>
+                      <div style="font-size: 0.82rem;">All ownership claims and regulatory credentials have been reviewed.</div>
+                    </td>
+                  </tr>
+                ` : cases.map(c => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;">
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 800; color: #0A2046;">${c.school_name || 'Institution'}</div>
+                      <div style="font-size: 0.76rem; color: #64748b; font-family: monospace;">${c.id}</div>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 700; color: #334155;">${c.claimant_name || 'Proprietor'}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${c.claimant_email || ''} &bull; <span class="badge" style="background:#e0e7ff;color:#3730a3;font-size:0.7rem;">${c.claimant_role || 'Proprietor'}</span></div>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <span class="badge" style="background: ${c.authority_status === 'verified' ? '#dcfce7' : (c.authority_status === 'rejected' ? '#fee2e2' : '#fef3c7')}; color: ${c.authority_status === 'verified' ? '#166534' : (c.authority_status === 'rejected' ? '#991b1b' : '#92400e')}; font-weight: 800; text-transform: uppercase; font-size: 0.72rem;">
+                        ${c.authority_status || 'pending'}
+                      </span>
+                    </td>
+                    <td style="padding: 1rem;">
+                      <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                        ${(c.evidence_documents || []).map(d => `
+                          <div style="font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem;">
+                            <span>📄</span>
+                            <span style="font-weight: 600;">${d.document_type || 'Document'}</span>
+                            <span style="color: #64748b; font-size: 0.72rem;">(${d.document_number || 'N/A'}${d.expires_at ? ' - Exp: ' + d.expires_at.slice(0,10) : ''})</span>
+                          </div>
+                        `).join('') || '<span style="color:#94a3b8;font-size:0.78rem;">No documents uploaded</span>'}
+                      </div>
+                    </td>
+                    <td style="padding: 1rem; font-size: 0.8rem; color: #64748b;">
+                      ${c.submitted_at ? new Date(c.submitted_at).toLocaleDateString() : 'Recent'}
+                    </td>
+                    <td style="padding: 1rem; text-align: right;">
+                      <div style="display: inline-flex; gap: 0.4rem;">
+                        <button class="btn-pill btn-emerald btn-admin-case-approve" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
+                          ✓ Approve
+                        </button>
+                        <button class="btn-pill btn-outline btn-admin-case-info" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;">
+                          ? Request Info
+                        </button>
+                        <button class="btn-pill btn-outline btn-admin-case-reject" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem; color: #dc2626; border-color: #fca5a5;">
+                          ✕ Reject
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
   renderOverviewTab(overview, schools, rfqs = [], procurementLogs = []) {
     const kpis = overview.kpis || {};
 

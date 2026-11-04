@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, JWT_SECRET } = require('../middleware/auth');
 const AuditService = require('../services/auditService');
+const SchoolOwnerService = require('../services/schoolOwnerService');
 
 /**
  * Helper to generate URL-safe slugs
@@ -2372,6 +2373,42 @@ router.patch('/procurement/suppliers/:id/verify', async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update supplier verification' });
+  }
+});
+
+
+// ----------------------------------------------------------------------------
+// PHASE 1: SUPER ADMIN REVIEW QUEUE & VERIFICATION DECISIONS (SCH-005)
+// ----------------------------------------------------------------------------
+
+/**
+ * GET /api/admin/verification-cases (SCH-005)
+ * Super Admin review queue for institution ownership & regulatory accreditation
+ */
+router.get('/verification-cases', async (req, res) => {
+  try {
+    const queue = await SchoolOwnerService.getAdminVerificationQueue();
+    return res.json({ success: true, queue, count: queue.length });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch verification queue' });
+  }
+});
+
+/**
+ * POST /api/admin/verification-cases/:id/review (SCH-005)
+ * Super Admin approves, rejects, or requests additional evidence for a verification case
+ */
+router.post('/verification-cases/:id/review', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { decision, notes = '', reason = '' } = req.body;
+    if (!decision) {
+      return res.status(400).json({ error: 'Review decision (approved, rejected, info_requested) is required' });
+    }
+    const result = await SchoolOwnerService.reviewVerificationCase(id, decision, req.user, notes, reason);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

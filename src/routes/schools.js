@@ -3,6 +3,7 @@ const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate, requireRole } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
+const SchoolOwnerService = require('../services/schoolOwnerService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -598,6 +599,210 @@ router.post('/:id/subscribe/verify', async (req, res) => {
     message: 'Subscription successfully activated',
     status: 'active'
   });
+});
+
+
+function optionalAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authenticate(req, res, next);
+  }
+  next();
+}
+
+// ----------------------------------------------------------------------------
+// PHASE 1: SCHOOL OWNER & PROPRIETOR BLUEPRINT v2.0 ENDPOINTS (SCH-001 - SCH-010)
+// ----------------------------------------------------------------------------
+
+/**
+ * POST /api/schools/lookup-claim (SCH-002)
+ * Searches canonical school directory for existing records, claim status, and conflict warnings
+ */
+router.post('/lookup-claim', async (req, res) => {
+  try {
+    const { query } = req.body;
+    if (!query) {
+      return res.status(400).json({ error: 'Search query is required' });
+    }
+    const result = await SchoolOwnerService.lookupClaim(query);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Lookup failed' });
+  }
+});
+
+/**
+ * POST /api/schools/register-wizard (SCH-001, SCH-003, DEC-01)
+ * Multi-step institution onboarding wizard enforcing single primary school per proprietor
+ */
+router.post('/register-wizard', optionalAuth, async (req, res) => {
+  try {
+    const user = req.user || req.body.user || {
+      id: `usr-proprietor-${Date.now()}`,
+      email: req.body.email || req.body.contact_email || 'proprietor@example.com',
+      full_name: req.body.proprietor_name || 'School Proprietor',
+      role: 'school_admin'
+    };
+
+    const result = await SchoolOwnerService.registerSchoolWizard(req.body, user);
+    return res.status(201).json(result);
+  } catch (err) {
+    if (err.message && err.message.includes('DEC-01')) {
+      return res.status(409).json({ error: err.message, code: 'DEC_01_VIOLATION' });
+    }
+    return res.status(400).json({ error: err.message || 'School registration failed' });
+  }
+});
+
+/**
+ * GET /api/schools/my-membership (SCH-006, DEC-01)
+ * Returns the currently authenticated proprietor's primary school
+ */
+router.get('/my-membership', optionalAuth, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.json({ success: true, hasExistingSchool: false, school: null });
+    }
+    const check = await SchoolOwnerService.checkProprietorExistingSchool(userId);
+    return res.json({ success: true, ...check });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/workspace (SCH-006, SCH-007, DASH-001)
+ * Retrieves full institutional workspace telemetry, KPI cards, profile score, and seat limits
+ */
+router.get('/:id/workspace', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const workspace = await SchoolOwnerService.getWorkspace(id, req.user?.id);
+    return res.json({ success: true, workspace });
+  } catch (err) {
+    return res.status(err.message === 'School not found' ? 404 : 500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/verification-docs (SCH-004)
+ * Private regulatory document upload (NaSIA, GES, Registrar General)
+ */
+router.post('/:id/verification-docs', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', role: 'proprietor' };
+    const result = await SchoolOwnerService.submitVerificationDocument(id, req.body, user);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/verification-docs (SCH-004)
+ * Retrieves private verification documents for an institution
+ */
+router.get('/:id/verification-docs', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const docs = await SchoolOwnerService.getVerificationDocs(id);
+    return res.json({ success: true, documents: docs });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/profile-revisions (SCH-008)
+ * Retrieves draft vs published public profile revisions
+ */
+router.get('/:id/profile-revisions', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const revisions = await SchoolOwnerService.getProfileRevisions(id);
+    return res.json({ success: true, ...revisions });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/profile-draft (SCH-008)
+ * Saves a draft revision of the institution's public profile without mutating live public directory
+ */
+router.post('/:id/profile-draft', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh' };
+    const result = await SchoolOwnerService.saveProfileDraft(id, req.body, user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/profile-publish (SCH-008)
+ * Publishes draft revision to the live public school directory
+ */
+router.post('/:id/profile-publish', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh' };
+    const result = await SchoolOwnerService.publishProfileRevision(id, user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/staff (SCH-009)
+ * Retrieves institution staff directory with seat quotas
+ */
+router.get('/:id/staff', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const staff = await SchoolOwnerService.getStaff(id);
+    return res.json({ success: true, staff });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/staff/invite (SCH-009)
+ * Invites a new team member, enforcing tier seat limit (Free: 1, Growth: 3, Pro: 10, Ent: 25)
+ */
+router.post('/:id/staff/invite', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh' };
+    const result = await SchoolOwnerService.inviteStaffMember(id, req.body, user);
+    return res.status(201).json(result);
+  } catch (err) {
+    if (err.message && err.message.includes('Tier seat limit reached')) {
+      return res.status(403).json({ error: err.message, code: 'SEAT_LIMIT_REACHED' });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/schools/:id/staff/:membershipId (SCH-009)
+ * Revokes a team member membership and frees an allocated seat
+ */
+router.delete('/:id/staff/:membershipId', optionalAuth, async (req, res) => {
+  try {
+    const { id, membershipId } = req.params;
+    const user = req.user || { id: 'usr-proprietor-01', email: 'proprietor@gis.edu.gh' };
+    const result = await SchoolOwnerService.revokeStaffMember(id, membershipId, user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
 });
 
 module.exports = router;

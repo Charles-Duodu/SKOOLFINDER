@@ -2769,3 +2769,158 @@ body.has-comparison-dock .sd-chat-window {
     min-height: 32px;
   }
 }
+
+
+/* ==========================================================================
+   Blueprint v2.0: School Owner Portal 12-Group Shell & Theme B Tokens
+   ========================================================================== */
+.owner-shell {
+  display: flex;
+  min-height: calc(100vh - 7rem);
+  background: var(--theme-b-canvas, #F7F9FC);
+}
+
+.owner-sidebar {
+  width: 280px;
+  background: #0A2046;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.owner-sidebar-header {
+  padding: 1.25rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.owner-sidebar-nav {
+  padding: 0.75rem 0.5rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.owner-nav-group-title {
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #94a3b8;
+  padding: 0.75rem 0.75rem 0.25rem;
+}
+
+.owner-nav-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.52rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  margin-bottom: 2px;
+}
+
+.owner-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.owner-nav-item.active {
+  background: #1266C4;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(18, 102, 196, 0.35);
+}
+
+.owner-nav-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 100px;
+}
+
+.owner-main-content {
+  flex: 1;
+  padding: 2rem 2.25rem 5rem;
+  overflow-y: auto;
+  max-width: 1400px;
+}
+
+.owner-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.owner-kpi-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(10, 32, 70, 0.04);
+}
+
+.owner-kpi-val {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.1;
+  margin-top: 0.35rem;
+}
+
+.owner-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 8px rgba(10, 32, 70, 0.04);
+}
+
+.wizard-step-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.wizard-step-pill.active {
+  border-color: #1266C4;
+  color: #1266C4;
+  background: #eff6ff;
+}
+
+.wizard-step-pill.completed {
+  border-color: #10b981;
+  color: #065f46;
+  background: #ecfdf5;
+}
+
+@media (max-width: 960px) {
+  .owner-shell {
+    flex-direction: column;
+  }
+  .owner-sidebar {
+    width: 100%;
+  }
+  .owner-main-content {
+    padding: 1.25rem;
+  }
+}
+
