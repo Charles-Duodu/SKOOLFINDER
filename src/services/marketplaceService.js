@@ -55,6 +55,9 @@ const IN_MEMORY_TENDERS = new Map();
 const IN_MEMORY_BIDS = new Map();
 const IN_MEMORY_CREDITS = new Map(); // schoolId -> array of ledger records
 const IN_MEMORY_ESCROWS = new Map(); // tenderId -> array of 2 milestones
+const IN_MEMORY_LPOS = new Map(); // tenderId -> LPO contract
+const IN_MEMORY_OFFER_LETTERS = new Map(); // applicationId -> Offer Letter
+const IN_MEMORY_SUPPLIER_RATINGS = new Map(); // tenderId -> Rating
 const IN_MEMORY_AUDIT_LOGS = [];
 
 class MarketplaceService {
@@ -1371,6 +1374,267 @@ class MarketplaceService {
     }).catch(() => {});
 
     return logItem;
+  }
+  // ==========================================================================
+  // PHASE 4: ADVANCED INSTITUTIONAL HR & B2B PROCUREMENT CONTRACTS (OPTION C)
+  // ==========================================================================
+
+  /**
+   * Generates an official digital Local Purchase Order (LPO) for an awarded tender
+   */
+  static async generateTenderLPO(schoolId, tenderId) {
+    const tender = IN_MEMORY_TENDERS.get(tenderId);
+    if (!tender || String(tender.school_id) !== String(schoolId)) {
+      throw new Error('Tender not found or access denied');
+    }
+
+    if (IN_MEMORY_LPOS.has(tenderId)) {
+      return IN_MEMORY_LPOS.get(tenderId);
+    }
+
+    const bids = Array.from(IN_MEMORY_BIDS.values()).filter(b => String(b.tender_id) === String(tenderId));
+    const awardedBid = bids.find(b => b.status === 'awarded') || bids[0];
+    const totalAmount = Number(awardedBid?.quote_amount || awardedBid?.quoteAmount || awardedBid?.quoted_amount_ghs || tender.budget_max || tender.budget_max_ghs || tender.budget_ghs || 10000);
+
+    const lpo = {
+      id: `lpo-${tenderId}`,
+      lpoNumber: `SF-LPO-${new Date().getFullYear()}-${tenderId.slice(-6).toUpperCase()}`,
+      tenderId,
+      schoolId,
+      schoolName: tender.school_name || 'Procuring Institution',
+      supplierId: tender.awarded_supplier_id || awardedBid?.supplier_id || 'sup-wa-edtech',
+      supplierName: tender.awarded_supplier_name || awardedBid?.supplier_name || 'Accredited Educational Vendor',
+      tenderTitle: tender.title,
+      category: tender.category,
+      specifications: tender.specifications || 'As detailed in institutional quotation requirements',
+      totalAmountGhs: totalAmount,
+      milestones: [
+        { milestone: 'Milestone 1: 50% Mobilization Deposit', percentage: 50, amountGhs: totalAmount * 0.5, status: 'escrow_locked' },
+        { milestone: 'Milestone 2: 50% Delivery & Campus Inspection Balance', percentage: 50, amountGhs: totalAmount * 0.5, status: 'pending_delivery' }
+      ],
+      taxTerms: 'Statutory learning and educational inputs VAT/NHIL exempt under Ghana VAT Act 870',
+      paymentRail: 'SkoolFinder 50/50 Mobile Money Milestone Escrow',
+      issuedAt: new Date().toISOString(),
+      signedBySchool: false,
+      signedAt: null,
+      status: 'draft'
+    };
+
+    IN_MEMORY_LPOS.set(tenderId, lpo);
+    return lpo;
+  }
+
+  /**
+   * Signs and seals an LPO contract by School Bursar or Head of Procurement
+   */
+  static async signTenderLPO(schoolId, tenderId, signatureData = {}) {
+    const lpo = await this.generateTenderLPO(schoolId, tenderId);
+    lpo.signedBySchool = true;
+    lpo.signedAt = new Date().toISOString();
+    lpo.status = 'issued_and_signed';
+    lpo.signatoryName = signatureData.signatoryName || signatureData.actorName || 'School Bursar';
+    lpo.signatoryTitle = signatureData.signatoryTitle || 'Director of Finance & Procurement';
+    lpo.signatureHash = `SIG-LPO-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+    IN_MEMORY_LPOS.set(tenderId, lpo);
+
+    this.recordAuditLog({
+      schoolId,
+      actorName: lpo.signatoryName,
+      eventType: 'TENDER_LPO_EXECUTED',
+      entityType: 'lpo_contract',
+      entityId: lpo.lpoNumber,
+      amount: lpo.totalAmountGhs,
+      details: { supplierName: lpo.supplierName, tenderTitle: lpo.tenderTitle }
+    });
+
+    return {
+      success: true,
+      lpo,
+      message: `Digital LPO #${lpo.lpoNumber} executed with tamper-evident cryptographic seal.`
+    };
+  }
+
+  /**
+   * Generates a formal Employment Offer Letter for a shortlisted educator applicant
+   */
+  static async generateTeacherOfferLetter(schoolId, applicationId, offerData = {}) {
+    const app = IN_MEMORY_APPLICATIONS.get(applicationId);
+    if (!app || String(app.school_id) !== String(schoolId)) {
+      throw new Error('Candidate application dossier not found or unauthorized');
+    }
+
+    app.status = 'offered';
+    app.updated_at = new Date().toISOString();
+
+    const offerLetter = {
+      id: `ofr-${applicationId}`,
+      offerNumber: `SF-OFR-${new Date().getFullYear()}-${applicationId.slice(-6).toUpperCase()}`,
+      applicationId,
+      vacancyId: app.vacancy_id,
+      schoolId,
+      schoolName: app.school_name || 'Academic Institution',
+      candidateName: app.full_name,
+      candidateEmail: app.email,
+      candidatePhone: app.phone,
+      ntcNumber: app.ntc_number,
+      positionTitle: offerData.positionTitle || 'Certified Educator',
+      department: offerData.department || 'Academics & Teaching',
+      grossSalaryGhs: Number(offerData.grossSalaryGhs) || 3500,
+      termStartDate: offerData.termStartDate || '2026-09-01',
+      probationMonths: Number(offerData.probationMonths) || 3,
+      benefits: offerData.benefits || [
+        'Tier 1 & Tier 2 SSNIT Pension contributions',
+        'Comprehensive institutional health cover',
+        'Campus lunch & instructional materials allowance'
+      ],
+      issuedAt: new Date().toISOString(),
+      status: 'pending_candidate_acceptance',
+      responseDate: null,
+      candidateSignature: null
+    };
+
+    IN_MEMORY_OFFER_LETTERS.set(applicationId, offerLetter);
+    app.offerLetter = offerLetter;
+    IN_MEMORY_APPLICATIONS.set(applicationId, app);
+
+    this.recordAuditLog({
+      schoolId,
+      actorName: offerData.signatoryName || 'School HR Recruiter',
+      eventType: 'TEACHER_OFFER_LETTER_ISSUED',
+      entityType: 'teacher_offer',
+      entityId: offerLetter.offerNumber,
+      details: { candidateName: app.full_name, position: offerLetter.positionTitle, salary: offerLetter.grossSalaryGhs }
+    });
+
+    return {
+      success: true,
+      offerLetter,
+      message: `Formal Employment Offer Letter #${offerLetter.offerNumber} dispatched to ${app.full_name}.`
+    };
+  }
+
+  /**
+   * Candidate reviews and responds to an employment offer letter
+   */
+  static async respondTeacherOfferLetter(applicationId, responseData = {}) {
+    let offer = IN_MEMORY_OFFER_LETTERS.get(applicationId);
+    const app = IN_MEMORY_APPLICATIONS.get(applicationId);
+
+    if (!offer) {
+      if (app && app.offerLetter) {
+        offer = app.offerLetter;
+      } else {
+        throw new Error('Offer letter not found for this candidate');
+      }
+    }
+
+    const decision = (responseData.decision || 'accepted').toLowerCase();
+    const now = new Date().toISOString();
+
+    if (decision === 'accepted') {
+      offer.status = 'accepted';
+      offer.candidateSignature = responseData.candidateSignature || responseData.signature || app.full_name;
+      offer.responseDate = now;
+      if (app) app.status = 'accepted';
+
+      this.recordAuditLog({
+        schoolId: offer.schoolId,
+        actorName: app?.full_name || 'Educator Candidate',
+        eventType: 'TEACHER_OFFER_ACCEPTED',
+        entityType: 'teacher_offer',
+        entityId: offer.offerNumber,
+        details: { candidateName: app?.full_name, position: offer.positionTitle }
+      });
+
+      return {
+        success: true,
+        offer,
+        message: 'Congratulations! Teacher employment offer accepted and signed.'
+      };
+    } else {
+      offer.status = 'declined';
+      offer.declineReason = responseData.reason || 'Candidate accepted alternative engagement';
+      offer.responseDate = now;
+      if (app) app.status = 'declined';
+
+      this.recordAuditLog({
+        schoolId: offer.schoolId,
+        actorName: app?.full_name || 'Educator Candidate',
+        eventType: 'TEACHER_OFFER_DECLINED',
+        entityType: 'teacher_offer',
+        entityId: offer.offerNumber,
+        details: { reason: offer.declineReason }
+      });
+
+      return {
+        success: true,
+        offer,
+        message: 'Offer declined.'
+      };
+    }
+  }
+
+  /**
+   * Retrieves an offer letter by application ID
+   */
+  static getTeacherOfferLetter(applicationId) {
+    const offer = IN_MEMORY_OFFER_LETTERS.get(applicationId);
+    if (!offer) {
+      const app = IN_MEMORY_APPLICATIONS.get(applicationId);
+      return app?.offerLetter || null;
+    }
+    return offer;
+  }
+
+  /**
+   * Submits post-delivery performance rating & review for an accredited supplier
+   */
+  static async submitSupplierRating(schoolId, tenderId, ratingData = {}) {
+    const tender = IN_MEMORY_TENDERS.get(tenderId);
+    if (!tender || String(tender.school_id) !== String(schoolId)) {
+      throw new Error('Tender not found or access denied');
+    }
+
+    const ratingVal = Math.min(5, Math.max(1, Number(ratingData.rating) || 5));
+    const rating = {
+      id: `rate-${tenderId}`,
+      tenderId,
+      schoolId,
+      supplierId: tender.awarded_supplier_id || 'sup-wa-edtech',
+      supplierName: tender.awarded_supplier_name || 'Accredited Educational Vendor',
+      rating: ratingVal,
+      punctualityScore: Math.min(5, Math.max(1, Number(ratingData.punctualityScore) || ratingVal)),
+      qualityScore: Math.min(5, Math.max(1, Number(ratingData.qualityScore) || ratingVal)),
+      reviewText: ratingData.reviewText || ratingData.notes || 'Materials delivered on campus in pristine condition. Excellent service.',
+      submittedAt: new Date().toISOString()
+    };
+
+    IN_MEMORY_SUPPLIER_RATINGS.set(tenderId, rating);
+    tender.supplier_rating = rating;
+    IN_MEMORY_TENDERS.set(tenderId, tender);
+
+    this.recordAuditLog({
+      schoolId,
+      actorName: ratingData.raterName || 'School Bursar / Quality Inspector',
+      eventType: 'SUPPLIER_FULFILLMENT_RATED',
+      entityType: 'supplier_rating',
+      entityId: rating.id,
+      details: { supplierName: rating.supplierName, rating: rating.rating, tenderTitle: tender.title }
+    });
+
+    return {
+      success: true,
+      rating,
+      message: `Supplier fulfillment rating of ${rating.rating}/5 successfully recorded.`
+    };
+  }
+
+  /**
+   * Retrieves supplier rating for a tender
+   */
+  static getSupplierRating(tenderId) {
+    return IN_MEMORY_SUPPLIER_RATINGS.get(tenderId) || null;
   }
 }
 

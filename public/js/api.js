@@ -2169,6 +2169,64 @@ const API = {
       headers: this.getHeaders()
     });
     return res.json();
+  },
+
+  // ==========================================================================
+  // PHASE 4: ADVANCED INSTITUTIONAL HR & B2B PROCUREMENT CONTRACTS (OPTION C)
+  // ==========================================================================
+  async getTenderLPO(schoolId, tenderId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/lpo`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async signTenderLPO(schoolId, tenderId, signatureData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/lpo/sign`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(signatureData)
+    });
+    return res.json();
+  },
+
+  async rateSupplierFulfillment(schoolId, tenderId, ratingData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/rate-supplier`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(ratingData)
+    });
+    return res.json();
+  },
+
+  async generateTeacherOffer(schoolId, vacancyId, applicationId, offerData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/${encodeURIComponent(vacancyId)}/applicants/${encodeURIComponent(applicationId)}/offer`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(offerData)
+    });
+    return res.json();
+  },
+
+  async getTeacherOffer(schoolId, vacancyId, applicationId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/${encodeURIComponent(vacancyId)}/applicants/${encodeURIComponent(applicationId)}/offer`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getCandidateOffer(applicationId) {
+    const res = await fetch(`${this.baseUrl}/jobs/applications/${encodeURIComponent(applicationId)}/offer`);
+    return res.json();
+  },
+
+  async respondCandidateOffer(applicationId, responseData = {}) {
+    const res = await fetch(`${this.baseUrl}/jobs/applications/${encodeURIComponent(applicationId)}/offer-response`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(responseData)
+    });
+    return res.json();
   }
 
 };

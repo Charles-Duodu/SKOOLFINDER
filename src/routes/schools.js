@@ -1394,5 +1394,80 @@ router.get('/:id/marketplace/audit-log', optionalAuth, async (req, res) => {
   }
 });
 
+// ============================================================================
+// PHASE 4: ADVANCED INSTITUTIONAL HR & B2B PROCUREMENT CONTRACTS (OPTION C)
+// ============================================================================
+
+/**
+ * GET /api/schools/:id/tenders/:tenderId/lpo
+ * Generates or retrieves digital Local Purchase Order (LPO)
+ */
+router.get('/:id/tenders/:tenderId/lpo', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const lpo = await MarketplaceService.generateTenderLPO(id, tenderId);
+    return res.json({ success: true, lpo });
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/lpo/sign
+ * School executes and seals digital LPO contract
+ */
+router.post('/:id/tenders/:tenderId/lpo/sign', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.signTenderLPO(id, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/rate-supplier
+ * Post-delivery rating and performance scorecard for accredited vendor
+ */
+router.post('/:id/tenders/:tenderId/rate-supplier', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.submitSupplierRating(id, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/vacancies/:vacancyId/applicants/:appId/offer
+ * School HR recruiter generates and issues formal Employment Offer Letter
+ */
+router.post('/:id/vacancies/:vacancyId/applicants/:appId/offer', optionalAuth, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+    const result = await MarketplaceService.generateTeacherOfferLetter(id, appId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/vacancies/:vacancyId/applicants/:appId/offer
+ * Retrieves formal Employment Offer Letter
+ */
+router.get('/:id/vacancies/:vacancyId/applicants/:appId/offer', optionalAuth, async (req, res) => {
+  try {
+    const { appId } = req.params;
+    const offer = MarketplaceService.getTeacherOfferLetter(appId);
+    if (!offer) return res.status(404).json({ error: 'Offer letter not found' });
+    return res.json({ success: true, offer });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
 

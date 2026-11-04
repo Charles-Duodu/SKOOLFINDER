@@ -2644,17 +2644,23 @@ const DashboardView = {
                         <div><strong style="color: #475569;">Tracking Code:</strong> <code style="font-size: 0.75rem;">${a.tracking_ref || a.id.slice(0,8)}</code></div>
                       </div>
 
-                      <!-- Stage Machine Selector (VAC-005) -->
+                      <!-- Stage Machine Selector (VAC-005 & OPTION C) -->
                       <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
                           <span style="font-size: 0.82rem; font-weight: 700; color: #0A2046;">Candidate Stage:</span>
                           <select class="form-control candidate-stage-select" data-app-id="${a.id}" data-vac-id="${vacId}" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.82rem; font-weight: 700;">
                             <option value="applied" ${a.status === 'applied' ? 'selected' : ''}>Applied (New)</option>
                             <option value="shortlisted" ${a.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
                             <option value="interview_scheduled" ${a.status === 'interview_scheduled' ? 'selected' : ''}>Interview Scheduled</option>
                             <option value="offered" ${a.status === 'offered' ? 'selected' : ''}>Job Offered</option>
+                            <option value="accepted" ${a.status === 'accepted' ? 'selected' : ''}>Offer Accepted</option>
+                            <option value="declined" ${a.status === 'declined' ? 'selected' : ''}>Offer Declined</option>
                             <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
                           </select>
+
+                          <button class="btn-issue-candidate-offer" data-app-id="${a.id}" data-app-name="${a.full_name}" data-vac-id="${vacId}" style="padding: 0.3rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #1266C4; border: 1.5px solid #bfdbfe; font-weight: 800; border-radius: 999px; cursor: pointer;">
+                            📜 Issue Formal Offer Letter
+                          </button>
                         </div>
                         <div style="font-size: 0.75rem; color: #64748b;">
                           Status updated: ${new Date(a.updated_at || a.created_at).toLocaleDateString('en-GB')}
@@ -2682,6 +2688,35 @@ const DashboardView = {
                 State.showToast(`Candidate stage updated to ${targetStatus.toUpperCase()}`, 'success');
               } catch (err) {
                 State.showToast(err.message || 'Failed to update candidate stage', 'error');
+              }
+            };
+          });
+
+          // Issue Formal Offer Letter Button (OPTION C)
+          document.querySelectorAll('.btn-issue-candidate-offer').forEach(offerBtn => {
+            offerBtn.onclick = async () => {
+              const appId = offerBtn.dataset.appId;
+              const candidateName = offerBtn.dataset.appName;
+              const vacId = offerBtn.dataset.vacId;
+
+              const salary = prompt(`Enter gross monthly salary for ${candidateName} (GH₵):`, '3500');
+              if (!salary) return;
+              const startDate = prompt('Enter academic term start date (YYYY-MM-DD):', '2026-09-01');
+              if (!startDate) return;
+
+              try {
+                offerBtn.disabled = true;
+                offerBtn.innerText = 'Issuing...';
+                const res = await API.generateTeacherOffer(schoolId, vacId, appId, {
+                  grossSalaryGhs: Number(salary),
+                  termStartDate: startDate
+                });
+                State.showToast(`✓ Official Offer Letter #${res.offerLetter.offerNumber} issued to ${candidateName}!`, 'success');
+                App.navigate('schools');
+              } catch (err) {
+                State.showToast(err.message || 'Failed to issue offer letter', 'error');
+                offerBtn.disabled = false;
+                offerBtn.innerText = '📜 Issue Formal Offer Letter';
               }
             };
           });
@@ -2949,10 +2984,15 @@ const DashboardView = {
                 `).join('')}
               </div>
 
-              <!-- Dispute Trigger (ESC-003) -->
+              <!-- Digital LPO & Fulfillment Rating Actions (OPTION C) -->
               <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
-                <div style="font-size: 0.82rem; color: #64748b;">
-                  🔒 Funds are held safely in SkoolFinder escrow until your physical inspection sign-off.
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                  <button id="btn-view-digital-lpo" data-tender-id="${tenderId}" class="btn-pill btn-primary" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+                    📄 View & Seal Digital LPO Contract
+                  </button>
+                  <button id="btn-rate-vendor-fulfillment" data-tender-id="${tenderId}" class="btn-pill btn-gold" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+                    ⭐ Rate Vendor Fulfillment
+                  </button>
                 </div>
                 <button id="btn-trigger-escrow-dispute" data-tender-id="${tenderId}" class="btn-pill btn-danger" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
                   ⚠️ Raise Escrow Dispute
@@ -2963,6 +3003,50 @@ const DashboardView = {
 
           document.getElementById('btn-close-escrow-desk')?.addEventListener('click', () => {
             container.style.display = 'none';
+          });
+
+          // View & Sign Digital LPO (OPTION C)
+          document.getElementById('btn-view-digital-lpo')?.addEventListener('click', async () => {
+            try {
+              const res = await API.getTenderLPO(schoolId, tenderId);
+              const lpo = res.lpo;
+              const signConfirm = confirm(
+                `Institutional Digital Local Purchase Order (LPO)\n` +
+                `--------------------------------------------------\n` +
+                `LPO Number: ${lpo.lpoNumber}\n` +
+                `Tender: ${lpo.tenderTitle}\n` +
+                `Supplier: ${lpo.supplierName}\n` +
+                `Total Amount: GH₵ ${Number(lpo.totalAmountGhs).toLocaleString()}\n` +
+                `Status: ${lpo.status.toUpperCase()}\n` +
+                `Payment Rail: ${lpo.paymentRail}\n\n` +
+                `${lpo.signedBySchool ? '✓ Already digitally executed by Bursar.' : 'Would you like to digitally SIGN and SEAL this purchase order?'}`
+              );
+
+              if (signConfirm && !lpo.signedBySchool) {
+                const signatoryName = prompt('Enter authorized Bursar / Head of Procurement name:', 'School Bursar') || 'School Bursar';
+                await API.signTenderLPO(schoolId, tenderId, { signatoryName });
+                State.showToast(`✓ Official LPO #${lpo.lpoNumber} signed and sealed!`, 'success');
+                App.navigate('schools');
+              }
+            } catch (err) {
+              State.showToast(err.message || 'Failed to process LPO', 'error');
+            }
+          });
+
+          // Rate Vendor Fulfillment (OPTION C)
+          document.getElementById('btn-rate-vendor-fulfillment')?.addEventListener('click', async () => {
+            const ratingInput = prompt('Rate vendor performance (1 to 5 stars):', '5');
+            if (!ratingInput) return;
+            const rating = parseInt(ratingInput, 10) || 5;
+            const reviewText = prompt('Enter fulfillment review notes (delivery punctuality, product quality, packaging):', 'Materials arrived on schedule and verified on campus in pristine condition.');
+
+            try {
+              await API.rateSupplierFulfillment(schoolId, tenderId, { rating, reviewText });
+              State.showToast(`✓ Supplier fulfillment rating (${rating}/5) recorded!`, 'success');
+              App.navigate('schools');
+            } catch (err) {
+              State.showToast(err.message || 'Failed to submit rating', 'error');
+            }
           });
 
           // Milestone 1 Lock Click

@@ -66,5 +66,36 @@ router.post('/:id/apply', async (req, res) => {
   }
 });
 
+// ============================================================================
+// CANDIDATE EMPLOYMENT OFFER LETTER ENDPOINTS (OPTION C)
+// ============================================================================
+
+/**
+ * GET /api/jobs/applications/:appId/offer
+ * Candidate reviews formal employment offer letter
+ */
+router.get('/applications/:appId/offer', async (req, res) => {
+  try {
+    const offer = MarketplaceService.getTeacherOfferLetter(req.params.appId);
+    if (!offer) return res.status(404).json({ error: 'Employment offer letter not found' });
+    return res.json({ success: true, offer });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/jobs/applications/:appId/offer-response
+ * Candidate accepts or declines employment offer letter
+ */
+router.post('/applications/:appId/offer-response', async (req, res) => {
+  try {
+    const result = await MarketplaceService.respondTeacherOfferLetter(req.params.appId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
 module.exports = router;
 

@@ -167,13 +167,16 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], async (req, res) => {
       email: supplierEmail = '',
       price,
       amount,
+      quotedAmountGhs,
+      quoteAmount,
       deliveryDays = 5,
       warrantyTerms = 'Standard 6 Months',
       paymentTerms = '50% Advance / 50% on Delivery',
       notes = ''
     } = req.body;
 
-    const finalPrice = price || (amount ? `GH₵ ${Number(amount).toLocaleString()}` : 'GH₵ 5,000');
+    const numAmount = amount || quotedAmountGhs || quoteAmount;
+    const finalPrice = price || (numAmount ? `GH₵ ${Number(numAmount).toLocaleString()}` : 'GH₵ 5,000');
     const quoteRef = `QUOTE-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Resolve RFQ details to get school name and RFQ title
