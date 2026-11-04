@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const EmailService = require('../services/emailService');
+const MarketplaceService = require('../services/marketplaceService');
 
 const DEFAULT_RFQS = [
   {
@@ -54,11 +55,42 @@ router.get('/rfqs', async (req, res) => {
     let query = supabaseAdmin.from('rfqs').select('*').order('created_at', { ascending: false });
     if (schoolId) query = query.eq('school_id', schoolId);
 
-    const { data: rfqs, error } = await query;
-    if (error || !rfqs || rfqs.length === 0) {
+    const { data: rfqs } = await query;
+    let combined = [];
+
+    // Get marketplace tenders from MarketplaceService (TEN-004)
+    try {
+      const tenders = await MarketplaceService.getPublicTenders(req.query);
+      if (tenders && tenders.length > 0) {
+        combined = [...tenders.map(t => ({
+          id: t.id,
+          school_id: t.schoolId,
+          school_name: t.schoolName,
+          title: t.title,
+          category: t.category,
+          description: t.description,
+          budget_range: t.budgetRange,
+          quantity: t.quantity,
+          region: 'Greater Accra',
+          status: t.status === 'open' ? 'Open' : t.status,
+          deadline: t.deadline,
+          quotes_received: t.quotesReceived
+        }))];
+      }
+    } catch (e) {}
+
+    if (rfqs && rfqs.length > 0) {
+      rfqs.forEach(r => {
+        if (!combined.some(c => c.id === r.id)) {
+          combined.push(r);
+        }
+      });
+    }
+
+    if (combined.length === 0) {
       return res.json(DEFAULT_RFQS);
     }
-    return res.json(rfqs.map(formatRFQ));
+    return res.json(combined.map(formatRFQ));
   } catch (err) {
     return res.json(DEFAULT_RFQS);
   }
@@ -156,6 +188,23 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], async (req, res) => {
         if (rfq.title) rfqTitle = rfq.title;
         if (rfq.school_name) schoolName = rfq.school_name;
       }
+    }
+
+    // Submit to MarketplaceService if active in Phase 2B
+    try {
+      await MarketplaceService.submitSupplierBid(rfqId, {
+        supplierId,
+        supplierName,
+        supplierEmail,
+        supplierPhone: phone,
+        quoteAmount: parseFloat(String(finalPrice).replace(/[^0-9.]/g, '')) || 0,
+        deliveryDaysSLA: deliveryDays,
+        warrantyTerms,
+        paymentTerms,
+        proposalNotes: notes
+      });
+    } catch (e) {
+      // Not a marketplace tender or handled by standard flow
     }
 
     const { data: quote, error } = await supabaseAdmin

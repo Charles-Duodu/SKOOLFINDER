@@ -6,6 +6,7 @@ const { authenticate, JWT_SECRET } = require('../middleware/auth');
 const AuditService = require('../services/auditService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
 const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
+const MarketplaceService = require('../services/marketplaceService');
 
 /**
  * Helper to generate URL-safe slugs
@@ -2447,6 +2448,39 @@ router.post('/subscriptions/:schoolId/tier', async (req, res) => {
     return res.json({ success: true, subscription: updated });
   } catch (err) {
     return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ----------------------------------------------------------------------------
+ * PHASE 2B: SUPER ADMIN MARKETPLACE & ESCROW CONTROL (ESC-003, ESC-004)
+ * ----------------------------------------------------------------------------
+ */
+
+/**
+ * POST /api/admin/marketplace/escrow/:tenderId/resolve (ESC-003)
+ * Super Admin arbitration and resolution of escrow disputes
+ */
+router.post('/marketplace/escrow/:tenderId/resolve', async (req, res) => {
+  try {
+    const { tenderId } = req.params;
+    const result = await MarketplaceService.resolveEscrowDispute(req.user, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/admin/marketplace/audit-log (ESC-004)
+ * Super Admin access to tamper-evident marketplace and escrow audit logs
+ */
+router.get('/marketplace/audit-log', async (req, res) => {
+  try {
+    const logs = MarketplaceService.getMarketplaceAuditLogs(req.query);
+    return res.json({ success: true, logs });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 });
 

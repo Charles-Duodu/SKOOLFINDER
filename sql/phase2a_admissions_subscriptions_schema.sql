@@ -167,3 +167,4 @@ CREATE POLICY "School staff read invoices" ON public.subscription_invoices FOR S
     school_id IN (SELECT school_id FROM public.school_memberships WHERE user_id = auth.uid() AND status = 'active')
     OR auth.role() = 'service_role'
 );
+

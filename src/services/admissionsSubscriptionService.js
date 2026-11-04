@@ -42,7 +42,7 @@ const SUBSCRIPTION_PLANS = {
     seatsIncluded: 3,
     galleryImageQuota: 20,
     vacanciesLimit: 3,
-    includedTendersPerMonth: 1,
+    includedTendersPerMonth: 0,
     features: {
       basicDirectoryListing: true,
       enquiryAlertEmail: true,

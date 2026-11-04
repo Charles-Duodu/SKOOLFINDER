@@ -1979,6 +1979,147 @@ const API = {
       body: JSON.stringify({ decision })
     });
     return res.json();
+  },
+
+  // ==========================================================================
+  // PHASE 2B: INSTITUTIONAL MARKETPLACE (VACANCIES, TENDERS & ESCROW)
+  // Baseline: Blueprint v2.0 Sections 6, 12, 13, 23, 25, 26.4
+  // ==========================================================================
+
+  // 1. Vacancies & Teacher Recruiting
+  async getSchoolVacancies(schoolId, params = {}) {
+    const q = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies${q ? '?' + q : ''}`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createSchoolVacancy(schoolId, vacancyData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(vacancyData)
+    });
+    return res.json();
+  },
+
+  async purchaseVacancyAddonSlot(schoolId, paymentData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/add-on-slot`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(paymentData)
+    });
+    return res.json();
+  },
+
+  async updateVacancyStatus(schoolId, vacancyId, status) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/${encodeURIComponent(vacancyId)}/status`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ status })
+    });
+    return res.json();
+  },
+
+  async getVacancyApplicants(schoolId, vacancyId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/${encodeURIComponent(vacancyId)}/applicants`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async updateVacancyApplicantStatus(schoolId, applicationId, data) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/applicants/${encodeURIComponent(applicationId)}/status`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  // 2. B2B Procurement Tenders
+  async getSchoolTenders(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createSchoolTender(schoolId, tenderData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(tenderData)
+    });
+    return res.json();
+  },
+
+  async purchaseTenderCredits(schoolId, data = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/buy-credits`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  async getTenderBids(schoolId, tenderId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/bids`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async awardTenderContract(schoolId, tenderId, bidId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/award`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ bidId })
+    });
+    return res.json();
+  },
+
+  // 3. Milestone MoMo Escrow
+  async getTenderEscrow(schoolId, tenderId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/escrow`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async fundEscrowMilestone(schoolId, tenderId, paymentData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/escrow-milestone`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(paymentData)
+    });
+    return res.json();
+  },
+
+  async signOffTenderDelivery(schoolId, tenderId, signoffData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/delivery-signoff`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(signoffData)
+    });
+    return res.json();
+  },
+
+  async raiseTenderDispute(schoolId, tenderId, disputeData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tenders/${encodeURIComponent(tenderId)}/dispute`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(disputeData)
+    });
+    return res.json();
+  },
+
+  async getMarketplaceAuditLog(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/marketplace/audit-log`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
   }
 
 };

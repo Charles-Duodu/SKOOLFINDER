@@ -336,9 +336,11 @@ const DashboardView = {
     let subscription = null;
     let invoices = [];
     let plans = [];
+    let vacanciesData = { vacancies: [], quota: { planTier: 'growth', baseQuota: 2, totalAllowed: 2, currentActive: 0, remainingSlots: 2 } };
+    let tendersData = { tenders: [], quota: { planTier: 'growth', includedMonthlyQuota: 0, purchasedCreditsRemaining: 0, totalAvailable: 0 } };
 
     try {
-      const [res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes] = await Promise.allSettled([
+      const [res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes, vacRes, tndRes] = await Promise.allSettled([
         API.getSchoolWorkspace(schoolId),
         API.getSchoolIntakes(schoolId),
         API.getSchoolApplications(schoolId),
@@ -346,7 +348,9 @@ const DashboardView = {
         API.getSchoolTourSlots(schoolId),
         API.getSchoolSubscription(schoolId),
         API.getSchoolInvoices(schoolId),
-        API.getSubscriptionPlans()
+        API.getSubscriptionPlans(),
+        API.getSchoolVacancies(schoolId),
+        API.getSchoolTenders(schoolId)
       ]);
       if (res.status === 'fulfilled' && res.value?.workspace) workspaceData = res.value.workspace;
       if (intakesRes.status === 'fulfilled' && intakesRes.value?.intakes) intakes = intakesRes.value.intakes;
@@ -356,8 +360,10 @@ const DashboardView = {
       if (subRes.status === 'fulfilled' && subRes.value?.subscription) subscription = subRes.value.subscription;
       if (invRes.status === 'fulfilled' && invRes.value?.invoices) invoices = invRes.value.invoices;
       if (plansRes.status === 'fulfilled' && plansRes.value?.plans) plans = plansRes.value.plans;
+      if (vacRes.status === 'fulfilled' && vacRes.value) vacanciesData = vacRes.value;
+      if (tndRes.status === 'fulfilled' && tndRes.value) tendersData = tndRes.value;
     } catch (e) {
-      console.warn('Workspace & Phase 2A load notice:', e.message);
+      console.warn('Workspace & Phase 2 load notice:', e.message);
     }
 
     const school = workspaceData?.school || {
@@ -381,6 +387,7 @@ const DashboardView = {
     const auditLogs = workspaceData?.auditLogs || [];
 
     const phase2aData = { intakes, applications, enquiriesData, tourSlots, subscription, invoices, plans };
+    const phase2bData = { vacanciesData, tendersData };
 
     return `
       <div class="owner-shell">
@@ -455,16 +462,19 @@ const DashboardView = {
               <span>🚌 Fleet, Clinic & IDs</span>
             </button>
 
-            <!-- Group 7: Phase 2B & 3 Preview Badges -->
-            <div class="owner-nav-group-title">Future Expansion</div>
-            <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
-              <span>📦 B2B Procurement</span>
-              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 2B</span>
-            </div>
-            <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
+            <!-- Group 7: Institutional Marketplace (Active Phase 2B) -->
+            <div class="owner-nav-group-title">Institutional Marketplace (Phase 2B)</div>
+            <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting">
               <span>🧑‍🏫 Teacher Recruiting</span>
-              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 2B</span>
-            </div>
+              <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${vacanciesData?.vacancies?.length || 0} JOBS</span>
+            </button>
+            <button class="owner-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-owner-tab="procurement">
+              <span>📦 B2B Procurement RFQs</span>
+              <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
+            </button>
+
+            <!-- Group 8: Phase 3 Preview Badges -->
+            <div class="owner-nav-group-title">Future Expansion</div>
             <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
               <span>📚 Student Academics & SIS</span>
               <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 3</span>
@@ -474,7 +484,7 @@ const DashboardView = {
 
         <!-- MAIN WORKSPACE CONTENT CONTAINER -->
         <main class="owner-main-content">
-          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData)}
+          ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData)}
         </main>
       </div>
     `;
@@ -483,7 +493,7 @@ const DashboardView = {
   /**
    * Renders tab content based on activeTab
    */
-  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}) {
+  renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2a = {}, phase2b = {}) {
     switch (this.activeTab) {
       case 'overview':
         return this.renderOverviewTab(school, kpis, seatQuotas, tasks);
@@ -497,6 +507,10 @@ const DashboardView = {
         return this.renderAdmissionsTab(school, phase2a.intakes, phase2a.applications, phase2a.tourSlots);
       case 'inquiries':
         return this.renderInquiriesTab(school, phase2a.enquiriesData, phase2a.tourSlots);
+      case 'recruiting':
+        return this.renderRecruitingTab(school, phase2b.vacanciesData);
+      case 'procurement':
+        return this.renderProcurementTab(school, phase2b.tendersData);
       case 'audit':
         return this.renderAuditTab(school, auditLogs);
       case 'subscription':
@@ -1373,7 +1387,333 @@ const DashboardView = {
   },
 
   /**
-   * TAB 7: SCH-010 Audit History & Traceability
+   * TAB 6: Teacher Vacancies & Recruiting Command (Blueprint v2.0 §12, VAC-001 - VAC-006)
+   */
+  renderRecruitingTab(school, vacanciesData = {}) {
+    const vacancies = vacanciesData.vacancies || [];
+    const quota = vacanciesData.quota || {
+      planTier: 'growth',
+      baseQuota: 2,
+      activeAddonSlots: 0,
+      totalAllowed: 2,
+      currentActive: 0,
+      remainingSlots: 2
+    };
+
+    return `
+      <div>
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §12 &bull; VAC-001 to VAC-006 &bull; Institutional Talent Acquisition
+            </div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              Teacher Vacancies & Recruiting Desk
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Manage published school teaching posts, enforce simultaneous vacancy quotas, review candidate dossiers, and vet National Teaching Council (NTC) licences.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="btn-buy-vacancy-slot" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>💳</span> Buy Add-on Slot (GH₵ 25 / 30d)
+            </button>
+            <button id="btn-open-post-vacancy" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>➕</span> Post New Vacancy
+            </button>
+          </div>
+        </div>
+
+        <!-- Quota & Metrics Cards (VAC-001, VAC-002) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+          <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
+            <div class="owner-kpi-label">Active Vacancies Quota</div>
+            <div class="owner-kpi-value">${quota.currentActive} <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 600;">/ ${quota.totalAllowed}</span></div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              ${quota.baseQuota} base on ${quota.planTier.toUpperCase()} + ${quota.activeAddonSlots} add-on slots
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
+            <div class="owner-kpi-label">Remaining Publishing Slots</div>
+            <div class="owner-kpi-value" style="color: ${quota.remainingSlots === 0 ? '#ef4444' : '#1266C4'};">${quota.remainingSlots}</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              ${quota.remainingSlots === 0 ? 'Quota full. Close post or buy slot.' : 'Available for immediate publishing'}
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #D5A63B;">
+            <div class="owner-kpi-label">Add-on Slot Pricing (Approved)</div>
+            <div class="owner-kpi-value" style="color: #b45309; font-size: 1.4rem;">GH₵ 25.00</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              Valid for 30 days via Paystack MoMo/Card
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #6366f1;">
+            <div class="owner-kpi-label">NTC Credential Vetting</div>
+            <div class="owner-kpi-value" style="font-size: 1.3rem; color: #4338ca;">Strict NTC</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              Licence check on all candidate dossiers
+            </div>
+          </div>
+        </div>
+
+        <!-- Vacancies List (VAC-003, VAC-006) -->
+        <div class="owner-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
+              🏛️ Published Vacancies & Active Openings (${vacancies.length})
+            </h3>
+            <span style="font-size: 0.8rem; color: #64748b;">
+              Synced in real time to <strong>/jobs</strong> & Teachers Portal
+            </span>
+          </div>
+
+          ${vacancies.length === 0 ? `
+            <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧑‍🏫</div>
+              <div style="font-weight: 700; color: #334155; margin-bottom: 0.25rem;">No teaching vacancies posted yet</div>
+              <p style="font-size: 0.85rem; max-width: 450px; margin: 0 auto 1.25rem;">
+                Publish your first vacancy to connect with thousands of vetted, NTC-licensed teachers in Greater Accra and Kumasi.
+              </p>
+              <button class="btn-pill btn-primary btn-open-post-vacancy-empty" style="font-size: 0.85rem;">
+                <span>➕</span> Post School Vacancy
+              </button>
+            </div>
+          ` : `
+            <div class="owner-table-wrapper">
+              <table class="owner-table">
+                <thead>
+                  <tr>
+                    <th>Role & Subject</th>
+                    <th>Department & Level</th>
+                    <th>Curriculum</th>
+                    <th>Salary Range</th>
+                    <th>Status</th>
+                    <th>Applicants</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${vacancies.map(v => `
+                    <tr>
+                      <td style="font-weight: 700; color: #0A2046;">
+                        ${v.title}
+                        <div style="font-size: 0.75rem; color: #64748b; font-weight: normal;">
+                          ${v.job_type === 'full_time' ? 'Full Time' : v.job_type} &bull; Min ${v.min_experience_years || 1} yr exp
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge badge-secondary" style="font-size: 0.72rem;">${v.department}</span>
+                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 2px;">${v.level}</div>
+                      </td>
+                      <td style="font-size: 0.82rem; color: #334155;">${v.curriculum}</td>
+                      <td style="font-size: 0.82rem; font-weight: 700; color: #0b7285;">${v.salary_range}</td>
+                      <td>
+                        <span class="badge ${v.status === 'published' ? 'badge-emerald' : 'badge-secondary'}" style="font-size: 0.72rem;">
+                          ${v.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn-view-vacancy-apps" data-vac-id="${v.id}" data-vac-title="${v.title}" style="background: none; border: 1px solid #cbd5e1; border-radius: 9999px; padding: 0.25rem 0.65rem; font-size: 0.78rem; font-weight: 700; color: #1266C4; cursor: pointer;">
+                          👥 ${v.applicantsCount || 0} Dossiers
+                        </button>
+                      </td>
+                      <td>
+                        <div style="display: flex; gap: 0.4rem;">
+                          ${v.status === 'published' ? `
+                            <button class="btn-toggle-vac-status" data-vac-id="${v.id}" data-target-status="closed" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 6px; cursor: pointer;">
+                              Close
+                            </button>
+                          ` : `
+                            <button class="btn-toggle-vac-status" data-vac-id="${v.id}" data-target-status="published" style="padding: 0.25rem 0.6rem; font-size: 0.75rem; background: #dcfce7; color: #166534; border: 1px solid #86efac; border-radius: 6px; cursor: pointer;">
+                              Publish
+                            </button>
+                          `}
+                        </div>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <!-- Active Candidate Dossiers Container -->
+        <div id="vacancy-applicants-container" style="display: none; margin-top: 1.5rem;">
+          <!-- Loaded dynamically upon clicking View Dossiers -->
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * TAB 7: B2B Procurement RFQs & MoMo Milestone Escrow (Blueprint v2.0 §13, §25, TEN-001 - TEN-006, ESC-001 - ESC-004)
+   */
+  renderProcurementTab(school, tendersData = {}) {
+    const tenders = tendersData.tenders || [];
+    const quota = tendersData.quota || {
+      planTier: 'growth',
+      includedMonthlyQuota: 0,
+      usedThisMonth: 0,
+      remainingMonthlyQuota: 0,
+      purchasedCreditsRemaining: 0,
+      totalAvailable: 0
+    };
+
+    return `
+      <div>
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+              Blueprint v2.0 §13 &bull; §25 &bull; TEN-001 to TEN-006 &bull; ESC-001 to ESC-004 &bull; B2B Institutional Procurement
+            </div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+              Procurement RFQs & MoMo Milestone Escrow
+            </h1>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Publish procurement tenders, compare competing supplier bids side-by-side, lock 50% mobilization deposit into escrow, and release upon physical delivery inspection.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button id="btn-buy-tender-credits" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>💳</span> Buy Tender Credits (GH₵ 45 / GH₵ 120)
+            </button>
+            <button id="btn-open-post-tender" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>➕</span> Issue Procurement Tender
+            </button>
+          </div>
+        </div>
+
+        <!-- Quota & Escrow Safeguard Cards (TEN-001, TEN-002, ESC-001) -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
+          <div class="owner-kpi-card" style="border-left: 3px solid #0ea5e9;">
+            <div class="owner-kpi-label">Monthly Tender Quota</div>
+            <div class="owner-kpi-value">${quota.usedThisMonth} <span style="font-size: 1.1rem; color: #94a3b8; font-weight: 600;">/ ${quota.includedMonthlyQuota}</span></div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              Included on ${quota.planTier.toUpperCase()} Plan (resets monthly)
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
+            <div class="owner-kpi-label">Purchased Tender Credits</div>
+            <div class="owner-kpi-value" style="color: #10b981;">${quota.purchasedCreditsRemaining}</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              Non-expiring credits across billing cycles
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #D5A63B;">
+            <div class="owner-kpi-label">Credit Add-on Bundles</div>
+            <div class="owner-kpi-value" style="font-size: 1.25rem; color: #b45309;">GH₵ 45 / GH₵ 120</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              1 Credit: GH₵ 45 &bull; 3-Pack: GH₵ 120 (Save GH₵ 15)
+            </div>
+          </div>
+          <div class="owner-kpi-card" style="border-left: 3px solid #8b5cf6;">
+            <div class="owner-kpi-label">50/50 MoMo Milestone Escrow</div>
+            <div class="owner-kpi-value" style="font-size: 1.25rem; color: #6d28d9;">50% / 50%</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">
+              Deposit locked &bull; Balance on delivery sign-off
+            </div>
+          </div>
+        </div>
+
+        <!-- Published Tenders Table (TEN-003, TEN-004) -->
+        <div class="owner-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
+              📦 Active Tenders & Requests for Quotation (${tenders.length})
+            </h3>
+            <span style="font-size: 0.8rem; color: #64748b;">
+              Published to accredited vendors on <strong>/suppliers</strong>
+            </span>
+          </div>
+
+          ${tenders.length === 0 ? `
+            <div style="text-align: center; padding: 3rem 1rem; color: #94a3b8;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📦</div>
+              <div style="font-weight: 700; color: #334155; margin-bottom: 0.25rem;">No procurement tenders published yet</div>
+              <p style="font-size: 0.85rem; max-width: 450px; margin: 0 auto 1.25rem;">
+                Issue RFQs for textbooks, STEM lab kits, food supplies, and uniforms to receive competitive quotations with 50/50 escrow protection.
+              </p>
+              <button class="btn-pill btn-primary btn-open-post-tender-empty" style="font-size: 0.85rem;">
+                <span>➕</span> Issue First Tender
+              </button>
+            </div>
+          ` : `
+            <div class="owner-table-wrapper">
+              <table class="owner-table">
+                <thead>
+                  <tr>
+                    <th>Ref & Title</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Budget Range</th>
+                    <th>Deadlines</th>
+                    <th>Quotes</th>
+                    <th>Escrow Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tenders.map(t => `
+                    <tr>
+                      <td>
+                        <div style="font-family: monospace; font-size: 0.72rem; color: #1266C4; font-weight: 800;">
+                          ${t.reference_code || 'TND-2026-X'}
+                        </div>
+                        <div style="font-weight: 700; color: #0A2046; font-size: 0.88rem;">
+                          ${t.title}
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge badge-secondary" style="font-size: 0.72rem;">${t.category}</span>
+                      </td>
+                      <td style="font-size: 0.82rem; color: #475569;">${t.quantity}</td>
+                      <td style="font-size: 0.82rem; font-weight: 700; color: #0b7285;">
+                        GH₵ ${Number(t.budget_min || 0).toLocaleString()} - ${Number(t.budget_max || 50000).toLocaleString()}
+                      </td>
+                      <td style="font-size: 0.78rem; color: #64748b;">
+                        <div>Sub: <strong>${t.submission_deadline}</strong></div>
+                        <div>Del: <strong>${t.delivery_deadline}</strong></div>
+                      </td>
+                      <td>
+                        <button class="btn-view-tender-bids" data-tender-id="${t.id}" data-tender-title="${t.title}" style="background: none; border: 1px solid #cbd5e1; border-radius: 9999px; padding: 0.25rem 0.65rem; font-size: 0.78rem; font-weight: 700; color: #1266C4; cursor: pointer;">
+                          📊 ${t.bidsCount || 0} Bids
+                        </button>
+                      </td>
+                      <td>
+                        <span class="badge ${
+                          t.escrow_status === 'fully_disbursed' ? 'badge-emerald' :
+                          t.escrow_status === 'deposit_funded' ? 'badge-primary' :
+                          t.escrow_status === 'disputed' ? 'badge-danger' : 'badge-secondary'
+                        }" style="font-size: 0.7rem;">
+                          ${t.escrow_status ? t.escrow_status.replace('_', ' ').toUpperCase() : 'PENDING'}
+                        </span>
+                      </td>
+                      <td>
+                        <button class="btn-manage-escrow" data-tender-id="${t.id}" data-tender-title="${t.title}" data-escrow-status="${t.escrow_status}" style="padding: 0.25rem 0.65rem; font-size: 0.75rem; background: #0A2046; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700;">
+                          🛡️ Escrow
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+
+        <!-- Dynamic Tender Bids & Escrow Workspace Container -->
+        <div id="tender-workspace-container" style="display: none; margin-top: 1.5rem;">
+          <!-- Loaded dynamically upon clicking Compare Bids or Escrow -->
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * TAB 8: SCH-010 Audit History & Traceability
    */
   renderAuditTab(school, logs = []) {
     return `
@@ -2175,6 +2515,498 @@ const DashboardView = {
       } catch (err) {
         State.showToast(err.message || 'Failed to create slot', 'error');
       }
+    });
+
+    // ========================================================================
+    // PHASE 2B: TEACHER VACANCIES & RECRUITING EVENT LISTENERS (VAC-001 - VAC-006)
+    // ========================================================================
+
+    // 1. Post Vacancy Dialog
+    const handlePostVacancy = async () => {
+      const title = prompt('Enter Job Title / Subject Teacher:', 'Senior High School Mathematics Teacher');
+      if (!title) return;
+      const department = prompt('Department (e.g. Mathematics, Science, Early Years):', 'Mathematics') || 'Academics';
+      const level = prompt('Level (e.g. Primary, JHS, SHS, Cambridge):', 'SHS') || 'SHS';
+      const curriculum = prompt('Curriculum (GES / NaCCA, British Cambridge, IB):', 'GES / NaCCA') || 'GES / NaCCA';
+      const salaryRange = prompt('Salary Range in GHS:', 'GH₵ 3,000 - 4,500 / month') || 'GH₵ 3,000 - 4,500 / month';
+
+      try {
+        await API.createSchoolVacancy(schoolId, {
+          title,
+          department,
+          level,
+          curriculum,
+          salaryRange,
+          minExperienceYears: 2,
+          minQualification: 'B.Ed in Mathematics / Post-Graduate Diploma',
+          description: `Passionate educator sought for ${level} ${department} department.`,
+          ntcRequired: true,
+          status: 'published'
+        });
+        State.showToast('Teacher vacancy published successfully! Synced to /jobs & Teachers Portal.', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to post vacancy', 'error');
+      }
+    };
+    document.getElementById('btn-open-post-vacancy')?.addEventListener('click', handlePostVacancy);
+    document.querySelector('.btn-open-post-vacancy-empty')?.addEventListener('click', handlePostVacancy);
+
+    // 2. Buy Add-on Vacancy Slot (Approved GH₵ 25 for 30 days) (VAC-002)
+    document.getElementById('btn-buy-vacancy-slot')?.addEventListener('click', async () => {
+      const confirmBuy = confirm('Purchase 1 additional active vacancy slot for GH₵ 25.00 valid for 30 days via Paystack MoMo?');
+      if (!confirmBuy) return;
+      try {
+        const res = await API.purchaseVacancyAddonSlot(schoolId, { paymentMethod: 'momo' });
+        State.showToast(`Active vacancy slot activated! Expires in 30 days.`, 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to purchase slot', 'error');
+      }
+    });
+
+    // 3. Toggle Vacancy Status (VAC-003)
+    document.querySelectorAll('.btn-toggle-vac-status').forEach(btn => {
+      btn.onclick = async () => {
+        const vacId = btn.dataset.vacId;
+        const targetStatus = btn.dataset.targetStatus;
+        try {
+          await API.updateVacancyStatus(schoolId, vacId, targetStatus);
+          State.showToast(`Vacancy marked as ${targetStatus.toUpperCase()}! Active slot quota updated.`, 'success');
+          App.navigate('schools');
+        } catch (err) {
+          State.showToast(err.message || 'Failed to update vacancy status', 'error');
+        }
+      };
+    });
+
+    // 4. View Vacancy Applicants Dossiers (VAC-004, VAC-005)
+    document.querySelectorAll('.btn-view-vacancy-apps').forEach(btn => {
+      btn.onclick = async () => {
+        const vacId = btn.dataset.vacId;
+        const vacTitle = btn.dataset.vacTitle;
+        const container = document.getElementById('vacancy-applicants-container');
+        if (!container) return;
+
+        try {
+          const res = await API.getVacancyApplicants(schoolId, vacId);
+          const applicants = res.applicants || [];
+
+          container.style.display = 'block';
+          container.scrollIntoView({ behavior: 'smooth' });
+          container.innerHTML = `
+            <div class="owner-card" style="border: 2px solid #1266C4; background: #ffffff;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                    Candidate Applications Dossier (VAC-004, VAC-005)
+                  </div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
+                    ${vacTitle} &bull; ${applicants.length} Applicants
+                  </h3>
+                </div>
+                <button id="btn-close-vac-apps" class="btn-pill btn-secondary" style="font-size: 0.75rem;">
+                  ✕ Close Dossier View
+                </button>
+              </div>
+
+              ${applicants.length === 0 ? `
+                <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+                  No applications received yet for this vacancy.
+                </div>
+              ` : `
+                <div style="display: grid; gap: 1rem;">
+                  ${applicants.map(a => `
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 0.75rem;">
+                        <div>
+                          <div style="font-size: 1.05rem; font-weight: 800; color: #0A2046;">
+                            ${a.full_name}
+                          </div>
+                          <div style="font-size: 0.82rem; color: #64748b; margin-top: 2px;">
+                            ✉️ ${a.email} &bull; 📞 ${a.phone} &bull; 🏫 Current: ${a.current_school || 'Private'}
+                          </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                          <span class="badge ${a.ntc_verified ? 'badge-emerald' : 'badge-secondary'}" style="font-size: 0.75rem;">
+                            ${a.ntc_verified ? `🛡️ NTC: ${a.ntc_number}` : '⚠️ NTC Unverified'}
+                          </span>
+                          <a href="${a.cv_url || '#'}" target="_blank" class="btn-pill btn-outline" style="font-size: 0.75rem; padding: 0.25rem 0.65rem;">
+                            📄 View CV / Resume
+                          </a>
+                        </div>
+                      </div>
+
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0.75rem; background: #ffffff; padding: 0.75rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 0.75rem; font-size: 0.8rem;">
+                        <div><strong style="color: #475569;">Qualification:</strong> ${a.qualification}</div>
+                        <div><strong style="color: #475569;">Experience:</strong> ${a.years_experience} Years</div>
+                        <div><strong style="color: #475569;">Expected Salary:</strong> ${a.expected_salary}</div>
+                        <div><strong style="color: #475569;">Tracking Code:</strong> <code style="font-size: 0.75rem;">${a.tracking_ref || a.id.slice(0,8)}</code></div>
+                      </div>
+
+                      <!-- Stage Machine Selector (VAC-005) -->
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                          <span style="font-size: 0.82rem; font-weight: 700; color: #0A2046;">Candidate Stage:</span>
+                          <select class="form-control candidate-stage-select" data-app-id="${a.id}" data-vac-id="${vacId}" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.82rem; font-weight: 700;">
+                            <option value="applied" ${a.status === 'applied' ? 'selected' : ''}>Applied (New)</option>
+                            <option value="shortlisted" ${a.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
+                            <option value="interview_scheduled" ${a.status === 'interview_scheduled' ? 'selected' : ''}>Interview Scheduled</option>
+                            <option value="offered" ${a.status === 'offered' ? 'selected' : ''}>Job Offered</option>
+                            <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+                          </select>
+                        </div>
+                        <div style="font-size: 0.75rem; color: #64748b;">
+                          Status updated: ${new Date(a.updated_at || a.created_at).toLocaleDateString('en-GB')}
+                        </div>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          `;
+
+          // Close button
+          document.getElementById('btn-close-vac-apps')?.addEventListener('click', () => {
+            container.style.display = 'none';
+          });
+
+          // Stage change handler
+          document.querySelectorAll('.candidate-stage-select').forEach(sel => {
+            sel.onchange = async (e) => {
+              const appId = sel.dataset.appId;
+              const targetStatus = e.target.value;
+              try {
+                await API.updateVacancyApplicantStatus(schoolId, appId, { status: targetStatus });
+                State.showToast(`Candidate stage updated to ${targetStatus.toUpperCase()}`, 'success');
+              } catch (err) {
+                State.showToast(err.message || 'Failed to update candidate stage', 'error');
+              }
+            };
+          });
+        } catch (err) {
+          State.showToast(err.message || 'Failed to load applicants', 'error');
+        }
+      };
+    });
+
+    // ========================================================================
+    // PHASE 2B: B2B PROCUREMENT RFQS & MOMO ESCROW LISTENERS (TEN-001 - ESC-004)
+    // ========================================================================
+
+    // 1. Buy Tender Credits (Approved: 1 for GH₵ 45, 3 for GH₵ 120) (TEN-002)
+    document.getElementById('btn-buy-tender-credits')?.addEventListener('click', async () => {
+      const choice = prompt('Select credit package:\n1: 1 Single Tender Credit — GH₵ 45\n2: 3-Tender Credit Bundle — GH₵ 120 (Save GH₵ 15)', '2');
+      if (!choice) return;
+      const packType = choice === '1' ? 'single' : 'bundle_3';
+      const cost = packType === 'single' ? 'GH₵ 45.00' : 'GH₵ 120.00';
+      const confirmed = confirm(`Proceed to purchase ${packType === 'single' ? '1 Credit' : '3 Credits Bundle'} for ${cost} via Paystack MoMo?`);
+      if (!confirmed) return;
+
+      try {
+        await API.purchaseTenderCredits(schoolId, { packType, paymentMethod: 'momo' });
+        State.showToast(`Tender credits added to balance! You can now publish institutional RFQs.`, 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to purchase credits', 'error');
+      }
+    });
+
+    // 2. Issue Procurement Tender Dialog (TEN-003)
+    const handlePostTender = async () => {
+      const title = prompt('Enter Tender Title / RFQ:', 'Supply of 200 Core Mathematics Textbooks');
+      if (!title) return;
+      const category = prompt('Category (Textbooks, IT & Computers, Food & Catering, Uniforms):', 'Textbooks & Stationery') || 'General Supplies';
+      const quantity = prompt('Quantity / Scope:', '200 Copies (Term 1 Delivery)') || 'Term Requirement';
+      const maxBudget = prompt('Estimated Budget Ceiling in GHS:', '15000') || '15000';
+
+      try {
+        await API.createSchoolTender(schoolId, {
+          title,
+          category,
+          quantity,
+          budgetMin: 5000,
+          budgetMax: Number(maxBudget),
+          deliveryLocation: 'Main Campus Administration Store',
+          description: `Accredited suppliers sought for ${quantity} of ${title}.`,
+          specifications: 'Official NaCCA curriculum approved editions only.'
+        });
+        State.showToast('Tender published to B2B Procurement Desk (/suppliers)!', 'success');
+        App.navigate('schools');
+      } catch (err) {
+        State.showToast(err.message || 'Failed to publish tender', 'error');
+      }
+    };
+    document.getElementById('btn-open-post-tender')?.addEventListener('click', handlePostTender);
+    document.querySelector('.btn-open-post-tender-empty')?.addEventListener('click', handlePostTender);
+
+    // 3. View & Compare Supplier Bids Side-by-Side (TEN-005, TEN-006, ESC-001)
+    document.querySelectorAll('.btn-view-tender-bids').forEach(btn => {
+      btn.onclick = async () => {
+        const tenderId = btn.dataset.tenderId;
+        const tenderTitle = btn.dataset.tenderTitle;
+        const container = document.getElementById('tender-workspace-container');
+        if (!container) return;
+
+        try {
+          const res = await API.getTenderBids(schoolId, tenderId);
+          const bids = res.bids || [];
+          const tender = res.tender;
+
+          container.style.display = 'block';
+          container.scrollIntoView({ behavior: 'smooth' });
+          container.innerHTML = `
+            <div class="owner-card" style="border: 2px solid #0ea5e9; background: #ffffff;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 800; color: #0ea5e9; text-transform: uppercase;">
+                    Side-by-Side Bids Comparison & 50/50 Escrow Award (TEN-006, ESC-001)
+                  </div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
+                    ${tenderTitle} &bull; ${bids.length} Competing Supplier Quotes
+                  </h3>
+                </div>
+                <button id="btn-close-tender-workspace" class="btn-pill btn-secondary" style="font-size: 0.75rem;">
+                  ✕ Close Bids Workspace
+                </button>
+              </div>
+
+              ${bids.length === 0 ? `
+                <div style="text-align: center; padding: 2.5rem; color: #94a3b8;">
+                  No bids submitted yet for this tender. Verified suppliers on <strong>/suppliers</strong> are reviewing specifications.
+                </div>
+              ` : `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                  ${bids.map(b => `
+                    <div style="background: #f8fafc; border: 2px solid ${b.status === 'awarded' ? '#10b981' : '#e2e8f0'}; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                      <div>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                          <div style="font-weight: 800; color: #0A2046; font-size: 1.05rem;">
+                            ${b.supplier_name}
+                          </div>
+                          <span class="badge ${b.status === 'awarded' ? 'badge-emerald' : 'badge-secondary'}" style="font-size: 0.72rem;">
+                            ${b.status.toUpperCase()}
+                          </span>
+                        </div>
+                        <div style="font-size: 0.82rem; color: #64748b; margin-bottom: 0.75rem;">
+                          ⭐ ${b.supplier_rating || 4.8} / 5.0 &bull; 📞 ${b.supplier_phone} &bull; ✉️ ${b.supplier_email}
+                        </div>
+
+                        <!-- Price Tag -->
+                        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.75rem; margin-bottom: 0.75rem; text-align: center;">
+                          <div style="font-size: 0.72rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Quotation Total</div>
+                          <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046;">GH₵ ${Number(b.quote_amount).toLocaleString()}</div>
+                          <div style="font-size: 0.72rem; color: #10b981; font-weight: 700; margin-top: 2px;">
+                            50% Mobilization: GH₵ ${(b.quote_amount * 0.5).toLocaleString()}
+                          </div>
+                        </div>
+
+                        <div style="font-size: 0.8rem; color: #334155; margin-bottom: 0.5rem;">
+                          ⏱️ <strong>Delivery SLA:</strong> ${b.delivery_days_sla} Calendar Days
+                        </div>
+                        <div style="font-size: 0.8rem; color: #334155; margin-bottom: 0.5rem;">
+                          🛡️ <strong>Warranty:</strong> ${b.warranty_terms}
+                        </div>
+                        <div style="font-size: 0.8rem; color: #334155; margin-bottom: 0.75rem;">
+                          💳 <strong>Terms:</strong> 50% Mobilization / 50% on Inspection
+                        </div>
+                        ${b.proposal_notes ? `
+                          <div style="font-size: 0.78rem; color: #64748b; background: #f1f5f9; padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem;">
+                            <em>"${b.proposal_notes}"</em>
+                          </div>
+                        ` : ''}
+                      </div>
+
+                      ${tender.status !== 'awarded' && tender.status !== 'closed' ? `
+                        <button class="btn-award-tender-bid btn-pill btn-primary" data-bid-id="${b.id}" data-tender-id="${tenderId}" data-supplier="${b.supplier_name}" data-amount="${b.quote_amount}" style="width: 100%; font-size: 0.82rem; margin-top: 0.5rem;">
+                          🏆 Award Contract & Init 50/50 Escrow
+                        </button>
+                      ` : `
+                        <div style="text-align: center; font-size: 0.8rem; color: ${b.status === 'awarded' ? '#10b981' : '#94a3b8'}; font-weight: 700; padding: 0.5rem 0;">
+                          ${b.status === 'awarded' ? '✓ Contract Awarded to this Vendor' : 'Bid Not Selected'}
+                        </div>
+                      `}
+                    </div>
+                  `).join('')}
+                </div>
+              `}
+            </div>
+          `;
+
+          document.getElementById('btn-close-tender-workspace')?.addEventListener('click', () => {
+            container.style.display = 'none';
+          });
+
+          // Award Bid Click Handler
+          document.querySelectorAll('.btn-award-tender-bid').forEach(awardBtn => {
+            awardBtn.onclick = async () => {
+              const bidId = awardBtn.dataset.bidId;
+              const supplier = awardBtn.dataset.supplier;
+              const amount = Number(awardBtn.dataset.amount);
+              const m1Amount = (amount * 0.5).toLocaleString();
+              const confirmAward = confirm(`Award contract to ${supplier} for GH₵ ${amount.toLocaleString()}?\n\nThis will initialize 50/50 MoMo Milestone Escrow:\n- Milestone 1: 50% Mobilization Deposit (GH₵ ${m1Amount})\n- Milestone 2: 50% Final Disbursement upon Physical Inspection`);
+              if (!confirmAward) return;
+
+              try {
+                await API.awardTenderContract(schoolId, tenderId, bidId);
+                State.showToast(`Contract awarded to ${supplier}! 50/50 Escrow initialized.`, 'success');
+                App.navigate('schools');
+              } catch (err) {
+                State.showToast(err.message || 'Failed to award contract', 'error');
+              }
+            };
+          });
+        } catch (err) {
+          State.showToast(err.message || 'Failed to load tender bids', 'error');
+        }
+      };
+    });
+
+    // 4. Milestone MoMo Escrow Management (ESC-001, ESC-002, ESC-003)
+    document.querySelectorAll('.btn-manage-escrow').forEach(btn => {
+      btn.onclick = async () => {
+        const tenderId = btn.dataset.tenderId;
+        const tenderTitle = btn.dataset.tenderTitle;
+        const container = document.getElementById('tender-workspace-container');
+        if (!container) return;
+
+        try {
+          const res = await API.getTenderEscrow(schoolId, tenderId);
+          const milestones = res.milestones || [];
+          const tender = res.tender || {};
+
+          container.style.display = 'block';
+          container.scrollIntoView({ behavior: 'smooth' });
+          container.innerHTML = `
+            <div class="owner-card" style="border: 2px solid #8b5cf6; background: #ffffff;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 800; color: #8b5cf6; text-transform: uppercase;">
+                    50/50 MoMo Milestone Escrow Desk (ESC-001, ESC-002, ESC-003)
+                  </div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
+                    ${tenderTitle} &bull; Escrow Contract
+                  </h3>
+                </div>
+                <button id="btn-close-escrow-desk" class="btn-pill btn-secondary" style="font-size: 0.75rem;">
+                  ✕ Close Escrow Desk
+                </button>
+              </div>
+
+              <!-- Escrow Milestones 1 & 2 Cards -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                ${milestones.map(m => `
+                  <div style="background: #f8fafc; border: 2px solid ${
+                    m.status === 'disbursed' ? '#10b981' :
+                    m.status === 'funded_in_escrow' ? '#1266C4' :
+                    m.status === 'disputed' ? '#ef4444' : '#e2e8f0'
+                  }; border-radius: 12px; padding: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                      <span class="badge ${
+                        m.status === 'disbursed' ? 'badge-emerald' :
+                        m.status === 'funded_in_escrow' ? 'badge-primary' :
+                        m.status === 'disputed' ? 'badge-danger' : 'badge-secondary'
+                      }" style="font-size: 0.72rem;">
+                        ${m.status.toUpperCase()}
+                      </span>
+                      <span style="font-weight: 800; font-size: 0.85rem; color: #64748b;">
+                        Milestone ${m.milestone_index} (${m.percentage}%)
+                      </span>
+                    </div>
+
+                    <h4 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: #0A2046; font-weight: 800;">
+                      ${m.milestone_name}
+                    </h4>
+
+                    <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046; margin-bottom: 0.5rem;">
+                      GH₵ ${Number(m.amount).toLocaleString()}
+                    </div>
+
+                    <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 1rem;">
+                      ${m.disbursement_reference ? `Ref: <code>${m.disbursement_reference}</code>` : 'Awaiting payment lock'}
+                      ${m.inspection_notes ? `<br>Notes: <em>"${m.inspection_notes}"</em>` : ''}
+                    </div>
+
+                    ${m.milestone_index === 1 && m.status === 'pending' ? `
+                      <button id="btn-lock-m1-deposit" data-tender-id="${tenderId}" data-amount="${m.amount}" class="btn-pill btn-primary" style="width: 100%; font-size: 0.82rem;">
+                        🔒 Lock 50% Mobilization Deposit (MoMo)
+                      </button>
+                    ` : ''}
+
+                    ${m.milestone_index === 2 && m.status === 'pending' ? `
+                      <button id="btn-signoff-delivery-modal" data-tender-id="${tenderId}" class="btn-pill btn-emerald" style="width: 100%; font-size: 0.82rem;">
+                        📋 Physical Delivery Inspection Sign-off
+                      </button>
+                    ` : ''}
+
+                    ${m.status === 'disbursed' ? `
+                      <div style="text-align: center; font-size: 0.82rem; color: #10b981; font-weight: 700; padding: 0.5rem;">
+                        ✓ Disbursed via MoMo to Supplier
+                      </div>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+
+              <!-- Dispute Trigger (ESC-003) -->
+              <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div style="font-size: 0.82rem; color: #64748b;">
+                  🔒 Funds are held safely in SkoolFinder escrow until your physical inspection sign-off.
+                </div>
+                <button id="btn-trigger-escrow-dispute" data-tender-id="${tenderId}" class="btn-pill btn-danger" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
+                  ⚠️ Raise Escrow Dispute
+                </button>
+              </div>
+            </div>
+          `;
+
+          document.getElementById('btn-close-escrow-desk')?.addEventListener('click', () => {
+            container.style.display = 'none';
+          });
+
+          // Milestone 1 Lock Click
+          document.getElementById('btn-lock-m1-deposit')?.addEventListener('click', async () => {
+            const confirmed = confirm('Lock 50% mobilization deposit into platform MoMo Escrow?');
+            if (!confirmed) return;
+            try {
+              await API.fundEscrowMilestone(schoolId, tenderId, { paymentMethod: 'momo' });
+              State.showToast('50% Mobilization Deposit locked securely in escrow!', 'success');
+              App.navigate('schools');
+            } catch (err) {
+              State.showToast(err.message || 'Failed to fund escrow', 'error');
+            }
+          });
+
+          // Milestone 2 Delivery Sign-off
+          document.getElementById('btn-signoff-delivery-modal')?.addEventListener('click', async () => {
+            const notes = prompt('Enter delivery inspection sign-off notes:', 'Goods received and inspected on campus. Quality matches specifications.');
+            if (!notes) return;
+            try {
+              await API.signOffTenderDelivery(schoolId, tenderId, { inspectionNotes: notes });
+              State.showToast('Physical delivery approved! Full contract disbursed to supplier.', 'success');
+              App.navigate('schools');
+            } catch (err) {
+              State.showToast(err.message || 'Failed to sign off delivery', 'error');
+            }
+          });
+
+          // Escrow Dispute
+          document.getElementById('btn-trigger-escrow-dispute')?.addEventListener('click', async () => {
+            const reason = prompt('Enter reason for escrow dispute:', 'Items delivered defective or not received.');
+            if (!reason) return;
+            try {
+              await API.raiseTenderDispute(schoolId, tenderId, { reason });
+              State.showToast('Escrow dispute raised. Funds frozen pending Super Admin arbitration.', 'warning');
+              App.navigate('schools');
+            } catch (err) {
+              State.showToast(err.message || 'Failed to raise dispute', 'error');
+            }
+          });
+        } catch (err) {
+          State.showToast(err.message || 'Failed to load escrow contract', 'error');
+        }
+      };
     });
   }
 };

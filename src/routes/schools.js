@@ -5,6 +5,7 @@ const { authenticate, requireRole } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
 const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
+const MarketplaceService = require('../services/marketplaceService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -1156,6 +1157,240 @@ router.post('/:id/tours/slots/:slotId/book', async (req, res) => {
     return res.status(201).json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
+  }
+});
+
+// ============================================================================
+// PHASE 2B: INSTITUTIONAL MARKETPLACE (VACANCIES, TENDERS & MOMO ESCROW)
+// Baseline: Blueprint v2.0 Sections 6, 12, 13, 23, 25, 26.4
+// Packages: VAC-001 through VAC-006, TEN-001 through TEN-006, ESC-001 through ESC-004
+// ============================================================================
+
+/**
+ * GET /api/schools/:id/vacancies (VAC-001, VAC-003)
+ * Retrieves school vacancies, applicant metrics, and active vacancy quota metrics
+ */
+router.get('/:id/vacancies', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.getSchoolVacancies(id, req.query);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/vacancies (VAC-001, VAC-003)
+ * Creates and publishes a teacher vacancy enforcing active tier quota
+ */
+router.post('/:id/vacancies', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.createVacancy(id, req.body);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/vacancies/add-on-slot (VAC-002)
+ * Purchases 1 add-on active vacancy slot for 30 days at approved GH₵ 25
+ */
+router.post('/:id/vacancies/add-on-slot', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.purchaseVacancySlot(id, req.body);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/vacancies/:vacId/status (VAC-003)
+ * Updates vacancy lifecycle status (draft, published, closed, expired)
+ */
+router.patch('/:id/vacancies/:vacId/status', optionalAuth, async (req, res) => {
+  try {
+    const { id, vacId } = req.params;
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ error: 'Status is required' });
+    const result = await MarketplaceService.updateVacancyStatus(id, vacId, status, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/vacancies/:vacId/applicants (VAC-004, VAC-005)
+ * Retrieves candidate applications dossier for a vacancy with NTC licence vetting
+ */
+router.get('/:id/vacancies/:vacId/applicants', optionalAuth, async (req, res) => {
+  try {
+    const { id, vacId } = req.params;
+    const result = await MarketplaceService.getVacancyApplicants(id, vacId);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/vacancies/applicants/:appId/status (VAC-005)
+ * Updates candidate review stage (applied -> shortlisted -> interview_scheduled -> offered -> rejected)
+ */
+router.patch('/:id/vacancies/applicants/:appId/status', optionalAuth, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+    const result = await MarketplaceService.updateApplicantStatus(id, null, appId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/tenders (TEN-001, TEN-003)
+ * Retrieves school procurement tenders and tender credits balance
+ */
+router.get('/:id/tenders', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.getSchoolTenders(id);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders (TEN-001, TEN-003, TEN-004)
+ * Publishes a new B2B procurement tender, deducting monthly quota or purchased credit
+ */
+router.post('/:id/tenders', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.createTender(id, req.body);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/buy-credits (TEN-002)
+ * Purchases tender credits: 1 credit for GH₵ 45, or 3-credit bundle for GH₵ 120
+ */
+router.post('/:id/tenders/buy-credits', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.purchaseTenderCredits(id, req.body);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/tenders/:tenderId/bids (TEN-005, TEN-006)
+ * Compares competing supplier quotations side-by-side with SLA days and items
+ */
+router.get('/:id/tenders/:tenderId/bids', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.getTenderBids(id, tenderId);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/award (TEN-006, ESC-001)
+ * Awards contract to winning supplier and initializes 50/50 MoMo Milestone Escrow
+ */
+router.post('/:id/tenders/:tenderId/award', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const { bidId } = req.body;
+    if (!bidId) return res.status(400).json({ error: 'Winning bidId is required to award tender' });
+    const result = await MarketplaceService.awardTenderContract(id, tenderId, bidId, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/tenders/:tenderId/escrow (ESC-001, ESC-002)
+ * Retrieves escrow milestone contract status and payment links
+ */
+router.get('/:id/tenders/:tenderId/escrow', optionalAuth, async (req, res) => {
+  try {
+    const { tenderId } = req.params;
+    const result = await MarketplaceService.getEscrowMilestones(tenderId);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/escrow-milestone (ESC-001)
+ * School locks Milestone 1 (50% mobilization deposit) in platform MoMo escrow
+ */
+router.post('/:id/tenders/:tenderId/escrow-milestone', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.fundMobilizationDeposit(id, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/delivery-signoff (ESC-002)
+ * School inspects physical goods on campus, approves quality, and authorizes final 50% disbursement
+ */
+router.post('/:id/tenders/:tenderId/delivery-signoff', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.signOffDeliveryAndDisburse(id, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/tenders/:tenderId/dispute (ESC-003)
+ * School raises escrow dispute for defective or non-delivered goods
+ */
+router.post('/:id/tenders/:tenderId/dispute', optionalAuth, async (req, res) => {
+  try {
+    const { id, tenderId } = req.params;
+    const result = await MarketplaceService.raiseEscrowDispute(id, tenderId, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/marketplace/audit-log (ESC-004)
+ * Returns immutable marketplace & escrow audit log
+ */
+router.get('/:id/marketplace/audit-log', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const logs = MarketplaceService.getMarketplaceAuditLogs({ schoolId: id });
+    return res.json({ success: true, logs });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 });
 
