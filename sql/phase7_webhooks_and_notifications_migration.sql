@@ -2,6 +2,7 @@
 -- SKOOLFINDER GHANA: PHASE 7 PRODUCTION WEBHOOKS & NOTIFICATIONS MIGRATION
 -- Baseline: Master Blueprint v2.0 §12, Module 15, and Production Runbook
 -- Includes Phase 3: Outbound Dispatcher Engine, Delivery Queue & Retries
+-- 100% Idempotent: Safe to execute on brand-new or existing Supabase instances
 -- ============================================================================
 
 -- 1. School Webhook Subscriptions Table
@@ -19,6 +20,10 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_subscriptions (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Ensure additive columns exist if table was already created in an earlier migration
+ALTER TABLE public.school_webhook_subscriptions ADD COLUMN IF NOT EXISTS failure_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE public.school_webhook_subscriptions ADD COLUMN IF NOT EXISTS disabled_reason TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_wh_subs_school ON public.school_webhook_subscriptions(school_id);
 CREATE INDEX IF NOT EXISTS idx_wh_subs_active ON public.school_webhook_subscriptions(is_active);
@@ -43,6 +48,20 @@ CREATE TABLE IF NOT EXISTS public.school_webhook_deliveries (
     error_message TEXT,
     dispatched_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Ensure additive columns exist BEFORE creating indexes on them
+ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS attempts INTEGER NOT NULL DEFAULT 1;
+ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS max_attempts INTEGER NOT NULL DEFAULT 3;
+ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMPTZ;
+
+-- Ensure check constraint supports 'retrying' state safely
+DO $$
+BEGIN
+    ALTER TABLE public.school_webhook_deliveries DROP CONSTRAINT IF EXISTS school_webhook_deliveries_delivery_status_check;
+    ALTER TABLE public.school_webhook_deliveries ADD CONSTRAINT school_webhook_deliveries_delivery_status_check CHECK (delivery_status IN ('delivered', 'failed', 'retrying'));
+EXCEPTION
+    WHEN others THEN NULL;
+END $$;
 
 CREATE INDEX IF NOT EXISTS idx_wh_deliveries_school ON public.school_webhook_deliveries(school_id);
 CREATE INDEX IF NOT EXISTS idx_wh_deliveries_sub ON public.school_webhook_deliveries(subscription_id);
@@ -92,25 +111,24 @@ ALTER TABLE public.school_webhook_deliveries ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.school_notification_preferences ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.whatsapp_dispatch_logs ENABLE ROW LEVEL SECURITY;
 
--- 6. Access Control Policies
+-- 6. Access Control Policies (Drop and recreate to avoid duplicate policy errors)
+DROP POLICY IF EXISTS "Allow authenticated access to webhook subscriptions" ON public.school_webhook_subscriptions;
 CREATE POLICY "Allow authenticated access to webhook subscriptions"
     ON public.school_webhook_subscriptions FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated access to webhook deliveries" ON public.school_webhook_deliveries;
 CREATE POLICY "Allow authenticated access to webhook deliveries"
     ON public.school_webhook_deliveries FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated access to notification preferences" ON public.school_notification_preferences;
 CREATE POLICY "Allow authenticated access to notification preferences"
     ON public.school_notification_preferences FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow authenticated access to whatsapp dispatch logs" ON public.whatsapp_dispatch_logs;
 CREATE POLICY "Allow authenticated access to whatsapp dispatch logs"
     ON public.whatsapp_dispatch_logs FOR ALL USING (true);
 
--- 7. Ensure additive columns exist on existing databases (Phase 3 Idempotency)
-ALTER TABLE public.school_webhook_subscriptions ADD COLUMN IF NOT EXISTS disabled_reason TEXT;
-ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS max_attempts INTEGER NOT NULL DEFAULT 3;
-ALTER TABLE public.school_webhook_deliveries ADD COLUMN IF NOT EXISTS next_retry_at TIMESTAMPTZ;
-
--- 8. Seed Initial Default Preferences for Pilot School
+-- 7. Seed Initial Default Preferences for Pilot School
 INSERT INTO public.school_notification_preferences (
     school_id, whatsapp_enabled, whatsapp_phone_number, sms_enabled, sms_alert_phone, email_enabled, email_alert_address, webhook_enabled
 ) VALUES (
