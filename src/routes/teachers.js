@@ -3,6 +3,7 @@ const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
+const MarketplaceService = require('../services/marketplaceService');
 
 const FALLBACK_TEACHERS = [
   {
@@ -613,6 +614,35 @@ router.get('/vetting-status', authenticate, async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to check vetting status' });
+  }
+});
+
+/**
+ * GET /api/teachers/my-applications (PRO-01)
+ * Returns all institutional job applications submitted by this educator
+ */
+router.get('/my-applications', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const email = req.user.email;
+    const apps = await MarketplaceService.getEducatorApplications(userId, email);
+    return res.json({ success: true, count: apps.length, applications: apps });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve applications' });
+  }
+});
+
+/**
+ * POST /api/teachers/my-applications/:id/withdraw (PRO-01)
+ * Educator withdraws a submitted job application
+ */
+router.post('/my-applications/:id/withdraw', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const result = await MarketplaceService.withdrawApplication(req.params.id, userId);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

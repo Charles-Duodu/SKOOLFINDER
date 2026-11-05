@@ -86,8 +86,20 @@ function requirePersona(...personas) {
   };
 }
 
+/**
+ * Optional authentication middleware: attaches req.user if valid token provided, but doesn't block guests
+ */
+function optionalAuth(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authenticate(req, res, next);
+  }
+  next();
+}
+
 module.exports = {
   authenticate,
+  optionalAuth,
   requireRole,
   requirePersona,
   JWT_SECRET

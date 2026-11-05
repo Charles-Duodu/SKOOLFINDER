@@ -1608,6 +1608,48 @@ router.patch('/:id/vacancies/applicants/:appId/status', optionalAuth, async (req
 });
 
 /**
+ * POST /api/schools/:id/vacancies/applicants/:appId/offer (DEC-026)
+ * Generates and dispatches formal employment offer letter to candidate
+ */
+router.post('/:id/vacancies/applicants/:appId/offer', optionalAuth, async (req, res) => {
+  try {
+    const { id, appId } = req.params;
+    const result = await MarketplaceService.issueTeacherOfferLetter(id, appId, req.body);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/candidates/search (REC-01 to REC-04)
+ * Searches candidate pool for this school with contact masking
+ */
+router.get('/:id/candidates/search', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await MarketplaceService.searchCandidates(id, req.query);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/candidates/:candidateId/unlock (REC-02)
+ * Unlocks candidate unmasked contact information for this school
+ */
+router.post('/:id/candidates/:candidateId/unlock', optionalAuth, async (req, res) => {
+  try {
+    const { id, candidateId } = req.params;
+    const result = await MarketplaceService.unlockCandidate(id, candidateId, req.user?.id);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/schools/:id/tenders (TEN-001, TEN-003)
  * Retrieves school procurement tenders and tender credits balance
  */

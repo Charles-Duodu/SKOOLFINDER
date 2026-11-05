@@ -58,7 +58,125 @@ const IN_MEMORY_ESCROWS = new Map(); // tenderId -> array of 2 milestones
 const IN_MEMORY_LPOS = new Map(); // tenderId -> LPO contract
 const IN_MEMORY_OFFER_LETTERS = new Map(); // applicationId -> Offer Letter
 const IN_MEMORY_SUPPLIER_RATINGS = new Map(); // tenderId -> Rating
+const IN_MEMORY_UNLOCKS = new Map(); // `${schoolId}:${professionalId}` -> unlockRecord
 const IN_MEMORY_AUDIT_LOGS = [];
+
+function maskPhone(phone) {
+  if (!phone) return '+233 24 *** **00';
+  const clean = String(phone).replace(/\s+/g, '');
+  if (clean.length < 8) return '***-***';
+  return clean.slice(0, 6) + ' *** ' + clean.slice(-2);
+}
+
+function maskEmail(email) {
+  if (!email || !email.includes('@')) return 'e***@***.edu.gh';
+  const [user, domain] = email.split('@');
+  if (user.length <= 2) return `${user[0]}***@${domain}`;
+  return `${user[0]}***${user[user.length - 1]}@${domain}`;
+}
+
+const SEED_CANDIDATES = [
+  {
+    id: 'cand-01',
+    userId: 'u-cand-01',
+    fullName: 'Emmanuel Boateng',
+    email: 'emmanuel.boateng@gmail.com',
+    phone: '+233 24 412 8899',
+    headline: 'Senior Mathematics & Physics Specialist',
+    bio: '12+ years teaching Cambridge IGCSE, A-Levels, and WASSCE Mathematics & Physics.',
+    subjects: ['Mathematics', 'Physics', 'Further Mathematics'],
+    levels: ['JHS', 'SHS', 'IGCSE', 'A-Levels'],
+    curricula: ['Cambridge', 'GES'],
+    region: 'Greater Accra',
+    locality: 'East Legon',
+    hourlyRate: 120,
+    experienceYears: 12,
+    qualification: 'B.Sc Physics (Legon), PGDE',
+    d1_identity_status: 'verified',
+    d2_qualifications_status: 'verified',
+    d3_licence_status: 'verified',
+    d4_child_facing_status: 'verified',
+    d5_profile_status: 'published',
+    rating: 4.9,
+    reviewCount: 45,
+    recruiterSearchOptIn: true
+  },
+  {
+    id: 'cand-02',
+    userId: 'u-cand-02',
+    fullName: 'Dr. Araba Mensah',
+    email: 'araba.mensah@gmail.com',
+    phone: '+233 20 819 2345',
+    headline: 'Chemistry & Biology Educator',
+    bio: 'PhD in Biochemistry, University of Ghana. Specialises in Cambridge AS/A-Level Biology and Chemistry.',
+    subjects: ['Chemistry', 'Biology', 'Science'],
+    levels: ['SHS', 'IGCSE', 'A-Levels'],
+    curricula: ['Cambridge', 'IB'],
+    region: 'Greater Accra',
+    locality: 'Cantonments',
+    hourlyRate: 150,
+    experienceYears: 10,
+    qualification: 'Ph.D Biochemistry (Legon)',
+    d1_identity_status: 'verified',
+    d2_qualifications_status: 'verified',
+    d3_licence_status: 'verified',
+    d4_child_facing_status: 'verified',
+    d5_profile_status: 'published',
+    rating: 5.0,
+    reviewCount: 38,
+    recruiterSearchOptIn: true
+  },
+  {
+    id: 'cand-03',
+    userId: 'u-cand-03',
+    fullName: 'Kofi Addo-Mensah',
+    email: 'kofi.addo@gmail.com',
+    phone: '+233 54 112 9901',
+    headline: 'French & English Language Consultant',
+    bio: 'Bilingual educator certified by DELF/DALF and Alliance Française.',
+    subjects: ['French', 'English'],
+    levels: ['Primary', 'JHS', 'SHS'],
+    curricula: ['GES', 'Cambridge'],
+    region: 'Greater Accra',
+    locality: 'Tema',
+    hourlyRate: 90,
+    experienceYears: 7,
+    qualification: 'B.A French & Linguistics (UCC)',
+    d1_identity_status: 'verified',
+    d2_qualifications_status: 'verified',
+    d3_licence_status: 'verified',
+    d4_child_facing_status: 'verified',
+    d5_profile_status: 'published',
+    rating: 4.8,
+    reviewCount: 29,
+    recruiterSearchOptIn: true
+  },
+  {
+    id: 'cand-04',
+    userId: 'u-cand-04',
+    fullName: 'Grace Osei-Tutu',
+    email: 'grace.oseitutu@gmail.com',
+    phone: '+233 27 654 3210',
+    headline: 'Early Literacy & Phonics Specialist',
+    bio: 'Certified Jolly Phonics trainer with 9 years developing strong reading, spelling, and basic numeracy skills.',
+    subjects: ['Phonics', 'English', 'Mathematics'],
+    levels: ['Primary'],
+    curricula: ['Montessori', 'GES'],
+    region: 'Ashanti',
+    locality: 'Ahodwo (Kumasi)',
+    hourlyRate: 85,
+    experienceYears: 9,
+    qualification: 'B.Ed Early Childhood Education (UEW)',
+    d1_identity_status: 'verified',
+    d2_qualifications_status: 'verified',
+    d3_licence_status: 'verified',
+    d4_child_facing_status: 'verified',
+    d5_profile_status: 'published',
+    rating: 4.9,
+    reviewCount: 31,
+    recruiterSearchOptIn: true
+  }
+];
 
 class MarketplaceService {
 
@@ -387,14 +505,15 @@ class MarketplaceService {
   }
 
   /**
-   * Public submission of candidate application dossier (VAC-004)
+   * Public submission of candidate application dossier with point-in-time immutable snapshot (VAC-004, DEC-007)
    */
-  static async submitJobApplication(vacancyId, payload) {
+  static async submitJobApplication(vacancyId, payload, applicantUserId = null) {
     const vacancy = IN_MEMORY_VACANCIES.get(vacancyId);
     if (!vacancy || vacancy.status !== 'published') {
       throw new Error('This vacancy is closed or no longer accepting applications.');
     }
 
+    const userId = applicantUserId || payload.applicantUserId || payload.userId || null;
     const ntcNumber = (payload.ntcNumber || payload.ntc_number || '').trim();
     // Validate standard Ghana NTC licence format (e.g. PT/XXXXX/YYYY or registration format)
     const ntcVerified = Boolean(ntcNumber && ntcNumber.length >= 6);
@@ -403,23 +522,74 @@ class MarketplaceService {
     const trackingRef = `NTC-APP-${Date.now().toString().slice(-6)}`;
     const now = new Date().toISOString();
 
+    // Check if user has a professional_profiles record to lock into snapshot
+    let profProfile = null;
+    let profReferees = [];
+    if (userId) {
+      try {
+        const { data: prof } = await supabaseAdmin
+          .from('professional_profiles')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (prof) {
+          profProfile = prof;
+          const { data: refs } = await supabaseAdmin
+            .from('professional_referees')
+            .select('*')
+            .eq('professional_id', prof.id);
+          if (Array.isArray(refs)) profReferees = refs;
+        }
+      } catch (e) {}
+    }
+
+    // DEC-007 Point-in-time immutable JSON application snapshot
+    const snapshotData = {
+      applicantUserId: userId,
+      fullName: payload.fullName || payload.full_name || 'Educator Applicant',
+      email: payload.email || '',
+      phone: payload.phone || '',
+      ntcNumber: ntcNumber || profProfile?.ntc_number || null,
+      ntcVerified: ntcVerified || profProfile?.d3_licence_status === 'verified',
+      qualification: payload.qualification || payload.minQualification || profProfile?.qualification || 'B.Ed in Basic Education',
+      yearsExperience: parseInt(payload.yearsExperience || payload.years_experience || profProfile?.experience_years || 0, 10),
+      currentSchool: payload.currentSchool || payload.current_school || 'Educational Institution',
+      cvUrl: payload.cvUrl || payload.cv_url || 'https://skoolfinder.com.gh/uploads/cv-sample.pdf',
+      coverLetter: payload.coverLetter || payload.cover_letter || '',
+      expectedSalary: payload.expectedSalary || payload.expected_salary || 'GH₵ 3,000',
+      vettingDimensions: {
+        D1_Identity: profProfile?.d1_identity_status || payload.d1_identity_status || 'verified',
+        D2_Qualifications: profProfile?.d2_qualifications_status || payload.d2_qualifications_status || 'verified',
+        D3_Licence: profProfile?.d3_licence_status || (ntcVerified ? 'verified' : 'pending'),
+        D4_ChildFacing: profProfile?.d4_child_facing_status || payload.d4_child_facing_status || 'verified',
+        D5_Profile: profProfile?.d5_profile_status || 'submitted'
+      },
+      subjects: profProfile?.subjects || (Array.isArray(payload.subjects) ? payload.subjects : [payload.subject || 'General']),
+      levels: profProfile?.levels || (Array.isArray(payload.levels) ? payload.levels : [payload.level || 'Primary']),
+      curricula: profProfile?.curricula || (Array.isArray(payload.curricula) ? payload.curricula : ['GES']),
+      referees: profReferees.length > 0 ? profReferees : (payload.referees || []),
+      snapshotTimestamp: now
+    };
+
     const application = {
       id: appId,
       vacancy_id: vacancyId,
       school_id: vacancy.school_id,
-      full_name: payload.fullName || payload.full_name || 'Educator Applicant',
-      email: payload.email || '',
-      phone: payload.phone || '',
-      ntc_number: ntcNumber,
-      ntc_verified: ntcVerified,
-      qualification: payload.qualification || 'B.Ed in Basic Education',
-      years_experience: parseInt(payload.yearsExperience || payload.years_experience || 0, 10),
-      current_school: payload.currentSchool || payload.current_school || 'Private Institution',
-      cv_url: payload.cvUrl || payload.cv_url || 'https://skoolfinder.com.gh/uploads/cv-sample.pdf',
-      cover_letter: payload.coverLetter || payload.cover_letter || '',
-      expected_salary: payload.expectedSalary || payload.expected_salary || 'GH₵ 3,000',
+      applicant_user_id: userId,
+      full_name: snapshotData.fullName,
+      email: snapshotData.email,
+      phone: snapshotData.phone,
+      ntc_number: snapshotData.ntcNumber,
+      ntc_verified: snapshotData.ntcVerified,
+      qualification: snapshotData.qualification,
+      years_experience: snapshotData.yearsExperience,
+      current_school: snapshotData.currentSchool,
+      cv_url: snapshotData.cvUrl,
+      cover_letter: snapshotData.coverLetter,
+      expected_salary: snapshotData.expectedSalary,
       status: 'applied',
       tracking_ref: trackingRef,
+      snapshot_data: snapshotData,
       interview_date: null,
       interview_mode: 'in_person',
       interview_notes: null,
@@ -431,8 +601,29 @@ class MarketplaceService {
     IN_MEMORY_APPLICATIONS.set(appId, application);
 
     try {
-      await supabaseAdmin.from('vacancy_applications').insert(application);
-    } catch (e) {}
+      await supabaseAdmin.from('vacancy_applications').insert({
+        id: appId,
+        vacancy_id: vacancyId,
+        school_id: vacancy.school_id,
+        applicant_user_id: userId,
+        full_name: application.full_name,
+        email: application.email,
+        phone: application.phone,
+        ntc_number: application.ntc_number,
+        ntc_verified: application.ntc_verified,
+        qualification: application.qualification,
+        years_experience: application.years_experience,
+        current_school: application.current_school,
+        cv_url: application.cv_url,
+        cover_letter: application.cover_letter,
+        expected_salary: application.expected_salary,
+        status: application.status,
+        tracking_ref: trackingRef,
+        snapshot_data: snapshotData
+      });
+    } catch (e) {
+      console.warn('Supabase vacancy_applications insert notice:', e.message);
+    }
 
     this.recordAuditLog({
       schoolId: vacancy.school_id,
@@ -441,20 +632,21 @@ class MarketplaceService {
       entityType: 'application',
       entityId: appId,
       referenceCode: trackingRef,
-      details: { vacancyTitle: vacancy.title, ntcVerified, qualification: application.qualification }
+      details: { vacancyTitle: vacancy.title, ntcVerified: snapshotData.ntcVerified, qualification: application.qualification }
     });
 
     return {
       success: true,
       applicationId: appId,
       trackingRef,
-      ntcVerified,
-      message: 'Application and educator credentials submitted successfully to the school recruitment board.'
+      ntcVerified: snapshotData.ntcVerified,
+      snapshot: snapshotData,
+      message: 'Application and educator credentials submitted successfully with point-in-time immutable snapshot.'
     };
   }
 
   /**
-   * Retrieves all candidate applications for a specific vacancy (VAC-004, VAC-005)
+   * Retrieves all candidate applications for a specific vacancy (VAC-004, VAC-005, DEC-007)
    */
   static async getVacancyApplicants(schoolId, vacancyId) {
     const vacancy = IN_MEMORY_VACANCIES.get(vacancyId);
@@ -462,26 +654,63 @@ class MarketplaceService {
       throw new Error('Vacancy not found or access denied');
     }
 
-    const apps = Array.from(IN_MEMORY_APPLICATIONS.values()).filter(a => String(a.vacancy_id) === String(vacancyId));
+    let apps = Array.from(IN_MEMORY_APPLICATIONS.values()).filter(a => String(a.vacancy_id) === String(vacancyId));
+    if (apps.length === 0) {
+      try {
+        const { data, error } = await supabaseAdmin
+          .from('vacancy_applications')
+          .select('*')
+          .eq('vacancy_id', vacancyId)
+          .order('created_at', { ascending: false });
+        if (!error && Array.isArray(data)) {
+          apps = data;
+          data.forEach(a => IN_MEMORY_APPLICATIONS.set(a.id, a));
+        }
+      } catch (e) {}
+    }
+
+    // Attach formal offer letters if present
+    const enriched = apps.map(app => {
+      const offer = IN_MEMORY_OFFER_LETTERS.get(app.id) || app.offerLetter || null;
+      return {
+        ...app,
+        offerLetter: offer
+      };
+    });
+
     return {
       vacancy,
-      applicants: apps
+      applicants: enriched
     };
   }
 
   /**
    * Updates candidate status along review stage machine (VAC-005)
-   * Stages: applied -> shortlisted -> interview_scheduled -> offered -> rejected
+   * Stages: applied -> shortlisted -> interview_scheduled -> offered -> rejected -> withdrawn
    */
   static async updateApplicantStatus(schoolId, vacancyId, applicationId, payload = {}) {
-    const app = IN_MEMORY_APPLICATIONS.get(applicationId);
+    let app = IN_MEMORY_APPLICATIONS.get(applicationId);
+    if (!app) {
+      try {
+        const { data } = await supabaseAdmin
+          .from('vacancy_applications')
+          .select('*')
+          .eq('id', applicationId)
+          .maybeSingle();
+        if (data) {
+          app = data;
+          IN_MEMORY_APPLICATIONS.set(applicationId, app);
+        }
+      } catch (e) {}
+    }
+
     if (!app || String(app.school_id) !== String(schoolId)) {
       throw new Error('Application dossier not found or unauthorized');
     }
 
     const previousStatus = app.status;
     const targetStatus = payload.status || 'shortlisted';
-    const validStatuses = ['applied', 'shortlisted', 'interview_scheduled', 'offered', 'rejected'];
+    const validStatuses = ['applied', 'shortlisted', 'interview_scheduled', 'offered', 'rejected', 'withdrawn'];
 
     if (!validStatuses.includes(targetStatus)) {
       throw new Error(`Invalid candidate status: ${targetStatus}`);
@@ -524,6 +753,316 @@ class MarketplaceService {
       success: true,
       application: app,
       message: `Applicant stage updated to ${targetStatus.replace('_', ' ').toUpperCase()}`
+    };
+  }
+
+  /**
+   * Retrieves all applications submitted by an educator across all schools (PRO-01)
+   */
+  static async getEducatorApplications(userId, email = null) {
+    let apps = Array.from(IN_MEMORY_APPLICATIONS.values()).filter(a => 
+      (userId && String(a.applicant_user_id) === String(userId)) ||
+      (email && a.email && a.email.toLowerCase() === email.toLowerCase())
+    );
+
+    try {
+      let query = supabaseAdmin
+        .from('vacancy_applications')
+        .select('*, school_vacancies(title, school_id, location, salary_range, application_deadline, schools(name, logo_url))')
+        .order('created_at', { ascending: false });
+
+      if (userId) {
+        query = query.eq('applicant_user_id', userId);
+      } else if (email) {
+        query = query.eq('email', email);
+      }
+
+      const { data, error } = await query;
+      if (!error && Array.isArray(data) && data.length > 0) {
+        data.forEach(dbApp => {
+          if (!apps.some(a => String(a.id) === String(dbApp.id))) {
+            apps.push(dbApp);
+          }
+        });
+      }
+    } catch (e) {}
+
+    return apps.map(a => {
+      const vac = IN_MEMORY_VACANCIES.get(a.vacancy_id) || a.school_vacancies || {};
+      const offer = IN_MEMORY_OFFER_LETTERS.get(a.id) || a.offerLetter || null;
+      return {
+        id: a.id,
+        applicationId: a.id,
+        vacancyId: a.vacancy_id,
+        vacancyTitle: vac.title || 'Subject Teacher',
+        schoolId: a.school_id,
+        schoolName: vac.schools?.name || vac.school_name || 'Accredited Institution',
+        location: vac.location || 'Greater Accra',
+        salaryRange: vac.salary_range || 'Competitive',
+        deadline: vac.application_deadline,
+        trackingRef: a.tracking_ref,
+        status: a.status,
+        snapshot: a.snapshot_data,
+        offerLetter: offer,
+        createdAt: a.created_at,
+        updatedAt: a.updated_at
+      };
+    });
+  }
+
+  /**
+   * Allows candidate to withdraw a submitted application (PRO-01)
+   */
+  static async withdrawApplication(applicationId, userId = null) {
+    let app = IN_MEMORY_APPLICATIONS.get(applicationId);
+    if (!app) {
+      try {
+        const { data } = await supabaseAdmin
+          .from('vacancy_applications')
+          .select('*')
+          .eq('id', applicationId)
+          .maybeSingle();
+        if (data) app = data;
+      } catch (e) {}
+    }
+
+    if (!app) {
+      throw new Error('Application not found');
+    }
+
+    if (userId && app.applicant_user_id && String(app.applicant_user_id) !== String(userId)) {
+      throw new Error('Unauthorized to withdraw this application');
+    }
+
+    if (app.status === 'accepted') {
+      throw new Error('Cannot withdraw an application after accepting an employment offer letter.');
+    }
+
+    const now = new Date().toISOString();
+    app.status = 'withdrawn';
+    app.withdrawn_at = now;
+    app.updated_at = now;
+    IN_MEMORY_APPLICATIONS.set(applicationId, app);
+
+    try {
+      await supabaseAdmin
+        .from('vacancy_applications')
+        .update({ status: 'withdrawn', withdrawn_at: now, updated_at: now })
+        .eq('id', applicationId);
+    } catch (e) {}
+
+    this.recordAuditLog({
+      schoolId: app.school_id,
+      actorId: userId || null,
+      actorName: app.full_name || 'Candidate',
+      eventType: 'APPLICATION_WITHDRAWN',
+      entityType: 'application',
+      entityId: applicationId,
+      referenceCode: app.tracking_ref,
+      details: { reason: 'Candidate initiated withdrawal' }
+    });
+
+    return {
+      success: true,
+      message: 'Application successfully withdrawn.',
+      application: app
+    };
+  }
+
+  /**
+   * Checks whether a school has unlocked a candidate's unmasked contact details (REC-01 to REC-04)
+   */
+  static async isCandidateUnlocked(schoolId, candidateId) {
+    if (!schoolId || !candidateId) return false;
+    const key = `${schoolId}:${candidateId}`;
+    if (IN_MEMORY_UNLOCKS.has(key)) return true;
+    try {
+      const { data } = await supabaseAdmin
+        .from('recruiter_candidate_unlocks')
+        .select('id')
+        .eq('school_id', schoolId)
+        .eq('professional_id', candidateId)
+        .maybeSingle();
+      if (data && data.id) {
+        IN_MEMORY_UNLOCKS.set(key, true);
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  /**
+   * Recruiter Candidate Search with contact masking and 5D vetting dimensions (REC-01 through REC-04)
+   */
+  static async searchCandidates(schoolId, query = {}) {
+    let pool = [];
+
+    // Query professional profiles from Supabase
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('professional_profiles')
+        .select('*, profiles(full_name, email, phone, avatar_url, role)')
+        .eq('recruiter_search_opt_in', true);
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        pool = data.map(p => ({
+          id: p.id,
+          userId: p.user_id,
+          fullName: p.profiles?.full_name || p.headline || 'Verified Educator',
+          email: p.profiles?.email || 'educator@school.edu.gh',
+          phone: p.profiles?.phone || '+233 24 000 0000',
+          headline: p.headline || 'Senior Educational Specialist',
+          bio: p.bio || '',
+          subjects: Array.isArray(p.subjects) ? p.subjects : ['Mathematics'],
+          levels: Array.isArray(p.levels) ? p.levels : ['Primary', 'JHS'],
+          curricula: Array.isArray(p.curricula) ? p.curricula : ['GES'],
+          region: p.region || 'Greater Accra',
+          locality: p.locality || 'Accra',
+          hourlyRate: p.hourly_rate || 80,
+          experienceYears: p.experience_years || 5,
+          qualification: p.qualification || 'B.Ed',
+          d1_identity_status: p.d1_identity_status || 'verified',
+          d2_qualifications_status: p.d2_qualifications_status || 'verified',
+          d3_licence_status: p.d3_licence_status || 'verified',
+          d4_child_facing_status: p.d4_child_facing_status || 'verified',
+          d5_profile_status: p.d5_profile_status || 'published',
+          rating: p.rating || 4.9,
+          reviewCount: p.review_count || 12,
+          recruiterSearchOptIn: true
+        }));
+      }
+    } catch (e) {}
+
+    // Fallback seed pool if database is empty or pending
+    if (pool.length === 0) {
+      pool = [...SEED_CANDIDATES];
+    }
+
+    let results = pool;
+
+    // Filter by subject
+    if (query.subject && query.subject !== 'All') {
+      const q = query.subject.toLowerCase();
+      results = results.filter(c => Array.isArray(c.subjects) && c.subjects.some(s => s.toLowerCase().includes(q)));
+    }
+
+    // Filter by curriculum
+    if (query.curriculum && query.curriculum !== 'All') {
+      const q = query.curriculum.toLowerCase();
+      results = results.filter(c => Array.isArray(c.curricula) && c.curricula.some(cur => cur.toLowerCase().includes(q)));
+    }
+
+    // Filter by level
+    if (query.level && query.level !== 'All') {
+      const q = query.level.toLowerCase();
+      results = results.filter(c => Array.isArray(c.levels) && c.levels.some(l => l.toLowerCase().includes(q)));
+    }
+
+    // Filter by region
+    if (query.region && query.region !== 'All') {
+      results = results.filter(c => c.region && c.region.toLowerCase().includes(query.region.toLowerCase()));
+    }
+
+    // Filter by min experience
+    if (query.minExperience) {
+      const minExp = Number(query.minExperience);
+      results = results.filter(c => Number(c.experienceYears) >= minExp);
+    }
+
+    // Filter by NTC licence verified
+    if (query.ntcVerified === 'true' || query.ntcVerified === true) {
+      results = results.filter(c => c.d3_licence_status === 'verified');
+    }
+
+    // Filter by child-facing eligible
+    if (query.childFacingEligible === 'true' || query.childFacingEligible === true) {
+      results = results.filter(c => c.d4_child_facing_status === 'verified');
+    }
+
+    // Contact Masking: Check each candidate's unlock status for this school
+    const processed = await Promise.all(results.map(async c => {
+      const isUnlocked = await MarketplaceService.isCandidateUnlocked(schoolId, c.id);
+      return {
+        id: c.id,
+        userId: c.userId,
+        fullName: c.fullName,
+        headline: c.headline,
+        bio: c.bio,
+        subjects: c.subjects,
+        levels: c.levels,
+        curricula: c.curricula,
+        region: c.region,
+        locality: c.locality,
+        hourlyRate: c.hourlyRate,
+        experienceYears: c.experienceYears,
+        qualification: c.qualification,
+        rating: c.rating,
+        reviewCount: c.reviewCount,
+        dimensions: {
+          D1_Identity: c.d1_identity_status,
+          D2_Qualifications: c.d2_qualifications_status,
+          D3_Licence: c.d3_licence_status,
+          D4_ChildFacing: c.d4_child_facing_status,
+          D5_Profile: c.d5_profile_status
+        },
+        isUnlocked,
+        phone: isUnlocked ? c.phone : maskPhone(c.phone),
+        email: isUnlocked ? c.email : maskEmail(c.email)
+      };
+    }));
+
+    return {
+      schoolId,
+      totalCandidates: processed.length,
+      candidates: processed
+    };
+  }
+
+  /**
+   * Unlocks a candidate's direct phone and email contact details for a school (REC-02)
+   */
+  static async unlockCandidate(schoolId, candidateId, recruiterUserId = null) {
+    if (!schoolId || !candidateId) {
+      throw new Error('School ID and Candidate ID are required to unlock contact details');
+    }
+
+    const key = `${schoolId}:${candidateId}`;
+    IN_MEMORY_UNLOCKS.set(key, {
+      schoolId,
+      candidateId,
+      recruiterUserId,
+      unlockedAt: new Date().toISOString()
+    });
+
+    try {
+      await supabaseAdmin
+        .from('recruiter_candidate_unlocks')
+        .insert({
+          school_id: schoolId,
+          professional_id: candidateId,
+          recruiter_user_id: recruiterUserId
+        });
+    } catch (e) {}
+
+    // Find candidate details to return unmasked
+    const searchRes = await this.searchCandidates(schoolId, {});
+    const candidate = searchRes.candidates.find(c => String(c.id) === String(candidateId));
+
+    this.recordAuditLog({
+      schoolId,
+      actorId: recruiterUserId,
+      actorName: 'School Recruiter',
+      eventType: 'CANDIDATE_CONTACT_UNLOCKED',
+      entityType: 'recruiter_unlock',
+      entityId: candidateId,
+      details: { candidateName: candidate?.fullName }
+    });
+
+    return {
+      success: true,
+      unlocked: true,
+      candidate,
+      message: `Contact information for ${candidate?.fullName || 'Candidate'} unlocked successfully.`
     };
   }
 
@@ -1474,6 +2013,10 @@ class MarketplaceService {
   /**
    * Generates a formal Employment Offer Letter for a shortlisted educator applicant
    */
+  static issueTeacherOfferLetter(schoolId, applicationId, offerData = {}) {
+    return this.generateTeacherOfferLetter(schoolId, applicationId, offerData);
+  }
+
   static async generateTeacherOfferLetter(schoolId, applicationId, offerData = {}) {
     const app = IN_MEMORY_APPLICATIONS.get(applicationId);
     if (!app || String(app.school_id) !== String(schoolId)) {

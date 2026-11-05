@@ -9,6 +9,11 @@ const API = {
     return this.getAuthHeaders({ ...defaults, ...customHeaders });
   },
 
+  getAuthHeader() {
+    const token = typeof State !== 'undefined' && State.authToken ? State.authToken : localStorage.getItem('skoolfinder_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  },
+
   getAuthHeaders(customHeaders = {}) {
     const headers = { ...customHeaders };
     const token = typeof State !== 'undefined' && State.authToken ? State.authToken : localStorage.getItem('skoolfinder_token');
@@ -22,7 +27,7 @@ const API = {
   async login(login, password) {
     const res = await fetch(`${this.baseUrl}/auth/login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ login, password })
     });
     const result = await res.json();
@@ -33,7 +38,7 @@ const API = {
   async register(userData) {
     const res = await fetch(`${this.baseUrl}/auth/register`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(userData)
     });
     const result = await res.json();
@@ -83,7 +88,7 @@ const API = {
   async sendOTP(phone, purpose = 'login') {
     const res = await fetch(`${this.baseUrl}/auth/otp/send`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, purpose })
     });
     const result = await res.json();
@@ -94,7 +99,7 @@ const API = {
   async verifyOTP(phone, code) {
     const res = await fetch(`${this.baseUrl}/auth/otp/verify`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone, code })
     });
     const result = await res.json();
@@ -117,7 +122,7 @@ const API = {
   async registerSchoolForVetting(data) {
     const res = await fetch(`${this.baseUrl}/schools/register-vetting`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     const result = await res.json();
@@ -187,7 +192,7 @@ const API = {
   async bookTutor(bookingData) {
     const res = await fetch(`${this.baseUrl}/teachers/book`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(bookingData)
     });
     const result = await res.json();
@@ -526,7 +531,7 @@ const API = {
   async createSchool(schoolData) {
     const res = await fetch(`${this.baseUrl}/schools`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(schoolData)
     });
     return res.json();
@@ -574,7 +579,7 @@ const API = {
   async crossCheckNasiaRegistry(payload) {
     const res = await fetch(`${this.baseUrl}/regulatory/nasia/cross-check`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
     return res.json();
@@ -607,7 +612,7 @@ const API = {
   async createSupplier(data) {
     const res = await fetch(`${this.baseUrl}/suppliers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     return res.json();
@@ -632,7 +637,7 @@ const API = {
   async createRFQ(rfqData) {
     const res = await fetch(`${this.baseUrl}/rfqs`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(rfqData)
     });
     return res.json();
@@ -641,7 +646,7 @@ const API = {
   async submitQuote(rfqId, quoteData) {
     const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/quote`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(quoteData)
     });
     return res.json();
@@ -650,7 +655,7 @@ const API = {
   async updateQuoteStatus(quoteId, status, reason = '') {
     const res = await fetch(`${this.baseUrl}/quotes/${quoteId}/status`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ status, reason })
     });
     return res.json();
@@ -677,7 +682,7 @@ const API = {
   async disburseLPOMilestone(lpoId, milestoneIndex, paymentMethod = 'Paystack MoMo Escrow') {
     const res = await fetch(`${this.baseUrl}/lpos/${lpoId}/disburse`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ milestoneIndex, paymentMethod })
     });
     return res.json();
@@ -704,7 +709,7 @@ const API = {
   async createJob(jobData) {
     const res = await fetch(`${this.baseUrl}/jobs`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(jobData)
     });
     return res.json();
@@ -713,7 +718,7 @@ const API = {
   async applyJob(jobId, appData) {
     const res = await fetch(`${this.baseUrl}/jobs/${jobId}/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(appData)
     });
     return res.json();
@@ -747,7 +752,7 @@ const API = {
   async subscribeTeacher(teacherData) {
     const res = await fetch(`${this.baseUrl}/teachers`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(teacherData)
     });
     return res.json();
@@ -756,7 +761,7 @@ const API = {
   async recordTeacherLead(teacherId, type) {
     const res = await fetch(`${this.baseUrl}/teachers/${teacherId}/lead`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ type })
     });
     return res.json();
@@ -766,7 +771,7 @@ const API = {
   async uploadFile(fileData, filename = 'upload.jpg', bucket = 'school-media') {
     const res = await fetch(`${this.baseUrl}/upload`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ fileData, filename, bucket })
     });
     if (!res.ok) {
@@ -780,7 +785,7 @@ const API = {
   async uploadVerificationDoc(docData) {
     const res = await fetch(`${this.baseUrl}/upload`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
         filename: docData.filename || 'verification_doc.pdf',
         fileData: docData.fileData || docData.base64 || docData.documentUrl || 'demo-content',
@@ -800,7 +805,7 @@ const API = {
   async initializePayment(paymentData) {
     const res = await fetch(`${this.baseUrl}/payments/initialize`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(paymentData)
     });
     return res.json();
@@ -809,7 +814,7 @@ const API = {
   async verifyPayment(reference, networkDetails = {}) {
     const res = await fetch(`${this.baseUrl}/payments/verify`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ reference, ...networkDetails })
     });
     return res.json();
@@ -841,7 +846,7 @@ const API = {
   async calculateCSSPS(inputs) {
     const res = await fetch(`${this.baseUrl}/cssps/calculate`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(inputs)
     });
     return res.json();
@@ -851,7 +856,7 @@ const API = {
   async submitAdmissionApplication(data) {
     const res = await fetch(`${this.baseUrl}/admissions/apply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     if (!res.ok) {
@@ -879,7 +884,7 @@ const API = {
   async updateApplicationStatus(id, updateData) {
     const res = await fetch(`${this.baseUrl}/admissions/applications/${id}/status`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData)
     });
     if (!res.ok) {
@@ -910,7 +915,7 @@ const API = {
   async submitSchoolReview(schoolId, reviewData) {
     const res = await fetch(`${this.baseUrl}/schools/${schoolId}/reviews`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(reviewData)
     });
     if (!res.ok) {
@@ -980,7 +985,7 @@ const API = {
   async replyToReview(reviewId, replyData) {
     const res = await fetch(`${this.baseUrl}/reviews/${reviewId}/reply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(replyData)
     });
     if (!res.ok) {
@@ -1019,7 +1024,7 @@ const API = {
   async submitInquiry(data) {
     const res = await fetch(`${this.baseUrl}/inquiries`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     if (!res.ok) {
@@ -1032,7 +1037,7 @@ const API = {
   async replyToInquiry(inquiryId, replyData) {
     const res = await fetch(`${this.baseUrl}/inquiries/${inquiryId}/reply`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(replyData)
     });
     if (!res.ok) {
@@ -1045,7 +1050,7 @@ const API = {
   async updateInquiryStatus(inquiryId, updateData) {
     const res = await fetch(`${this.baseUrl}/inquiries/${inquiryId}/status`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(updateData)
     });
     if (!res.ok) {
@@ -1100,7 +1105,7 @@ const API = {
   async createAcademicResource(data) {
     const res = await fetch(`${this.baseUrl}/resources`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
     if (!res.ok) {
@@ -1672,7 +1677,7 @@ const API = {
   async queryAIChat(message, history = [], context = {}) {
     const res = await fetch(`${this.baseUrl}/ai/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ message, history, context })
     });
     const result = await res.json();
@@ -1695,7 +1700,7 @@ const API = {
   async verifyDigitalID(codeOrIndex) {
     const res = await fetch(`${this.baseUrl}/students/verify-id`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: codeOrIndex, indexNumber: codeOrIndex })
     });
     return res.json();
@@ -1957,7 +1962,7 @@ const API = {
   async createGuestEnquiry(schoolId, enquiryData) {
     const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/enquiries`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(enquiryData)
     });
     if (!res.ok) {
@@ -2147,7 +2152,7 @@ const API = {
   async bookSchoolTourSlot(schoolId, slotId, bookingData) {
     const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots/${encodeURIComponent(slotId)}/book`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(bookingData)
     });
     return res.json();
@@ -2163,7 +2168,7 @@ const API = {
   async respondToAdmissionOffer(trackingCode, decision) {
     const res = await fetch(`${this.baseUrl}/admissions/offers/${encodeURIComponent(trackingCode)}/respond`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ decision })
     });
     return res.json();
@@ -2359,10 +2364,51 @@ const API = {
     return res.json();
   },
 
+  async getEducatorApplications() {
+    const res = await fetch(`${this.baseUrl}/teachers/my-applications`, {
+      headers: this.getAuthHeader()
+    });
+    return res.json();
+  },
+
+  async withdrawEducatorApplication(applicationId) {
+    const res = await fetch(`${this.baseUrl}/teachers/my-applications/${applicationId}/withdraw`, {
+      method: 'POST',
+      headers: this.getAuthHeader()
+    });
+    return res.json();
+  },
+
+  async searchRecruiterCandidates(schoolId, filters = {}) {
+    const query = new URLSearchParams(filters);
+    const res = await fetch(`${this.baseUrl}/jobs/recruiter/search?schoolId=${encodeURIComponent(schoolId)}&${query.toString()}`, {
+      headers: this.getAuthHeader()
+    });
+    return res.json();
+  },
+
+  async unlockRecruiterCandidate(schoolId, candidateId) {
+    const res = await fetch(`${this.baseUrl}/jobs/recruiter/unlock`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ schoolId, candidateId })
+    });
+    return res.json();
+  },
+
+  async issueCandidateOffer(schoolId, applicationId, offerData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/vacancies/applicants/${encodeURIComponent(applicationId)}/offer`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(offerData)
+    });
+    return res.json();
+  },
+
   async respondCandidateOffer(applicationId, responseData = {}) {
     const res = await fetch(`${this.baseUrl}/jobs/applications/${encodeURIComponent(applicationId)}/offer-response`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(responseData)
     });
     return res.json();

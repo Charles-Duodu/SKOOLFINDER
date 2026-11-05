@@ -1152,6 +1152,10 @@ const Modals = {
             <input type="email" id="app-email" class="form-input" placeholder="kwabena@example.com" required />
           </div>
           <div class="form-group">
+            <label class="form-label">NTC Teacher Licence / PIN (Optional for Non-Teaching Roles)</label>
+            <input type="text" id="app-ntc" class="form-input" placeholder="e.g. PT/10293/2021" />
+          </div>
+          <div class="form-group">
             <label class="form-label">Highest Teaching Qualification *</label>
             <select id="app-qual" class="form-select" required>
               <option value="B.Ed (Education / Subject)">B.Ed (Education / Subject)</option>
@@ -1190,9 +1194,20 @@ const Modals = {
       const qualification = document.getElementById('app-qual').value;
       const yearsExperience = document.getElementById('app-exp').value;
       const notes = document.getElementById('app-notes').value;
+      const ntcNumber = document.getElementById('app-ntc')?.value || '';
 
       try {
-        await API.applyJob(job.id, { applicantName, phone, email, qualification, yearsExperience, notes });
+        await API.applyJob(job.id, { 
+          fullName: applicantName, 
+          applicantName, 
+          phone, 
+          email, 
+          ntcNumber, 
+          qualification, 
+          yearsExperience, 
+          notes,
+          coverLetter: notes 
+        });
         this.close();
         State.showToast(`Application successfully sent to ${job.schoolName}!`, 'success');
         if (State.currentView === 'jobs') App.navigate('jobs');
