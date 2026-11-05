@@ -149,3 +149,4 @@ CREATE POLICY "Owner upload private credentials" ON storage.objects FOR INSERT W
     bucket_id IN ('credentials', 'safeguarding-evidence', 'resumes-private')
     AND (auth.uid() = owner OR auth.role() = 'service_role')
 );
+

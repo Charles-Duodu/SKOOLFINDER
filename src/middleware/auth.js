@@ -19,6 +19,7 @@ async function authenticate(req, res, next) {
     try {
       const decoded = jwt.verify(token, JWT_SECRET);
       req.user = decoded;
+      req.user.activePersona = decoded.activePersona || decoded.active_persona || decoded.role || 'parent';
       return next();
     } catch (jwtErr) {
       // Fallback: check if it is a Supabase Auth access token
@@ -39,6 +40,8 @@ async function authenticate(req, res, next) {
         auth_user_id: user.id,
         email: user.email,
         role: profile ? profile.role : 'parent',
+        active_persona: profile?.active_persona || profile?.role || 'parent',
+        activePersona: profile?.active_persona || profile?.role || 'parent',
         full_name: profile ? profile.full_name : user.user_metadata?.full_name || 'User'
       };
 
@@ -65,9 +68,28 @@ function requireRole(...roles) {
   };
 }
 
+/**
+ * Persona-scoped authorization middleware (Release 1 DEC-001)
+ */
+function requirePersona(...personas) {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    const currentPersona = req.user.activePersona || req.user.role || 'parent';
+    const normalizedTarget = personas.map(p => p === 'professional' ? 'teacher' : p);
+    const normalizedCurrent = currentPersona === 'professional' ? 'teacher' : currentPersona;
+    if (!normalizedTarget.includes(normalizedCurrent) && req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: `Forbidden: requires active persona [${personas.join(', ')}]` });
+    }
+    next();
+  };
+}
+
 module.exports = {
   authenticate,
   requireRole,
+  requirePersona,
   JWT_SECRET
 };
 

@@ -113,9 +113,16 @@ const Navbar = {
 
             ${State.isAuthenticated() ? `
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.45rem;">
-                <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.role === 'school_admin' ? 'btn-gold' : 'btn-primary'}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your role workspace">
-                  <span>${State.currentUser.role === 'school_admin' ? '🏫 School OS' : (State.currentUser.role === 'teacher' ? '👨‍🏫 Tutor Desk' : (State.currentUser.role === 'supplier' ? '📦 Vendor Hub' : '👨‍👩‍👧 My Portal'))}</span>
+                <!-- Persona Workspace Pill & Switcher (Release 1 DEC-001) -->
+                <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.activePersona === 'school_admin' ? 'btn-gold' : (State.currentUser.activePersona === 'teacher' ? 'btn-emerald' : 'btn-primary')}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your active workspace">
+                  <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : (State.currentUser.activePersona === 'super_admin' ? '🛡️ Admin HQ' : '👨‍👩‍👧 Parent Portal')))}</span>
                 </button>
+                <select id="select-active-persona" class="persona-select-dropdown" style="font-size: 0.74rem; font-weight: 700; padding: 0.32rem 0.55rem; border-radius: 999px; background: rgba(255,255,255,0.08); color: var(--text-heading, #1e293b); border: 1px solid var(--border-color, rgba(0,0,0,0.18)); cursor: pointer;" title="Switch active persona">
+                  <option value="parent" ${(State.currentUser.activePersona === 'parent' || !State.currentUser.activePersona) ? 'selected' : ''}>👨‍👩‍👧 Parent</option>
+                  <option value="teacher" ${State.currentUser.activePersona === 'teacher' ? 'selected' : ''}>🧑‍🏫 Educator</option>
+                  <option value="school_admin" ${State.currentUser.activePersona === 'school_admin' ? 'selected' : ''}>🏫 School</option>
+                  ${State.currentUser.role === 'super_admin' ? `<option value="super_admin" ${State.currentUser.activePersona === 'super_admin' ? 'selected' : ''}>🛡️ Super Admin</option>` : ''}
+                </select>
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
                   ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]}
                 </span>
@@ -435,15 +442,22 @@ const Navbar = {
     document.getElementById('mob-btn-admin-signin')?.addEventListener('click', handleMobAdminSignInModal);
     document.getElementById('mob-btn-admin-signup')?.addEventListener('click', handleMobAdminSignInModal);
 
+    document.getElementById('select-active-persona')?.addEventListener('change', async (e) => {
+      const targetPersona = e.target.value;
+      if (targetPersona && targetPersona !== State.currentUser?.activePersona) {
+        await State.switchPersona(targetPersona);
+      }
+    });
+
     document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {
-      const role = State.currentUser?.role;
-      if (role === 'school_admin' || role === 'primary_proprietor' || role === 'school_owner') {
+      const activePersona = State.currentUser?.activePersona || State.currentUser?.role;
+      if (activePersona === 'school_admin' || activePersona === 'primary_proprietor' || activePersona === 'school_owner') {
         App.navigate('schools', State.currentUser?.schoolId || 'ghana-international-school');
-      } else if (role === 'teacher') {
+      } else if (activePersona === 'teacher' || activePersona === 'professional') {
         App.navigate('teachers');
-      } else if (role === 'supplier') {
+      } else if (activePersona === 'supplier') {
         App.navigate('suppliers');
-      } else if (role === 'super_admin') {
+      } else if (activePersona === 'super_admin') {
         App.navigate('admin');
       } else {
         App.navigate('parents');

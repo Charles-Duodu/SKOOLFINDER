@@ -116,12 +116,12 @@ const MobileNav = {
       btnMySpace.onclick = (e) => {
         e.preventDefault();
         if (typeof State !== 'undefined' && State.isAuthenticated()) {
-          const role = State.currentUser?.role;
-          if (role === 'school_owner') {
-            App.navigate('school-portal');
-          } else if (role === 'teacher') {
+          const persona = State.currentUser?.activePersona || State.currentUser?.role;
+          if (persona === 'school_owner' || persona === 'school_admin' || persona === 'primary_proprietor') {
+            App.navigate('schools', State.currentUser?.schoolId || 'ghana-international-school');
+          } else if (persona === 'teacher' || persona === 'professional') {
             App.navigate('teachers');
-          } else if (role === 'super_admin') {
+          } else if (persona === 'super_admin') {
             App.navigate('admin');
           } else {
             App.navigate('parents');

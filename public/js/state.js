@@ -173,6 +173,49 @@ const State = {
     return [this.currentUser.schoolId || 'sch-gis-accra'];
   },
 
+  async switchPersona(persona) {
+    if (!this.isAuthenticated()) {
+      this.showToast('Please sign in to switch roles.', 'warning');
+      return;
+    }
+    try {
+      const res = await API.switchPersona(persona);
+      if (res && res.success) {
+        if (this.currentUser) {
+          this.currentUser.activePersona = res.activePersona;
+          this.currentUser.role = res.activePersona;
+        }
+        if (res.token) {
+          this.setCurrentUser(this.currentUser, res.token);
+        }
+        this.showToast(`Switched active workspace to ${res.activePersona.replace('_', ' ').toUpperCase()}`, 'success');
+        if (typeof Navbar !== 'undefined' && Navbar.render) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents && Navbar.attachEvents();
+        }
+        
+        // Auto-navigate to the persona workspace
+        if (typeof App !== 'undefined' && App.navigate) {
+          if (res.activePersona === 'parent') {
+            App.navigate('parents');
+          } else if (res.activePersona === 'teacher') {
+            App.navigate('teachers');
+          } else if (res.activePersona === 'school_admin') {
+            App.navigate('schools');
+          } else if (res.activePersona === 'super_admin') {
+            App.navigate('admin');
+          } else if (res.activePersona === 'supplier') {
+            App.navigate('suppliers');
+          }
+        }
+        return res;
+      }
+    } catch (err) {
+      this.showToast(err.message || 'Failed to switch workspace', 'error');
+      throw err;
+    }
+  },
+
   switchCampus(schoolId) {
     this.currentSchoolId = schoolId;
     if (this.currentUser) {

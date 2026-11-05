@@ -167,6 +167,9 @@ router.post('/login', async (req, res) => {
         auth_user_id: '00000000-0000-0000-0000-000000000001',
         email: 'admin@skoolfinder.com.gh',
         role: 'super_admin',
+        activePersona: 'super_admin',
+        active_persona: 'super_admin',
+        availablePersonas: ['super_admin', 'school_admin', 'teacher', 'parent'],
         full_name: 'Platform Lead (Super Admin)'
       };
       const token = jwt.sign(superUser, JWT_SECRET, { expiresIn: '7d' });
@@ -221,13 +224,21 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid password. Please try again.' });
     }
 
-    // 3. Issue Token
+    // 3. Resolve Personas and Issue Token
+    const activePersona = profile.active_persona || profile.role || 'parent';
+    const enrolmentsList = ['parent'];
+    if (profile.role && !enrolmentsList.includes(profile.role)) {
+      enrolmentsList.push(profile.role);
+    }
+
     const token = jwt.sign(
       {
         id: profile.id,
         auth_user_id: profile.auth_user_id,
         email: profile.email,
         role: profile.role,
+        active_persona: activePersona,
+        activePersona: activePersona,
         full_name: profile.full_name
       },
       JWT_SECRET,
@@ -244,6 +255,8 @@ router.post('/login', async (req, res) => {
         name: profile.full_name,
         fullName: profile.full_name,
         role: profile.role,
+        activePersona,
+        availablePersonas: enrolmentsList,
         phone: profile.phone,
         status: profile.status
       }
@@ -265,6 +278,8 @@ router.post('/demo-login', async (req, res) => {
     const email = isSuperAdmin ? 'admin@skoolfinder.com.gh' : 'proprietor@gis.edu.gh';
     const fullName = isSuperAdmin ? 'Super Administrator (SkoolFinder HQ)' : 'Dr. Elizabeth Mensah (Proprietor)';
     const userId = isSuperAdmin ? '00000000-0000-0000-0000-000000000001' : 'usr-proprietor-01';
+    const activePersona = isSuperAdmin ? 'super_admin' : 'school_admin';
+    const availablePersonas = isSuperAdmin ? ['super_admin', 'school_admin', 'teacher', 'parent'] : ['school_admin', 'parent'];
 
     const token = jwt.sign(
       {
@@ -272,6 +287,8 @@ router.post('/demo-login', async (req, res) => {
         auth_user_id: userId,
         email,
         role: userRole,
+        active_persona: activePersona,
+        activePersona: activePersona,
         full_name: fullName,
         school_id: isSuperAdmin ? null : 'sch-gis-accra',
         schoolId: isSuperAdmin ? null : 'sch-gis-accra'
@@ -289,6 +306,8 @@ router.post('/demo-login', async (req, res) => {
         name: fullName,
         fullName,
         role: userRole,
+        activePersona,
+        availablePersonas,
         school_id: isSuperAdmin ? null : 'sch-gis-accra',
         schoolId: isSuperAdmin ? null : 'sch-gis-accra',
         phone: '+233 24 111 2222'
@@ -301,41 +320,92 @@ router.post('/demo-login', async (req, res) => {
 
 /**
  * GET /api/auth/me
+ * Returns unified canonical identity + multi-persona extensions (DEC-001)
  */
 router.get('/me', authenticate, async (req, res) => {
   try {
-    const { data: profile, error } = await supabaseAdmin
-      .from('profiles')
-      .select('*')
-      .eq('id', req.user.id)
-      .maybeSingle();
+    const userId = req.user.id;
+    const isSuperAdmin = req.user.role === 'super_admin';
 
-    if (error || !profile) {
-      // Robust fallback for verified mock/demo sessions
-      if (req.user) {
-        const isSuperAdmin = req.user.role === 'super_admin';
-        return res.json({
-          user: {
-            id: req.user.id,
-            email: req.user.email,
-            name: req.user.full_name || req.user.name || (isSuperAdmin ? 'Super Administrator' : 'Dr. Elizabeth Mensah (Proprietor)'),
-            fullName: req.user.full_name || req.user.name || (isSuperAdmin ? 'Super Administrator' : 'Dr. Elizabeth Mensah (Proprietor)'),
-            role: req.user.role || 'primary_proprietor',
-            phone: req.user.phone || '+233 24 111 2222',
-            school_id: req.user.school_id || (isSuperAdmin ? null : 'sch-gis-accra'),
-            status: 'active',
-            enrolments: isSuperAdmin ? ['admin', 'schools'] : ['schools']
-          }
-        });
-      }
-      return res.status(404).json({ error: 'Profile not found' });
+    let profile = null;
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      if (!error && data) profile = data;
+    } catch (e) {}
+
+    // Fallback if profile not yet in DB or test mock session
+    if (!profile) {
+      const activePersona = req.user.activePersona || req.user.role || (isSuperAdmin ? 'super_admin' : 'parent');
+      const availablePersonas = isSuperAdmin 
+        ? ['super_admin', 'school_admin', 'teacher', 'parent'] 
+        : ['parent', req.user.role || 'teacher'].filter(Boolean);
+      return res.json({
+        user: {
+          id: req.user.id,
+          email: req.user.email,
+          name: req.user.full_name || req.user.name || (isSuperAdmin ? 'Super Administrator' : 'User'),
+          fullName: req.user.full_name || req.user.name || (isSuperAdmin ? 'Super Administrator' : 'User'),
+          role: req.user.role || 'parent',
+          activePersona,
+          availablePersonas: Array.from(new Set(availablePersonas)),
+          phone: req.user.phone || '+233 24 000 0000',
+          status: 'active',
+          enrolments: availablePersonas
+        }
+      });
     }
 
     // Get portal enrolments
-    const { data: enrolments } = await supabaseAdmin
-      .from('portal_enrolments')
-      .select('portal_type')
-      .eq('user_id', profile.id);
+    let enrolmentsList = ['parent'];
+    try {
+      const { data: enrolments } = await supabaseAdmin
+        .from('portal_enrolments')
+        .select('portal_type')
+        .eq('user_id', profile.id);
+      if (enrolments && enrolments.length > 0) {
+        enrolmentsList = enrolments.map(e => e.portal_type);
+      }
+    } catch (e) {}
+
+    // Add profile.role if not present
+    if (profile.role && !enrolmentsList.includes(profile.role)) {
+      enrolmentsList.push(profile.role);
+    }
+    if (!enrolmentsList.includes('parent')) {
+      enrolmentsList.unshift('parent');
+    }
+
+    // Fetch persona extensions
+    let parentProfile = null;
+    let professionalProfile = null;
+    let schoolMemberships = [];
+
+    try {
+      const [ppRes, profRes, smRes] = await Promise.all([
+        supabaseAdmin.from('parent_profiles').select('*').eq('user_id', profile.id).maybeSingle(),
+        supabaseAdmin.from('professional_profiles').select('*').eq('user_id', profile.id).maybeSingle(),
+        supabaseAdmin.from('school_memberships').select('*').eq('user_id', profile.id).eq('status', 'active')
+      ]);
+      parentProfile = ppRes.data || null;
+      professionalProfile = profRes.data || null;
+      schoolMemberships = smRes.data || [];
+    } catch (e) {}
+
+    if (professionalProfile && !enrolmentsList.includes('teacher')) {
+      enrolmentsList.push('teacher');
+    }
+    if (schoolMemberships.length > 0 && !enrolmentsList.includes('school_admin')) {
+      enrolmentsList.push('school_admin');
+    }
+    if (profile.role === 'super_admin' && !enrolmentsList.includes('super_admin')) {
+      enrolmentsList.push('super_admin');
+    }
+
+    const activePersona = req.user.activePersona || profile.active_persona || profile.role || 'parent';
 
     return res.json({
       user: {
@@ -344,13 +414,102 @@ router.get('/me', authenticate, async (req, res) => {
         name: profile.full_name,
         fullName: profile.full_name,
         role: profile.role,
+        activePersona,
+        availablePersonas: Array.from(new Set(enrolmentsList)),
         phone: profile.phone,
         status: profile.status,
-        enrolments: enrolments ? enrolments.map(e => e.portal_type) : [profile.role]
+        enrolments: enrolmentsList,
+        parentProfile,
+        professionalProfile,
+        schoolMemberships
       }
     });
   } catch (err) {
+    console.error('/api/auth/me error:', err);
     return res.status(500).json({ error: 'Failed to retrieve profile' });
+  }
+});
+
+/**
+ * POST /api/auth/switch-persona
+ * Switches the active persona claim for the authenticated user session (DEC-001)
+ */
+router.post('/switch-persona', authenticate, async (req, res) => {
+  try {
+    const { persona } = req.body;
+    const validPersonas = ['parent', 'teacher', 'professional', 'school_admin', 'supplier', 'super_admin'];
+    if (!persona || !validPersonas.includes(persona)) {
+      return res.status(400).json({ error: `Invalid or missing persona: ${persona}. Allowed: ${validPersonas.join(', ')}` });
+    }
+
+    const normalized = persona === 'professional' ? 'teacher' : persona;
+    const userId = req.user.id;
+
+    // Security check: only super_admin can switch to super_admin persona
+    if (normalized === 'super_admin' && req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: 'Forbidden: Super Administrator credentials required' });
+    }
+
+    // Auto-enroll persona if not enrolled
+    try {
+      await supabaseAdmin
+        .from('portal_enrolments')
+        .upsert({ user_id: userId, portal_type: normalized }, { onConflict: 'user_id,portal_type' });
+    } catch (e) {}
+
+    // Auto-provision initial draft if switching to teacher/professional
+    if (normalized === 'teacher') {
+      try {
+        const { data: existingProf } = await supabaseAdmin
+          .from('professional_profiles')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+
+        if (!existingProf) {
+          await supabaseAdmin
+            .from('professional_profiles')
+            .insert({
+              user_id: userId,
+              headline: 'Verified Professional Educator',
+              tier: 'free',
+              d5_profile_status: 'draft'
+            });
+        }
+      } catch (e) {}
+    }
+
+    // Update active_persona in profiles table
+    try {
+      await supabaseAdmin
+        .from('profiles')
+        .update({ active_persona: normalized, updated_at: new Date().toISOString() })
+        .eq('id', userId);
+    } catch (e) {}
+
+    // Generate fresh token with active_persona claim
+    const updatedUser = {
+      id: req.user.id,
+      auth_user_id: req.user.auth_user_id,
+      email: req.user.email,
+      role: req.user.role,
+      active_persona: normalized,
+      activePersona: normalized,
+      full_name: req.user.full_name || req.user.name || 'User'
+    };
+
+    const token = jwt.sign(updatedUser, JWT_SECRET, { expiresIn: '7d' });
+
+    return res.json({
+      success: true,
+      message: `Active persona switched to ${normalized}`,
+      activePersona: normalized,
+      token,
+      user: updatedUser
+    });
+  } catch (err) {
+    console.error('Error switching persona:', err);
+    return res.status(500).json({ error: 'Failed to switch active persona' });
   }
 });
 

@@ -59,6 +59,17 @@ const API = {
     return res.json();
   },
 
+  async switchPersona(persona) {
+    const res = await fetch(`${this.baseUrl}/auth/switch-persona`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify({ persona })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to switch persona');
+    return result;
+  },
+
   async getCurrentUser() {
     try {
       const data = await this.getMe();
