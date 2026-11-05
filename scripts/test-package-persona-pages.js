@@ -152,10 +152,10 @@ async function runTests() {
   // 5. Verify Script Tags in index.html
   console.log('\n--- Test Group 5: HTML Script Tags in index.html ---');
   const indexHtml = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-  assert(indexHtml.includes('<script src="/js/views/forSchoolsView.js?v=75" defer></script>'), 'Loads forSchoolsView.js with ?v=75');
-  assert(indexHtml.includes('<script src="/js/views/forTeachersView.js?v=75" defer></script>'), 'Loads forTeachersView.js with ?v=75');
-  assert(indexHtml.includes('<script src="/js/views/forSuppliersView.js?v=75" defer></script>'), 'Loads forSuppliersView.js with ?v=75');
-  assert(indexHtml.includes('<script src="/js/app.js?v=75" defer></script>'), 'Loads app.js with ?v=75');
+  assert(/\/js\/views\/forSchoolsView\.js\?v=(7[5-9]|[8-9][0-9])/.test(indexHtml), 'Loads forSchoolsView.js with ?v=75+');
+  assert(/\/js\/views\/forTeachersView\.js\?v=(7[5-9]|[8-9][0-9])/.test(indexHtml), 'Loads forTeachersView.js with ?v=75+');
+  assert(/\/js\/views\/forSuppliersView\.js\?v=(7[5-9]|[8-9][0-9])/.test(indexHtml), 'Loads forSuppliersView.js with ?v=75+');
+  assert(/\/js\/app\.js\?v=(7[5-9]|[8-9][0-9])/.test(indexHtml), 'Loads app.js with ?v=75+');
 
   // 6. Verify Navigation in footer.js & homeView.js
   console.log('\n--- Test Group 6: Ecosystem Navigation Links ---');

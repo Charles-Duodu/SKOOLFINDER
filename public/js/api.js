@@ -918,6 +918,54 @@ const API = {
     return res.json();
   },
 
+  async replySchoolReview(schoolId, reviewId, replyData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/reviews/${encodeURIComponent(reviewId)}/reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(this.getAuthHeader ? this.getAuthHeader() : {}) },
+      body: JSON.stringify(replyData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to submit official reply');
+    }
+    return res.json();
+  },
+
+  async disputeSchoolReview(schoolId, reviewId, disputeData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/reviews/${encodeURIComponent(reviewId)}/dispute`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...(this.getAuthHeader ? this.getAuthHeader() : {}) },
+      body: JSON.stringify(disputeData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to dispute review');
+    }
+    return res.json();
+  },
+
+  async getAdminPendingReviews(query = {}) {
+    const params = new URLSearchParams(query);
+    const res = await fetch(`${this.baseUrl}/admin/reviews?${params.toString()}`, {
+      headers: { ...(this.getAuthHeader ? this.getAuthHeader() : {}) }
+    });
+    if (!res.ok) throw new Error('Failed to fetch reviews for admin moderation');
+    return res.json();
+  },
+
+  async moderateReview(reviewId, moderationData) {
+    const res = await fetch(`${this.baseUrl}/admin/reviews/${encodeURIComponent(reviewId)}/moderation`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', ...(this.getAuthHeader ? this.getAuthHeader() : {}) },
+      body: JSON.stringify(moderationData)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to moderate review');
+    }
+    return res.json();
+  },
+
   async replyToReview(reviewId, replyData) {
     const res = await fetch(`${this.baseUrl}/reviews/${reviewId}/reply`, {
       method: 'POST',

@@ -1,3 +1,4 @@
+const { reviewService } = require('../services/reviewService');
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
@@ -2609,6 +2610,40 @@ router.post('/webhooks/subscriptions/:subscriptionId/reset', async (req, res) =>
     return res.json(result);
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * SUPER ADMIN 4-DIMENSIONAL REVIEW MODERATION & DISPUTE ARBITRATION
+ * ============================================================================
+ */
+
+/**
+ * GET /api/admin/reviews
+ * Super Admin review moderation queue (pending, disputed, all)
+ */
+router.get('/reviews', async (req, res) => {
+  try {
+    const list = await reviewService.getReviewsForModeration(req.query);
+    return res.json({ reviews: list, total: list.length });
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to fetch reviews for moderation' });
+  }
+});
+
+/**
+ * PATCH /api/admin/reviews/:id/moderation
+ * Super Admin review moderation decision (approved, rejected, dismiss_dispute)
+ */
+router.patch('/reviews/:id/moderation', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { decision, notes } = req.body;
+    const result = await reviewService.moderateReview(id, decision, notes, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to moderate review' });
   }
 });
 

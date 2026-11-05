@@ -9,6 +9,7 @@ const MarketplaceService = require('../services/marketplaceService');
 const { IntelligenceOperationsService } = require('../services/intelligenceOperationsService');
 const { LeadAttributionService } = require('../services/leadAttributionService');
 const { AdmissionsVoucherService } = require('../services/admissionsVoucherService');
+const { reviewService } = require('../services/reviewService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -639,74 +640,66 @@ router.get('/:id/claim-status', async (req, res) => {
 });
 
 /**
+ * ============================================================================
+ * 4-DIMENSIONAL VERIFIED PARENT REVIEW INTAKE & DISPUTE PIPELINE
+ * Canonical Dimensions: communication, facilities, learning_environment, overall_experience
+ * ============================================================================
+ */
+
+/**
  * GET /api/schools/:id/reviews
+ * Returns 4-dimensional verified parent review summary & approved reviews list
  */
 router.get('/:id/reviews', async (req, res) => {
-  return res.json({
-    summary: {
-      averageOverall: 4.9,
-      totalReviews: 24,
-      dimensions: {
-        academics: 4.9,
-        facilities: 4.8,
-        pastoralCare: 4.9,
-        parentCommunication: 4.8
-      }
-    },
-    reviews: [
-      {
-        id: 'rev-01',
-        authorName: 'Vivian Arthur',
-        authorRole: 'Parent of Class 5 Student',
-        overallRating: 5.0,
-        dimensions: { academics: 5, facilities: 5, pastoralCare: 5, safety: 5 },
-        title: 'Outstanding academic rigour and well-rounded co-curriculars',
-        comment: 'Our experience has been exceptional. The teachers are approachable and the STEM robotics curriculum has truly sparked my son’s curiosity.',
-        highlights: ['Olympic Swimming Pool', 'Robotics Lab', 'Supportive Teachers'],
-        helpfulCount: 14,
-        date: '15 October 2026',
-        officialReply: {
-          author: 'Head of Admissions Desk',
-          role: 'Institutional Administration',
-          date: '16 October 2026',
-          message: 'Thank you Mrs. Arthur for your review. We are delighted with your ward’s growth in our STEM program.'
-        }
-      },
-      {
-        id: 'rev-02',
-        authorName: 'Dr. Kwame Frimpong',
-        authorRole: 'Parent of Form 2 Student',
-        overallRating: 4.8,
-        dimensions: { academics: 5, facilities: 4.5, pastoralCare: 5, safety: 5 },
-        title: 'Great discipline and Cambridge international benchmark',
-        comment: 'High academic standard. The online portal for tracking reports and term fees makes our parenting journey seamless.',
-        highlights: ['Strict Discipline', 'Cambridge IGCSE Track Record'],
-        helpfulCount: 9,
-        date: '28 September 2026'
-      }
-    ]
-  });
+  try {
+    const { id } = req.params;
+    const result = await reviewService.getSchoolReviews(id, req.query);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to retrieve reviews' });
+  }
 });
 
 /**
  * POST /api/schools/:id/reviews
+ * Submits a new 4-dimensional parent review into the verification & moderation queue
  */
 router.post('/:id/reviews', async (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
-  return res.status(201).json({
-    success: true,
-    message: 'Your review has been submitted for moderation.',
-    review: {
-      id: `rev-${Date.now()}`,
-      schoolId: id,
-      authorName: body.authorName || 'Parent / Guardian',
-      overallRating: body.overallRating || body.rating || 5,
-      comment: body.comment,
-      helpfulCount: 0,
-      date: new Date().toLocaleDateString('en-GB')
-    }
-  });
+  try {
+    const { id } = req.params;
+    const result = await reviewService.submitReview(id, req.body, req.user);
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to submit review' });
+  }
+});
+
+/**
+ * POST /api/schools/:id/reviews/:reviewId/reply
+ * School Owner/Admin: Publish an official institutional reply
+ */
+router.post('/:id/reviews/:reviewId/reply', async (req, res) => {
+  try {
+    const { id, reviewId } = req.params;
+    const result = await reviewService.addOfficialReply(id, reviewId, req.body, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to publish official reply' });
+  }
+});
+
+/**
+ * POST /api/schools/:id/reviews/:reviewId/dispute
+ * School Owner/Admin: Submit a formal dispute for Super Admin arbitration
+ */
+router.post('/:id/reviews/:reviewId/dispute', async (req, res) => {
+  try {
+    const { id, reviewId } = req.params;
+    const result = await reviewService.disputeReview(id, reviewId, req.body, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to dispute review' });
+  }
 });
 
 /**

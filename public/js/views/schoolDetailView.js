@@ -613,25 +613,30 @@ const SchoolDetailView = {
                 </div>
               </div>
 
-              <!-- Right: Dimension Breakdown Bars -->
+              <!-- Right: 4-Dimensional Breakdown Bars (Roadmap v1.1 Phase 5) -->
               <div>
-                <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); text-transform: uppercase; margin-bottom: 0.85rem;">
-                  Institutional Performance by Dimension
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                  <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); text-transform: uppercase;">
+                    4-Dimensional Verified Parent Experience
+                  </div>
+                  <span style="font-size: 0.72rem; color: #0284c7; background: #e0f2fe; padding: 0.2rem 0.5rem; border-radius: 9999px; font-weight: 700;">
+                    Verified Family Feedback
+                  </span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem;">
                   <div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                      <span>📚 Academic Quality & Teaching</span>
-                      <strong id="dim-score-academics">${ratingSummary.dimensions?.academics || '5.0'} / 5.0</strong>
+                      <span>📞 School-Parent Communication</span>
+                      <strong id="dim-score-communication">${ratingSummary.dimensions?.communication || '5.0'} / 5.0</strong>
                     </div>
                     <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-                      <div style="width: ${((ratingSummary.dimensions?.academics || 5) / 5) * 100}%; height: 100%; background: #2563eb; border-radius: 3px;"></div>
+                      <div style="width: ${((ratingSummary.dimensions?.communication || 5) / 5) * 100}%; height: 100%; background: #2563eb; border-radius: 3px;"></div>
                     </div>
                   </div>
 
                   <div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                      <span>🏫 Campus Facilities & Labs</span>
+                      <span>🏫 Campus Facilities</span>
                       <strong id="dim-score-facilities">${ratingSummary.dimensions?.facilities || '4.8'} / 5.0</strong>
                     </div>
                     <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
@@ -641,23 +646,28 @@ const SchoolDetailView = {
 
                   <div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                      <span>⚖️ Discipline & Pastoral Care</span>
-                      <strong id="dim-score-discipline">${ratingSummary.dimensions?.discipline || '4.7'} / 5.0</strong>
+                      <span>🌿 Learning Environment</span>
+                      <strong id="dim-score-learning">${ratingSummary.dimensions?.learning_environment || '4.9'} / 5.0</strong>
                     </div>
                     <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-                      <div style="width: ${((ratingSummary.dimensions?.discipline || 4.7) / 5) * 100}%; height: 100%; background: #f59e0b; border-radius: 3px;"></div>
+                      <div style="width: ${((ratingSummary.dimensions?.learning_environment || 4.9) / 5) * 100}%; height: 100%; background: #f59e0b; border-radius: 3px;"></div>
                     </div>
                   </div>
 
                   <div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 0.2rem;">
-                      <span>💰 Value for Money (Tuition & Services)</span>
-                      <strong id="dim-score-value">${ratingSummary.dimensions?.valueForMoney || '4.5'} / 5.0</strong>
+                      <span>🤝 Overall Parent Experience</span>
+                      <strong id="dim-score-experience">${ratingSummary.dimensions?.overall_experience || '4.9'} / 5.0</strong>
                     </div>
                     <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-                      <div style="width: ${((ratingSummary.dimensions?.valueForMoney || 4.5) / 5) * 100}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
+                      <div style="width: ${((ratingSummary.dimensions?.overall_experience || 4.9) / 5) * 100}%; height: 100%; background: #8b5cf6; border-radius: 3px;"></div>
                     </div>
                   </div>
+                </div>
+
+                <!-- Mandatory Roadmap v1.1 Regulatory Disclaimer Banner -->
+                <div style="background: #f8fafc; border-left: 3px solid #64748b; padding: 0.65rem 0.85rem; border-radius: 4px; margin-top: 1rem; font-size: 0.75rem; color: #475569; line-height: 1.45;">
+                  <strong>🛡️ Independent Parent Feedback Notice:</strong> These 4-dimensional reviews reflect verified family experiences and are completely separate from official NaSIA regulatory licensing or government academic inspection ratings.
                 </div>
               </div>
             </div>

@@ -501,3 +501,4 @@ const ForSuppliersView = {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ForSuppliersView;
 }
+

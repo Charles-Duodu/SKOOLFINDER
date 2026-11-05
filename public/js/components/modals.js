@@ -3821,48 +3821,75 @@ const Modals = {
             </div>
           </div>
 
-          <!-- Dimension Breakdown Scores -->
+          <!-- 4 Canonical Evaluation Dimensions (Roadmap v1.1) -->
           <div style="margin-bottom: 1.5rem;">
             <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); text-transform: uppercase; margin-bottom: 0.75rem;">
-              Rate Specific Dimensions (1 - 5 Stars)
+              Rate the 4 Canonical Dimensions (1 - 5 Stars) *
             </div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
               <div>
-                <label class="form-label" style="font-size: 0.8rem;">📚 Academic Quality</label>
-                <select id="rev-dim-academics" class="form-select">
-                  <option value="5" selected>5 ★★★★★ (Exceptional)</option>
-                  <option value="4">4 ★★★★☆ (Strong)</option>
-                  <option value="3">3 ★★★☆☆ (Average)</option>
-                  <option value="2">2 ★★☆☆☆ (Needs Work)</option>
+                <label class="form-label" style="font-size: 0.8rem;">📞 School-Parent Communication</label>
+                <select id="rev-dim-communication" class="form-select">
+                  <option value="5" selected>5 ★★★★★ (Swift & Transparent)</option>
+                  <option value="4">4 ★★★★☆ (Good & Responsive)</option>
+                  <option value="3">3 ★★★☆☆ (Moderate Response)</option>
+                  <option value="2">2 ★★☆☆☆ (Slow Communication)</option>
                 </select>
               </div>
               <div>
                 <label class="form-label" style="font-size: 0.8rem;">🏫 Campus Facilities</label>
                 <select id="rev-dim-facilities" class="form-select">
-                  <option value="5" selected>5 ★★★★★ (Modern / State-of-the-Art)</option>
-                  <option value="4">4 ★★★★☆ (Well-equipped)</option>
+                  <option value="5" selected>5 ★★★★★ (Modern / Well-Equipped)</option>
+                  <option value="4">4 ★★★★☆ (Standard & Clean)</option>
                   <option value="3">3 ★★★☆☆ (Adequate)</option>
-                  <option value="2">2 ★★☆☆☆ (Outdated)</option>
+                  <option value="2">2 ★★☆☆☆ (Needs Upgrade)</option>
                 </select>
               </div>
               <div>
-                <label class="form-label" style="font-size: 0.8rem;">⚖️ Discipline & Pastoral Care</label>
-                <select id="rev-dim-discipline" class="form-select">
-                  <option value="5" selected>5 ★★★★★ (Strict & Nurturing)</option>
-                  <option value="4">4 ★★★★☆ (Good Order)</option>
-                  <option value="3">3 ★★★☆☆ (Fair)</option>
-                  <option value="2">2 ★★☆☆☆ (Lacking)</option>
+                <label class="form-label" style="font-size: 0.8rem;">🌿 Learning Environment</label>
+                <select id="rev-dim-learning" class="form-select">
+                  <option value="5" selected>5 ★★★★★ (Inspiring & Safe)</option>
+                  <option value="4">4 ★★★★☆ (Supportive & Orderly)</option>
+                  <option value="3">3 ★★★☆☆ (Acceptable)</option>
+                  <option value="2">2 ★★☆☆☆ (Needs Work)</option>
                 </select>
               </div>
               <div>
-                <label class="form-label" style="font-size: 0.8rem;">💰 Value for Money (Fees)</label>
-                <select id="rev-dim-value" class="form-select">
-                  <option value="5">5 ★★★★★ (Exceptional Value)</option>
-                  <option value="4" selected>4 ★★★★☆ (Fair for Quality)</option>
-                  <option value="3">3 ★★★☆☆ (Expensive)</option>
-                  <option value="2">2 ★★☆☆☆ (Overpriced)</option>
+                <label class="form-label" style="font-size: 0.8rem;">🤝 Overall Parent Experience</label>
+                <select id="rev-dim-experience" class="form-select">
+                  <option value="5" selected>5 ★★★★★ (Highly Positive)</option>
+                  <option value="4">4 ★★★★☆ (Good Experience)</option>
+                  <option value="3">3 ★★★☆☆ (Mixed Experience)</option>
+                  <option value="2">2 ★★☆☆☆ (Disappointing)</option>
                 </select>
               </div>
+            </div>
+          </div>
+
+          <!-- Verified Parent Engagement Proof & Privacy Safeguarding -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">
+              Verified Parent Engagement Proof:
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div>
+                <label class="form-label" style="font-size: 0.75rem;">Engagement Basis *</label>
+                <select id="rev-verification-type" class="form-select" style="font-size: 0.85rem;">
+                  <option value="enrolled_ward" selected>My child is currently enrolled</option>
+                  <option value="verified_tour">I took an official campus tour</option>
+                  <option value="verified_voucher">I purchased an admissions voucher</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 0.75rem;">Proof Reference (Optional)</label>
+                <input type="text" id="rev-verification-proof" class="form-input" placeholder="e.g. Tour BK ref or Voucher Code" style="font-size: 0.85rem;" />
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <input type="checkbox" id="rev-is-anonymous" style="width: 16px; height: 16px; cursor: pointer;" />
+              <label for="rev-is-anonymous" style="font-size: 0.8rem; color: #475569; cursor: pointer; user-select: none;">
+                Keep my name private on public profile (Display as <em>"Verified Parent"</em>)
+              </label>
             </div>
           </div>
 
@@ -3983,10 +4010,13 @@ const Modals = {
       const title = document.getElementById('rev-title').value.trim();
       const content = document.getElementById('rev-content').value.trim();
 
-      const academics = document.getElementById('rev-dim-academics').value;
-      const facilities = document.getElementById('rev-dim-facilities').value;
-      const discipline = document.getElementById('rev-dim-discipline').value;
-      const valueForMoney = document.getElementById('rev-dim-value').value;
+      const commVal = parseFloat(document.getElementById('rev-dim-communication').value) || 5;
+      const facVal = parseFloat(document.getElementById('rev-dim-facilities').value) || 5;
+      const learnVal = parseFloat(document.getElementById('rev-dim-learning').value) || 5;
+      const expVal = parseFloat(document.getElementById('rev-dim-experience').value) || 5;
+      const verificationType = document.getElementById('rev-verification-type').value;
+      const verificationProof = document.getElementById('rev-verification-proof').value.trim();
+      const isAnonymous = document.getElementById('rev-is-anonymous').checked;
 
       const highlights = [];
       div.querySelectorAll('#review-highlights-container input[type="checkbox"]:checked').forEach(cb => {
@@ -3995,18 +4025,24 @@ const Modals = {
 
       try {
         const res = await API.submitSchoolReview(school.id, {
-          authorName,
-          affiliation,
-          wardGrade,
-          overallRating: currentOverall,
-          academics,
-          facilities,
-          discipline,
-          valueForMoney,
-          communication: 5,
-          title,
-          content,
-          highlights
+          parent_name: authorName,
+          authorName: authorName,
+          affiliation: affiliation,
+          ward_grade: wardGrade,
+          headline: title,
+          title: title,
+          comment: content,
+          content: content,
+          is_anonymous: isAnonymous,
+          verification_type: verificationType,
+          verification_proof: verificationProof,
+          dimensions: {
+            communication: commVal,
+            facilities: facVal,
+            learning_environment: learnVal,
+            overall_experience: expVal
+          },
+          highlights: highlights
         });
 
         this.close();
