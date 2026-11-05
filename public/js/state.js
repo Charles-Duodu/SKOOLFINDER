@@ -2,6 +2,14 @@
  * SkoolFinder Ghana - Global Utilities & Application State
  */
 const Utils = {
+  trackLead(schoolId, leadData = {}) {
+    return Utils.trackLead(schoolId, leadData);
+  },
+
+  buildWhatsAppInquiryUrl(school, context = {}) {
+    return Utils.buildWhatsAppInquiryUrl(school, context);
+  },
+
   formatGhanaWhatsApp(phone) {
     if (!phone) return '233302777163';
     let clean = String(phone).replace(/[^0-9]/g, '');
@@ -11,6 +19,29 @@ const Utils = {
       clean = '233' + clean;
     }
     return clean || '233302777163';
+  },
+
+  buildWhatsAppInquiryUrl(school, context = {}) {
+    if (!school) return 'https://wa.me/233302777163';
+    const phone = this.formatGhanaWhatsApp(school.whatsapp || school.phone);
+    const schoolName = school.name || 'Admissions Desk';
+    let text = `Hello ${schoolName}, I found your school on SkoolFinder Ghana and would like to inquire about admissions.`;
+    
+    if (context.source === 'matchmaker') {
+      text = `Hello ${schoolName}, your campus came up as a top recommended match for my child on the SkoolFinder Ghana Fit Adviser (${context.level || 'Admissions'}). Could you please share enrollment details?`;
+    } else if (context.source === 'compare') {
+      text = `Hello ${schoolName}, I am comparing accredited schools on SkoolFinder Ghana and shortlisted your campus. Could you share your latest verified fee schedule and admissions guidelines?`;
+    } else if (context.level) {
+      text = `Hello ${schoolName}, I found your campus on SkoolFinder Ghana and would like to inquire about admissions for ${context.level}.`;
+    }
+    
+    return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  },
+
+  trackLead(schoolId, leadData = {}) {
+    if (typeof API !== 'undefined' && API.recordLead) {
+      API.recordLead(schoolId, leadData).catch(() => {});
+    }
   },
 
   escapeHTML(str) {

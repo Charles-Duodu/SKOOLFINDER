@@ -409,7 +409,7 @@ const MatchmakerView = {
                         <span>⚖️</span> ${isCompared ? 'In Compare Tray (✓)' : '+ Add to Compare'}
                       </button>
 
-                      <a href="https://wa.me/${Utils.formatGhanaWhatsApp(s.whatsapp || s.phone)}?text=Hello%20${encodeURIComponent(s.name)},%20I%20found%20your%20school%20on%20SkoolFinder%20Fit%20Adviser%20and%20would%20like%20to%20inquire%20about%20${encodeURIComponent(this.criteria.level)}." target="_blank" class="btn-pill btn-emerald" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem 0.75rem; text-decoration: none; text-align: center; display: flex; align-items: center; gap: 0.35rem; font-weight: 700;">
+                      <a href="https://wa.me/${Utils.formatGhanaWhatsApp(s.whatsapp || s.phone)}?text=Hello%20${encodeURIComponent(s.name)},%20I%20found%20your%20school%20on%20SkoolFinder%20Fit%20Adviser%20and%20would%20like%20to%20inquire%20about%20${encodeURIComponent(this.criteria.level)}." target="_blank" class="btn-pill btn-emerald btn-match-whatsapp" data-school-id="${s.id}" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem 0.75rem; text-decoration: none; text-align: center; display: flex; align-items: center; gap: 0.35rem; font-weight: 700;">
                         <span>💬</span> WhatsApp Desk
                       </a>
                     </div>
@@ -740,6 +740,21 @@ const MatchmakerView = {
               const countEl = document.getElementById('match-compare-count');
               if (countEl) countEl.textContent = State.comparisonList.length;
             }
+          }
+        };
+      });
+
+      // WhatsApp Desk Lead Attribution Tracking
+      document.querySelectorAll('.btn-match-whatsapp').forEach(btn => {
+        btn.onclick = () => {
+          const sId = btn.dataset.schoolId;
+          if (sId && typeof API !== 'undefined' && API.recordLead) {
+            API.recordLead(sId, {
+              channel: 'whatsapp',
+              source: 'fit_matchmaker',
+              studentGrade: this.criteria.level,
+              curriculum: this.criteria.curriculum
+            });
           }
         };
       });

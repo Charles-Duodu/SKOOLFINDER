@@ -521,13 +521,19 @@ const API = {
     return res.json();
   },
 
-  async recordLead(schoolId, type) {
-    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/lead`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ type })
-    });
-    return res.json();
+  async recordLead(schoolId, leadData = {}) {
+    const payload = typeof leadData === "string" ? { channel: leadData } : leadData;
+    try {
+      const res = await fetch(`${this.baseUrl}/schools/${schoolId}/lead`, {
+        method: "POST",
+        headers: this.getHeaders(),
+        body: JSON.stringify(payload)
+      });
+      return res.json();
+    } catch (e) {
+      console.warn("Lead attribution tracking notice:", e);
+      return { success: false };
+    }
   },
 
   async getSchoolAnalytics(schoolId) {
@@ -2835,6 +2841,60 @@ const API = {
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Failed to delete saved comparison");
     return result;
+  },
+
+  // ==========================================================================
+  // PACKAGE E: LEAD ATTRIBUTION & WHATSAPP INTELLIGENCE CLIENT METHODS
+  // ==========================================================================
+
+  async getSchoolLeadAnalytics(schoolId, days = 30) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/leads/analytics?days=${days}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch lead analytics");
+    }
+    return res.json();
+  },
+
+  async getSchoolLeads(schoolId, query = {}) {
+    const params = new URLSearchParams();
+    Object.keys(query).forEach(k => {
+      if (query[k] !== undefined && query[k] !== null && query[k] !== '') {
+        params.append(k, query[k]);
+      }
+    });
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/leads?${params.toString()}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch school leads");
+    }
+    return res.json();
+  },
+
+  async updateSchoolLeadStatus(schoolId, leadId, updateData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/leads/${encodeURIComponent(leadId)}/status`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(updateData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update lead status");
+    return result;
+  },
+
+  async exportSchoolLeads(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/leads/export`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to export leads");
+    }
+    return res.text();
   }
 
 };

@@ -612,7 +612,7 @@ const CompareView = {
                   ${schools.map((s, idx) => `
                     <td class="comp-cell comp-col-${idx}" style="padding: 0.9rem 1.25rem; font-size: 0.84rem; border-left: 1px solid var(--border-light);" data-val="${s.admissionsWindow}">
                       <div style="font-weight: 600; margin-bottom: 0.4rem;">${s.admissionsWindow}</div>
-                      <a href="https://wa.me/${Utils.formatGhanaWhatsApp(s.whatsapp || s.phone)}?text=Hello%20${encodeURIComponent(s.name)},%20I%20am%20comparing%20schools%20on%20SkoolFinder%20and%20would%20like%20to%20inquire%20about%20admissions." target="_blank" class="btn-pill btn-emerald" style="width: 100%; justify-content: center; font-size: 0.76rem; padding: 0.35rem 0.75rem; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; font-weight: 700;">
+                      <a href="https://wa.me/${Utils.formatGhanaWhatsApp(s.whatsapp || s.phone)}?text=Hello%20${encodeURIComponent(s.name)},%20I%20am%20comparing%20schools%20on%20SkoolFinder%20and%20would%20like%20to%20inquire%20about%20admissions." target="_blank" class="btn-pill btn-emerald btn-matrix-whatsapp" data-school-id="${s.id}" style="width: 100%; justify-content: center; font-size: 0.76rem; padding: 0.35rem 0.75rem; text-decoration: none; display: flex; align-items: center; gap: 0.3rem; font-weight: 700;">
                         <span>💬</span> WhatsApp Desk
                       </a>
                     </td>
@@ -833,6 +833,16 @@ const CompareView = {
           Modals.openInquireAdmissionModal(school);
         } else {
           App.navigate('school-detail', schoolId);
+        }
+      };
+    });
+
+    // WhatsApp Desk Lead Attribution Tracking
+    document.querySelectorAll('.btn-matrix-whatsapp').forEach(btn => {
+      btn.onclick = () => {
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId && typeof API !== 'undefined' && API.recordLead) {
+          API.recordLead(schoolId, { channel: 'whatsapp', source: 'compare_matrix' });
         }
       };
     });

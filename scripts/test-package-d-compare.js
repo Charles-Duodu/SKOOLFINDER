@@ -254,10 +254,10 @@ async function runPackageDTests() {
   // --------------------------------------------------------------------------
   // TEST 9: Cache Buster Increment
   // --------------------------------------------------------------------------
-  await test('9. public/index.html incremented to v=72 cache buster', async () => {
+  await test('9. public/index.html incremented to v=72+ cache buster', async () => {
     const indexHtml = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-    assert.ok(indexHtml.includes('/js/views/compareView.js?v=72'), 'compareView v=72 missing in index.html');
-    assert.ok(indexHtml.includes('/js/views/matchmakerView.js?v=72'), 'matchmakerView v=72 missing in index.html');
+    assert.ok(/\/js\/views\/compareView\.js\?v=7[2-9]/.test(indexHtml), 'compareView v=72+ missing in index.html');
+    assert.ok(/\/js\/views\/matchmakerView\.js\?v=7[2-9]/.test(indexHtml), 'matchmakerView v=72+ missing in index.html');
   });
 
   console.log('\n========================================================================');
