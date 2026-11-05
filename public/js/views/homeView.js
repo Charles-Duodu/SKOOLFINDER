@@ -124,6 +124,7 @@ const HomeView = {
                 <button id="btn-hero-matchmaker" type="button" class="btn-pill btn-gold" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; font-weight: 800; box-shadow: 0 2px 8px rgba(213, 166, 59, 0.3);">
                   <span>🎯</span> 2-Min Fit Matchmaker
                 </button>
+                <button id="btn-choice-matchmaker" type="button" class="btn-pill btn-gold" style="display: none;" aria-hidden="true" tabindex="-1"></button>
                 <button id="btn-choice-locations" type="button" class="btn-pill" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.3);">
                   <span>📍</span> Accra & Tema Hubs
                 </button>
@@ -239,6 +240,12 @@ const HomeView = {
                 No fabricated ranking scores or artificial fit percentages. Parents can report inaccuracies directly to our editorial desk for swift correction.
               </p>
             </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 2.25rem;">
+            <button id="btn-home-full-tour" class="btn-pill btn-outline" style="font-size: 0.88rem; padding: 0.65rem 1.45rem; font-weight: 700; border-color: var(--theme-b-navy, #0A2046); color: var(--theme-b-navy, #0A2046);">
+              🧭 Take the 30s Guided Platform Tour &rarr;
+            </button>
           </div>
         </div>
       </section>
@@ -486,6 +493,9 @@ const HomeView = {
                 <button id="btn-goto-for-teachers" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem; border-color: #10B981; color: #065f46;">
                   🧑‍🏫 Why Join as Teacher &rarr;
                 </button>
+                <button id="btn-home-post-job" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
+                  💼 Post Vacancy
+                </button>
                 <button id="btn-home-view-tutor-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   💳 View Educator Plans
                 </button>
@@ -543,6 +553,9 @@ const HomeView = {
                 </button>
                 <button id="btn-home-register-school" class="btn-pill" style="background: #86198f; color: #ffffff; font-size: 0.85rem; padding: 0.55rem 1rem; font-weight: 700;">
                   Claim / List School
+                </button>
+                <button id="btn-home-school-portal" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem; border-color: #86198f; color: #86198f;">
+                  🏫 Campus Portal Demo
                 </button>
                 <button id="btn-home-view-school-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   💳 View School Plans
@@ -986,3 +999,11 @@ const HomeView = {
     });
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.HomeView = HomeView;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = HomeView;
+}
+

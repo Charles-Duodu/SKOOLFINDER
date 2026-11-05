@@ -340,8 +340,9 @@ const ForTeachersView = {
                 <div style="position: absolute; top: -12px; right: 20px; background: #10B981; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">
                   RECOMMENDED
                 </div>
-                <div style="font-size: 0.85rem; font-weight: 800; color: #10B981; text-transform: uppercase; margin-bottom: 0.5rem;">Pro Educator</div>
-                <div style="font-size: 2rem; font-weight: 900; color: #0A2046; margin-bottom: 0.5rem;">GH₵ 35 <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">/ month</span></div>
+                <div style="font-size: 0.85rem; font-weight: 800; color: #10B981; text-transform: uppercase; margin-bottom: 0.5rem;">Plus / Pro Educator Suite</div>
+                <div style="font-size: 2rem; font-weight: 900; color: #0A2046; margin-bottom: 0.5rem;">GH₵ 39 <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">/ month</span></div>
+                <div style="font-size: 0.78rem; color: #059669; font-weight: 700; margin-bottom: 0.5rem;">Special introductory rate from GH₵ 35 / mo • Business tier GH₵ 99 / mo</div>
                 <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">For elite educators wanting top-tier tutoring inquiries and featured status.</p>
                 
                 <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 0.75rem;">

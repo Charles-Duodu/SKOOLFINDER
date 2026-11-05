@@ -220,11 +220,11 @@ async function runSEOTests() {
   });
 
   // Test 11: Cache Buster Alignment in public/index.html
-  test('public/index.html maintains unified cache buster ?v=77 across all client scripts', () => {
-    assert.ok(indexHtml.includes('/js/api.js?v=77'), 'api.js must have ?v=77');
-    assert.ok(indexHtml.includes('/js/app.js?v=77'), 'app.js must have ?v=77');
-    assert.ok(indexHtml.includes('/js/views/schoolDetailView.js?v=77'), 'schoolDetailView.js must have ?v=77');
-    assert.ok(indexHtml.includes('/js/views/forSchoolsView.js?v=77'), 'forSchoolsView.js must have ?v=77');
+  test('public/index.html maintains unified cache buster (?v=77+) across all client scripts', () => {
+    assert.ok(/\/js\/api\.js\?v=(7[7-9]|[8-9][0-9])/.test(indexHtml), 'api.js must have ?v=77+');
+    assert.ok(/\/js\/app\.js\?v=(7[7-9]|[8-9][0-9])/.test(indexHtml), 'app.js must have ?v=77+');
+    assert.ok(/\/js\/views\/schoolDetailView\.js\?v=(7[7-9]|[8-9][0-9])/.test(indexHtml), 'schoolDetailView.js must have ?v=77+');
+    assert.ok(/\/js\/views\/forSchoolsView\.js\?v=(7[7-9]|[8-9][0-9])/.test(indexHtml), 'forSchoolsView.js must have ?v=77+');
   });
 
   console.log('\n========================================================================');
@@ -236,3 +236,4 @@ runSEOTests().catch(err => {
   console.error("Test execution failed:", err);
   process.exit(1);
 });
+

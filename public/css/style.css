@@ -853,8 +853,8 @@ button {
 
 .search-btn-hero {
   background: var(--gradient-gold);
-  color: #ffffff;
-  font-weight: 700;
+  color: #0A2046 !important;
+  font-weight: 800;
   font-size: 1.05rem;
   padding: 0.95rem 1.85rem;
   border-radius: var(--radius-md);
@@ -869,6 +869,7 @@ button {
 .search-btn-hero:hover {
   transform: translateY(-2px);
   box-shadow: 0 12px 30px rgba(217, 119, 6, 0.45);
+  color: #0A2046 !important;
 }
 
 .search-quick-tags {
