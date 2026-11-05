@@ -128,3 +128,4 @@ CREATE POLICY "Users view own portal enrolments" ON public.portal_enrolments FOR
     OR EXISTS (SELECT 1 FROM public.profiles WHERE id = portal_enrolments.user_id AND auth_user_id = auth.uid())
     OR auth.role() = 'service_role'
 );
+

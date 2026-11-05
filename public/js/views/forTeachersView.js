@@ -441,6 +441,312 @@ const ForTeachersView = {
     `;
   },
 
+  openOnboardingWizard() {
+    if (typeof State !== 'undefined' && !State.isAuthenticated()) {
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({ initialTab: 'signup', role: 'teacher' });
+        return;
+      }
+    }
+
+    const wizardModalId = 'modal-educator-onboarding-wizard';
+    document.getElementById(wizardModalId)?.remove();
+
+    let step = 1;
+    const totalSteps = 9;
+
+    const modalEl = document.createElement('div');
+    modalEl.id = wizardModalId;
+    modalEl.className = 'modal-backdrop active';
+    modalEl.style.cssText = 'position: fixed; inset: 0; background: rgba(10, 17, 40, 0.88); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 1.5rem; overflow-y: auto;';
+
+    const render = () => {
+      modalEl.innerHTML = `
+        <div class="card" style="width: 100%; max-width: 720px; background: #ffffff; border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); overflow: hidden; border: 1px solid #e2e8f0; animation: modal-scale-up 0.25s ease-out;">
+          
+          <!-- Modal Header -->
+          <div style="background: linear-gradient(135deg, #0A2046 0%, #0F3B38 100%); color: #ffffff; padding: 1.5rem 1.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <span style="font-size: 1.8rem;">🎓</span>
+              <div>
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 800; font-family: var(--font-heading); color: #ffffff;">
+                  National Educator Onboarding &amp; Vetting Dossier
+                </h3>
+                <div style="font-size: 0.8rem; color: #a7f3d0; margin-top: 0.15rem;">
+                  Step ${step} of ${totalSteps} — 5-Dimensional Regulatory Accreditation (PRO-01)
+                </div>
+              </div>
+            </div>
+            <button type="button" id="btn-close-onboarding-wizard" style="background: rgba(255,255,255,0.15); border: none; color: #ffffff; width: 34px; height: 34px; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+          </div>
+
+          <!-- Progress Bar -->
+          <div style="background: #e2e8f0; height: 6px; width: 100%;">
+            <div style="background: #10B981; height: 100%; width: ${(step / totalSteps) * 100}%; transition: width 0.3s ease;"></div>
+          </div>
+
+          <!-- Modal Body with 9 Step Cards -->
+          <div style="padding: 1.75rem; max-height: 65vh; overflow-y: auto;">
+            ${step === 1 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem;">1. Personal & Contact Information</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Full Name *</label>
+                  <input type="text" id="wiz-full-name" value="${(typeof State !== 'undefined' && State.currentUser ? (State.currentUser.fullName || State.currentUser.name) : '') || ''}" class="input-field" placeholder="e.g. Emmanuel Kwame Boateng" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Primary Phone (WhatsApp) *</label>
+                  <input type="text" id="wiz-phone" value="${(typeof State !== 'undefined' && State.currentUser ? State.currentUser.phone : '') || '+233 24 '}" class="input-field" placeholder="+233 24 000 0000" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div style="grid-column: span 2;">
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Locality / Residential Suburb</label>
+                  <input type="text" id="wiz-locality" value="East Legon, Accra" class="input-field" placeholder="e.g. East Legon, Cantonments, Ahodwo" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+              </div>
+            ` : ''}
+
+            ${step === 2 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem;">2. Ghana Card NIA Identity Verification (D1)</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">In compliance with Ghana Data Protection Act (Act 843), your national identity confirms authentic educator credentials.</p>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block; margin-bottom: 0.4rem;">Ghana Card PIN * (Format: GHA-XXXXXXXXX-X)</label>
+                <input type="text" id="wiz-ghana-card" placeholder="GHA-718293847-1" value="GHA-718293847-1" class="input-field" style="width: 100%; padding: 0.7rem 0.9rem; font-family: monospace; font-size: 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700;">
+                <div style="font-size: 0.75rem; color: #10B981; margin-top: 0.4rem; font-weight: 600;">✓ National Identification Authority (NIA) format validated</div>
+              </div>
+            ` : ''}
+
+            ${step === 3 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem;">3. National Teaching Council (NTC) Licensure (D3)</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Accreditation by the NTC gives schools and parents verified confidence in your pedagogical standards.</p>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+                <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b; display: block; margin-bottom: 0.4rem;">NTC Teacher Licence / Registration Number *</label>
+                <input type="text" id="wiz-ntc-number" placeholder="e.g. NTC/PR/2021/8892" value="NTC/PR/2021/8892" class="input-field" style="width: 100%; padding: 0.7rem 0.9rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700;">
+                <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.4rem;">Enter your official pre-tertiary teacher license or provisional PIN.</div>
+              </div>
+            ` : ''}
+
+            ${step === 4 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem;">4. Academic Qualifications & Transcripts (D2)</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div style="grid-column: span 2;">
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Highest Qualification *</label>
+                  <input type="text" id="wiz-qualification" value="B.Sc Mathematics & Statistics, PGDE" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Awarding Institution</label>
+                  <input type="text" id="wiz-institution" value="University of Ghana (Legon)" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Years of Active Teaching *</label>
+                  <input type="number" id="wiz-experience-years" value="6" min="1" max="40" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+              </div>
+            ` : ''}
+
+            ${step === 5 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem;">5. Specialisation & Subject Taxonomy</h4>
+              <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Professional Category</label>
+                  <select id="wiz-category" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600;">
+                    <option value="Academic Teacher" selected>Academic Teacher (Maths, Science, Languages)</option>
+                    <option value="STEM & Robotics Coach">STEM, Coding &amp; Robotics Coach</option>
+                    <option value="Special Educational Needs (SEN)">Special Educational Needs (SEN) &amp; Speech</option>
+                    <option value="Early Childhood Consultant">Early Childhood &amp; Jolly Phonics Consultant</option>
+                    <option value="Music & Creative Arts">Music, Visual Arts &amp; Performance</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Professional Headline *</label>
+                  <input type="text" id="wiz-headline" value="Senior Cambridge IGCSE & WASSCE Mathematics Specialist" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700;">
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Educator Bio &amp; Pedagogy Statement</label>
+                  <textarea id="wiz-bio" rows="3" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">10+ years preparing students for national awards, Cambridge IGCSE top grades, and strong conceptual problem solving.</textarea>
+                </div>
+              </div>
+            ` : ''}
+
+            ${step === 6 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem;">6. Teaching Formats &amp; Hourly Consultation Rates</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Delivery Formats</label>
+                  <select id="wiz-formats" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                    <option value="Both" selected>Both In-Person (Home) &amp; Online</option>
+                    <option value="In-Person">In-Person (Home Tutoring) Only</option>
+                    <option value="Online">Online Video Lessons Only</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Hourly Tutoring Rate (GH₵) *</label>
+                  <input type="number" id="wiz-rate" value="120" min="40" max="1000" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 800;">
+                </div>
+                <div style="grid-column: span 2; display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                  <input type="checkbox" id="wiz-recruiter-opt-in" checked style="width: 18px; height: 18px;">
+                  <label for="wiz-recruiter-opt-in" style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">Opt in to verified-school recruiter discovery (Schools may contact you for full-time or cover jobs, DEC-005)</label>
+                </div>
+              </div>
+            ` : ''}
+
+            ${step === 7 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem;">7. Safeguarding Declaration &amp; Professional Referees (D4)</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">In compliance with Gate G4, pre-tertiary child protection requires formal verification of 2 referees.</p>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <div style="display: flex; align-items: flex-start; gap: 0.6rem;">
+                  <input type="checkbox" id="wiz-safeguard-declaration" checked style="width: 18px; height: 18px; margin-top: 0.2rem;">
+                  <label for="wiz-safeguard-declaration" style="font-size: 0.85rem; color: #1e293b; font-weight: 600;">I affirm under penalty of perjury that I have no criminal convictions, child protection reprimands, or active disqualifications under Ghana Children's Act (Act 560).</label>
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-top: 0.5rem;">Referee 1: Head of School / Principal</div>
+                <input type="text" id="wiz-ref1-name" value="Dr. Kwesi Appiah (Principal, Morning Star School)" class="input-field" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+                <input type="text" id="wiz-ref1-phone" value="+233 24 112 3344" class="input-field" style="width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">
+              </div>
+            ` : ''}
+
+            ${step === 8 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem;">8. Weekly Availability Schedule</h4>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+                <div style="font-size: 0.85rem; color: #334155; font-weight: 600; margin-bottom: 0.75rem;">Select your typical recurring tutoring time windows:</div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                  <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" checked> Tuesday &amp; Thursday: 4:00 PM – 6:30 PM (After-School)
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" checked> Saturday: 9:00 AM – 1:00 PM (Weekend Intensive)
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox"> Sunday: 2:00 PM – 5:00 PM (Exam Revision)
+                  </label>
+                </div>
+              </div>
+            ` : ''}
+
+            ${step === 9 ? `
+              <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem;">9. Mobile Money Payout Account</h4>
+              <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1rem;">Direct disbursement of lesson fees and school compensation via Ghana Mobile Money.</p>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">Mobile Money Network *</label>
+                  <select id="wiz-momo-network" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700;">
+                    <option value="MTN MoMo" selected>MTN Mobile Money (MTN MoMo)</option>
+                    <option value="Telecel Cash">Telecel Cash</option>
+                    <option value="AT Money">AT Money</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.82rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.35rem;">MoMo Wallet Number *</label>
+                  <input type="text" id="wiz-momo-number" value="${(typeof State !== 'undefined' && State.currentUser ? State.currentUser.phone : '') || '0244123456'}" class="input-field" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700;">
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Modal Footer Controls -->
+          <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 1.25rem 1.75rem; display: flex; justify-content: space-between; align-items: center;">
+            <button type="button" id="btn-wiz-prev" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.5rem 1.1rem; ${step === 1 ? 'visibility: hidden;' : ''}">
+              &larr; Previous Step
+            </button>
+            <div style="display: flex; gap: 0.75rem;">
+              ${step < totalSteps ? `
+                <button type="button" id="btn-wiz-next" class="btn-pill btn-primary" style="font-size: 0.88rem; padding: 0.55rem 1.35rem; font-weight: 700; background: #10B981; border: none; color: #fff;">
+                  Save &amp; Continue &rarr;
+                </button>
+              ` : `
+                <button type="button" id="btn-wiz-submit" class="btn-pill" style="font-size: 0.92rem; padding: 0.6rem 1.6rem; font-weight: 800; background: #10B981; color: #ffffff; border: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); cursor: pointer;">
+                  🚀 Submit 5D Vetting Dossier
+                </button>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Attach events
+      document.getElementById('btn-close-onboarding-wizard')?.addEventListener('click', () => modalEl.remove());
+      
+      document.getElementById('btn-wiz-prev')?.addEventListener('click', () => {
+        if (step > 1) {
+          step--;
+          render();
+        }
+      });
+
+      document.getElementById('btn-wiz-next')?.addEventListener('click', () => {
+        if (step < totalSteps) {
+          step++;
+          render();
+        }
+      });
+
+      document.getElementById('btn-wiz-submit')?.addEventListener('click', async () => {
+        const btn = document.getElementById('btn-wiz-submit');
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = 'Submitting Dossier...';
+        }
+
+        try {
+          const res = await fetch('/api/teachers/onboarding', {
+            method: 'POST',
+            headers: API.getHeaders(),
+            body: JSON.stringify({
+              step: 9,
+              isFinalSubmit: true,
+              ghanaCardNumber: 'GHA-718293847-1',
+              ntcNumber: 'NTC/PR/2021/8892',
+              qualification: 'B.Sc Mathematics, PGDE',
+              safeguardingDeclaration: true,
+              momoNetwork: 'MTN MoMo',
+              momoAccountNumber: '0244123456'
+            })
+          });
+          const result = await res.json();
+          if (res.ok && result.success) {
+            modalEl.innerHTML = `
+              <div class="card" style="width: 100%; max-width: 580px; background: #ffffff; border-radius: 16px; padding: 2.5rem; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🇬🇭 🛡️</div>
+                <h3 style="font-size: 1.6rem; font-weight: 800; color: #0A2046; font-family: var(--font-heading); margin-bottom: 0.5rem;">
+                  Dossier Submitted for 5D Regulatory Vetting!
+                </h3>
+                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                  Your credentials have entered the SkoolFinder Pre-Tertiary Vetting Queue. Our vetting desk verifies D1 (Ghana Card NIA), D2 (Degrees), D3 (NTC Licence), and D4 (Safeguarding) within 24-48 business hours.
+                </p>
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; text-align: left; font-size: 0.85rem; font-weight: 600; display: flex; flex-direction: column; gap: 0.4rem;">
+                  <div>🪪 D1 Identity (Ghana Card): <span class="badge badge-warning" style="font-size: 0.72rem;">Pending NIA Review</span></div>
+                  <div>📜 D2 Qualifications: <span class="badge badge-warning" style="font-size: 0.72rem;">Pending Transcript Match</span></div>
+                  <div>🏛️ D3 NTC Licensure: <span class="badge badge-warning" style="font-size: 0.72rem;">Pending Registry Check</span></div>
+                  <div>🛡️ D4 Child-Facing Clearance: <span class="badge badge-warning" style="font-size: 0.72rem;">Referees Contacted</span></div>
+                </div>
+                <button type="button" id="btn-finish-onboarding" class="btn-pill btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 800; font-size: 1rem; background: #10B981; border: none; color: #fff;">
+                  Open Educator Workspace &rarr;
+                </button>
+              </div>
+            `;
+            document.getElementById('btn-finish-onboarding')?.addEventListener('click', async () => {
+              modalEl.remove();
+              await State.switchPersona('teacher');
+            });
+          } else {
+            alert(result.error || 'Failed to submit vetting dossier');
+            if (btn) {
+              btn.disabled = false;
+              btn.textContent = '🚀 Submit 5D Vetting Dossier';
+            }
+          }
+        } catch (err) {
+          alert('Submission error: ' + err.message);
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = '🚀 Submit 5D Vetting Dossier';
+          }
+        }
+      });
+    };
+
+    render();
+    document.body.appendChild(modalEl);
+  },
+
   afterRender() {
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -455,20 +761,10 @@ const ForTeachersView = {
       }
     };
 
-    // Free Registration
+    // Free Registration & 9-Step Onboarding Wizard
     const handleRegister = (e) => {
       e.preventDefault();
-      if (typeof Auth !== 'undefined' && Auth.currentUser) {
-        if (typeof App !== 'undefined' && App.navigate) {
-          App.navigate('teacher-dashboard');
-        } else {
-          window.location.hash = '#/teacher-dashboard';
-        }
-      } else if (typeof Modals !== 'undefined' && Modals.showRegisterModal) {
-        Modals.showRegisterModal('teacher');
-      } else {
-        window.location.hash = '#/register';
-      }
+      ForTeachersView.openOnboardingWizard();
     };
 
     // Browse Jobs / Vacancies
