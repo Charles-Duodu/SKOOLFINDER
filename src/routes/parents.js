@@ -602,4 +602,60 @@ router.delete('/saved-comparisons/:id', authenticate, async (req, res) => {
   }
 });
 
+/**
+ * ============================================================================
+ * PACKAGE F: PARENT DIGITAL ADMISSIONS VOUCHERS WALLET
+ * ============================================================================
+ */
+
+/**
+ * GET /api/parents/vouchers & /api/parent/vouchers (Package F: VOUCH-004)
+ * Retrieves purchased admission vouchers for parent by auth session or phone/email query
+ */
+router.get('/vouchers', async (req, res) => {
+  try {
+    const { AdmissionsVoucherService } = require('../services/admissionsVoucherService');
+    let phone = req.query.phone || '';
+    let email = req.query.email || '';
+    let userId = '';
+
+    // Extract user if Bearer token present
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const jwt = require('jsonwebtoken');
+        const { JWT_SECRET } = require('../middleware/auth');
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded) {
+          userId = decoded.id || '';
+          if (!phone) phone = decoded.phone || '';
+          if (!email) email = decoded.email || '';
+        }
+      } catch (e) {}
+    }
+
+    const result = await AdmissionsVoucherService.getParentVouchers({ phone, email, userId });
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch parent vouchers' });
+  }
+});
+
+/**
+ * GET /api/parents/vouchers/:code
+ * Retrieves specific voucher verification record by code with optional PIN
+ */
+router.get('/vouchers/:code', async (req, res) => {
+  try {
+    const { AdmissionsVoucherService } = require('../services/admissionsVoucherService');
+    const { code } = req.params;
+    const pin = req.query.pin || null;
+    const result = await AdmissionsVoucherService.getVoucherByCode(code, pin);
+    return res.json(result);
+  } catch (err) {
+    return res.status(404).json({ error: err.message || 'Voucher not found' });
+  }
+});
+
 module.exports = router;

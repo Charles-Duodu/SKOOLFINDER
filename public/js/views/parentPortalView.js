@@ -36,6 +36,12 @@ const ParentPortalView = {
         reportCards: []
       };
       this.shortlistsData = shortlistsRes?.shortlists || [];
+      try {
+        const vRes = await API.getParentVouchers({ phone: user?.phone, email: user?.email });
+        this.vouchersData = vRes?.vouchers || [];
+      } catch (e) {
+        this.vouchersData = [];
+      }
     } catch (e) {
       console.warn("Could not fetch remote parent overview, falling back to clean state", e);
       this.overviewData = {
@@ -1236,6 +1242,55 @@ const ParentPortalView = {
 
     return `
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <!-- Digital Admissions Vouchers Wallet (Package F: VOUCH-004) -->
+        <div style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 1.5px solid #e2e8f0; border-radius: var(--radius-xl); padding: 1.5rem; margin-bottom: 0.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                🎓 Mobile Money Admissions Wallet
+              </div>
+              <h3 style="font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0 0;">
+                Digital Admission Vouchers (${(this.vouchersData || []).length})
+              </h3>
+            </div>
+            <button id="btn-portal-buy-voucher" class="btn-pill btn-gold" style="font-size: 0.82rem; font-weight: 700; padding: 0.45rem 1rem;">
+              <span>💳</span> Buy Admission Voucher (GH₵ 150)
+            </button>
+          </div>
+
+          <div id="portal-vouchers-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            ${(this.vouchersData || []).length === 0 ? `
+              <div style="grid-column: 1 / -1; background: #ffffff; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 1.5rem; text-align: center; color: #64748b; font-size: 0.88rem;">
+                No digital vouchers purchased yet. Click "Buy Admission Voucher" or visit any school showcase profile to purchase an official form token.
+              </div>
+            ` : (this.vouchersData || []).map(v => `
+              <div class="card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; box-shadow: var(--shadow-sm);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                  <div>
+                    <span class="badge ${v.status === "redeemed" ? "badge-primary" : "badge-emerald"}" style="font-size: 0.7rem; font-weight: 800; text-transform: uppercase;">
+                      ${v.status === "redeemed" ? "✓ REDEEMED" : "● ACTIVE"}
+                    </span>
+                    <div style="font-size: 0.95rem; font-weight: 800; color: #0A2046; margin-top: 0.35rem;">${v.school_name || "Accredited Institution"}</div>
+                  </div>
+                  <strong style="color: #059669; font-size: 1rem;">GH₵ ${(v.amount_ghs || 150).toFixed(2)}</strong>
+                </div>
+                <div style="background: #fefce8; border: 1px dashed #f59e0b; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.75rem;">
+                  <div style="font-size: 0.68rem; color: #92400e; font-weight: 700; text-transform: uppercase;">Serial Code &amp; PIN</div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.2rem;">
+                    <span style="font-family: monospace; font-weight: 800; color: #78350f; font-size: 0.95rem;">${v.voucher_code}</span>
+                    <span style="font-family: monospace; font-weight: 800; color: #b45309; font-size: 0.9rem; background: #fff; padding: 2px 6px; border-radius: 4px; border: 1px solid #fde68a;">PIN: ${v.pin}</span>
+                  </div>
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.75rem;">
+                  Applicant: <strong style="color: #0A2046;">${v.student_name || "Student"}</strong> (${v.target_level || "General"})
+                </div>
+                <button type="button" class="btn-pill btn-view-portal-voucher" data-code="${v.voucher_code}" style="width: 100%; font-size: 0.8rem; padding: 0.45rem; background: #0A2046; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.35rem;">
+                  <span>🖨️</span> View Official Voucher / Certificate
+                </button>
+              </div>
+            `).join("")}
+          </div>
+        </div>
         <!-- Top Action Dossier Header -->
         <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: #ffffff; padding: 1.25rem 1.5rem; border-radius: var(--radius-xl); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
           <div>
@@ -2998,6 +3053,30 @@ const ParentPortalView = {
   },
 
   attachTabChildEvents() {
+    // Package F: Parent Portal Voucher Wallet Handlers
+    document.getElementById("btn-portal-buy-voucher")?.addEventListener("click", () => {
+      Modals.openPaystackCheckoutModal({
+        amount: 150,
+        purpose: "admission_form",
+        targetTitle: "Official Digital Admission Voucher",
+        onSuccess: async (tx) => {
+          try {
+            const vRes = await API.getParentVouchers();
+            ParentPortalView.vouchersData = vRes?.vouchers || [];
+          } catch (e) {}
+          App.refreshCurrentView();
+        }
+      });
+    });
+
+    document.querySelectorAll(".btn-view-portal-voucher").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const code = btn.dataset.code;
+        const voucher = (ParentPortalView.vouchersData || []).find(v => v.voucher_code === code) || { voucher_code: code };
+        Modals.openVoucherReceiptModal(voucher);
+      });
+    });
+
     // Phase 4: Next Best Step CTA Action Buttons
     document.querySelectorAll('.btn-nbs-action').forEach(btn => {
       btn.addEventListener('click', (e) => {

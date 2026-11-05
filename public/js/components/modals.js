@@ -2007,6 +2007,9 @@ const Modals = {
                       </a>
                     </div>
                     <div style="font-size: 1.15rem; font-weight: 900; letter-spacing: 0.1em; color: #92400e;">${tx.voucherCode}</div>
+                    <button type="button" id="btn-view-voucher-cert" class="btn-pill" style="margin-top: 0.5rem; background: #0A2046; color: #ffffff; font-size: 0.8rem; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 6px; border: none; cursor: pointer;">
+                      🎓 View Official Voucher Certificate
+                    </button>
                   </div>
                 ` : ''}
               </div>
@@ -2023,6 +2026,13 @@ const Modals = {
 
             </div>
           `;
+
+          const btnCert = document.getElementById('btn-view-voucher-cert');
+          if (btnCert) {
+            btnCert.onclick = () => {
+              Modals.openVoucherReceiptModal(tx.voucher || tx);
+            };
+          }
 
           document.getElementById('btn-receipt-finish').onclick = () => {
             Modals.close();
@@ -12932,6 +12942,215 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     });
+  },
+  // ============================================================================
+  // PACKAGE F: ADMISSIONS VOUCHERS MODALS
+  // ============================================================================
+
+  openVoucherReceiptModal(voucher = {}) {
+    this.close();
+    const code = voucher.voucher_code || voucher.voucherCode || "VOUCH-GIS-894201";
+    const pin = voucher.pin || voucher.voucherPin || "5928";
+    const student = voucher.student_name || voucher.studentName || "Prospective Student";
+    const grade = voucher.target_level || voucher.targetLevel || "Primary / Main Intake";
+    const schoolName = voucher.school_name || voucher.schoolName || voucher.targetTitle || "Ghana International School";
+    const amount = Number(voucher.amount_ghs || voucher.amount) || 150.00;
+    const status = (voucher.status || "active").toUpperCase();
+    const receiptNo = voucher.receipt_number || voucher.receiptNumber || `REC-${code.replace("VOUCH-", "")}`;
+    const shareMsg = `🎓 *SKOOLFINDER GHANA — OFFICIAL ADMISSIONS VOUCHER* 🇬🇭\n\nSchool: ${schoolName}\nStudent: ${student}\nClass: ${grade}\nReceipt No: ${receiptNo}\nVoucher Code: ${code}\nSecurity PIN: ${pin}\nFee Paid: GH₵ ${amount.toFixed(2)}\nStatus: ${status}\n\nPresent this digital voucher code and PIN to the school admissions bursar during registration.`;
+
+    const div = document.createElement("div");
+    div.id = "modal-backdrop";
+    div.className = "modal-backdrop";
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px; padding: 0; overflow: hidden; border-radius: 16px; box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.2);">
+        <!-- Official Header -->
+        <div style="background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #fff; padding: 1.5rem; text-align: center; border-bottom: 3px solid var(--gold-500); position: relative;">
+          <button class="modal-close-btn" id="modal-close" style="position: absolute; top: 1rem; right: 1.25rem; color: #94a3b8; font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
+          <div style="font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-400); font-weight: 800; margin-bottom: 0.35rem;">
+            🇬🇭 REPUBLIC OF GHANA • SKOOLFINDER OFFICIAL ADMISSIONS VOUCHER
+          </div>
+          <h2 style="font-size: 1.4rem; font-weight: 900; margin: 0 0 0.25rem 0; color: #ffffff; font-family: var(--font-heading);">
+            Digital Admissions Voucher
+          </h2>
+          <div style="font-size: 0.82rem; color: #cbd5e1;">Official Electronic Token for Institution Enrollment Verification</div>
+        </div>
+
+        <!-- Voucher Body -->
+        <div style="padding: 1.75rem; background: #ffffff;">
+          <!-- Status Pill & School Banner -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 1px solid #e2e8f0;">
+            <div>
+              <div style="font-size: 0.75rem; color: #64748b; font-weight: 700;">INSTITUTION</div>
+              <div style="font-size: 1.05rem; font-weight: 800; color: #0A2046;">${schoolName}</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge ${status === "REDEEMED" ? "badge-primary" : "badge-emerald"}" style="font-size: 0.8rem; font-weight: 800; padding: 0.35rem 0.75rem; text-transform: uppercase;">
+                ${status === "REDEEMED" ? "✓ REDEEMED" : "● ACTIVE & VALID"}
+              </span>
+            </div>
+          </div>
+
+          <!-- Serial & PIN High Contrast Security Box -->
+          <div style="background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%); border: 2px dashed #f59e0b; border-radius: 12px; padding: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem;">
+              VOUCHER SERIAL NUMBER
+            </div>
+            <div style="font-family: monospace; font-size: 1.6rem; font-weight: 900; color: #78350f; letter-spacing: 0.08em; margin-bottom: 0.75rem;" id="modal-voucher-code">
+              ${code}
+            </div>
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: #ffffff; padding: 0.4rem 1rem; border-radius: 9999px; border: 1px solid #fde68a;">
+              <span style="font-size: 0.8rem; color: #92400e; font-weight: 700;">4-Digit Security PIN:</span>
+              <strong style="font-family: monospace; font-size: 1.15rem; color: #b45309; letter-spacing: 0.15em;" id="modal-voucher-pin">${pin}</strong>
+            </div>
+          </div>
+
+          <!-- Grid of Details -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; background: #f8fafc; border-radius: 10px; padding: 1rem; font-size: 0.85rem; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Prospective Student:</span>
+              <strong style="color: #0A2046;">${student}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Target Class / Level:</span>
+              <strong style="color: #0A2046;">${grade}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Fee Paid:</span>
+              <strong style="color: #059669; font-size: 0.95rem;">GH₵ ${amount.toFixed(2)}</strong>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; display: block;">Receipt No:</span>
+              <span style="font-family: monospace; font-weight: 700; color: #0A2046;">${receiptNo}</span>
+            </div>
+          </div>
+
+          <!-- Instructions Box -->
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.78rem; color: #1e40af; line-height: 1.5; margin-bottom: 1.5rem;">
+            ℹ️ <strong>Instructions:</strong> Present this voucher serial code and 4-digit PIN to the School Admissions Bursar upon campus visit or enter it during online form submission. The school bursar will verify validity and issue the admissions packet.
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button type="button" class="btn-pill" id="btn-print-voucher-cert" style="flex: 1; min-width: 130px; padding: 0.65rem 0.85rem; font-size: 0.85rem; background: #0A2046; color: #ffffff; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-weight: 700;">
+              🖨️ Print Voucher
+            </button>
+            <a href="https://api.whatsapp.com/send?text=${encodeURIComponent(shareMsg)}" target="_blank" class="btn-pill" style="flex: 1; min-width: 140px; padding: 0.65rem 0.85rem; font-size: 0.85rem; background: #25D366; color: #ffffff; border: none; border-radius: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-weight: 700;">
+              📲 Send WhatsApp
+            </a>
+            <button type="button" class="btn-pill" id="btn-copy-voucher-token" style="flex: 1; min-width: 120px; padding: 0.65rem 0.85rem; font-size: 0.85rem; background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-weight: 700;">
+              📋 Copy Code & PIN
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(div);
+    document.getElementById("modal-close").onclick = () => this.close();
+    document.getElementById("btn-print-voucher-cert").onclick = () => window.print();
+    document.getElementById("btn-copy-voucher-token").onclick = () => {
+      navigator.clipboard.writeText(`VOUCHER: ${code} | PIN: ${pin} | School: ${schoolName} | Student: ${student}`);
+      State.showToast("✓ Voucher Code and PIN copied to clipboard!", "success");
+    };
+  },
+
+  openRedeemVoucherModal(schoolId, onRedeemed) {
+    this.close();
+    const div = document.createElement("div");
+    div.id = "modal-backdrop";
+    div.className = "modal-backdrop";
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 480px; padding: 0; overflow: hidden; border-radius: 16px; box-shadow: var(--shadow-xl); border: 1px solid rgba(255, 255, 255, 0.2);">
+        <div style="background: #0A2046; color: #ffffff; padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-500);">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <div style="background: var(--gold-500); color: #0a1128; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem;">
+              🎫
+            </div>
+            <div>
+              <div style="font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-400); font-weight: 700;">School Bursar Desk</div>
+              <div style="font-weight: 800; font-size: 1.05rem; font-family: var(--font-heading); color: #ffffff;">Redeem Admissions Voucher</div>
+            </div>
+          </div>
+          <button class="modal-close-btn" id="modal-close" style="color: #94a3b8; font-size: 1.5rem; background: none; border: none; cursor: pointer;">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; background: #ffffff;">
+          <p style="font-size: 0.88rem; color: #64748b; line-height: 1.5; margin-bottom: 1.25rem;">
+            Enter the applicant\'s official digital voucher serial number and 4-digit security PIN to confirm registration and verify the 95% revenue settlement.
+          </p>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Voucher Serial Code *</label>
+            <input type="text" id="redeem-input-code" class="form-input" placeholder="e.g. VOUCH-GIS-894201" style="font-family: monospace; font-size: 1.05rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">4-Digit Security PIN *</label>
+            <input type="password" id="redeem-input-pin" class="form-input" placeholder="e.g. 5928" maxlength="6" style="font-family: monospace; font-size: 1.1rem; font-weight: 800; letter-spacing: 0.15em;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Bursar Staff / Officer Name</label>
+            <input type="text" id="redeem-input-bursar" class="form-input" placeholder="e.g. Mrs. Cynthia Quaye (Senior Bursar)" value="Admissions Bursar" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700;">Redemption Notes / Dossier Ref (Optional)</label>
+            <input type="text" id="redeem-input-notes" class="form-input" placeholder="e.g. Issued entrance exam dossier #GIS-2026-092" />
+          </div>
+
+          <div style="display: flex; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-redeem-cancel" style="flex: 1; padding: 0.75rem;">
+              Cancel
+            </button>
+            <button type="button" class="btn-pill" id="btn-redeem-submit" style="flex: 2; padding: 0.75rem; background: var(--emerald-600); color: #ffffff; border: none; font-weight: 800; font-size: 0.95rem; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+              <span>✓</span> Verify & Redeem Voucher
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById("modal-close").onclick = () => this.close();
+    document.getElementById("btn-redeem-cancel").onclick = () => this.close();
+
+    document.getElementById("btn-redeem-submit").onclick = async () => {
+      const code = document.getElementById("redeem-input-code")?.value?.trim();
+      const pin = document.getElementById("redeem-input-pin")?.value?.trim();
+      const bursar = document.getElementById("redeem-input-bursar")?.value?.trim() || "Admissions Bursar";
+      const notes = document.getElementById("redeem-input-notes")?.value?.trim() || "";
+
+      if (!code || !pin) {
+        State.showToast("Please enter both the Voucher Serial Code and 4-digit PIN.", "warning");
+        return;
+      }
+
+      const btn = document.getElementById("btn-redeem-submit");
+      btn.disabled = true;
+      btn.innerHTML = "Verifying...";
+
+      try {
+        const res = await API.redeemSchoolVoucher(schoolId, {
+          voucherCode: code,
+          pin,
+          redeemedBy: bursar,
+          notes
+        });
+
+        this.close();
+        State.showToast(`✓ Voucher ${code} successfully REDEEMED for ${res.voucher?.student_name || "student"}!`, "success");
+        if (typeof onRedeemed === "function") {
+          onRedeemed(res.voucher);
+        } else {
+          App.refreshCurrentView();
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = "<span>✓</span> Verify & Redeem Voucher";
+        State.showToast(err.message || "Failed to redeem voucher", "error");
+      }
+    };
   }
 };
 

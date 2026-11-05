@@ -337,6 +337,7 @@ const DashboardView = {
       'user-plus': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>`,
       'messages-square': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"></path></svg>`,
       'credit-card': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>`,
+      'ticket': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 11v2"></path><path d="M13 17v2"></path></svg>`,
       'receipt': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v12"></path></svg>`,
       'trending-up': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
       'truck': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`,
@@ -363,6 +364,7 @@ const DashboardView = {
       'audit': 'governance',
       'admissions': 'admissions',
       'inquiries': 'admissions',
+      'vouchers': 'admissions',
       'subscription': 'billing',
       'intelligence': 'intelligence',
       'operations': 'operations',
@@ -475,6 +477,14 @@ const DashboardView = {
             icon: 'messages-square',
             badge: `${enquiriesData?.stats?.total || kpis?.totalEnquiries || 28}`,
             badgeStyle: 'background: #3b82f6; color: #fff;'
+          },
+          {
+            tab: 'vouchers',
+            title: 'Admissions Vouchers',
+            subtitle: 'Bursar ledger & MoMo tokens',
+            icon: 'ticket',
+            badge: `${this._cachedVouchersData?.allTotal || 5}`,
+            badgeStyle: 'background: #f59e0b; color: #fff;'
           }
         ]
       },
@@ -749,7 +759,7 @@ const DashboardView = {
       const [
         res, intakesRes, appsRes, enqRes, toursRes, subRes, invRes, plansRes, vacRes, tndRes,
         yieldRes, retRes, revRes, assetsRes, booksRes, fleetRes, routesRes, groupRes, smsRes,
-        campaignsRes, pkgsRes, webhooksRes, deliveriesRes, notifPrefsRes
+        campaignsRes, pkgsRes, webhooksRes, deliveriesRes, notifPrefsRes, vouchersRes, voucherAnalyticsRes
       ] = await Promise.allSettled([
         API.getSchoolWorkspace(schoolId),
         API.getSchoolIntakes(schoolId),
@@ -776,7 +786,9 @@ const DashboardView = {
         API.getPromotionPackages(),
         API.getSchoolWebhooks(schoolId),
         API.getWebhookDeliveries(schoolId),
-        API.getSchoolNotificationPreferences(schoolId)
+        API.getSchoolNotificationPreferences(schoolId),
+        API.getSchoolVouchers(schoolId),
+        API.getSchoolVoucherAnalytics(schoolId)
       ]);
       if (res.status === 'fulfilled' && res.value?.workspace) workspaceData = res.value.workspace;
       if (intakesRes.status === 'fulfilled' && intakesRes.value?.intakes) intakes = intakesRes.value.intakes;
@@ -804,6 +816,8 @@ const DashboardView = {
       if (webhooksRes.status === 'fulfilled' && webhooksRes.value?.webhooks) webhooks = webhooksRes.value.webhooks;
       if (deliveriesRes.status === 'fulfilled' && deliveriesRes.value?.deliveries) deliveries = deliveriesRes.value.deliveries;
       if (notifPrefsRes.status === 'fulfilled' && notifPrefsRes.value?.preferences) notificationPreferences = notifPrefsRes.value.preferences;
+      if (vouchersRes?.status === 'fulfilled' && vouchersRes.value) this._cachedVouchersData = vouchersRes.value;
+      if (voucherAnalyticsRes?.status === 'fulfilled' && voucherAnalyticsRes.value) this._cachedVoucherAnalytics = voucherAnalyticsRes.value;
     } catch (e) {
       console.warn('Workspace & Phase 2/5 load notice:', e.message);
     }
@@ -868,6 +882,8 @@ const DashboardView = {
         return this.renderStaffTab(school, staffList, seatQuotas);
       case 'admissions':
         return this.renderAdmissionsTab(school, phase2a.intakes, phase2a.applications, phase2a.tourSlots);
+      case 'vouchers':
+        return this.renderVouchersTab(school, this._cachedVouchersData, this._cachedVoucherAnalytics);
       case 'inquiries':
         return this.renderInquiriesTab(school, phase2a.enquiriesData, phase2a.tourSlots, phase2a.tourBookings, phase2a.openDays, phase2a.subscription);
       case 'recruiting':
@@ -4319,6 +4335,121 @@ const DashboardView = {
           State.showToast(`✓ Lead status updated to ${newStatus.toUpperCase()}!`, 'success');
         } catch (err) {
           State.showToast(err.message || 'Failed to update lead status', 'error');
+        }
+      });
+    });
+
+        // ========================================================================
+    // PACKAGE F: ADMISSIONS VOUCHERS EVENT LISTENERS
+    // ========================================================================
+
+    // 1. Redeem Voucher Modal Trigger
+    document.getElementById("btn-open-redeem-modal")?.addEventListener("click", () => {
+      Modals.openRedeemVoucherModal(schoolId, async () => {
+        DashboardView._cachedVouchersData = await API.getSchoolVouchers(schoolId);
+        DashboardView.activeTab = "vouchers";
+        App.navigate("schools");
+      });
+    });
+
+    // 2. Export Vouchers CSV (with Entitlement Guard)
+    document.getElementById("btn-export-vouchers-csv")?.addEventListener("click", async () => {
+      if (this._cachedSubscription && this._cachedSubscription.tier === "free") {
+        State.showToast("Bursar CSV reconciliation export requires Growth or Pro plan (DEC-01 & Section 26). Upgrade to download.", "warning");
+        App.navigate("pricing", "schools");
+        return;
+      }
+      try {
+        const csvText = await API.exportSchoolVouchers(schoolId);
+        const blob = new Blob([csvText], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `skoolfinder-vouchers-${schoolId}-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        State.showToast("✓ Admissions vouchers ledger exported to CSV successfully!", "success");
+      } catch (err) {
+        State.showToast(err.message || "Failed to export vouchers", "error");
+      }
+    });
+
+    // 3. Status Filter Buttons
+    document.querySelectorAll(".voucher-filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".voucher-filter-btn").forEach(b => {
+          b.style.background = "#f1f5f9";
+          b.style.color = "#475569";
+          b.style.border = "1px solid #cbd5e1";
+          b.classList.remove("active");
+        });
+        btn.style.background = "#0A2046";
+        btn.style.color = "#fff";
+        btn.style.border = "none";
+        btn.classList.add("active");
+        const filter = btn.dataset.filter;
+        document.querySelectorAll("#table-school-vouchers .voucher-ledger-row").forEach(row => {
+          if (filter === "all" || row.dataset.status === filter) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      });
+    });
+
+    // 4. Search input for vouchers
+    document.getElementById("input-search-vouchers")?.addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll("#table-school-vouchers .voucher-ledger-row").forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = (!q || text.includes(q)) ? "" : "none";
+      });
+    });
+
+    // 5. PIN Reveal Toggle
+    document.querySelectorAll(".voucher-pin-display").forEach(el => {
+      el.addEventListener("click", () => {
+        const pin = el.dataset.pin;
+        if (el.textContent.trim() === "••••") {
+          el.textContent = pin;
+        } else {
+          el.textContent = "••••";
+        }
+      });
+    });
+
+    // 6. Quick Redeem on Row
+    document.querySelectorAll(".btn-quick-redeem-row").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const code = btn.dataset.code;
+        const pin = btn.dataset.pin;
+        Modals.openRedeemVoucherModal(schoolId, async () => {
+          DashboardView._cachedVouchersData = await API.getSchoolVouchers(schoolId);
+          DashboardView.activeTab = "vouchers";
+          App.navigate("schools");
+        });
+        setTimeout(() => {
+          const inputCode = document.getElementById("redeem-input-code");
+          const inputPin = document.getElementById("redeem-input-pin");
+          if (inputCode) inputCode.value = code;
+          if (inputPin) inputPin.value = pin;
+        }, 100);
+      });
+    });
+
+    // 7. View Voucher Certificate
+    document.querySelectorAll(".btn-view-voucher-cert").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const code = btn.dataset.code;
+        try {
+          const res = await API.getVoucherDetails(code);
+          Modals.openVoucherReceiptModal(res.voucher);
+        } catch (e) {
+          const v = DashboardView._cachedVouchersData?.vouchers?.find(item => item.voucher_code === code);
+          Modals.openVoucherReceiptModal(v || { voucher_code: code });
         }
       });
     });

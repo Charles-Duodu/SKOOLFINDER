@@ -2895,8 +2895,89 @@ const API = {
       throw new Error(err.error || "Failed to export leads");
     }
     return res.text();
-  }
+  },
 
+
+  // ============================================================================
+  // PACKAGE F: ADMISSIONS VOUCHERS & BURSAR REDEMPTION RECONCILIATION
+  // ============================================================================
+
+  async getSchoolVouchers(schoolId, query = {}) {
+    const params = new URLSearchParams();
+    Object.keys(query).forEach(k => {
+      if (query[k] !== undefined && query[k] !== null && query[k] !== "") {
+        params.append(k, query[k]);
+      }
+    });
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/vouchers?${params.toString()}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch school vouchers");
+    }
+    return res.json();
+  },
+
+  async getSchoolVoucherAnalytics(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/vouchers/analytics`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch voucher analytics");
+    }
+    return res.json();
+  },
+
+  async redeemSchoolVoucher(schoolId, redeemData = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/vouchers/redeem`, {
+      method: "POST",
+      headers: this.getHeaders(),
+      body: JSON.stringify(redeemData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to redeem voucher");
+    return result;
+  },
+
+  async exportSchoolVouchers(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/vouchers/export`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to export vouchers");
+    }
+    return res.text();
+  },
+
+  async getParentVouchers(query = {}) {
+    const params = new URLSearchParams();
+    Object.keys(query).forEach(k => {
+      if (query[k]) params.append(k, query[k]);
+    });
+    const res = await fetch(`${this.baseUrl}/parents/vouchers?${params.toString()}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch parent vouchers");
+    }
+    return res.json();
+  },
+
+  async getVoucherDetails(code, pin = null) {
+    const url = pin
+      ? `${this.baseUrl}/parents/vouchers/${encodeURIComponent(code)}?pin=${encodeURIComponent(pin)}`
+      : `${this.baseUrl}/parents/vouchers/${encodeURIComponent(code)}`;
+    const res = await fetch(url, { headers: this.getHeaders() });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch voucher details");
+    }
+    return res.json();
+  }
 };
 
 if (typeof window !== "undefined") {

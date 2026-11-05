@@ -227,28 +227,32 @@ router.post('/verify', async (req, res) => {
       }
     }
 
-    // Generate Admission Voucher Code if applicable (Sprint 5)
+    // Generate Admission Voucher Code if applicable (Package F: VOUCH-001)
+    let voucher = null;
     let voucherCode = null;
     let voucherPin = null;
     if (purpose === 'admission_form' || purpose.includes('admission') || purpose.includes('voucher')) {
-      voucherCode = `VOUCH-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
-      voucherPin = `${Math.floor(1000 + Math.random() * 9000)}`;
-      try {
-        await supabaseAdmin
-          .from('admissions_vouchers')
-          .insert({
-            school_id: targetId,
-            voucher_code: voucherCode,
-            pin: voucherPin,
-            amount_ghs: finalAmount,
-            status: 'active'
-          });
-      } catch (vErr) {
-        // Table fallback
-      }
+      const { AdmissionsVoucherService } = require('../services/admissionsVoucherService');
+      const schoolTitle = orderRecord?.metadata?.targetTitle || 'Accredited Institution';
+      const cleanSchoolName = schoolTitle.replace(/^Official Admission Voucher\s*-\s*/i, '');
+      voucher = await AdmissionsVoucherService.generateVoucher({
+        schoolId: targetId,
+        schoolName: cleanSchoolName,
+        payerName,
+        payerPhone: orderRecord?.payer_phone || '',
+        payerEmail,
+        studentName: orderRecord?.metadata?.studentName || 'Prospective Student',
+        targetLevel: orderRecord?.metadata?.targetLevel || 'Primary / Main Intake',
+        academicYear: orderRecord?.metadata?.academicYear || '2026/2027',
+        amount: finalAmount,
+        paymentReference: reference,
+        paymentChannel: finalChannel
+      });
+      voucherCode = voucher.voucher_code;
+      voucherPin = voucher.pin;
     }
 
-    const receiptNumber = `REC-${reference.slice(-8).toUpperCase()}`;
+    const receiptNumber = voucher?.receipt_number || ('REC-' + reference.slice(-8).toUpperCase());
 
     const transaction = {
       receiptNumber,
@@ -262,6 +266,7 @@ router.post('/verify', async (req, res) => {
       targetTitle: orderRecord?.metadata?.targetTitle || 'Verified Institutional Partner',
       voucherCode,
       voucherPin,
+      voucher,
       payerPhone: orderRecord?.payer_phone || ''
     };
 

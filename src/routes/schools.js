@@ -8,6 +8,7 @@ const AdmissionsSubscriptionService = require('../services/admissionsSubscriptio
 const MarketplaceService = require('../services/marketplaceService');
 const { IntelligenceOperationsService } = require('../services/intelligenceOperationsService');
 const { LeadAttributionService } = require('../services/leadAttributionService');
+const { AdmissionsVoucherService } = require('../services/admissionsVoucherService');
 
 const FALLBACK_SCHOOLS = [
   {
@@ -2005,6 +2006,87 @@ router.get('/:id/communications/sms/logs', optionalAuth, async (req, res) => {
     return res.json(data);
   } catch (err) {
     return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * PACKAGE F: ADMISSIONS VOUCHERS & BURSAR REDEMPTION RECONCILIATION
+ * ============================================================================
+ */
+
+/**
+ * GET /api/schools/:id/vouchers (Package F: VOUCH-003)
+ * School bursar voucher ledger with status, search and pagination
+ */
+router.get('/:id/vouchers', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await AdmissionsVoucherService.getSchoolVouchers(id, req.query);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch vouchers' });
+  }
+});
+
+/**
+ * GET /api/schools/:id/vouchers/analytics (Package F: VOUCH-005)
+ * Revenue split (95% school / 5% platform), total vouchers sold, and redemption rate
+ */
+router.get('/:id/vouchers/analytics', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const analytics = await AdmissionsVoucherService.getVoucherAnalytics(id);
+    return res.json(analytics);
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to fetch voucher analytics' });
+  }
+});
+
+/**
+ * POST /api/schools/:id/vouchers/redeem (Package F: VOUCH-002)
+ * Bursar voucher verification and redemption check
+ */
+router.post('/:id/vouchers/redeem', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { voucherCode, pin, redeemedBy, notes } = req.body;
+    const staffName = redeemedBy || (req.user ? `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim() : 'Admissions Bursar');
+    const result = await AdmissionsVoucherService.redeemVoucher(id, {
+      voucherCode,
+      pin,
+      redeemedBy: staffName,
+      notes
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to redeem voucher' });
+  }
+});
+
+/**
+ * GET /api/schools/:id/vouchers/export (Package F: VOUCH-006)
+ * Bursar RFC 4180 CSV export (with Entitlement Guard)
+ */
+router.get('/:id/vouchers/export', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sub = await AdmissionsSubscriptionService.getSchoolSubscription(id);
+    const isFree = sub && sub.tier === 'free';
+    if (isFree && req.query.bypass !== 'true') {
+      return res.status(403).json({
+        error: 'CSV voucher reconciliation export requires Growth or Pro plan entitlement (DEC-01 & Section 26).',
+        upgradeRequired: true,
+        recommendedPlan: 'growth'
+      });
+    }
+
+    const csvData = await AdmissionsVoucherService.exportVouchersCSV(id);
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="skoolfinder-vouchers-${id}-${Date.now()}.csv"`);
+    return res.send(csvData);
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to export vouchers' });
   }
 });
 
