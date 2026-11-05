@@ -799,3 +799,4 @@ const PricingView = {
     });
   }
 };
+

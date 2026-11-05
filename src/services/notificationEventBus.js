@@ -146,6 +146,20 @@ class NotificationEventBus {
             schoolName: payload.schoolName || 'School Board',
             link: `https://skoolfinder.com.gh/marketplace/tenders`
           };
+        } else if (eventName === 'TourBookingUpdated' || eventName === 'TourBookingConfirmed' || eventName === 'TourBookingCreated') {
+          recipientPhone = payload.parentPhone || context.recipientPhone || schoolWhatsappPhone;
+          templateType = 'tour_booking_confirmed';
+          templateVars = {
+            parentName: payload.parentName || context.recipientName || 'Parent',
+            schoolName: payload.schoolName || 'SkoolFinder School',
+            tourDate: payload.slotDate || payload.tourDate || 'Scheduled Date',
+            tourTime: payload.slotTime || payload.tourTime || 'Scheduled Time',
+            hostStaff: payload.hostStaff || 'Admissions Team',
+            venue: payload.venue || 'Campus Main Reception',
+            bookingId: payload.bookingId || 'TOUR',
+            status: payload.status || 'confirmed',
+            link: `https://skoolfinder.com.gh/school/${schoolId}`
+          };
         }
 
         if (recipientPhone) {
@@ -193,6 +207,16 @@ class NotificationEventBus {
           recipientPhone = schoolAlertPhone;
           recipientName = payload.schoolName || 'Procurement Board';
           smsMessage = `SkoolFinder B2B: Procurement tender "${payload.title || 'RFQ'}" published. Suppliers notified.`;
+        } else if (eventName === 'TourBookingUpdated' || eventName === 'TourBookingConfirmed' || eventName === 'TourBookingCreated') {
+          recipientPhone = payload.parentPhone || context.recipientPhone || schoolAlertPhone;
+          recipientName = payload.parentName || context.recipientName || 'Parent';
+          if (payload.status === 'rescheduled') {
+            smsMessage = `SkoolFinder Notice: Your campus visit to ${payload.schoolName || 'the school'} has been rescheduled to ${payload.slotDate || 'the new date'} at ${payload.slotTime || 'the new time'}. Host: ${payload.hostStaff || 'Admissions Desk'}. Ref: ${payload.bookingId || 'TOUR'}.`;
+          } else if (payload.status === 'cancelled') {
+            smsMessage = `SkoolFinder Notice: Your campus tour booking at ${payload.schoolName || 'the school'} for ${payload.slotDate || 'the session'} has been cancelled. Ref: ${payload.bookingId || 'TOUR'}.`;
+          } else {
+            smsMessage = `SkoolFinder Confirmation: Your campus tour at ${payload.schoolName || 'the school'} is confirmed for ${payload.slotDate} at ${payload.slotTime}. Host: ${payload.hostStaff || 'Admissions Team'}. Venue: ${payload.venue || 'Main Gate'}. Ref: ${payload.bookingId || 'TOUR'}.`;
+          }
         }
 
         if (recipientPhone && smsMessage) {
@@ -250,6 +274,25 @@ class NotificationEventBus {
               note: payload.note || 'Congratulations! An admission offer has been extended.',
               trackingUrl: `https://skoolfinder.com.gh/parent-portal?track=${payload.trackingCode || ''}`
             });
+            report.channels.email.success = true;
+          }
+        } else if (eventName === 'TourBookingUpdated' || eventName === 'TourBookingConfirmed' || eventName === 'TourBookingCreated') {
+          const parentEmail = payload.parentEmail || context.recipientEmail;
+          if (parentEmail && parentEmail.includes('@')) {
+            await EmailService.sendTourBookingConfirmation({
+              to: parentEmail,
+              parentName: payload.parentName || context.recipientName || 'Parent / Guardian',
+              schoolName: payload.schoolName || 'SkoolFinder Partner School',
+              bookingId: payload.bookingId || 'TOUR-01',
+              slotDate: payload.slotDate || payload.tourDate || 'Scheduled Date',
+              slotTime: payload.slotTime || payload.tourTime || '10:00 AM',
+              venue: payload.venue || 'Campus Main Reception',
+              hostStaff: payload.hostStaff || 'Admissions Representative',
+              notes: payload.notes || '',
+              status: payload.status || 'confirmed'
+            });
+            report.channels.email.success = true;
+          } else {
             report.channels.email.success = true;
           }
         } else {

@@ -12102,6 +12102,344 @@ const Modals = {
         State.showToast(err.message, 'error');
       }
     };
+  },
+
+  // ============================================================================
+  // PACKAGE B: TOUR SCHEDULING & CONFIRMATION MANAGEMENT MODALS
+  // ============================================================================
+
+  openConfirmTourBookingModal(booking, school, onConfirmed) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em;">Tour Operations Desk</div>
+            <h3 class="modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0A2046;">Confirm Campus Walkthrough</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+        <form id="form-confirm-tour-booking" class="modal-body">
+          <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <div>
+                <div style="font-weight: 800; color: #0A2046; font-size: 1rem;">${booking.parentName}</div>
+                <div style="font-size: 0.82rem; color: #64748b;">📞 ${booking.parentPhone} &bull; ✉️ ${booking.parentEmail || 'N/A'}</div>
+              </div>
+              <span class="badge badge-warning" style="font-size: 0.72rem; text-transform: uppercase;">
+                ${booking.status || 'Pending'}
+              </span>
+            </div>
+            <div style="font-size: 0.84rem; color: #334155; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
+              <strong>Student:</strong> ${booking.childName ? `${booking.childName} (${booking.childGrade})` : booking.childGrade} &bull; 
+              <strong>Session:</strong> ${booking.slotTitle || 'Campus Walkthrough'}
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">
+              Assigned Host Staff Member *
+            </label>
+            <input type="text" id="confirm-host-staff" class="form-input" style="width: 100%;" 
+              placeholder="e.g. Mr. Ebenezer Mensah (Admissions Officer)" 
+              value="${booking.hostStaff || 'Admissions Desk Team'}" required />
+            <small style="font-size: 0.74rem; color: #64748b;">The family will receive the staff host's name in their SMS and WhatsApp confirmation.</small>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Confirmed Date *</label>
+              <input type="date" id="confirm-tour-date" class="form-input" style="width: 100%;" value="${booking.slotDate || ''}" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Confirmed Time *</label>
+              <input type="text" id="confirm-tour-time" class="form-input" style="width: 100%;" placeholder="e.g. 10:00 AM" value="${booking.slotTime || '10:00 AM'}" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">
+              Meeting Venue / Reception Point *
+            </label>
+            <input type="text" id="confirm-tour-venue" class="form-input" style="width: 100%;" 
+              placeholder="e.g. Main Administration Block Reception, Cantonments" 
+              value="${booking.venue || 'Main Administration Block Reception'}" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">
+              Visitor Instructions & Notes
+            </label>
+            <textarea id="confirm-tour-notes" class="form-textarea" rows="2" style="width: 100%;" 
+              placeholder="e.g. Please present valid photo ID at the security post. Parking is available in Visitor Lot A.">${booking.notes || ''}</textarea>
+          </div>
+
+          <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 6px; padding: 0.75rem; margin-bottom: 1.25rem; font-size: 0.78rem; color: #065f46;">
+            <strong>⚡ Automated Multi-Channel Dispatch:</strong> Confirming this booking will instantly send a formatted SMS alert (Hubtel) and WhatsApp notification with directions and host details to <strong>${booking.parentPhone}</strong>.
+          </div>
+
+          <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; padding: 0; background: none; border-top: none;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-confirm-tour">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-submit-confirm-tour">
+              <span>✓</span> Confirm & Dispatch Notifications
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-confirm-tour').onclick = () => this.close();
+
+    document.getElementById('form-confirm-tour-booking').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-confirm-tour');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Dispatching...';
+
+      const hostStaff = document.getElementById('confirm-host-staff').value.trim();
+      const slotDate = document.getElementById('confirm-tour-date').value;
+      const slotTime = document.getElementById('confirm-tour-time').value.trim();
+      const venue = document.getElementById('confirm-tour-venue').value.trim();
+      const notes = document.getElementById('confirm-tour-notes').value.trim();
+
+      try {
+        await API.updateSchoolTourBooking(school.id || school.school_id, booking.slotId, booking.bookingId, {
+          status: 'confirmed',
+          hostStaff,
+          slotDate,
+          slotTime,
+          venue,
+          notes
+        });
+        this.close();
+        State.showToast(`✓ Campus tour confirmed! SMS and WhatsApp notification dispatched to ${booking.parentName}.`, 'success');
+        if (onConfirmed) onConfirmed();
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Confirm & Dispatch Notifications';
+        State.showToast(err.message || 'Failed to confirm tour booking', 'error');
+      }
+    };
+  },
+
+  openRescheduleTourModal(booking, school, onRescheduled) {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 500px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em;">Schedule Adjustment</div>
+            <h3 class="modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0A2046;">Reschedule Campus Tour</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+        <form id="form-reschedule-tour" class="modal-body">
+          <p style="font-size: 0.85rem; color: #64748b; margin-top: 0;">
+            Adjusting appointment for <strong>${booking.parentName}</strong> (${booking.childGrade}). Currently scheduled for <strong>${booking.slotDate} at ${booking.slotTime}</strong>.
+          </p>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">New Appointment Date *</label>
+              <input type="date" id="resched-tour-date" class="form-input" style="width: 100%;" value="${booking.slotDate || ''}" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">New Start Time *</label>
+              <input type="text" id="resched-tour-time" class="form-input" style="width: 100%;" placeholder="e.g. 11:30 AM" value="${booking.slotTime || '10:00 AM'}" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">
+              Reason / Message to Family *
+            </label>
+            <textarea id="resched-tour-notes" class="form-textarea" rows="3" style="width: 100%;" 
+              placeholder="e.g. Session adjusted due to scheduled inter-house sports. We look forward to receiving you at the new time." required>${booking.notes || ''}</textarea>
+          </div>
+
+          <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; padding: 0; background: none; border-top: none;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-resched">Cancel</button>
+            <button type="submit" class="btn-pill btn-gold" id="btn-submit-resched">
+              Send Reschedule Notice
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-resched').onclick = () => this.close();
+
+    document.getElementById('form-reschedule-tour').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-resched');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Updating...';
+
+      const slotDate = document.getElementById('resched-tour-date').value;
+      const slotTime = document.getElementById('resched-tour-time').value.trim();
+      const notes = document.getElementById('resched-tour-notes').value.trim();
+
+      try {
+        await API.updateSchoolTourBooking(school.id || school.school_id, booking.slotId, booking.bookingId, {
+          status: 'rescheduled',
+          slotDate,
+          slotTime,
+          notes
+        });
+        this.close();
+        State.showToast(`✓ Tour rescheduled to ${slotDate} at ${slotTime}. Family alerted.`, 'info');
+        if (onRescheduled) onRescheduled();
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Send Reschedule Notice';
+        State.showToast(err.message || 'Failed to reschedule tour', 'error');
+      }
+    };
+  },
+
+  openCreateTourSlotModal(schoolId, onCreated, defaultType = 'tour') {
+    this.close();
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.78rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em;">Tour & Open Day Publisher</div>
+            <h3 class="modal-title" style="margin: 0; font-size: 1.25rem; font-weight: 800; color: #0A2046;">Schedule Campus Session</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+        <form id="form-create-tour-slot" class="modal-body">
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Session Type *</label>
+            <select id="slot-type" class="form-select" style="width: 100%;" required>
+              <option value="tour" ${defaultType === 'tour' ? 'selected' : ''}>Guided Campus Walkthrough (Small Group / Families)</option>
+              <option value="open_day" ${defaultType === 'open_day' ? 'selected' : ''}>Public Campus Open Day / Admissions Showcase</option>
+              <option value="assessment" ${defaultType === 'assessment' ? 'selected' : ''}>Admissions Assessment & Screening Session</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Session Title *</label>
+            <input type="text" id="slot-title" class="form-input" style="width: 100%;" 
+              placeholder="e.g. Weekly Guided Walkthrough & STEM Lab Tour" 
+              value="${defaultType === 'open_day' ? 'Annual Campus Open House & Curriculum Showcase' : 'Weekly Guided Campus Walkthrough'}" required />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Event Date *</label>
+              <input type="date" id="slot-date" class="form-input" style="width: 100%;" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Start Time *</label>
+              <input type="text" id="slot-time" class="form-input" style="width: 100%;" placeholder="e.g. 10:00 AM" value="10:00 AM" required />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Meeting Venue *</label>
+              <input type="text" id="slot-venue" class="form-input" style="width: 100%;" placeholder="e.g. Main Admin Building Reception" value="Main Administration Block" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Max Family Capacity *</label>
+              <input type="number" id="slot-capacity" class="form-input" style="width: 100%;" min="1" max="500" value="${defaultType === 'open_day' ? '50' : '15'}" required />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Target Grades</label>
+            <input type="text" id="slot-target-grades" class="form-input" style="width: 100%;" placeholder="e.g. Primary 1-6 or All Grades" value="All Grades (Crèche to High School)" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem; display: block;">Description / Highlights</label>
+            <textarea id="slot-description" class="form-textarea" rows="2" style="width: 100%;" 
+              placeholder="e.g. Guided exploration of campus facilities, meet teachers, and review Cambridge & GES curriculum options."></textarea>
+          </div>
+
+          <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 0.75rem; padding: 0; background: none; border-top: none;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-create-slot">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-submit-create-slot">
+              Publish Session
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-create-slot').onclick = () => this.close();
+
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 7);
+    document.getElementById('slot-date').value = tomorrow.toISOString().split('T')[0];
+
+    document.getElementById('form-create-tour-slot').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-create-slot');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Publishing...';
+
+      const type = document.getElementById('slot-type').value;
+      const title = document.getElementById('slot-title').value.trim();
+      const slotDate = document.getElementById('slot-date').value;
+      const slotTime = document.getElementById('slot-time').value.trim();
+      const venue = document.getElementById('slot-venue').value.trim();
+      const capacity = parseInt(document.getElementById('slot-capacity').value, 10) || 15;
+      const targetGrades = document.getElementById('slot-target-grades').value.trim();
+      const description = document.getElementById('slot-description').value.trim();
+
+      try {
+        if (type === 'open_day') {
+          await API.createSchoolOpenDay(schoolId, {
+            title,
+            slotDate,
+            slotTime,
+            venue,
+            capacity,
+            targetGrades,
+            description
+          });
+        } else {
+          await API.createSchoolTourSlot(schoolId, {
+            type,
+            title,
+            slotDate,
+            slotTime,
+            venue,
+            capacity,
+            targetGrades,
+            description
+          });
+        }
+        this.close();
+        State.showToast(`✓ "${title}" successfully scheduled!`, 'success');
+        if (onCreated) onCreated();
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Publish Session';
+        if (err.message && err.message.includes('Growth')) {
+          State.showToast(err.message, 'warning');
+        } else {
+          State.showToast(err.message || 'Failed to create session', 'error');
+        }
+      }
+    };
   }
 };
 

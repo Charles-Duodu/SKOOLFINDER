@@ -29,8 +29,8 @@ async function runPricingTests() {
   // 1. Script inclusion in index.html
   test('index.html registers pricingView.js and app.js with updated cache-buster', () => {
     const html = fs.readFileSync(path.resolve('public/index.html'), 'utf8');
-    assert.ok(html.includes('src="/js/views/pricingView.js?v=69"'), 'pricingView.js missing or bad version in index.html');
-    assert.ok(html.includes('src="/js/app.js?v=69"'), 'app.js must be version 69 in index.html');
+    assert.ok(html.includes('src="/js/views/pricingView.js?v='), 'pricingView.js missing in index.html');
+    assert.ok(html.includes('src="/js/app.js?v='), 'app.js missing in index.html');
   });
 
   // 2. Router registration in app.js

@@ -233,6 +233,65 @@ const SchoolDetailView = {
               </div>
 
               
+              <!-- PACKAGE B: UPCOMING PUBLIC OPEN DAYS & GUIDED TOURS SHOWCASE -->
+              ${tourSlots && tourSlots.length > 0 ? `
+                <div style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <span class="badge badge-primary" style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">
+                          🏫 Campus Visits & Open Days
+                        </span>
+                        <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Direct Institution-Hosted Sessions</span>
+                      </div>
+                      <h3 style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0;">
+                        Experience ${school.name} in Person
+                      </h3>
+                      <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0.25rem 0 0 0;">
+                        Reserve your family's place for an upcoming guided campus walkthrough or public Open Day showcase.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+                    ${tourSlots.map(slot => {
+                      const isOpenDay = slot.type === 'open_day';
+                      const availableSeats = Math.max(0, (slot.capacity || 15) - (slot.booked_count || 0));
+                      return `
+                        <div style="background: ${isOpenDay ? '#fffdf7' : '#ffffff'}; border: 1.5px solid ${isOpenDay ? '#fde68a' : '#e2e8f0'}; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                          <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                              <span class="badge ${isOpenDay ? 'badge-gold' : 'badge-primary'}" style="font-size: 0.72rem; text-transform: uppercase;">
+                                ${isOpenDay ? '🌟 Public Open Day' : '🚶 Guided Tour'}
+                              </span>
+                              <span class="badge ${availableSeats > 0 ? 'badge-emerald' : 'badge-danger'}" style="font-size: 0.7rem;">
+                                ${availableSeats > 0 ? `${availableSeats} Seats Available` : 'Session Full'}
+                              </span>
+                            </div>
+                            <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0; line-height: 1.3;">
+                              ${slot.title}
+                            </h4>
+                            <div style="font-size: 0.84rem; color: #475569; margin-bottom: 0.75rem; line-height: 1.5;">
+                              <div>📅 <strong>${slot.slot_date}</strong> at <strong>${slot.slot_time}</strong> ${slot.end_time ? `– ${slot.end_time}` : ''}</div>
+                              <div>📍 ${slot.venue || 'Main Campus'}</div>
+                              ${slot.target_grades ? `<div>🎓 Grades: <strong>${slot.target_grades}</strong></div>` : ''}
+                            </div>
+                            ${slot.description ? `
+                              <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.4;">
+                                ${slot.description}
+                              </p>
+                            ` : ''}
+                          </div>
+                          <button class="btn-pill btn-primary btn-rsvp-tour-slot" data-slot-id="${slot.id}" data-slot-title="${slot.title}" data-slot-date="${slot.slot_date}" style="width: 100%; justify-content: center; font-size: 0.82rem; padding: 0.5rem 1rem; margin-top: 0.5rem;" ${availableSeats <= 0 ? 'disabled' : ''}>
+                            <span>🎟️</span> ${availableSeats > 0 ? 'RSVP / Book Tour Slot' : 'Fully Booked'}
+                          </button>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : ''}
+
               <!-- FEATURE 8: INTERACTIVE 360° VIRTUAL CAMPUS TOUR & MULTIMEDIA SHOWCASE -->
               <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-light); padding: 2rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
@@ -652,6 +711,21 @@ const SchoolDetailView = {
         Modals.openOnlineAdmissionModal(school);
       };
     }
+
+    // Package B: RSVP / Book Specific Tour Slot
+    document.querySelectorAll(".btn-rsvp-tour-slot").forEach(btn => {
+      btn.onclick = async () => {
+        const slotDate = btn.dataset.slotDate;
+        const school = await API.getSchoolById(schoolId);
+        Modals.openInquireAdmissionModal(school);
+        setTimeout(() => {
+          const dateInput = document.getElementById("inq-date");
+          if (dateInput && slotDate) {
+            dateInput.value = slotDate;
+          }
+        }, 50);
+      };
+    });
 
     // Book Campus Tour / Official Admission Inquiry
     const btnInquire = document.getElementById('btn-inquire-tour');

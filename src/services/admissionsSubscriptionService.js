@@ -228,7 +228,7 @@ IN_MEMORY_ENQUIRY_MESSAGES.push({
   created_at: new Date(Date.now() - 3 * 86400000).toISOString()
 });
 
-// Seed default tour slot
+// Seed default tour slot and Open Day
 IN_MEMORY_TOUR_SLOTS.push({
   id: 'tour-slot-01',
   school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
@@ -236,11 +236,87 @@ IN_MEMORY_TOUR_SLOTS.push({
   type: 'tour',
   slot_date: '2026-11-18',
   slot_time: '10:00 AM',
+  end_time: '11:30 AM',
   venue: 'Main Administration Block, Cantonments',
   capacity: 15,
-  booked_count: 4,
+  target_grades: 'Primary to High School',
+  description: 'Comprehensive guided walkthrough covering science labs, library, Olympic-size pool, and arts pavilion.',
+  booked_count: 3,
   attendees: [
-    { parentName: 'Dr. Kwame Boateng', parentPhone: '+233 24 455 1290', parentEmail: 'k.boateng@gmail.com', childGrade: 'Primary 4', status: 'confirmed' }
+    {
+      bookingId: 'bk-tour-001',
+      parentName: 'Dr. Kwame Boateng',
+      parentPhone: '+233 24 455 1290',
+      parentEmail: 'k.boateng@gmail.com',
+      childName: 'Nana Yaa Boateng',
+      childGrade: 'Primary 4',
+      status: 'confirmed',
+      hostStaff: 'Ebenezer Mensah (Admissions Officer)',
+      slotDate: '2026-11-18',
+      slotTime: '10:00 AM',
+      notes: 'Interested in Cambridge Primary Science Lab & swimming facilities.',
+      bookedAt: new Date(Date.now() - 4 * 86400000).toISOString()
+    },
+    {
+      bookingId: 'bk-tour-002',
+      parentName: 'Mrs. Cynthia Addo',
+      parentPhone: '+233 20 812 3456',
+      parentEmail: 'cynthia.addo@outlook.com',
+      childName: 'Kofi Addo',
+      childGrade: 'JHS Form 1',
+      status: 'pending',
+      hostStaff: null,
+      slotDate: '2026-11-18',
+      slotTime: '10:00 AM',
+      notes: 'Inquiring about bus shuttle routes from Spintex and East Legon.',
+      bookedAt: new Date(Date.now() - 2 * 86400000).toISOString()
+    },
+    {
+      bookingId: 'bk-tour-003',
+      parentName: 'Ing. Michael Annan',
+      parentPhone: '+233 55 987 6543',
+      parentEmail: 'm.annan@consultgh.com',
+      childName: 'Kweku Annan',
+      childGrade: 'Nursery 1',
+      status: 'rescheduled',
+      hostStaff: 'Ama Serwaa (Early Years Coordinator)',
+      slotDate: '2026-11-25',
+      slotTime: '10:00 AM',
+      notes: 'Rescheduled from Nov 18 due to flight arrival.',
+      bookedAt: new Date(Date.now() - 1 * 86400000).toISOString()
+    }
+  ],
+  created_at: new Date().toISOString()
+});
+
+IN_MEMORY_TOUR_SLOTS.push({
+  id: 'tour-slot-openday-01',
+  school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+  title: 'Annual Open Day & Cambridge Curriculum Showcase',
+  type: 'open_day',
+  slot_date: '2026-11-28',
+  slot_time: '09:30 AM',
+  end_time: '01:00 PM',
+  venue: 'GIS Multi-Purpose Sports & Arts Complex',
+  capacity: 50,
+  target_grades: 'Crèche to A-Levels (All Grades)',
+  description: 'Join faculty, student ambassadors, and admissions counselors for campus tours, interactive science demos, and admissions consultation.',
+  booked_count: 22,
+  attendees: [
+    {
+      bookingId: 'bk-od-001',
+      parentName: 'Mr. David Osei',
+      parentPhone: '+233 24 333 4455',
+      parentEmail: 'david.osei@gmail.com',
+      childName: 'Akua Osei',
+      childGrade: 'SHS Form 1',
+      status: 'confirmed',
+      hostStaff: 'Admissions Desk Team',
+      slotDate: '2026-11-28',
+      slotTime: '09:30 AM',
+      notes: 'Attending with spouse and 2 children.',
+      bookedAt: new Date(Date.now() - 3 * 86400000).toISOString()
+    }
   ],
   created_at: new Date().toISOString()
 });
@@ -1336,16 +1412,39 @@ class AdmissionsSubscriptionService {
   }
 
   static async createTourSlot(schoolId, slotData = {}) {
-    const { title, type = 'tour', slotDate, slotTime, venue, capacity = 15 } = slotData;
+    // Entitlement guard: requires campusTourScheduler (Growth tier or above)
+    const entitlement = await this.checkSchoolEntitlements(schoolId, 'campusTourScheduler');
+    if (!entitlement.allowed) {
+      const err = new Error(entitlement.message || 'Campus tour scheduling requires Growth plan or higher.');
+      err.code = 'UPGRADE_REQUIRED';
+      err.requiredTier = 'growth';
+      throw err;
+    }
+
+    const { 
+      title, 
+      type = 'tour', 
+      slotDate, 
+      slotTime, 
+      endTime = '12:00 PM', 
+      venue, 
+      capacity = 15,
+      targetGrades = 'All Grades',
+      description = ''
+    } = slotData;
+
     const newSlot = {
       id: `slot-${Date.now()}`,
       school_id: schoolId,
-      title: title || 'Guided Campus Walkthrough',
-      type,
+      title: title || (type === 'open_day' ? 'Campus Public Open Day' : 'Guided Campus Walkthrough'),
+      type, // 'tour' | 'open_day' | 'assessment'
       slot_date: slotDate,
       slot_time: slotTime,
+      end_time: endTime,
       venue: venue || 'Main Administration Block',
       capacity: Number(capacity) || 15,
+      target_grades: targetGrades,
+      description,
       booked_count: 0,
       attendees: [],
       created_at: new Date().toISOString()
@@ -1353,6 +1452,15 @@ class AdmissionsSubscriptionService {
 
     IN_MEMORY_TOUR_SLOTS.push(newSlot);
     return newSlot;
+  }
+
+  static async deleteTourSlot(schoolId, slotId) {
+    const idx = IN_MEMORY_TOUR_SLOTS.findIndex(s => s.id === slotId && s.school_id === schoolId);
+    if (idx === -1) {
+      throw new Error(`Tour slot ${slotId} not found.`);
+    }
+    const [deleted] = IN_MEMORY_TOUR_SLOTS.splice(idx, 1);
+    return { success: true, slotId: deleted.id };
   }
 
   static async bookTourSlot(schoolId, slotId, bookingData = {}) {
@@ -1364,24 +1472,181 @@ class AdmissionsSubscriptionService {
     }
 
     const attendee = {
-      bookingId: `bk-${Date.now()}`,
-      parentName: bookingData.parentName,
-      parentPhone: bookingData.parentPhone,
-      parentEmail: bookingData.parentEmail,
-      childGrade: bookingData.childGrade,
-      status: 'confirmed',
+      bookingId: bookingData.bookingId || `bk-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`,
+      parentName: bookingData.parentName || 'Prospective Parent',
+      parentPhone: bookingData.parentPhone || '+233 24 000 0000',
+      parentEmail: bookingData.parentEmail || 'parent@example.com',
+      childName: bookingData.childName || '',
+      childGrade: bookingData.childGrade || 'General Admission',
+      status: bookingData.status || 'pending', // 'pending' | 'confirmed' | 'rescheduled' | 'cancelled' | 'completed'
+      slotDate: slot.slot_date,
+      slotTime: slot.slot_time,
+      venue: slot.venue,
+      hostStaff: bookingData.hostStaff || null,
+      notes: bookingData.notes || '',
       bookedAt: new Date().toISOString()
     };
 
     slot.attendees.push(attendee);
     slot.booked_count += 1;
 
+    // Dispatch notification
+    try {
+      const { NotificationEventBus } = require('./notificationEventBus');
+      NotificationEventBus.publish('TourBookingCreated', schoolId, {
+        bookingId: attendee.bookingId,
+        parentName: attendee.parentName,
+        parentPhone: attendee.parentPhone,
+        parentEmail: attendee.parentEmail,
+        childName: attendee.childName,
+        childGrade: attendee.childGrade,
+        slotDate: slot.slot_date,
+        slotTime: slot.slot_time,
+        venue: slot.venue,
+        status: attendee.status,
+        hostStaff: attendee.hostStaff,
+        notes: attendee.notes
+      }, {
+        recipientPhone: attendee.parentPhone,
+        recipientEmail: attendee.parentEmail,
+        recipientName: attendee.parentName
+      });
+    } catch (e) {
+      console.warn('[Admissions] NotificationEventBus dispatch skipped:', e.message);
+    }
+
     return {
       success: true,
-      message: 'Campus walkthrough booking confirmed.',
+      message: 'Campus walkthrough booking submitted.',
       slot,
       booking: attendee
     };
+  }
+
+  /**
+   * Package B: Get all inbound tour bookings for a school
+   */
+  static async getTourBookings(schoolId) {
+    const slots = IN_MEMORY_TOUR_SLOTS.filter(s => s.school_id === schoolId);
+    const bookings = [];
+
+    for (const slot of slots) {
+      for (const att of (slot.attendees || [])) {
+        bookings.push({
+          bookingId: att.bookingId || `bk-${att.parentPhone}`,
+          slotId: slot.id,
+          slotTitle: slot.title,
+          slotType: slot.type || 'tour',
+          slotDate: att.slotDate || slot.slot_date,
+          slotTime: att.slotTime || slot.slot_time,
+          venue: att.venue || slot.venue,
+          parentName: att.parentName,
+          parentPhone: att.parentPhone,
+          parentEmail: att.parentEmail,
+          childName: att.childName || '',
+          childGrade: att.childGrade || 'General',
+          status: att.status || 'pending',
+          hostStaff: att.hostStaff || null,
+          notes: att.notes || '',
+          bookedAt: att.bookedAt || slot.created_at
+        });
+      }
+    }
+
+    return bookings.sort((a, b) => new Date(b.bookedAt || 0) - new Date(a.bookedAt || 0));
+  }
+
+  /**
+   * Package B: Update a tour booking (confirm, assign host staff, reschedule, cancel, complete)
+   */
+  static async updateTourBooking(schoolId, slotId, bookingId, updateData = {}) {
+    // Find the slot
+    let slot = null;
+    if (slotId) {
+      slot = IN_MEMORY_TOUR_SLOTS.find(s => s.id === slotId && s.school_id === schoolId);
+    }
+    // If not found by slotId, search across school slots
+    if (!slot) {
+      slot = IN_MEMORY_TOUR_SLOTS.find(s => s.school_id === schoolId && s.attendees?.some(a => a.bookingId === bookingId));
+    }
+
+    if (!slot) {
+      throw new Error(`Booking ${bookingId} or slot not found for school.`);
+    }
+
+    const attendee = slot.attendees.find(a => a.bookingId === bookingId);
+    if (!attendee) {
+      throw new Error(`Booking attendee ${bookingId} not found.`);
+    }
+
+    const previousStatus = attendee.status;
+    const newStatus = updateData.status || attendee.status;
+
+    // Apply updates
+    if (updateData.status) attendee.status = updateData.status;
+    if (updateData.hostStaff !== undefined) attendee.hostStaff = updateData.hostStaff;
+    if (updateData.notes !== undefined) attendee.notes = updateData.notes;
+    if (updateData.slotDate) attendee.slotDate = updateData.slotDate;
+    if (updateData.slotTime) attendee.slotTime = updateData.slotTime;
+    if (updateData.venue) attendee.venue = updateData.venue;
+
+    // If cancelled, adjust capacity
+    if (newStatus === 'cancelled' && previousStatus !== 'cancelled') {
+      if (slot.booked_count > 0) slot.booked_count -= 1;
+    }
+
+    // Dispatch domain event via NotificationEventBus
+    try {
+      const { NotificationEventBus } = require('./notificationEventBus');
+      NotificationEventBus.publish('TourBookingUpdated', schoolId, {
+        bookingId: attendee.bookingId,
+        parentName: attendee.parentName,
+        parentPhone: attendee.parentPhone,
+        parentEmail: attendee.parentEmail,
+        childName: attendee.childName,
+        childGrade: attendee.childGrade,
+        status: attendee.status,
+        hostStaff: attendee.hostStaff,
+        slotDate: attendee.slotDate || slot.slot_date,
+        slotTime: attendee.slotTime || slot.slot_time,
+        venue: attendee.venue || slot.venue,
+        notes: attendee.notes
+      }, {
+        recipientPhone: attendee.parentPhone,
+        recipientEmail: attendee.parentEmail,
+        recipientName: attendee.parentName
+      });
+    } catch (e) {
+      console.warn('[Admissions] NotificationEventBus dispatch error:', e.message);
+    }
+
+    return {
+      success: true,
+      message: `Tour booking status updated to ${attendee.status}.`,
+      booking: {
+        ...attendee,
+        slotId: slot.id,
+        slotTitle: slot.title
+      },
+      slot
+    };
+  }
+
+  /**
+   * Package B: Get public Open Days for a school
+   */
+  static async getOpenDays(schoolId) {
+    return IN_MEMORY_TOUR_SLOTS.filter(s => s.school_id === schoolId && s.type === 'open_day');
+  }
+
+  /**
+   * Package B: Create a public Open Day
+   */
+  static async createOpenDay(schoolId, openDayData = {}) {
+    return this.createTourSlot(schoolId, {
+      ...openDayData,
+      type: 'open_day'
+    });
   }
 
   /**

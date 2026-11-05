@@ -2010,6 +2010,46 @@ const API = {
     return res.json();
   },
 
+  async getSchoolTourBookings(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/bookings`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async updateSchoolTourBooking(schoolId, slotId, bookingId, updateData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots/${encodeURIComponent(slotId || 'all')}/bookings/${encodeURIComponent(bookingId)}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: JSON.stringify(updateData)
+    });
+    return res.json();
+  },
+
+  async deleteSchoolTourSlot(schoolId, slotId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots/${encodeURIComponent(slotId)}`, {
+      method: 'DELETE',
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getSchoolOpenDays(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/open-days`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async createSchoolOpenDay(schoolId, openDayData) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/open-days`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(openDayData)
+    });
+    return res.json();
+  },
+
   async bookSchoolTourSlot(schoolId, slotId, bookingData) {
     const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/tours/slots/${encodeURIComponent(slotId)}/book`, {
       method: 'POST',

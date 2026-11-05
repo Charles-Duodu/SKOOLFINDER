@@ -1170,14 +1170,64 @@ router.get('/:id/tours/slots', optionalAuth, async (req, res) => {
 });
 
 /**
- * POST /api/schools/:id/tours/slots (ADM-008)
- * Creates new campus walkthrough or entrance assessment slot
+ * POST /api/schools/:id/tours/slots (ADM-008, Package B)
+ * Creates new campus walkthrough or entrance assessment slot (Enforces Growth tier)
  */
 router.post('/:id/tours/slots', optionalAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const slot = await AdmissionsSubscriptionService.createTourSlot(id, req.body);
     return res.status(201).json({ success: true, slot });
+  } catch (err) {
+    if (err.code === 'UPGRADE_REQUIRED') {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'UPGRADE_REQUIRED', 
+        requiredTier: err.requiredTier || 'growth', 
+        message: err.message 
+      });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/schools/:id/tours/slots/:slotId (Package B)
+ * Cancels or removes a tour slot
+ */
+router.delete('/:id/tours/slots/:slotId', optionalAuth, async (req, res) => {
+  try {
+    const { id, slotId } = req.params;
+    const result = await AdmissionsSubscriptionService.deleteTourSlot(id, slotId);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/tours/bookings (Package B: Operational Tour Requests Desk)
+ * Retrieves all inbound parent tour bookings for the school
+ */
+router.get('/:id/tours/bookings', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const bookings = await AdmissionsSubscriptionService.getTourBookings(id);
+    return res.json({ success: true, bookings });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/schools/:id/tours/slots/:slotId/bookings/:bookingId (Package B: Proprietor Confirmation Action)
+ * Confirms appointment, assigns host staff, reschedules, or cancels booking
+ */
+router.patch('/:id/tours/slots/:slotId/bookings/:bookingId', optionalAuth, async (req, res) => {
+  try {
+    const { id, slotId, bookingId } = req.params;
+    const result = await AdmissionsSubscriptionService.updateTourBooking(id, slotId, bookingId, req.body);
+    return res.json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }
@@ -1193,6 +1243,42 @@ router.post('/:id/tours/slots/:slotId/book', async (req, res) => {
     const result = await AdmissionsSubscriptionService.bookTourSlot(id, slotId, req.body);
     return res.status(201).json(result);
   } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/schools/:id/open-days (Package B: Open Days Publisher)
+ * Retrieves upcoming public Open Days for a school
+ */
+router.get('/:id/open-days', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const openDays = await AdmissionsSubscriptionService.getOpenDays(id);
+    return res.json({ success: true, openDays });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/schools/:id/open-days (Package B: Open Days Publisher)
+ * Creates and publishes a public Open Day (Enforces Growth tier)
+ */
+router.post('/:id/open-days', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const openDay = await AdmissionsSubscriptionService.createOpenDay(id, req.body);
+    return res.status(201).json({ success: true, openDay });
+  } catch (err) {
+    if (err.code === 'UPGRADE_REQUIRED') {
+      return res.status(403).json({ 
+        success: false, 
+        error: 'UPGRADE_REQUIRED', 
+        requiredTier: err.requiredTier || 'growth', 
+        message: err.message 
+      });
+    }
     return res.status(400).json({ error: err.message });
   }
 });

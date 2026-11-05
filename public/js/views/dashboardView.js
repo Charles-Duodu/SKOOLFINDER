@@ -723,6 +723,8 @@ const DashboardView = {
     let applications = [];
     let enquiriesData = { enquiries: [], stats: {} };
     let tourSlots = [];
+    let tourBookings = [];
+    let openDays = [];
     let subscription = null;
     let invoices = [];
     let plans = [];
@@ -754,6 +756,8 @@ const DashboardView = {
         API.getSchoolApplications(schoolId),
         API.getSchoolEnquiries(schoolId),
         API.getSchoolTourSlots(schoolId),
+        API.getSchoolTourBookings(schoolId),
+        API.getSchoolOpenDays(schoolId),
         API.getSchoolSubscription(schoolId),
         API.getSchoolInvoices(schoolId),
         API.getSubscriptionPlans(),
@@ -779,6 +783,8 @@ const DashboardView = {
       if (appsRes.status === 'fulfilled' && appsRes.value?.applications) applications = appsRes.value.applications;
       if (enqRes.status === 'fulfilled') enquiriesData = enqRes.value;
       if (toursRes.status === 'fulfilled' && toursRes.value?.slots) tourSlots = toursRes.value.slots;
+      if (tourBookingsRes?.status === 'fulfilled' && tourBookingsRes.value?.bookings) tourBookings = tourBookingsRes.value.bookings;
+      if (openDaysRes?.status === 'fulfilled' && openDaysRes.value?.openDays) openDays = openDaysRes.value.openDays;
       if (subRes.status === 'fulfilled' && subRes.value?.subscription) subscription = subRes.value.subscription;
       if (invRes.status === 'fulfilled' && invRes.value?.invoices) invoices = invRes.value.invoices;
       if (plansRes.status === 'fulfilled' && plansRes.value?.plans) plans = plansRes.value.plans;
@@ -822,7 +828,11 @@ const DashboardView = {
     const tasks = workspaceData?.tasks || [];
     const auditLogs = workspaceData?.auditLogs || [];
 
-    const phase2aData = { intakes, applications, enquiriesData, tourSlots, subscription, invoices, plans };
+    this._cachedTourBookings = tourBookings;
+    this._cachedTourSlots = tourSlots;
+    this._cachedOpenDays = openDays;
+    this._cachedSubscription = subscription;
+    const phase2aData = { intakes, applications, enquiriesData, tourSlots, tourBookings, openDays, subscription, invoices, plans };
     const phase2bData = { vacanciesData, tendersData };
     const phase5Data = { yieldData, retentionData, revenueData, assetsData, booksData, fleetData, routesData, groupData, smsLogsData };
     const expansionsData = { campaigns, packages, webhooks, deliveries, notificationPreferences };
@@ -859,7 +869,7 @@ const DashboardView = {
       case 'admissions':
         return this.renderAdmissionsTab(school, phase2a.intakes, phase2a.applications, phase2a.tourSlots);
       case 'inquiries':
-        return this.renderInquiriesTab(school, phase2a.enquiriesData, phase2a.tourSlots);
+        return this.renderInquiriesTab(school, phase2a.enquiriesData, phase2a.tourSlots, phase2a.tourBookings, phase2a.openDays, phase2a.subscription);
       case 'recruiting':
         return this.renderRecruitingTab(school, phase2b.vacanciesData);
       case 'procurement':
@@ -1594,9 +1604,9 @@ const DashboardView = {
   },
 
   /**
-   * TAB 6: Inquiries & Campus Tours Desk (ENQ-001 to ENQ-008)
+   * TAB 6: Inquiries & Campus Tours Desk (ENQ-001 to ENQ-008, Package B)
    */
-  renderInquiriesTab(school, enquiriesData = {}, tourSlots = []) {
+  renderInquiriesTab(school, enquiriesData = {}, tourSlots = [], tourBookings = [], openDays = [], subscription = null) {
     const enquiries = enquiriesData.enquiries || [];
     const stats = (enquiriesData.stats && enquiriesData.stats.total !== undefined) ? enquiriesData.stats : {
       total: enquiries.length || 0,
@@ -1607,36 +1617,81 @@ const DashboardView = {
       closed: enquiries.filter(e => e.status === 'closed').length || 0
     };
 
+    const isGrowthOrAbove = subscription ? (subscription.tier !== 'free') : true;
+    const pendingBookings = tourBookings.filter(b => b.status === 'pending');
+    const confirmedBookings = tourBookings.filter(b => b.status === 'confirmed');
+    const rescheduledBookings = tourBookings.filter(b => b.status === 'rescheduled');
+    const completedBookings = tourBookings.filter(b => b.status === 'completed');
+    const totalBookedAttendees = tourSlots.reduce((a, s) => a + (s.booked_count || 0), 0) || tourBookings.length;
+
     return `
       <div>
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+        <!-- TAB HEADER -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
-            <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Direct Enquiry & Tour CRM
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <span style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em;">
+                Admissions CRM & Tour Operations
+              </span>
+              ${isGrowthOrAbove ? `
+                <span class="badge badge-emerald" style="font-size: 0.7rem; font-weight: 800;">
+                  ● Tour Engine Active (${subscription?.tier ? subscription.tier.toUpperCase() : 'GROWTH'})
+                </span>
+              ` : `
+                <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 800;">
+                  Free Starter Tier
+                </span>
+              `}
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Enquiry CRM & Campus Tours Desk
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Manage prospective parent leads, threaded conversations, staff assignments, walkthrough bookings, and conversion analytics.
+              Manage prospective parent leads, walkthrough bookings, Open Day showcases, and automated confirmations.
             </p>
           </div>
-          <button id="btn-create-tour-slot" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-            Add Campus Walkthrough Slot
-          </button>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button id="btn-create-tour-slot" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>+</span> Add Walkthrough Slot
+            </button>
+            <button id="btn-create-open-day" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
+              <span>📅</span> Schedule Public Open Day
+            </button>
+          </div>
         </div>
 
-        <!-- CRM Analytics Cards (ENQ-008) -->
+        ${!isGrowthOrAbove ? `
+          <!-- FREE PLAN UPGRADE CALLOUT (Entitlement Gating) -->
+          <div style="background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%); border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.75rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+              <div style="max-width: 720px;">
+                <div style="font-weight: 800; color: #1e3a8a; font-size: 1.05rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                  <span>🔒</span> Interactive Tour Scheduling & Automated Parent Notifications (Growth Plan Feature)
+                </div>
+                <p style="margin: 0; font-size: 0.86rem; color: #1e40af; line-height: 1.5;">
+                  Your institution is currently on the <strong>Free Starter Plan</strong>. Upgrade to the <strong>Growth Plan (GH₵99/month or GH₵990/year)</strong> to publish guided walkthrough slots, host public Open Days, assign admissions staff tour guides, and send instant SMS (Hubtel) & WhatsApp confirmations directly to prospective Ghanaian families.
+                </p>
+              </div>
+              <a href="#/pricing/schools" class="btn-pill btn-primary" style="font-size: 0.84rem; padding: 0.55rem 1.25rem; white-space: nowrap;">
+                Upgrade to Growth (GH₵99/mo) &rarr;
+              </a>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- CRM ANALYTICS KPIS -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">TOTAL LEADS</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">TOTAL INBOUND LEADS</div>
             <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total}</div>
             <div style="font-size: 0.75rem; color: #64748b;">${stats.new} New &bull; ${stats.contacted} Contacted</div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CONVERSION RATE</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total > 0 ? ((stats.converted / stats.total) * 100).toFixed(1) : 28.5}%</div>
-            <div style="font-size: 0.75rem; color: #64748b;">Leads Converted to Applications</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CAMPUS TOURS BOOKED</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${totalBookedAttendees}</div>
+            <div style="font-size: 0.75rem; color: #10b981; font-weight: 600;">
+              ${confirmedBookings.length} Confirmed &bull; ${pendingBookings.length} Pending
+            </div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #f59e0b;">
             <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">AVERAGE RESPONSE SLA</div>
@@ -1644,21 +1699,197 @@ const DashboardView = {
             <div style="font-size: 0.75rem; color: #64748b;">Admissions Desk Turnaround</div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #8b5cf6;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CAMPUS TOURS BOOKED</div>
-            <div class="owner-kpi-val" style="font-size: 1.6rem;">${tourSlots.reduce((a, s) => a + (s.booked_count || 0), 0)}</div>
-            <div style="font-size: 0.75rem; color: #64748b;">Walkthrough Attendees</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">PUBLIC OPEN DAYS</div>
+            <div class="owner-kpi-val" style="font-size: 1.6rem;">${openDays.length || 1}</div>
+            <div style="font-size: 0.75rem; color: #8b5cf6; font-weight: 600;">Active on Public Profile</div>
           </div>
         </div>
 
-        <!-- CRM Inbox Ledger (ENQ-003, ENQ-004, ENQ-005, ENQ-006) -->
+        <!-- PACKAGE B: OPERATIONAL TOUR REQUESTS DESK -->
         <div class="owner-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
+                  🏫 Inbound Campus Tour Requests & Confirmations
+                </h3>
+                <span class="badge badge-primary" style="font-size: 0.72rem;">${tourBookings.length} Total</span>
+              </div>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Review family visit requests, assign staff hosts, confirm appointment slots, and dispatch instant SMS/WhatsApp alerts.
+              </p>
+            </div>
+            
+            <!-- Filter Tabs -->
+            <div style="display: flex; gap: 0.35rem; background: #f1f5f9; padding: 0.25rem; border-radius: 8px;" id="tour-status-filters">
+              <button class="tour-filter-btn active" data-filter="all" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: none; background: #ffffff; color: #0A2046; cursor: pointer;">All (${tourBookings.length})</button>
+              <button class="tour-filter-btn" data-filter="pending" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: none; background: transparent; color: #64748b; cursor: pointer;">Pending (${pendingBookings.length})</button>
+              <button class="tour-filter-btn" data-filter="confirmed" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: none; background: transparent; color: #64748b; cursor: pointer;">Confirmed (${confirmedBookings.length})</button>
+              <button class="tour-filter-btn" data-filter="rescheduled" style="padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 600; border: none; background: transparent; color: #64748b; cursor: pointer;">Rescheduled (${rescheduledBookings.length})</button>
+            </div>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;" id="table-tour-bookings">
+              <thead style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; color: #64748b; font-size: 0.76rem; text-transform: uppercase;">
+                <tr>
+                  <th style="padding: 0.75rem 1rem;">Family & Contact</th>
+                  <th style="padding: 0.75rem 1rem;">Child & Grade</th>
+                  <th style="padding: 0.75rem 1rem;">Session & Venue</th>
+                  <th style="padding: 0.75rem 1rem;">Assigned Host</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                  <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tourBookings.length === 0 ? `
+                  <tr>
+                    <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                      No campus walkthrough bookings received yet. Published tour slots on your profile will appear here.
+                    </td>
+                  </tr>
+                ` : tourBookings.map(b => `
+                  <tr style="border-bottom: 1px solid #f1f5f9;" class="tour-row" data-status="${b.status}">
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 700; color: #0A2046;">${b.parentName}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">📞 ${b.parentPhone} &bull; ${b.parentEmail || 'N/A'}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 600; color: #334155;">${b.childName || 'Prospective Student'}</div>
+                      <div style="font-size: 0.78rem; color: #64748b;">${b.childGrade || 'General Admission'}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <div style="font-weight: 700; color: #1266C4;">📅 ${b.slotDate} at ${b.slotTime}</div>
+                      <div style="font-size: 0.76rem; color: #64748b;">${b.venue || 'Main Administration'}</div>
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      ${b.hostStaff ? `
+                        <div style="font-weight: 600; color: #0A2046; font-size: 0.82rem;">👤 ${b.hostStaff}</div>
+                      ` : `
+                        <span class="badge badge-warning" style="font-size: 0.72rem;">Unassigned</span>
+                      `}
+                    </td>
+                    <td style="padding: 0.85rem 1rem;">
+                      <span class="badge ${b.status === 'confirmed' ? 'badge-emerald' : (b.status === 'rescheduled' ? 'badge-info' : (b.status === 'cancelled' ? 'badge-danger' : 'badge-warning'))}" style="font-size: 0.74rem; text-transform: uppercase;">
+                        ${b.status}
+                      </span>
+                    </td>
+                    <td style="padding: 0.85rem 1rem; text-align: right;">
+                      <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+                        ${b.status === 'pending' ? `
+                          <button class="btn-pill btn-primary btn-confirm-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+                            Confirm & Assign &rarr;
+                          </button>
+                        ` : ''}
+                        ${b.status === 'confirmed' ? `
+                          <button class="btn-pill btn-outline btn-reschedule-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.65rem;">
+                            Reschedule
+                          </button>
+                          <button class="btn-pill btn-emerald btn-complete-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.65rem;" title="Mark visit complete">
+                            ✓ Complete
+                          </button>
+                          <button class="btn-pill btn-outline btn-cancel-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; color: #ef4444; border-color: #fecaca;" title="Cancel booking">
+                            &times;
+                          </button>
+                        ` : ''}
+                        ${b.status === 'rescheduled' ? `
+                          <button class="btn-pill btn-primary btn-confirm-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+                            Confirm Reschedule
+                          </button>
+                          <button class="btn-pill btn-outline btn-cancel-tour" data-booking-id="${b.bookingId}" data-slot-id="${b.slotId}" style="font-size: 0.75rem; padding: 0.3rem 0.5rem; color: #ef4444; border-color: #fecaca;">
+                            Cancel
+                          </button>
+                        ` : ''}
+                        ${b.status === 'completed' ? `
+                          <span style="font-size: 0.75rem; color: #10b981; font-weight: 700;">Completed ✓</span>
+                        ` : ''}
+                        ${b.status === 'cancelled' ? `
+                          <span style="font-size: 0.75rem; color: #94a3b8; font-weight: 600;">Cancelled</span>
+                        ` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PACKAGE B: SCHEDULED WALKTHROUGH SESSIONS & OPEN DAYS PUBLISHER -->
+        <div class="owner-card" style="margin-bottom: 2rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
+                Campus Walkthrough Sessions & Public Open Days
+              </h3>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Active visiting windows and public showcases visible to parents on your SkoolFinder profile.
+              </p>
+            </div>
+            <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+              Total Sessions: <strong>${tourSlots.length}</strong>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+            ${tourSlots.length === 0 ? `
+              <div style="grid-column: 1 / -1; padding: 2rem; text-align: center; color: #94a3b8; background: #f8fafc; border-radius: 8px;">
+                No walkthrough sessions currently scheduled. Click "+ Add Walkthrough Slot" or "Schedule Public Open Day" above to publish visiting opportunities.
+              </div>
+            ` : tourSlots.map(s => {
+              const isOpenDay = s.type === 'open_day';
+              const percentBooked = Math.min(100, Math.round(((s.booked_count || 0) / (s.capacity || 1)) * 100));
+              return `
+                <div style="background: ${isOpenDay ? 'linear-gradient(180deg, #fffbeb 0%, #ffffff 100%)' : '#f8fafc'}; border: 1.5px solid ${isOpenDay ? '#fde68a' : '#e2e8f0'}; border-radius: 10px; padding: 1.25rem; position: relative;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                    <div>
+                      <span class="badge ${isOpenDay ? 'badge-gold' : 'badge-primary'}" style="font-size: 0.7rem; text-transform: uppercase; margin-bottom: 0.35rem; display: inline-block;">
+                        ${isOpenDay ? '🌟 Public Open Day' : '🚶 Guided Walkthrough'}
+                      </span>
+                      <div style="font-weight: 800; color: #0A2046; font-size: 1rem; line-height: 1.3;">${s.title}</div>
+                    </div>
+                    <button class="btn-delete-slot" data-slot-id="${s.id}" style="background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 1.1rem; padding: 0.2rem;" title="Cancel session">&times;</button>
+                  </div>
+                  
+                  <div style="font-size: 0.82rem; color: #475569; margin-bottom: 0.75rem;">
+                    <div>📅 <strong>${s.slot_date}</strong> &bull; ⏰ <strong>${s.slot_time}</strong> ${s.end_time ? `– ${s.end_time}` : ''}</div>
+                    <div>📍 ${s.venue}</div>
+                    ${s.target_grades ? `<div>🎓 Grades: <strong>${s.target_grades}</strong></div>` : ''}
+                  </div>
+
+                  ${s.description ? `
+                    <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.4;">
+                      ${s.description}
+                    </p>
+                  ` : ''}
+
+                  <!-- Capacity Progress Bar -->
+                  <div style="border-top: 1px solid ${isOpenDay ? '#fef3c7' : '#e2e8f0'}; padding-top: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; margin-bottom: 0.35rem;">
+                      <span style="color: #475569;">Capacity: <strong>${s.booked_count} / ${s.capacity} families</strong></span>
+                      <span class="badge ${s.booked_count >= s.capacity ? 'badge-danger' : 'badge-emerald'}" style="font-size: 0.7rem;">
+                        ${s.booked_count >= s.capacity ? 'Full' : `${s.capacity - s.booked_count} Available`}
+                      </span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 9999px; overflow: hidden;">
+                      <div style="width: ${percentBooked}%; height: 100%; background: ${percentBooked >= 100 ? '#ef4444' : (percentBooked >= 75 ? '#f59e0b' : '#10b981')}; border-radius: 9999px;"></div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- CRM INBOX LEDGER (ENQUIRIES) -->
+        <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
               <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
                 Direct Enquiries Inbox
               </h3>
               <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
-                Click any enquiry to open the conversation thread, reply officially to parents, or log internal staff notes.
+                Official parent inquiry threads received from your public profile and the admissions directory.
               </p>
             </div>
             <input type="text" id="input-search-enquiries" class="form-input" placeholder="Search parent, email, grade..." style="max-width: 260px; font-size: 0.82rem; padding: 0.45rem 0.85rem;" />
@@ -1715,32 +1946,6 @@ const DashboardView = {
                 `).join('')}
               </tbody>
             </table>
-          </div>
-        </div>
-
-        <!-- Campus Tour Slots List (ADM-008) -->
-        <div class="owner-card">
-          <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-            Campus Walkthrough Sessions
-          </h3>
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-            ${tourSlots.map(s => `
-              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                  <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">${s.title}</div>
-                  <span class="badge badge-primary" style="font-size: 0.72rem;">${s.type}</span>
-                </div>
-                <div style="font-size: 0.82rem; color: #64748b; margin-bottom: 0.5rem;">
-                  📅 ${s.slot_date} at <strong>${s.slot_time}</strong> &bull; Venue: ${s.venue}
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; border-top: 1px solid #e2e8f0; padding-top: 0.5rem;">
-                  <span style="color: #475569;">Booked: <strong>${s.booked_count} / ${s.capacity} families</strong></span>
-                  <span class="badge ${s.booked_count >= s.capacity ? 'badge-danger' : 'badge-emerald'}" style="font-size: 0.7rem;">
-                    ${s.booked_count >= s.capacity ? 'Fully Booked' : 'Available'}
-                  </span>
-                </div>
-              </div>
-            `).join('')}
           </div>
         </div>
       </div>
@@ -3845,22 +4050,132 @@ const DashboardView = {
       }
     });
 
-    document.getElementById('btn-create-tour-slot')?.addEventListener('click', async () => {
-      const date = prompt('Enter campus tour date (YYYY-MM-DD):', '2026-11-20');
-      if (!date) return;
-      try {
-        await API.createSchoolTourSlot(schoolId, {
-          title: 'Campus Walkthrough & Admissions Q&A',
-          slotDate: date,
-          slotTime: '10:00 AM',
-          venue: 'Main Academic Hall',
-          capacity: 15
-        });
-        State.showToast('Walkthrough slot created!', 'success');
-        App.navigate('schools');
-      } catch (err) {
-        State.showToast(err.message || 'Failed to create slot', 'error');
+    // ========================================================================
+    // PACKAGE B: CAMPUS TOUR SCHEDULING & CONFIRMATION EVENT LISTENERS
+    // ========================================================================
+
+    // 1. Add Campus Walkthrough Slot Button
+    document.getElementById('btn-create-tour-slot')?.addEventListener('click', () => {
+      if (this._cachedSubscription && this._cachedSubscription.tier === 'free') {
+        State.showToast('Campus Tour Scheduling requires the Growth Plan (GH₵99/mo). Please upgrade to unlock.', 'warning');
+        App.navigate('pricing', 'schools');
+        return;
       }
+      Modals.openCreateTourSlotModal(schoolId, () => App.navigate('schools', 'inquiries'), 'tour');
+    });
+
+    // 2. Schedule Public Open Day Button
+    document.getElementById('btn-create-open-day')?.addEventListener('click', () => {
+      if (this._cachedSubscription && this._cachedSubscription.tier === 'free') {
+        State.showToast('Public Open Day publishing requires the Growth Plan (GH₵99/mo). Please upgrade to unlock.', 'warning');
+        App.navigate('pricing', 'schools');
+        return;
+      }
+      Modals.openCreateTourSlotModal(schoolId, () => App.navigate('schools', 'inquiries'), 'open_day');
+    });
+
+    // 3. Tour Status Filter Buttons
+    document.querySelectorAll('.tour-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tour-filter-btn').forEach(b => {
+          b.style.background = 'transparent';
+          b.style.color = '#64748b';
+          b.classList.remove('active');
+        });
+        btn.style.background = '#ffffff';
+        btn.style.color = '#0A2046';
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        document.querySelectorAll('.tour-row').forEach(row => {
+          if (filter === 'all' || row.dataset.status === filter) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 4. Confirm Tour Booking Action
+    document.querySelectorAll('.btn-confirm-tour').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bookingId = btn.dataset.bookingId;
+        const slotId = btn.dataset.slotId;
+        const booking = (this._cachedTourBookings || []).find(b => b.bookingId === bookingId) || {
+          bookingId,
+          slotId,
+          parentName: 'Prospective Parent',
+          parentPhone: '+233 24 000 0000',
+          childGrade: 'General Admission',
+          slotDate: '2026-11-20',
+          slotTime: '10:00 AM',
+          venue: 'Main Administration Reception'
+        };
+        Modals.openConfirmTourBookingModal(booking, school, () => App.navigate('schools', 'inquiries'));
+      });
+    });
+
+    // 5. Reschedule Tour Booking Action
+    document.querySelectorAll('.btn-reschedule-tour').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const bookingId = btn.dataset.bookingId;
+        const slotId = btn.dataset.slotId;
+        const booking = (this._cachedTourBookings || []).find(b => b.bookingId === bookingId) || {
+          bookingId,
+          slotId,
+          parentName: 'Prospective Parent',
+          childGrade: 'General Admission',
+          slotDate: '2026-11-20',
+          slotTime: '10:00 AM'
+        };
+        Modals.openRescheduleTourModal(booking, school, () => App.navigate('schools', 'inquiries'));
+      });
+    });
+
+    // 6. Complete Tour Booking Action
+    document.querySelectorAll('.btn-complete-tour').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bookingId = btn.dataset.bookingId;
+        const slotId = btn.dataset.slotId;
+        try {
+          await API.updateSchoolTourBooking(schoolId, slotId, bookingId, { status: 'completed' });
+          State.showToast('✓ Campus visit marked as completed!', 'success');
+          App.navigate('schools', 'inquiries');
+        } catch (err) {
+          State.showToast(err.message || 'Failed to update tour status', 'error');
+        }
+      });
+    });
+
+    // 7. Cancel Tour Booking Action
+    document.querySelectorAll('.btn-cancel-tour').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bookingId = btn.dataset.bookingId;
+        const slotId = btn.dataset.slotId;
+        if (!confirm('Are you sure you want to cancel this campus tour booking? The family will be notified.')) return;
+        try {
+          await API.updateSchoolTourBooking(schoolId, slotId, bookingId, { status: 'cancelled' });
+          State.showToast('Tour booking cancelled.', 'info');
+          App.navigate('schools', 'inquiries');
+        } catch (err) {
+          State.showToast(err.message || 'Failed to cancel tour', 'error');
+        }
+      });
+    });
+
+    // 8. Delete Tour Slot Action
+    document.querySelectorAll('.btn-delete-slot').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const slotId = btn.dataset.slotId;
+        if (!confirm('Cancel and delete this campus walkthrough session?')) return;
+        try {
+          await API.deleteSchoolTourSlot(schoolId, slotId);
+          State.showToast('Tour session cancelled and removed.', 'success');
+          App.navigate('schools', 'inquiries');
+        } catch (err) {
+          State.showToast(err.message || 'Failed to delete slot', 'error');
+        }
+      });
     });
 
     // ========================================================================

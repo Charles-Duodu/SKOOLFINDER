@@ -387,6 +387,83 @@ const EmailService = {
   },
 
   /**
+   * Parent: Campus Tour / Walkthrough Confirmation Alert
+   */
+  async sendTourBookingConfirmation({ to, parentName, schoolName, bookingId, slotDate, slotTime, venue, hostStaff, notes, status = 'confirmed' }) {
+    const isRescheduled = status === 'rescheduled';
+    const isCancelled = status === 'cancelled';
+    const actionTitle = isCancelled ? 'Campus Tour Session Cancelled' : (isRescheduled ? 'Campus Tour Rescheduled' : 'Campus Tour Booking Confirmed');
+    const badgeColor = isCancelled ? '#ef4444' : (isRescheduled ? '#f59e0b' : '#10b981');
+    const preheader = isCancelled
+      ? `Your tour at ${schoolName} for ${slotDate} has been cancelled.`
+      : `Your campus visit to ${schoolName} is set for ${slotDate} at ${slotTime}.`;
+
+    const contentHtml = `
+      <p style="font-size: 16px; line-height: 1.6; margin-top: 0;">
+        Dear <strong>${parentName || 'Parent / Guardian'}</strong>,
+      </p>
+      <p style="font-size: 15px; line-height: 1.6; color: #334155;">
+        ${isCancelled 
+          ? `Your upcoming campus visit to <strong>${schoolName}</strong> has been cancelled by the admissions office.`
+          : (isRescheduled
+            ? `Your campus walkthrough at <strong>${schoolName}</strong> has been rescheduled to a new appointment time.`
+            : `Your campus walkthrough session at <strong>${schoolName}</strong> has been officially confirmed by the admissions administration.`)}
+      </p>
+
+      <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 20px 0;">
+        <div style="display: inline-block; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 800; text-transform: uppercase; color: #ffffff; background: ${badgeColor}; margin-bottom: 12px;">
+          ${actionTitle}
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; width: 140px;">Booking Ref:</td>
+            <td style="padding: 6px 0; font-weight: 700; color: #0A2046;">${bookingId || 'TOUR-REF'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b;">Date & Time:</td>
+            <td style="padding: 6px 0; font-weight: 700; color: #1266C4;">${slotDate} at ${slotTime}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b;">Meeting Venue:</td>
+            <td style="padding: 6px 0; font-weight: 600; color: #0A2046;">${venue || 'Main Administration Reception'}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; color: #64748b;">Assigned Host:</td>
+            <td style="padding: 6px 0; font-weight: 600; color: #0A2046;">${hostStaff || 'Admissions Representative'}</td>
+          </tr>
+          ${notes ? `
+          <tr>
+            <td style="padding: 6px 0; color: #64748b; vertical-align: top;">Visitor Notes:</td>
+            <td style="padding: 6px 0; color: #475569;">${notes}</td>
+          </tr>
+          ` : ''}
+        </table>
+      </div>
+
+      ${!isCancelled ? `
+      <p style="font-size: 14px; line-height: 1.6; color: #64748b;">
+        Please present your booking reference code at the campus security gate on arrival. If you have any questions before your visit, please contact the admissions desk.
+      </p>
+      ` : `
+      <p style="font-size: 14px; line-height: 1.6; color: #64748b;">
+        If you wish to book an alternate date or require further assistance, please contact the admissions desk through SkoolFinder Ghana.
+      </p>
+      `}
+    `;
+
+    return dispatchEmail({
+      to,
+      recipientName: parentName,
+      portal: 'parents',
+      templateType: 'tour_confirmed',
+      referenceCode: bookingId || 'TOUR-REF',
+      subject: `[SkoolFinder] ${actionTitle} — ${schoolName} (${slotDate})`,
+      html: wrapInEmailTemplate(actionTitle, preheader, contentHtml),
+      text: `${actionTitle}: Your campus tour at ${schoolName} is set for ${slotDate} at ${slotTime}. Ref: ${bookingId}. Host: ${hostStaff || 'Admissions Desk'}.`
+    });
+  },
+
+  /**
    * School Owner: Claim / Registration Acknowledgment
    */
   async sendSchoolClaimAcknowledgment({ to, schoolName, claimantName, officialRole, referenceCode }) {
