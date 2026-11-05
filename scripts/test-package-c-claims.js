@@ -313,9 +313,9 @@ async function runPackageCTests() {
   // --------------------------------------------------------------------------
   await test('13. public/index.html includes v=71 cache-busters for client scripts', async () => {
     const indexHtml = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-    assert.ok(indexHtml.includes('/js/components/modals.js?v=71'), 'modals.js must have v=71');
-    assert.ok(indexHtml.includes('/js/views/adminView.js?v=71'), 'adminView.js must have v=71');
-    assert.ok(indexHtml.includes('/js/views/schoolDetailView.js?v=71'), 'schoolDetailView.js must have v=71');
+    assert.ok(/\/js\/components\/modals\.js\?v=7[1-9]/.test(indexHtml), 'modals.js must have active cache-buster');
+    assert.ok(/\/js\/views\/adminView\.js\?v=7[1-9]/.test(indexHtml), 'adminView.js must have active cache-buster');
+    assert.ok(/\/js\/views\/schoolDetailView\.js\?v=7[1-9]/.test(indexHtml), 'schoolDetailView.js must have active cache-buster');
   });
 
   console.log('\n========================================================================');

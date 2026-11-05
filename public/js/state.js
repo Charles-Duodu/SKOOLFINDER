@@ -50,7 +50,15 @@ const State = {
     return Utils.escapeHTML(str);
   },
 
-  comparisonList: [], // array of school objects (max 4 - Blueprint v4.2)
+  comparisonList: (() => {
+    try {
+      const stored = localStorage.getItem('skoolfinder_compare_list');
+      const parsed = stored ? JSON.parse(stored) : [];
+      return Array.isArray(parsed) ? parsed.slice(0, 4) : [];
+    } catch {
+      return [];
+    }
+  })(),
   
   // Bookmarks & Shortlisted Schools
   bookmarkedSchoolIds: (() => {
@@ -262,14 +270,42 @@ const State = {
       this.showToast(`Removed ${school.name} from comparison.`);
     } else {
       if (this.comparisonList.length >= 4) {
-        this.showToast(`You can compare up to 4 schools at a time.`, 'error');
+        this.showToast(`You can compare up to 4 schools at a time.`, "error");
         return false;
       }
       this.comparisonList.push(school);
-      this.showToast(`Added ${school.name} to compare list.`, 'success');
+      this.showToast(`Added ${school.name} to compare list.`, "success");
     }
+    this.saveComparisonToStorage();
     this.renderComparisonBar();
     return true;
+  },
+
+  addMultipleToCompare(schools = []) {
+    if (!Array.isArray(schools) || schools.length === 0) return 0;
+    let addedCount = 0;
+    for (const sch of schools) {
+      if (!sch || !sch.id) continue;
+      if (this.comparisonList.length >= 4) break;
+      if (!this.comparisonList.some(s => s.id === sch.id)) {
+        this.comparisonList.push(sch);
+        addedCount++;
+      }
+    }
+    this.saveComparisonToStorage();
+    this.renderComparisonBar();
+    if (addedCount > 0) {
+      this.showToast(`Added ${addedCount} school${addedCount > 1 ? "s" : ""} to compare tray!`, "success");
+    }
+    return addedCount;
+  },
+
+  saveComparisonToStorage() {
+    try {
+      localStorage.setItem("skoolfinder_compare_list", JSON.stringify(this.comparisonList));
+    } catch (e) {
+      console.warn("Compare list local storage write:", e);
+    }
   },
 
   isInCompare(schoolId) {
@@ -278,9 +314,11 @@ const State = {
 
   clearCompare() {
     this.comparisonList = [];
+    try {
+      localStorage.removeItem("skoolfinder_compare_list");
+    } catch (e) {}
     this.renderComparisonBar();
   },
-
   renderComparisonBar() {
     let bar = document.getElementById('comparison-floating-bar');
     if (!bar) {

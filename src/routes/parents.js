@@ -10,6 +10,7 @@ const isValidUUID = (id) => typeof id === 'string' && UUID_REGEX.test(id.trim())
 // In-memory linked wards store per user (synced with session)
 const userWardsStore = new Map();
 const userShortlistsStore = new Map();
+const userComparisonsStore = new Map();
 
 /**
  * GET /api/parents/overview & /api/parent/overview
@@ -532,6 +533,72 @@ router.delete('/shortlists/:schoolId', authenticate, async (req, res) => {
   } catch (err) {
     console.error('Delete parent shortlist error:', err);
     return res.status(500).json({ error: 'Failed to delete shortlist' });
+  }
+});
+
+// ============================================================================
+// PACKAGE D: SAVED 4-SCHOOL COMPARISONS & MATCH PLANS
+// ============================================================================
+
+/**
+ * GET /api/parents/saved-comparisons
+ */
+router.get('/saved-comparisons', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const list = userComparisonsStore.get(userId) || [];
+    return res.json({ success: true, count: list.length, comparisons: list });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch saved comparisons' });
+  }
+});
+
+/**
+ * POST /api/parents/saved-comparisons
+ */
+router.post('/saved-comparisons', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { schoolIds = [], title = 'School Comparison', criteria = null } = req.body;
+    if (!Array.isArray(schoolIds) || schoolIds.length === 0) {
+      return res.status(400).json({ error: 'schoolIds array is required (1 to 4 schools)' });
+    }
+    const cleanIds = schoolIds.slice(0, 4);
+    const newComp = {
+      id: `cmp-${Date.now()}`,
+      userId,
+      title: title || `Comparison (${cleanIds.length} Schools)`,
+      schoolIds: cleanIds,
+      criteria,
+      createdAt: new Date().toISOString()
+    };
+    const list = userComparisonsStore.get(userId) || [];
+    list.unshift(newComp);
+    userComparisonsStore.set(userId, list);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Comparison set successfully saved to parent account',
+      comparison: newComp
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to save comparison' });
+  }
+});
+
+/**
+ * DELETE /api/parents/saved-comparisons/:id
+ */
+router.delete('/saved-comparisons/:id', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { id } = req.params;
+    const list = userComparisonsStore.get(userId) || [];
+    const filtered = list.filter(c => c.id !== id);
+    userComparisonsStore.set(userId, filtered);
+    return res.json({ success: true, message: 'Saved comparison removed' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to delete saved comparison' });
   }
 });
 

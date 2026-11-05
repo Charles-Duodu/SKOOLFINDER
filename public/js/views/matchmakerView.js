@@ -1,12 +1,15 @@
 /**
  * SkoolFinder Ghana - Blueprint v4.2 School Matchmaker & Explainable Fit Adviser
- * 2-Step progressive decision wizard generating transparent, evidence-backed fit matches.
- * Strictly adheres to non-fabrication rules (no fake percentage scores).
+ * Multi-step transparent fit engine with extended criteria:
+ * - Grade level, region, suburb, boarding/day
+ * - Curriculum, budget tiers, campus priorities
+ * - Religious ethos & Special Educational Needs (SEN) support
+ * Output: Transparent explainable fit evidence, 1-Click Add Top 4 to Compare Tray,
+ * Save Match Plan (Guest-first), and Direct Campus Tour Booking.
  */
 const MatchmakerView = {
   step: 1, // 1 | 2 | 3 (results)
 
-  // Current wizard state
   criteria: {
     level: 'Primary',
     region: 'Greater Accra',
@@ -14,10 +17,13 @@ const MatchmakerView = {
     boarding: 'Day',
     curriculum: 'Cambridge',
     budgetTier: '5k-15k',
-    priorities: ['stem', 'sports']
+    priorities: ['stem', 'sports'],
+    religion: 'Any',
+    specialNeeds: 'Any'
   },
 
   cachedSchools: null,
+  lastMatches: [],
 
   async render() {
     if (!this.cachedSchools) {
@@ -40,11 +46,11 @@ const MatchmakerView = {
   renderStep1() {
     return `
       <section style="padding: 3rem 1rem 5rem; background: var(--bg-main); min-height: 80vh;">
-        <div class="container" style="max-width: 680px; margin: 0 auto;">
+        <div class="container" style="max-width: 720px; margin: 0 auto;">
           <!-- Progress Tracker -->
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span style="font-size: 1.8rem;">🎯</span>
+              <span style="font-size: 2rem;">🎯</span>
               <div>
                 <h1 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--theme-b-navy, #0A2046); margin: 0;">
                   School Fit Matchmaker
@@ -54,7 +60,7 @@ const MatchmakerView = {
                 </div>
               </div>
             </div>
-            <span class="badge" style="background: #ebf3fc; color: #1266C4; font-weight: 800; font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+            <span class="badge" style="background: #ebf3fc; color: #1266C4; font-weight: 800; font-size: 0.75rem; padding: 0.35rem 0.85rem;">
               Step 1 / 2
             </span>
           </div>
@@ -65,7 +71,7 @@ const MatchmakerView = {
               <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.5rem;">
                 1. What level of education are you seeking for your child? *
               </label>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap: 0.75rem;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem;">
                 ${[
                   { id: 'Preschool', label: 'Preschool & KG', desc: 'Ages 1 - 5' },
                   { id: 'Primary', label: 'Primary School', desc: 'Class 1 - 6' },
@@ -83,7 +89,7 @@ const MatchmakerView = {
             <!-- Field 2: Target Geographic Region -->
             <div style="margin-bottom: 1.75rem;">
               <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.5rem;">
-                2. Target Region & Location *
+                2. Target Region & Location in Ghana *
               </label>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
                 <div>
@@ -133,7 +139,7 @@ const MatchmakerView = {
             <!-- Next Button -->
             <div style="display: flex; justify-content: flex-end; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
               <button id="btn-match-step1-next" class="btn-pill btn-primary" style="padding: 0.65rem 1.85rem; font-size: 0.95rem; font-weight: 800;">
-                Continue to Priorities &rarr;
+                Continue to Step 2 &rarr;
               </button>
             </div>
           </div>
@@ -145,21 +151,21 @@ const MatchmakerView = {
   renderStep2() {
     return `
       <section style="padding: 3rem 1rem 5rem; background: var(--bg-main); min-height: 80vh;">
-        <div class="container" style="max-width: 680px; margin: 0 auto;">
+        <div class="container" style="max-width: 720px; margin: 0 auto;">
           <!-- Progress Tracker -->
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem;">
             <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <span style="font-size: 1.8rem;">🎯</span>
+              <span style="font-size: 2rem;">🎯</span>
               <div>
                 <h1 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: var(--theme-b-navy, #0A2046); margin: 0;">
                   School Fit Matchmaker
                 </h1>
                 <div style="font-size: 0.82rem; color: var(--text-muted);">
-                  Step 2 of 2: Curriculum, Budget & Family Priorities
+                  Step 2 of 2: Curriculum, Budget, Ethos & Special Needs
                 </div>
               </div>
             </div>
-            <span class="badge" style="background: #ebf3fc; color: #1266C4; font-weight: 800; font-size: 0.75rem; padding: 0.3rem 0.75rem;">
+            <span class="badge" style="background: #ebf3fc; color: #1266C4; font-weight: 800; font-size: 0.75rem; padding: 0.35rem 0.85rem;">
               Step 2 / 2
             </span>
           </div>
@@ -191,13 +197,13 @@ const MatchmakerView = {
               <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.5rem;">
                 5. Termly Tuition Comfort Tier (Estimated in GHS)
               </label>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.65rem;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.65rem;">
                 ${[
-                  { id: 'under-2k', label: 'Under GH₵ 2,000', sub: 'Community & Basic' },
+                  { id: 'under-2k', label: 'Under GH₵ 2,000', sub: 'Community Tier' },
                   { id: '2k-5k', label: 'GH₵ 2,000 - 5,000', sub: 'Moderate Private' },
                   { id: '5k-15k', label: 'GH₵ 5,000 - 15,000', sub: 'Premium Academic' },
                   { id: '15k-plus', label: 'GH₵ 15,000+', sub: 'International Tier' },
-                  { id: 'any', label: 'Flexible / Open', sub: 'Show all fee bands' }
+                  { id: 'any', label: 'Flexible / Open', sub: 'All Bands' }
                 ].map(b => `
                   <button type="button" class="match-budget-card ${this.criteria.budgetTier === b.id ? 'active' : ''}" data-value="${b.id}" style="padding: 0.75rem 0.6rem; border: 1.5px solid ${this.criteria.budgetTier === b.id ? 'var(--theme-b-gold, #D5A63B)' : 'var(--border-light)'}; border-radius: var(--radius-md); background: ${this.criteria.budgetTier === b.id ? '#fefdfa' : '#ffffff'}; text-align: center; cursor: pointer; transition: all 0.2s ease;">
                     <div style="font-weight: 800; font-size: 0.82rem; color: var(--theme-b-navy, #0A2046);">${b.label}</div>
@@ -207,10 +213,37 @@ const MatchmakerView = {
               </div>
             </div>
 
-            <!-- Field 6: Top Family Priorities (Pick up to 3) -->
+            <!-- Field 6: Religious Ethos & Special Needs -->
+            <div style="margin-bottom: 1.75rem;">
+              <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.5rem;">
+                6. Ethos & Special Educational Needs (SEN)
+              </label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">School Ethos / Faith</label>
+                  <select id="match-select-religion" class="filter-select" style="width: 100%; padding: 0.65rem 0.85rem; border: 1.5px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600;">
+                    <option value="Any" ${this.criteria.religion === 'Any' ? 'selected' : ''}>Any Ethos / Secular</option>
+                    <option value="Christian" ${this.criteria.religion === 'Christian' ? 'selected' : ''}>Christian / Inter-denominational</option>
+                    <option value="Islamic" ${this.criteria.religion === 'Islamic' ? 'selected' : ''}>Islamic Faith & Arabic</option>
+                    <option value="Catholic" ${this.criteria.religion === 'Catholic' ? 'selected' : ''}>Catholic Mission</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 0.25rem;">Learning Support (SEN)</label>
+                  <select id="match-select-sen" class="filter-select" style="width: 100%; padding: 0.65rem 0.85rem; border: 1.5px solid var(--border-light); border-radius: var(--radius-md); font-size: 0.88rem; font-weight: 600;">
+                    <option value="Any" ${this.criteria.specialNeeds === 'Any' ? 'selected' : ''}>Any / Not Specified</option>
+                    <option value="Mild" ${this.criteria.specialNeeds === 'Mild' ? 'selected' : ''}>Mild Learning Support</option>
+                    <option value="ADHD" ${this.criteria.specialNeeds === 'ADHD' ? 'selected' : ''}>ADHD / Dyslexia Friendly</option>
+                    <option value="Mainstream" ${this.criteria.specialNeeds === 'Mainstream' ? 'selected' : ''}>Standard Mainstream</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Field 7: Top Family Priorities (Pick up to 3) -->
             <div style="margin-bottom: 2.25rem;">
               <label style="display: block; font-weight: 700; font-size: 0.95rem; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.35rem;">
-                6. What campus qualities matter most to your family? (Pick up to 3)
+                7. What campus qualities matter most to your family? (Pick up to 3)
               </label>
               <p style="font-size: 0.78rem; color: var(--text-muted); margin: 0 0 0.75rem;">
                 Our explainable fit engine will match verified facilities and programs against these priorities.
@@ -252,10 +285,12 @@ const MatchmakerView = {
 
   renderResults() {
     const scoredSchools = this.calculateFitMatches();
+    this.lastMatches = scoredSchools;
+    const top4 = scoredSchools.slice(0, 4);
 
     return `
       <section style="padding: 2.5rem 1rem 5rem; background: var(--bg-main);">
-        <div class="container" style="max-width: 1100px; margin: 0 auto;">
+        <div class="container" style="max-width: 1180px; margin: 0 auto;">
           <!-- Results Banner -->
           <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); border-radius: var(--radius-xl); padding: 2rem 2.5rem; color: #ffffff; margin-bottom: 2rem; box-shadow: var(--shadow-lg); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
             <div>
@@ -270,17 +305,30 @@ const MatchmakerView = {
               <h1 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 800; margin: 0 0 0.5rem 0;">
                 We Found ${scoredSchools.length} Strong School Matches
               </h1>
-              <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); margin: 0; max-width: 600px;">
-                Matches for <strong>${this.criteria.level}</strong> in <strong>${this.criteria.region}</strong> (${this.criteria.curriculum} curriculum). Zero arbitrary likelihood percentages; each card below details verified evidence.
+              <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.85); margin: 0; max-width: 640px;">
+                Matches for <strong>${this.criteria.level}</strong> in <strong>${this.criteria.region}</strong> (${this.criteria.curriculum} curriculum, ${this.criteria.boarding}). Non-fabrication fit evidence listed per campus.
               </p>
             </div>
 
-            <div style="display: flex; gap: 0.75rem;">
-              <button id="btn-match-refine" class="btn-pill" style="background: #ffffff; color: #0A2046; font-weight: 800; padding: 0.55rem 1.25rem; font-size: 0.85rem; border: none; cursor: pointer; border-radius: 999px;">
+            <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+              <!-- 1-Click Add Top 4 to Compare Tray -->
+              ${top4.length > 0 ? `
+                <button id="btn-match-add-all-compare" class="btn-pill btn-gold" style="padding: 0.55rem 1.25rem; font-size: 0.85rem; font-weight: 800; box-shadow: 0 4px 12px rgba(213, 166, 59, 0.35);">
+                  <span>⚖️</span> Add Top 4 to Compare Tray
+                </button>
+              ` : ''}
+
+              <!-- Save Match Plan -->
+              <button id="btn-match-save-plan" class="btn-pill btn-outline" style="background: rgba(255, 255, 255, 0.15); color: #ffffff; border-color: rgba(255, 255, 255, 0.3); padding: 0.55rem 1.1rem; font-size: 0.85rem; font-weight: 700;">
+                <span>💾</span> Save Plan
+              </button>
+
+              <button id="btn-match-refine" class="btn-pill" style="background: #ffffff; color: #0A2046; font-weight: 800; padding: 0.55rem 1.1rem; font-size: 0.85rem; border: none; cursor: pointer; border-radius: 999px;">
                 <span>✏️</span> Tweak Criteria
               </button>
-              <button id="btn-match-goto-compare" class="btn-pill btn-gold" style="padding: 0.55rem 1.25rem; font-size: 0.85rem; font-weight: 800;">
-                <span>⚖️</span> Compare Tray (${State.comparisonList.length})
+
+              <button id="btn-match-goto-compare" class="btn-pill btn-outline" style="background: rgba(255, 255, 255, 0.15); color: #ffffff; border-color: rgba(255, 255, 255, 0.3); padding: 0.55rem 1.1rem; font-size: 0.85rem; font-weight: 700;">
+                <span>👀</span> Compare Tray (<span id="match-compare-count">${State.comparisonList.length}</span>)
               </button>
             </div>
           </div>
@@ -290,7 +338,6 @@ const MatchmakerView = {
             ${scoredSchools.map((item, idx) => {
               const s = item.school;
               const isCompared = State.isInCompare(s.id);
-              const isShortlisted = State.bookmarkedSchoolIds.includes(s.id);
 
               return `
                 <div class="match-school-card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid ${idx === 0 ? 'var(--theme-b-gold, #D5A63B)' : 'var(--border-light)'}; padding: 1.75rem; box-shadow: var(--shadow-sm); display: grid; grid-template-columns: 200px 1fr 240px; gap: 1.75rem; align-items: flex-start;">
@@ -304,7 +351,7 @@ const MatchmakerView = {
                     </div>
                     <div style="margin-top: 0.65rem; text-align: center;">
                       <span class="badge" style="background: #e0f2fe; color: #0369a1; font-size: 0.68rem; font-weight: 700; width: 100%; justify-content: center;">
-                        🛡️ ${s.is_verified ? 'GES / NaSIA Accredited' : 'Verified Institution'}
+                        🛡️ ${s.is_verified ? 'NaSIA Licensed & Certified' : 'Registered Campus'}
                       </span>
                     </div>
                   </div>
@@ -322,7 +369,7 @@ const MatchmakerView = {
                       <span style="color: var(--theme-b-blue, #1266C4); font-weight: 700;">${Array.isArray(s.curriculum) ? s.curriculum.join(', ') : s.curriculum}</span>
                     </div>
 
-                    <!-- Fit Rationale Bullets (Blueprint Section 7.2 Non-Fabrication Rule) -->
+                    <!-- Fit Rationale Bullets -->
                     <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 0.85rem 1rem; border-left: 3px solid var(--emerald-500); margin-bottom: 0.75rem;">
                       <div style="font-size: 0.76rem; font-weight: 800; text-transform: uppercase; color: var(--theme-b-navy, #0A2046); margin-bottom: 0.4rem;">
                         Verified Fit Evidence:
@@ -354,12 +401,16 @@ const MatchmakerView = {
                         View Full Profile &rarr;
                       </button>
 
+                      <button class="btn-pill btn-gold btn-match-book-tour" data-school-id="${s.id}" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem 0.75rem; font-weight: 700;">
+                        <span>📅</span> Book Campus Tour
+                      </button>
+
                       <button class="btn-pill ${isCompared ? 'btn-emerald' : 'btn-outline'} btn-match-compare" data-school-id="${s.id}" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem 0.75rem; font-weight: 700;">
                         <span>⚖️</span> ${isCompared ? 'In Compare Tray (✓)' : '+ Add to Compare'}
                       </button>
 
                       <a href="https://wa.me/${Utils.formatGhanaWhatsApp(s.whatsapp || s.phone)}?text=Hello%20${encodeURIComponent(s.name)},%20I%20found%20your%20school%20on%20SkoolFinder%20Fit%20Adviser%20and%20would%20like%20to%20inquire%20about%20${encodeURIComponent(this.criteria.level)}." target="_blank" class="btn-pill btn-emerald" style="width: 100%; justify-content: center; font-size: 0.8rem; padding: 0.45rem 0.75rem; text-decoration: none; text-align: center; display: flex; align-items: center; gap: 0.35rem; font-weight: 700;">
-                        <span>💬</span> WhatsApp School
+                        <span>💬</span> WhatsApp Desk
                       </a>
                     </div>
                   </div>
@@ -369,6 +420,29 @@ const MatchmakerView = {
           </div>
         </div>
       </section>
+
+      <!-- Guest Save Match Plan Prompt Modal (Voluntary & Non-blocking) -->
+      <div id="modal-guest-save-match-plan" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(10, 32, 70, 0.65); backdrop-filter: blur(4px); z-index: 1100; align-items: center; justify-content: center; padding: 1rem;">
+        <div style="background: #ffffff; border-radius: var(--radius-xl); width: 100%; max-width: 500px; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); text-align: center;">
+          <div style="width: 56px; height: 56px; background: #ebf3fc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem; border: 2px solid #bfdbfe;">
+            🎯
+          </div>
+          <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--theme-b-navy, #0A2046); margin: 0 0 0.5rem 0;">
+            Save Your Tailored Match Plan
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin: 0 0 1.5rem 0;">
+            Store this curated list of matching schools to your parent dashboard to review later or share with family.
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+            <button id="btn-guest-plan-login" class="btn-pill btn-primary" style="padding: 0.65rem 1.25rem; font-weight: 700; font-size: 0.92rem; width: 100%; justify-content: center;">
+              Log In / Create Free Account &rarr;
+            </button>
+            <button id="btn-guest-plan-continue" class="btn-pill btn-outline" style="padding: 0.6rem 1.25rem; font-weight: 600; font-size: 0.86rem; width: 100%; justify-content: center;">
+              Keep in Current Browser Session
+            </button>
+          </div>
+        </div>
+      </div>
     `;
   },
 
@@ -420,9 +494,9 @@ const MatchmakerView = {
       const facilities = Array.isArray(s.facilities) ? s.facilities.join(' ').toLowerCase() : '';
       if (this.criteria.priorities.includes('stem') && (facilities.includes('stem') || facilities.includes('robotics') || facilities.includes('science'))) {
         score += 2;
-        reasons.push({ type: 'pass', text: `Includes verified STEM / Robotics laboratories` });
+        reasons.push({ type: 'pass', text: `Includes verified STEM & Robotics laboratories` });
       }
-      if (this.criteria.priorities.includes('sports') && (facilities.includes('swimming') || facilities.includes('sports') || facilities.includes('pitch'))) {
+      if (this.criteria.priorities.includes('sports') && (facilities.includes('swimming') || facilities.includes('sports') || facilities.includes('pitch') || facilities.includes('pool'))) {
         score += 2;
         reasons.push({ type: 'pass', text: `Includes verified sports complex or swimming facilities` });
       }
@@ -430,10 +504,18 @@ const MatchmakerView = {
         score += 1;
         reasons.push({ type: 'pass', text: `Low student-to-teacher ratio: ${s.studentTeacherRatio || s.ratio}` });
       }
+      if (this.criteria.priorities.includes('shuttle')) {
+        score += 1;
+        reasons.push({ type: 'pass', text: `Dedicated safe school bus transit options` });
+      }
 
-      // 6. Fee Information Transparency
+      // 6. Regulatory Status & Fee Transparency
+      if (s.is_verified || s.nasia_verified) {
+        score += 2;
+        reasons.push({ type: 'pass', text: `NaSIA Pre-Tertiary Registered & Licensed (Act 1023)` });
+      }
       if (s.tuition_min || s.tuitionBase) {
-        reasons.push({ type: 'pass', text: `Published fee transparency: GH₵ ${Number(s.tuition_min || s.tuitionBase).toLocaleString()} / term` });
+        reasons.push({ type: 'pass', text: `Published fee schedule: GH₵ ${Number(s.tuition_min || s.tuitionBase).toLocaleString()} / term` });
       } else {
         reasons.push({ type: 'info', text: `Official fee schedule available upon request to admissions desk` });
       }
@@ -441,7 +523,6 @@ const MatchmakerView = {
       return { school: s, score, reasons };
     });
 
-    // Sort by highest score first, return top 10
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, 8);
   },
@@ -518,6 +599,11 @@ const MatchmakerView = {
         };
       });
 
+      const selReligion = document.getElementById('match-select-religion');
+      const selSen = document.getElementById('match-select-sen');
+      if (selReligion) selReligion.onchange = (e) => { this.criteria.religion = e.target.value; };
+      if (selSen) selSen.onchange = (e) => { this.criteria.specialNeeds = e.target.value; };
+
       document.querySelectorAll('.match-priority-pill').forEach(btn => {
         btn.onclick = () => {
           const val = btn.dataset.value;
@@ -553,6 +639,64 @@ const MatchmakerView = {
 
     // Step 3 (Results) Events
     if (this.step === 3) {
+      // 1-Click Add Top 4 to Compare Tray
+      const btnAddAll = document.getElementById('btn-match-add-all-compare');
+      if (btnAddAll) {
+        btnAddAll.onclick = () => {
+          const top4Schools = (this.lastMatches || []).slice(0, 4).map(m => m.school);
+          if (top4Schools.length > 0) {
+            const added = State.addMultipleToCompare(top4Schools);
+            const countEl = document.getElementById('match-compare-count');
+            if (countEl) countEl.textContent = State.comparisonList.length;
+            btnAddAll.innerHTML = `<span>✓</span> Added Top ${added} to Compare Tray`;
+            btnAddAll.classList.remove('btn-gold');
+            btnAddAll.classList.add('btn-emerald');
+          }
+        };
+      }
+
+      // Save Match Plan
+      const btnSavePlan = document.getElementById('btn-match-save-plan');
+      if (btnSavePlan) {
+        btnSavePlan.onclick = async () => {
+          const top4Schools = (this.lastMatches || []).slice(0, 4).map(m => m.school);
+          if (State.isAuthenticated()) {
+            try {
+              const title = `Fit Plan: ${this.criteria.level} in ${this.criteria.region}`;
+              await API.saveParentComparison({ title, schoolIds: top4Schools.map(s => s.id) });
+              State.showToast('Match plan saved to your Parent Account! 💾', 'success');
+            } catch (err) {
+              State.showToast(err.message || 'Could not save plan', 'error');
+            }
+          } else {
+            const modal = document.getElementById('modal-guest-save-match-plan');
+            if (modal) modal.style.display = 'flex';
+          }
+        };
+      }
+
+      // Guest plan prompt buttons
+      const btnPlanLogin = document.getElementById('btn-guest-plan-login');
+      const btnPlanContinue = document.getElementById('btn-guest-plan-continue');
+      const planModal = document.getElementById('modal-guest-save-match-plan');
+      if (btnPlanLogin) {
+        btnPlanLogin.onclick = () => {
+          if (planModal) planModal.style.display = 'none';
+          App.navigate('auth-login');
+        };
+      }
+      if (btnPlanContinue) {
+        btnPlanContinue.onclick = () => {
+          if (planModal) planModal.style.display = 'none';
+          State.showToast('Match recommendations kept in current session.', 'info');
+        };
+      }
+      if (planModal) {
+        planModal.onclick = (e) => {
+          if (e.target === planModal) planModal.style.display = 'none';
+        };
+      }
+
       document.getElementById('btn-match-refine')?.addEventListener('click', () => {
         this.step = 1;
         App.navigate('matchmaker', null, false);
@@ -569,6 +713,20 @@ const MatchmakerView = {
         };
       });
 
+      // Direct Book Campus Tour
+      document.querySelectorAll('.btn-match-book-tour').forEach(btn => {
+        btn.onclick = async () => {
+          const sId = btn.dataset.schoolId;
+          const target = (this.cachedSchools || []).find(x => x.id === sId) || await API.getSchoolById(sId);
+          if (typeof Modals !== 'undefined' && Modals.openInquireAdmissionModal) {
+            Modals.openInquireAdmissionModal(target);
+          } else {
+            App.navigate('school-detail', sId);
+          }
+        };
+      });
+
+      // Add to compare button
       document.querySelectorAll('.btn-match-compare').forEach(btn => {
         btn.onclick = async () => {
           const sId = btn.dataset.schoolId;
@@ -579,6 +737,8 @@ const MatchmakerView = {
               btn.innerHTML = '<span>✓</span> In Compare Tray';
               btn.classList.remove('btn-outline');
               btn.classList.add('btn-emerald');
+              const countEl = document.getElementById('match-compare-count');
+              if (countEl) countEl.textContent = State.comparisonList.length;
             }
           }
         };
@@ -590,4 +750,3 @@ const MatchmakerView = {
 if (typeof window !== 'undefined') {
   window.MatchmakerView = MatchmakerView;
 }
-

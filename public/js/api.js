@@ -2774,6 +2774,67 @@ const API = {
       headers: this.getHeaders()
     });
     return res.json();
+  },
+
+  // ==========================================================================
+  // PACKAGE D: 4-SCHOOL DEEP COMPARE & MATCHMAKER CLIENT APIS
+  // ==========================================================================
+
+  async getSchoolComparison(schoolIds = []) {
+    const idsParam = Array.isArray(schoolIds) ? schoolIds.join(',') : schoolIds;
+    const res = await fetch(`${this.baseUrl}/schools/compare?ids=${encodeURIComponent(idsParam)}`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to load school comparison");
+    }
+    return res.json();
+  },
+
+  async getMatchmakerRecommendations(criteria = {}) {
+    const res = await fetch(`${this.baseUrl}/schools/matchmaker`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(criteria)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to get matchmaker recommendations");
+    }
+    return res.json();
+  },
+
+  async saveParentComparison(comparisonData) {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(comparisonData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to save comparison");
+    return result;
+  },
+
+  async getParentSavedComparisons() {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons`, {
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || "Failed to fetch saved comparisons");
+    }
+    return res.json();
+  },
+
+  async deleteParentSavedComparison(id) {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: this.getHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to delete saved comparison");
+    return result;
   }
 
 };
