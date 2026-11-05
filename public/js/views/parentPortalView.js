@@ -26,13 +26,21 @@ const ParentPortalView = {
           return null;
         }) : Promise.resolve(null)
       ]);
-      this.overviewData = overview;
+      this.overviewData = overview || {
+        user: user || {},
+        stats: { totalApplications: 0, totalInquiries: 0, totalSavedSchools: 0, totalInvoices: 0, totalOutstanding: 0 },
+        applications: [],
+        inquiries: [],
+        savedSchools: [],
+        invoices: [],
+        reportCards: []
+      };
       this.shortlistsData = shortlistsRes?.shortlists || [];
     } catch (e) {
-      console.warn("Could not fetch remote parent overview, falling back to cached state", e);
+      console.warn("Could not fetch remote parent overview, falling back to clean state", e);
       this.overviewData = {
-        user: user || { name: "Mrs. Nana Aba Mensah", email: "parent@gmail.com", phone: "+233 24 412 9845" },
-        stats: { totalApplications: 1, totalInquiries: 1, totalSavedSchools: 2, totalInvoices: 1, totalOutstanding: 4400 },
+        user: user || {},
+        stats: { totalApplications: 0, totalInquiries: 0, totalSavedSchools: 0, totalInvoices: 0, totalOutstanding: 0 },
         applications: [],
         inquiries: [],
         savedSchools: [],
@@ -51,10 +59,10 @@ const ParentPortalView = {
       }
     }
 
-    const { user: profile, stats, applications = [], inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData;
-    const parentName = profile?.name || user?.name || "Parent / Guardian";
-    const parentEmail = profile?.email || user?.email || "parent@gmail.com";
-    const parentPhone = profile?.phone || user?.phone || "+233 24 412 9845";
+    const { user: profile, stats = {}, applications = [], inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData || {};
+    const parentName = profile?.name || user?.name || (user?.email ? user.email.split('@')[0] : "Parent / Guardian");
+    const parentEmail = profile?.email || user?.email || "";
+    const parentPhone = profile?.phone || user?.phone || "";
 
     const totalOutstanding = invoices.reduce((acc, inv) => acc + (Number(inv.balanceDue) || 0), 0);
 
@@ -1719,7 +1727,7 @@ const ParentPortalView = {
               <span class="badge" style="background: ${isDelayed ? '#fef2f2' : '#ecfdf5'}; color: ${isDelayed ? '#991b1b' : '#065f46'}; border: 1px solid ${isDelayed ? '#fecaca' : '#a7f3d0'}; font-weight: 800; padding: 0.45rem 0.95rem; font-size: 0.85rem; border-radius: 9999px;">
                 ● ${busPass.liveRoute?.status || 'In Transit'}
               </span>
-              <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; padding: 0.4rem 0.85rem; border-radius: 10px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);">
+              <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0A2046; padding: 0.4rem 0.85rem; border-radius: 10px; font-weight: 900; font-size: 1.1rem; box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);">
                 Seat #${busPass.seatNumber}
               </div>
             </div>
@@ -3549,6 +3557,10 @@ const ParentPortalView = {
   },
 
   renderAuthGateway() {
+    const compCount = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.length : 0;
+    const bookmarkCount = (typeof State !== 'undefined' && Array.isArray(State.bookmarkedSchoolIds)) ? State.bookmarkedSchoolIds.length : 0;
+    const totalGuestSaved = compCount + bookmarkCount;
+
     return `
       <section style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 85vh; padding: 3rem 1.5rem 5rem;">
         <div class="container" style="max-width: 920px; margin: 0 auto;">
@@ -3565,6 +3577,20 @@ const ParentPortalView = {
               Sign up as a new parent or log in to submit admissions applications to accredited Ghanaian schools, verify digital student ID cards, settle school fees via Mobile Money, and track school bus routes.
             </p>
           </div>
+
+          ${totalGuestSaved > 0 ? `
+          <div style="background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1.1rem 1.4rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 12px rgba(245,158,11,0.12);">
+            <div style="font-size: 2rem;">⚖️</div>
+            <div style="flex: 1;">
+              <div style="font-weight: 800; color: #92400e; font-size: 0.95rem;">
+                You have ${compCount > 0 ? `${compCount} school${compCount > 1 ? 's' : ''} in comparison` : ''}${compCount > 0 && bookmarkCount > 0 ? ' and ' : ''}${bookmarkCount > 0 ? `${bookmarkCount} saved bookmark${bookmarkCount > 1 ? 's' : ''}` : ''}!
+              </div>
+              <div style="font-size: 0.82rem; color: #b45309; margin-top: 0.2rem;">
+                Create your free parent account or sign in below to import these schools into your permanent shortlist, track deadlines, and submit applications.
+              </div>
+            </div>
+          </div>
+          ` : ''}
 
           <!-- Auth Card -->
           <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 3rem;">
@@ -3873,7 +3899,19 @@ const ParentPortalView = {
         if (res.token && res.user) {
           State.setCurrentUser(res.user, res.token);
           State.showToast(`🎉 Welcome to SkoolFinder, ${res.user.name}! Your parent account is active.`, 'success');
-          App.navigate('parents');
+
+          const guestBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
+          const guestCompare = Array.isArray(State.comparisonList) ? State.comparisonList.map(s => s.id) : [];
+          const allGuestIds = Array.from(new Set([...guestBookmarks, ...guestCompare].filter(Boolean)));
+          if (allGuestIds.length > 0 && typeof Modals !== 'undefined' && Modals.openGuestImportModal) {
+            Modals.openGuestImportModal({
+              schoolIds: allGuestIds,
+              user: res.user,
+              redirectView: 'parents'
+            });
+          } else {
+            App.navigate('parents');
+          }
         } else {
           throw new Error("Invalid response from server");
         }
@@ -3898,7 +3936,19 @@ const ParentPortalView = {
         if (res.token && res.user) {
           State.setCurrentUser(res.user, res.token);
           State.showToast(`Welcome back, ${res.user.name}!`, 'success');
-          App.navigate('parents');
+
+          const guestBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
+          const guestCompare = Array.isArray(State.comparisonList) ? State.comparisonList.map(s => s.id) : [];
+          const allGuestIds = Array.from(new Set([...guestBookmarks, ...guestCompare].filter(Boolean)));
+          if (allGuestIds.length > 0 && typeof Modals !== 'undefined' && Modals.openGuestImportModal) {
+            Modals.openGuestImportModal({
+              schoolIds: allGuestIds,
+              user: res.user,
+              redirectView: 'parents'
+            });
+          } else {
+            App.navigate('parents');
+          }
         }
       } catch (err) {
         btn.disabled = false;

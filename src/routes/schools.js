@@ -202,6 +202,8 @@ router.get('/', async (req, res) => {
       search,
       region,
       district,
+      suburb,
+      locality,
       curriculum,
       level,
       educationLevel,
@@ -231,6 +233,11 @@ router.get('/', async (req, res) => {
 
     if (district && district !== 'All') {
       query = query.ilike('district', `%${district}%`);
+    }
+
+    const targetSub = (suburb || locality || '').trim();
+    if (targetSub && targetSub !== 'All') {
+      query = query.or(`locality.ilike.%${targetSub}%,address.ilike.%${targetSub}%,district.ilike.%${targetSub}%`);
     }
 
     if (boarding && boarding !== 'All') {
@@ -267,6 +274,17 @@ router.get('/', async (req, res) => {
 
     if (targetLevel) {
       filtered = filtered.filter(s => Array.isArray(s.education_level) && s.education_level.some(l => l.toLowerCase().includes(targetLevel.toLowerCase())));
+    }
+
+    const targetSuburb = (suburb || locality) && (suburb || locality) !== 'All' ? (suburb || locality).trim().toLowerCase() : null;
+    if (targetSuburb) {
+      filtered = filtered.filter(s => {
+        const loc = (s.locality || '').toLowerCase();
+        const addr = (s.address || '').toLowerCase();
+        const dist = (s.district || '').toLowerCase();
+        const name = (s.name || '').toLowerCase();
+        return loc.includes(targetSuburb) || addr.includes(targetSuburb) || dist.includes(targetSuburb) || name.includes(targetSuburb);
+      });
     }
 
     const targetFacilities = req.query.facilities || req.query.facility;
@@ -341,7 +359,7 @@ router.get('/:idOrSlug', async (req, res) => {
           .or(`name.ilike.%${idOrSlug}%,slug.ilike.%${idOrSlug}%`)
           .limit(1)
           .maybeSingle();
-        
+
         if (fallbackSchool) school = fallbackSchool;
       }
     } catch (e) {
@@ -350,8 +368,8 @@ router.get('/:idOrSlug', async (req, res) => {
 
     // In-memory fallback if database is unreachable or empty
     if (!school) {
-      school = FALLBACK_SCHOOLS.find(s => 
-        s.id === idOrSlug || 
+      school = FALLBACK_SCHOOLS.find(s =>
+        s.id === idOrSlug ||
         s.slug === idOrSlug ||
         (s.name && s.name.toLowerCase().includes(idOrSlug.toLowerCase()))
       );

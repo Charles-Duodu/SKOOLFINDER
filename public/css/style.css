@@ -531,14 +531,18 @@ button {
 
 .btn-gold {
   background: var(--gradient-gold);
-  color: #0a1128 !important;
+  color: #0A2046 !important;
   font-weight: 800;
   box-shadow: 0 4px 14px rgba(217, 119, 6, 0.25);
 }
 
+.btn-gold, .btn-gold * {
+  color: #0A2046 !important;
+}
+
 .btn-gold:hover {
   transform: translateY(-1px);
-  color: #0a1128 !important;
+  color: #0A2046 !important;
   box-shadow: 0 6px 20px rgba(217, 119, 6, 0.35);
 }
 
@@ -1159,6 +1163,17 @@ button {
     box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
   }
 }
+
+/* WCAG 2.2 AA Minimum Touch Target Size (>= 44px) */
+@media (max-width: 768px) {
+  .btn-pill, button.btn-pill, a.btn-pill, .search-btn-hero, .btn-primary, .btn-gold, .btn-outline {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 
 
 

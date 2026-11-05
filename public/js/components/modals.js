@@ -3747,7 +3747,7 @@ const Modals = {
         <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
             <span class="badge" style="background: rgba(213, 166, 59, 0.25); color: #D5A63B; border: 1px solid #D5A63B; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block;">
-              Direct Admissions Desk Communication
+              Blueprint v4.2 &bull; Direct Admissions Desk Communication
             </span>
             <h3 class="modal-title" style="color: #ffffff; font-size: 1.35rem; margin: 0.2rem 0;">
               Schedule Campus Tour &amp; Admissions Inquiry
@@ -7479,9 +7479,9 @@ const Modals = {
               </div>
               
               <!-- Seat Badge -->
-              <div style="text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #ffffff; padding: 0.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);">
-                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700;">Assigned Seat</div>
-                <div style="font-size: 1.6rem; font-weight: 900; line-height: 1;">#${busPass.seatNumber}</div>
+              <div style="text-align: center; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0A2046; padding: 0.5rem 1rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(217, 119, 6, 0.3);">
+                <div style="font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 800;">Assigned Seat</div>
+                <div style="font-size: 1.6rem; font-weight: 900; line-height: 1; color: #0A2046;">#${busPass.seatNumber}</div>
               </div>
             </div>
 

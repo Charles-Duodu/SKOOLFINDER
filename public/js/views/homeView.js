@@ -121,7 +121,7 @@ const HomeView = {
                 <button id="btn-choice-schools" type="button" class="btn-pill" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.3);">
                   <span>🏫</span> Browse All Schools
                 </button>
-                <button id="btn-choice-matchmaker" type="button" class="btn-pill btn-gold" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; font-weight: 800; box-shadow: 0 2px 8px rgba(213, 166, 59, 0.3);">
+                <button id="btn-hero-matchmaker" type="button" class="btn-pill btn-gold" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; font-weight: 800; box-shadow: 0 2px 8px rgba(213, 166, 59, 0.3);">
                   <span>🎯</span> 2-Min Fit Matchmaker
                 </button>
                 <button id="btn-choice-locations" type="button" class="btn-pill" style="font-size: 0.8rem; padding: 0.35rem 0.85rem; background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.3);">
@@ -753,10 +753,12 @@ const HomeView = {
       App.navigate('directory');
     });
 
-    document.getElementById('btn-choice-matchmaker')?.addEventListener('click', (e) => {
-      e.preventDefault();
+    const onMatchmakerClick = (e) => {
+      e?.preventDefault();
       App.navigate('matchmaker');
-    });
+    };
+    document.getElementById('btn-hero-matchmaker')?.addEventListener('click', onMatchmakerClick);
+    document.getElementById('btn-choice-matchmaker')?.addEventListener('click', onMatchmakerClick);
 
     document.getElementById('btn-choice-locations')?.addEventListener('click', (e) => {
       e.preventDefault();
@@ -781,7 +783,7 @@ const HomeView = {
     document.querySelectorAll('.suburb-browse-card').forEach(card => {
       card.addEventListener('click', () => {
         const suburb = card.dataset.suburb || 'Accra';
-        State.filters = { search: suburb, region: 'Greater Accra', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
+        State.filters = { search: '', region: 'Greater Accra', suburb: suburb, level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
         App.navigate('directory');
       });
     });

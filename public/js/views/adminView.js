@@ -359,7 +359,7 @@ const AdminView = {
 
             <button class="admin-nav-item ${this.activeTab === 'verification' ? 'active' : ''}" data-admin-tab="verification">
               <span class="icon-label"><span>🛡️</span> Verification Desk</span>
-              <span class="admin-badge-count" style="background:#d97706;color:#fff;">QUEUE</span>
+              <span class="admin-badge-count" style="background:#d97706;color:#0A2046;font-weight:800;">QUEUE</span>
             </button>
             <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
               <span class="icon-label"><span>🏫</span> Schools (CRUD)</span>

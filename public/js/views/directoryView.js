@@ -88,8 +88,33 @@ const DirectoryView = {
             </button>
 
             <!-- 1-Click GES Category A Placement Filter -->
-            <button id="btn-toggle-cat-a" class="btn-pill" style="margin-left: auto; background: ${State.filters.categoryA ? '#0A2046' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}; color: ${State.filters.categoryA ? '#fbbf24' : '#000'}; font-weight: 800; font-size: 0.78rem; padding: 0.4rem 0.95rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: var(--shadow-sm);">
+            <button id="btn-toggle-cat-a" class="btn-pill" style="margin-left: auto; background: ${State.filters.categoryA ? '#0A2046' : 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'}; color: ${State.filters.categoryA ? '#fbbf24' : '#0A2046'}; font-weight: 800; font-size: 0.78rem; padding: 0.4rem 0.95rem; border: none; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; box-shadow: var(--shadow-sm);">
               <span>🏆</span> ${State.filters.categoryA ? '✓ Showing GES Category A' : 'Filter GES Category A SHS'}
+            </button>
+          </div>
+
+          <!-- Accra & Tema Enclaves Quick Chips Bar -->
+          <div class="dir-suburbs-bar" style="display: flex; gap: 0.45rem; overflow-x: auto; padding: 0.2rem 0 1rem; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap;">
+            <span style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-right: 0.25rem;">
+              📍 Accra & Tema Enclaves:
+            </span>
+            <button class="btn-pill btn-dir-suburb ${(!State.filters.suburb || State.filters.suburb === 'All') ? 'btn-secondary' : 'btn-outline'}" data-suburb="All" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              All Enclaves
+            </button>
+            <button class="btn-pill btn-dir-suburb ${State.filters.suburb === 'Cantonments' ? 'btn-secondary' : 'btn-outline'}" data-suburb="Cantonments" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              Cantonments & Airport
+            </button>
+            <button class="btn-pill btn-dir-suburb ${State.filters.suburb === 'East Legon' ? 'btn-secondary' : 'btn-outline'}" data-suburb="East Legon" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              East Legon & Roman Ridge
+            </button>
+            <button class="btn-pill btn-dir-suburb ${State.filters.suburb === 'Spintex' ? 'btn-secondary' : 'btn-outline'}" data-suburb="Spintex" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              Spintex Road
+            </button>
+            <button class="btn-pill btn-dir-suburb ${State.filters.suburb === 'Tema' ? 'btn-secondary' : 'btn-outline'}" data-suburb="Tema" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              Tema (Comm 1-25)
+            </button>
+            <button class="btn-pill btn-dir-suburb ${State.filters.suburb === 'Achimota' ? 'btn-secondary' : 'btn-outline'}" data-suburb="Achimota" style="font-size: 0.76rem; padding: 0.25rem 0.75rem;">
+              Achimota & West Legon
             </button>
           </div>
 
@@ -509,6 +534,25 @@ const DirectoryView = {
         const reg = btn.dataset.region;
         State.filters.region = reg;
         App.navigate('directory');
+      });
+    });
+
+    // Enclave / Suburb Quick Filter Buttons
+    document.querySelectorAll('.btn-dir-suburb').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const sub = btn.dataset.suburb;
+        State.filters.suburb = sub;
+        const subSelect = document.getElementById('filter-suburb');
+        if (subSelect) subSelect.value = sub;
+        try {
+          const schools = await API.getSchools(State.filters);
+          DirectoryView.updateResults(schools);
+          document.querySelectorAll('.btn-dir-suburb').forEach(b => {
+            b.className = `btn-pill btn-dir-suburb ${b.dataset.suburb === sub ? 'btn-secondary' : 'btn-outline'}`;
+          });
+        } catch (err) {
+          App.navigate('directory');
+        }
       });
     });
 

@@ -115,7 +115,20 @@ const MobileNav = {
     if (btnMySpace) {
       btnMySpace.onclick = (e) => {
         e.preventDefault();
-        if (typeof App !== 'undefined') App.navigate('parents');
+        if (typeof State !== 'undefined' && State.isAuthenticated()) {
+          const role = State.currentUser?.role;
+          if (role === 'school_owner') {
+            App.navigate('school-portal');
+          } else if (role === 'teacher') {
+            App.navigate('teachers');
+          } else if (role === 'super_admin') {
+            App.navigate('admin');
+          } else {
+            App.navigate('parents');
+          }
+        } else {
+          if (typeof App !== 'undefined') App.navigate('parents');
+        }
       };
     }
   },
