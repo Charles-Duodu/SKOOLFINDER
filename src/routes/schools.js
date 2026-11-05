@@ -422,71 +422,30 @@ router.post('/', authenticate, async (req, res) => {
 
 /**
  * POST /api/schools/:id/claim
+ * Accredited school ownership claim with NaSIA/GES cross-check (Package C)
  */
 router.post('/:id/claim', async (req, res) => {
   try {
     const { id } = req.params;
-    const officialRole = req.body.officialRole || req.body.claimantRole || 'Head of School / Principal';
-    const officialEmail = req.body.officialEmail || req.body.claimEmail || req.body.email || '';
-    const officialPhone = req.body.officialPhone || req.body.claimPhone || req.body.phone || '';
-    const evidenceNotes = req.body.evidenceNotes || req.body.notes || req.body.claimNotes || '';
-    const claimantName = req.body.claimantName || req.body.name || req.body.claimName || 'School Administrator';
-    const claimantId = req.body.claimantId || req.user?.id || '00000000-0000-0000-0000-000000000001';
-
-    const isSchoolUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    let targetSchoolId = isSchoolUuid ? id : null;
-
-    if (!targetSchoolId) {
-      const { data: sch } = await supabaseAdmin.from('schools').select('id').eq('slug', id).maybeSingle();
-      targetSchoolId = sch?.id || '00000000-0000-0000-0000-000000000001';
-    }
-
-    const { data: claim, error } = await supabaseAdmin
-      .from('school_claims')
-      .insert({
-        school_id: targetSchoolId,
-        claimant_id: claimantId,
-        official_role: officialRole,
-        official_email: officialEmail,
-        official_phone: officialPhone,
-        evidence_notes: `[Claimant: ${claimantName}] ${evidenceNotes}`.trim(),
-        status: 'pending'
-      })
-      .select()
-      .maybeSingle();
-
-    if (error) {
-      console.warn('Supabase school_claims table notice:', error.message);
-    }
-
-    const claimRef = claim?.id ? `CLAIM-${claim.id.slice(0, 8).toUpperCase()}` : `CLAIM-${Date.now().toString().slice(-6)}`;
-    if (officialEmail && officialEmail.includes('@')) {
-      EmailService.sendSchoolClaimAcknowledgment({
-        to: officialEmail,
-        schoolName: id.replace(/-/g, ' ').toUpperCase(),
-        claimantName,
-        officialRole,
-        referenceCode: claimRef
-      }).catch(err => console.error('School claim email error:', err.message));
-    }
-
-    return res.json({
-      success: true,
-      message: 'School ownership claim submitted for administrative review',
-      claim: {
-        id: claim?.id || `claim-${Date.now()}`,
-        schoolId: id,
-        claimantName,
-        officialRole,
-        officialEmail,
-        officialPhone,
-        status: 'pending',
-        submittedAt: new Date().toISOString()
-      }
-    });
+    const result = await SchoolOwnerService.submitSchoolClaim(id, req.body, req.user);
+    return res.status(201).json(result);
   } catch (err) {
     console.error('Error submitting claim:', err);
-    return res.status(500).json({ error: 'Failed to submit claim' });
+    return res.status(500).json({ error: err.message || 'Failed to submit claim' });
+  }
+});
+
+/**
+ * GET /api/schools/:id/claim-status
+ * Check claim status and NaSIA validation state for a school (Package C)
+ */
+router.get('/:id/claim-status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await SchoolOwnerService.getClaimStatus(id);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message || 'Failed to retrieve claim status' });
   }
 });
 

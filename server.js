@@ -24,6 +24,7 @@ const integrationsRoutes = require('./src/routes/integrations');
 const promotionsRoutes = require('./src/routes/promotions');
 const webhooksRoutes = require('./src/routes/webhooks');
 const regionsRoutes = require('./src/routes/regions');
+const regulatoryRoutes = require('./src/routes/regulatory');
 const { supabaseAdmin } = require('./src/config/supabase');
 const { strictLimiter, standardLimiter } = require('./src/middleware/rateLimiter');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -79,6 +80,7 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/promotions', promotionsRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 app.use('/api/regions', regionsRoutes);
+app.use('/api/regulatory', regulatoryRoutes);
 app.use('/api', rfqsRoutes);
 
 // Helpful reviews upvote and reply

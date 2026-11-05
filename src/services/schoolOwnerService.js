@@ -1,5 +1,8 @@
 const { supabaseAdmin } = require('../config/supabase');
 const AuditService = require('./auditService');
+const { NasiaRegistryService } = require('./nasiaRegistryService');
+const { NationalIntegrationsService } = require('./nationalIntegrationsService');
+const EmailService = require('./emailService');
 
 // Tier seat limits from Blueprint v2.0 §6.2
 const TIER_SEAT_LIMITS = {
@@ -71,6 +74,63 @@ const IN_MEMORY_MEMBERSHIPS = [
     seat_allocated: true,
     status: 'active',
     created_at: new Date(Date.now() - 20 * 86400000).toISOString()
+  }
+];
+
+const IN_MEMORY_CLAIMS = [
+  {
+    id: 'claim-01',
+    school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+    school_slug: 'ghana-international-school',
+    school_name: 'Ghana International School (GIS)',
+    claimant_id: 'usr-proprietor-01',
+    claimant_name: 'Mrs. Elizabeth Arthur',
+    claimant_role: 'Head of School / Principal',
+    official_email: 'principal@gis.edu.gh',
+    official_phone: '+233 24 111 2233',
+    ghana_card_pin: 'GHA-721839201-4',
+    nasia_license_number: 'NaSIA-ACC-2026-0894',
+    ges_circuit_code: 'GES-GAR-AMA-0194',
+    rgd_number: 'CS-0941-1953',
+    evidence_notes: '[Claimant: Mrs. Elizabeth Arthur] Certified NaSIA License NaSIA-ACC-2026-0894 and Ghana Card attached.',
+    evidence_documents: [
+      {
+        id: 'doc-clm-01',
+        name: 'NaSIA_Accreditation_Certificate_GIS_2026.pdf',
+        type: 'nasia_license',
+        url: 'https://storage.supabase.co/private/docs/nasia_gis_2026.pdf'
+      }
+    ],
+    statutory_declaration: true,
+    cross_check_result: {
+      success: true,
+      matchStatus: 'EXACT_MATCH',
+      confidenceScore: 95,
+      recommendation: 'AUTO_VERIFY_ELIGIBLE',
+      matchBreakdown: {
+        licenseMatch: true,
+        nameMatch: true,
+        gesCodeMatch: true,
+        locationMatch: true,
+        proprietorNameCheck: true
+      },
+      officialRecord: {
+        nasiaLicenseNumber: 'NaSIA-ACC-2026-0894',
+        gesCode: 'GES-GAR-AMA-0194',
+        rgdNumber: 'CS-0941-1953',
+        schoolName: 'Ghana International School',
+        licensingStatus: 'active_licensed',
+        inspectionGrade: 'Grade A (Outstanding)',
+        inspectionScore: 94.8,
+        registeredProprietor: 'GIS Board of Governors'
+      }
+    },
+    status: 'approved',
+    reviewer_id: '00000000-0000-0000-0000-000000000001',
+    reviewer_notes: 'NaSIA regulatory license cross-check matched 95%. Official principal identity confirmed.',
+    rejection_reason: null,
+    created_at: new Date(Date.now() - 25 * 86400000).toISOString(),
+    updated_at: new Date(Date.now() - 20 * 86400000).toISOString()
   }
 ];
 
@@ -167,6 +227,26 @@ const SchoolOwnerService = {
         .eq('status', 'active')
         .maybeSingle();
       return data?.school_id || null;
+    } catch (e) {
+      return null;
+    }
+  },
+
+  /**
+   * Retrieves active proprietor membership record for a given user
+   */
+  async getProprietorMembership(userId) {
+    if (!userId) return null;
+    let mem = IN_MEMORY_MEMBERSHIPS.find(m => m.user_id === userId && m.status === 'active');
+    if (mem) return mem;
+    try {
+      const { data } = await supabaseAdmin
+        .from('school_memberships')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .maybeSingle();
+      return data || null;
     } catch (e) {
       return null;
     }
@@ -653,6 +733,48 @@ const SchoolOwnerService = {
       throw new Error("Decision must be 'approve', 'reject', or 'request_info'.");
     }
 
+    // Sync with corresponding claim if present
+    const linkedClaim = IN_MEMORY_CLAIMS.find(c => c.id === vCase.claim_id || c.school_id === vCase.school_id);
+    if (linkedClaim) {
+      linkedClaim.status = vCase.authority_status === 'verified' ? 'approved' : (vCase.authority_status === 'rejected' ? 'rejected' : 'information_required');
+      linkedClaim.reviewer_id = reviewerId;
+      linkedClaim.reviewer_notes = notes;
+      linkedClaim.rejection_reason = reason || null;
+      linkedClaim.updated_at = new Date().toISOString();
+    }
+
+    if (vCase.authority_status === 'verified') {
+      const sch = CANONICAL_FALLBACK_SCHOOLS.find(s => s.id === vCase.school_id) ||
+                  IN_MEMORY_REGISTERED_SCHOOLS.find(s => s.id === vCase.school_id);
+      if (sch) {
+        sch.claimed = true;
+        sch.authority_status = 'approved_owner';
+        sch.accreditation_status = 'verified';
+        sch.is_verified = true;
+        sch.nasia_verified = true;
+        sch.nasia_license_number = linkedClaim?.nasia_license_number || 'NaSIA-ACC-2026-0894';
+        sch.nasia_inspection_grade = 'Grade A (Outstanding)';
+      }
+      // DEC-01 Primary Proprietor Membership
+      const claimantId = linkedClaim?.claimant_id || vCase.claimant_user_id;
+      if (claimantId) {
+        let mem = IN_MEMORY_MEMBERSHIPS.find(m => m.school_id === vCase.school_id && m.role === 'primary_proprietor');
+        if (!mem) {
+          IN_MEMORY_MEMBERSHIPS.push({
+            id: `mem-${Date.now()}`,
+            school_id: vCase.school_id,
+            user_id: claimantId,
+            role: 'primary_proprietor',
+            name: linkedClaim?.claimant_name || vCase.claimant_name || 'School Proprietor',
+            email: linkedClaim?.official_email || vCase.claimant_email || 'proprietor@example.com',
+            seat_allocated: true,
+            status: 'active',
+            created_at: new Date().toISOString()
+          });
+        }
+      }
+    }
+
     await AuditService.log({
       actorId: reviewerId,
       actorEmail: reviewer?.email || 'admin@skoolfinder.com.gh',
@@ -669,6 +791,351 @@ const SchoolOwnerService = {
       caseId: vCase.id,
       authorityStatus: vCase.authority_status,
       message: `Verification case marked as ${vCase.authority_status}.`
+    };
+  },
+
+  // ==========================================================================
+  // PACKAGE C: SCHOOL CLAIM & REGULATORY IDENTITY WORKFLOW (NaSIA / GES)
+  // ==========================================================================
+
+  /**
+   * Submit an accredited school ownership claim with NaSIA/GES cross-check
+   */
+  async submitSchoolClaim(schoolIdOrSlug, claimData, user) {
+    const rawId = schoolIdOrSlug || '';
+    let targetSchool = CANONICAL_FALLBACK_SCHOOLS.find(
+      s => s.id === rawId || s.slug === rawId || s.name.toLowerCase() === rawId.toLowerCase()
+    );
+
+    if (!targetSchool) {
+      targetSchool = IN_MEMORY_REGISTERED_SCHOOLS.find(
+        s => s.id === rawId || s.slug === rawId
+      );
+    }
+
+    if (!targetSchool) {
+      try {
+        const { data: sch } = await supabaseAdmin
+          .from('schools')
+          .select('id, name, slug, region, district, locality, authority_status, accreditation_status')
+          .or(`id.eq.${rawId},slug.eq.${rawId}`)
+          .maybeSingle();
+        if (sch) targetSchool = sch;
+      } catch (e) {}
+    }
+
+    if (!targetSchool) {
+      targetSchool = {
+        id: rawId || 'sch-claim-' + Date.now(),
+        slug: (rawId || 'school-claim').toLowerCase().replace(/\s+/g, '-'),
+        name: claimData.schoolName || claimData.name || rawId.replace(/-/g, ' ').toUpperCase(),
+        region: claimData.region || 'Greater Accra',
+        district: claimData.district || 'Accra Metropolitan',
+        locality: claimData.locality || 'Accra',
+        claimed: false
+      };
+    }
+
+    const claimantName = (claimData.claimantName || claimData.name || user?.full_name || 'School Administrator').trim();
+    const claimantRole = (claimData.claimantRole || claimData.officialRole || 'Head of School / Principal').trim();
+    const officialEmail = (claimData.officialEmail || claimData.email || user?.email || '').trim();
+    const officialPhone = (claimData.officialPhone || claimData.phone || '').trim();
+    const ghanaCardPin = (claimData.ghanaCardPin || claimData.pin || '').trim().toUpperCase();
+    const nasiaLicenseNumber = (claimData.nasiaLicenseNumber || claimData.nasiaLicense || '').trim();
+    const gesCircuitCode = (claimData.gesCircuitCode || claimData.gesCode || '').trim();
+    const rgdNumber = (claimData.rgdNumber || '').trim();
+    const evidenceNotes = (claimData.evidenceNotes || claimData.notes || '').trim();
+    const evidenceDocs = Array.isArray(claimData.evidence_documents) 
+      ? claimData.evidence_documents 
+      : (claimData.fileUrl ? [{ id: `doc-${Date.now()}`, name: claimData.fileName || 'credential.pdf', type: 'nasia_license', url: claimData.fileUrl }] : []);
+    const statutoryDeclaration = claimData.statutoryDeclaration === true || claimData.statutoryDeclaration === 'true';
+
+    // Validate Ghana Card format if supplied
+    let ghanaCardCheck = { valid: true };
+    if (ghanaCardPin) {
+      ghanaCardCheck = NasiaRegistryService.validateGhanaCard(ghanaCardPin);
+    }
+
+    // Run Algorithmic NaSIA Registry Cross-Check
+    const crossCheckResult = NasiaRegistryService.crossCheckSchool({
+      schoolName: targetSchool.name,
+      nasiaLicenseNumber,
+      gesCode: gesCircuitCode,
+      claimantName,
+      region: targetSchool.region
+    });
+
+    const claimTrackingRef = `SF-CLM-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const claimRecord = {
+      id: claimTrackingRef,
+      school_id: targetSchool.id,
+      school_slug: targetSchool.slug,
+      school_name: targetSchool.name,
+      claimant_id: user?.id || `usr-claimant-${Date.now()}`,
+      claimant_name: claimantName,
+      claimant_role: claimantRole,
+      official_email: officialEmail,
+      official_phone: officialPhone,
+      ghana_card_pin: ghanaCardPin,
+      ghana_card_validated: ghanaCardCheck.valid,
+      nasia_license_number: nasiaLicenseNumber,
+      ges_circuit_code: gesCircuitCode,
+      rgd_number: rgdNumber,
+      evidence_notes: evidenceNotes,
+      evidence_documents: evidenceDocs,
+      statutory_declaration: statutoryDeclaration,
+      cross_check_result: crossCheckResult,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    IN_MEMORY_CLAIMS.unshift(claimRecord);
+
+    // Link/Sync to Admin Verification Queue (SCH-005)
+    const verificationCase = {
+      id: `vcase-${claimTrackingRef}`,
+      claim_id: claimTrackingRef,
+      school_id: targetSchool.id,
+      school_name: targetSchool.name,
+      claimant_user_id: claimRecord.claimant_id,
+      claimant_name: claimantName,
+      claimant_email: officialEmail,
+      claimant_phone: officialPhone,
+      claimant_role: claimantRole,
+      ghana_card_pin: ghanaCardPin,
+      nasia_license_number: nasiaLicenseNumber,
+      ges_circuit_code: gesCircuitCode,
+      cross_check: crossCheckResult,
+      authority_status: 'pending',
+      accreditation_status: 'pending',
+      evidence_documents: evidenceDocs,
+      submitted_at: new Date().toISOString(),
+      created_at: new Date().toISOString()
+    };
+    IN_MEMORY_VERIFICATION_CASES.unshift(verificationCase);
+
+    // Safe DB insert if Supabase table exists
+    try {
+      await supabaseAdmin.from('school_claims').insert({
+        id: claimTrackingRef,
+        school_id: targetSchool.id,
+        claimant_id: claimRecord.claimant_id,
+        official_role: claimantRole,
+        official_email: officialEmail,
+        official_phone: officialPhone,
+        evidence_notes: `[Claimant: ${claimantName}] PIN: ${ghanaCardPin} | NaSIA: ${nasiaLicenseNumber} | Notes: ${evidenceNotes}`.trim(),
+        status: 'pending'
+      });
+    } catch (e) {}
+
+    // Omnichannel SMS Notification to Claimant
+    if (officialPhone) {
+      NationalIntegrationsService.dispatchLiveSms(targetSchool.id, {
+        recipientPhone: officialPhone,
+        recipientName: claimantName,
+        message: `SkoolFinder Ghana: Ownership claim ${claimTrackingRef} for ${targetSchool.name} received. Our regulatory verification team will cross-check NaSIA credentials within 24-48 hours.`
+      }, user).catch(err => console.warn('Claim SMS notice:', err.message));
+    }
+
+    // Email Acknowledgment with Reference Code
+    if (officialEmail && officialEmail.includes('@')) {
+      EmailService.sendSchoolClaimAcknowledgment({
+        to: officialEmail,
+        schoolName: targetSchool.name,
+        claimantName,
+        officialRole: claimantRole,
+        referenceCode: claimTrackingRef
+      }).catch(err => console.warn('Claim Email notice:', err.message));
+    }
+
+    // Tamper-Evident Audit Logging
+    await AuditService.log({
+      actorId: claimRecord.claimant_id,
+      actorEmail: officialEmail,
+      actorRole: 'school_admin',
+      action: 'school_claim_submitted',
+      targetType: 'school_claim',
+      targetId: claimTrackingRef,
+      details: {
+        schoolId: targetSchool.id,
+        schoolName: targetSchool.name,
+        ghanaCardPin,
+        nasiaLicense: nasiaLicenseNumber,
+        crossCheckMatch: crossCheckResult.matchStatus,
+        confidenceScore: crossCheckResult.confidenceScore
+      }
+    });
+
+    return {
+      success: true,
+      message: 'Official institution ownership claim and regulatory credentials submitted for Super Admin review.',
+      claim: claimRecord,
+      referenceCode: claimTrackingRef,
+      crossCheck: crossCheckResult
+    };
+  },
+
+  /**
+   * Get all school claims for Super Admin governance queue
+   */
+  async getClaimsList() {
+    return IN_MEMORY_CLAIMS;
+  },
+
+  /**
+   * Lookup status of claim for a given school
+   */
+  async getClaimStatus(schoolIdOrSlug) {
+    const raw = (schoolIdOrSlug || '').toLowerCase().trim();
+    const claim = IN_MEMORY_CLAIMS.find(
+      c => c.school_id === schoolIdOrSlug || 
+           c.school_slug === raw || 
+           c.id === schoolIdOrSlug ||
+           (c.school_name && c.school_name.toLowerCase() === raw)
+    );
+    return {
+      exists: !!claim,
+      claim: claim || null
+    };
+  },
+
+  /**
+   * Process Super Admin vetting decision on an institution claim
+   */
+  async reviewClaimDecision(claimId, decision, reviewer, notes = '', reason = '') {
+    const claim = IN_MEMORY_CLAIMS.find(c => c.id === claimId || c.school_id === claimId);
+    if (!claim) {
+      throw new Error(`School claim ${claimId} not found.`);
+    }
+
+    const reviewerId = reviewer?.id || 'admin-system';
+    claim.reviewer_id = reviewerId;
+    claim.reviewer_notes = notes || '';
+    claim.updated_at = new Date().toISOString();
+
+    const d = (decision || '').toLowerCase();
+    const targetStatus = d.startsWith('approve') 
+      ? 'approved' 
+      : (d.startsWith('reject') ? 'rejected' : 'information_required');
+
+    claim.status = targetStatus;
+
+    // Find target school and update verification badges
+    const school = CANONICAL_FALLBACK_SCHOOLS.find(s => s.id === claim.school_id || s.slug === claim.school_slug) ||
+                   IN_MEMORY_REGISTERED_SCHOOLS.find(s => s.id === claim.school_id || s.slug === claim.school_slug);
+
+    if (targetStatus === 'approved') {
+      if (school) {
+        school.claimed = true;
+        school.authority_status = 'approved_owner';
+        school.accreditation_status = 'verified';
+        school.is_verified = true;
+        school.nasia_verified = true;
+        school.nasia_license_number = claim.nasia_license_number || claim.cross_check_result?.officialRecord?.nasiaLicenseNumber || 'NaSIA-ACC-2026-0894';
+        school.nasia_inspection_grade = claim.cross_check_result?.officialRecord?.inspectionGrade || 'Grade A (Outstanding)';
+      }
+
+      // Assign DEC-01 Primary Proprietor Membership
+      let existingMem = IN_MEMORY_MEMBERSHIPS.find(
+        m => m.school_id === claim.school_id && m.role === 'primary_proprietor'
+      );
+      if (!existingMem) {
+        IN_MEMORY_MEMBERSHIPS.push({
+          id: `mem-${Date.now()}`,
+          school_id: claim.school_id,
+          school_slug: claim.school_slug,
+          user_id: claim.claimant_id,
+          role: 'primary_proprietor',
+          name: claim.claimant_name,
+          email: claim.official_email,
+          seat_allocated: true,
+          status: 'active',
+          created_at: new Date().toISOString()
+        });
+      } else {
+        existingMem.user_id = claim.claimant_id;
+        existingMem.name = claim.claimant_name;
+        existingMem.email = claim.official_email;
+        existingMem.status = 'active';
+      }
+
+      // Dispatch SMS & Email Approval Notification
+      if (claim.officialPhone) {
+        NationalIntegrationsService.dispatchLiveSms(claim.school_id, {
+          recipientPhone: claim.officialPhone,
+          recipientName: claim.claimant_name,
+          message: `SkoolFinder Ghana: Congratulations! Your ownership claim for ${claim.school_name} has been APPROVED. Your institution now displays verified NaSIA licensing.`
+        }, reviewer).catch(err => console.warn('Claim approval SMS notice:', err.message));
+      }
+
+      await AuditService.log({
+        actorId: reviewerId,
+        actorEmail: reviewer?.email || 'admin@skoolfinder.com.gh',
+        actorRole: 'super_admin',
+        action: 'claim_approved',
+        targetType: 'school_claim',
+        targetId: claim.id,
+        details: { schoolId: claim.school_id, claimant: claim.claimant_name, notes }
+      });
+    } else if (targetStatus === 'rejected') {
+      claim.rejection_reason = reason || notes || 'NaSIA regulatory credentials or authority proof failed inspection.';
+
+      if (claim.officialPhone) {
+        NationalIntegrationsService.dispatchLiveSms(claim.school_id, {
+          recipientPhone: claim.officialPhone,
+          recipientName: claim.claimant_name,
+          message: `SkoolFinder Ghana Notice: Ownership claim ${claim.id} for ${claim.school_name} was not approved: ${claim.rejection_reason}`
+        }, reviewer).catch(err => console.warn('Claim rejection SMS notice:', err.message));
+      }
+
+      await AuditService.log({
+        actorId: reviewerId,
+        actorEmail: reviewer?.email || 'admin@skoolfinder.com.gh',
+        actorRole: 'super_admin',
+        action: 'claim_rejected',
+        targetType: 'school_claim',
+        targetId: claim.id,
+        details: { schoolId: claim.school_id, reason: claim.rejection_reason, notes }
+      });
+    } else {
+      claim.reviewer_notes = notes || 'Additional certified NaSIA or Registrar General credentials required.';
+
+      if (claim.officialPhone) {
+        NationalIntegrationsService.dispatchLiveSms(claim.school_id, {
+          recipientPhone: claim.officialPhone,
+          recipientName: claim.claimant_name,
+          message: `SkoolFinder Ghana Notice: Additional regulatory documents are required for your claim ${claim.id}: ${claim.reviewer_notes}`
+        }, reviewer).catch(err => console.warn('Claim info SMS notice:', err.message));
+      }
+
+      await AuditService.log({
+        actorId: reviewerId,
+        actorEmail: reviewer?.email || 'admin@skoolfinder.com.gh',
+        actorRole: 'super_admin',
+        action: 'claim_info_requested',
+        targetType: 'school_claim',
+        targetId: claim.id,
+        details: { schoolId: claim.school_id, notes: claim.reviewer_notes }
+      });
+    }
+
+    // Sync with corresponding verification case
+    const vCase = IN_MEMORY_VERIFICATION_CASES.find(c => c.claim_id === claim.id || c.school_id === claim.school_id);
+    if (vCase) {
+      vCase.authority_status = targetStatus === 'approved' ? 'verified' : (targetStatus === 'rejected' ? 'rejected' : 'information_required');
+      vCase.accreditation_status = targetStatus === 'approved' ? 'verified' : vCase.accreditation_status;
+      vCase.reviewer_notes = notes;
+      vCase.rejection_reason = claim.rejection_reason || null;
+    }
+
+    return {
+      success: true,
+      decision: targetStatus,
+      claimId: claim.id,
+      claim,
+      message: `School claim has been ${targetStatus}`
     };
   },
 

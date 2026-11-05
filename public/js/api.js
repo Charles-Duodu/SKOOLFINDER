@@ -536,11 +536,40 @@ const API = {
   },
 
   async claimSchool(schoolId, claimData) {
-    const res = await fetch(`${this.baseUrl}/schools/${schoolId}/claim`, {
+    const headers = typeof this.getAuthHeaders === 'function' 
+      ? this.getAuthHeaders({ 'Content-Type': 'application/json' }) 
+      : { 'Content-Type': 'application/json' };
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/claim`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(claimData)
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to submit school claim');
+    return data;
+  },
+
+  async getSchoolClaimStatus(schoolId) {
+    const res = await fetch(`${this.baseUrl}/schools/${encodeURIComponent(schoolId)}/claim-status`);
+    return res.json();
+  },
+
+  async crossCheckNasiaRegistry(payload) {
+    const res = await fetch(`${this.baseUrl}/regulatory/nasia/cross-check`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    return res.json();
+  },
+
+  async lookupNasiaRegistry(query) {
+    const res = await fetch(`${this.baseUrl}/regulatory/nasia/lookup?q=${encodeURIComponent(query)}`);
+    return res.json();
+  },
+
+  async getNasiaRegistryStats() {
+    const res = await fetch(`${this.baseUrl}/regulatory/nasia/stats`);
     return res.json();
   },
 

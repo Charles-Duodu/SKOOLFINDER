@@ -152,5 +152,42 @@ router.get('/sms/stats/:schoolId', async (req, res, next) => {
   }
 });
 
+// ============================================================================
+// 4. NaSIA PRE-TERTIARY LICENSING (ACT 1023) REGULATORY ENDPOINTS
+// ============================================================================
+
+const { NasiaRegistryService } = require('../services/nasiaRegistryService');
+
+router.post('/nasia/cross-check', async (req, res, next) => {
+  try {
+    const result = NasiaRegistryService.crossCheckSchool(req.body);
+    return res.json(result);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/nasia/lookup', async (req, res, next) => {
+  try {
+    const query = req.query.q || req.query.query || '';
+    if (!query) {
+      return res.status(400).json({ error: 'Search query parameter (q) is required' });
+    }
+    const results = NasiaRegistryService.lookupRegistry(query);
+    return res.json({ success: true, count: results.length, results });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/nasia/stats', async (req, res, next) => {
+  try {
+    const stats = NasiaRegistryService.getRegistryStatistics();
+    return res.json({ success: true, stats });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
 

@@ -282,12 +282,12 @@ async function runPackageBTests() {
   });
 
   // 13. Cache Buster Update in index.html
-  await test('13. public/index.html includes v=70 cache-busters for updated scripts', async () => {
+  await test('13. public/index.html includes cache-busters for updated scripts', async () => {
     const html = fs.readFileSync(path.resolve('public/index.html'), 'utf8');
-    assert.ok(html.includes('src="/js/api.js?v=70"'), 'api.js must be v=70');
-    assert.ok(html.includes('src="/js/components/modals.js?v=70"'), 'modals.js must be v=70');
-    assert.ok(html.includes('src="/js/views/dashboardView.js?v=70"'), 'dashboardView.js must be v=70');
-    assert.ok(html.includes('src="/js/views/schoolDetailView.js?v=70"'), 'schoolDetailView.js must be v=70');
+    assert.ok(/src="\/js\/api\.js\?v=(7[0-9]|[8-9][0-9])"/.test(html), 'api.js must have cache-buster >= v=70');
+    assert.ok(/src="\/js\/components\/modals\.js\?v=(7[0-9]|[8-9][0-9])"/.test(html), 'modals.js must have cache-buster >= v=70');
+    assert.ok(/src="\/js\/views\/dashboardView\.js\?v=(7[0-9]|[8-9][0-9])"/.test(html), 'dashboardView.js must have cache-buster >= v=70');
+    assert.ok(/src="\/js\/views\/schoolDetailView\.js\?v=(7[0-9]|[8-9][0-9])"/.test(html), 'schoolDetailView.js must have cache-buster >= v=70');
   });
 
   console.log(`\n========================================================================`);

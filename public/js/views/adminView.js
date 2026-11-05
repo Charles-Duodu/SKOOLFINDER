@@ -491,18 +491,19 @@ const AdminView = {
    * Blueprint v2.0 §7.3 & SCH-005: Super Admin Verification Desk
    */
   renderVerificationDesk(cases = []) {
+    this.cachedVerificationCases = cases;
     return `
       <div>
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Regulatory Accreditation & Verification Review
+              Regulatory Accreditation & Verification Review (Act 1023)
             </div>
             <h1 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               School Ownership & Regulatory Verification Desk
             </h1>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
-              Inspect proprietor authority claims, review uploaded NaSIA / GES regulatory evidence, and record immutable audit decisions.
+              Cross-check proprietor claims against official NaSIA Pre-Tertiary Licensing Register, inspect Ghana Cards and record immutable audit decisions.
             </p>
           </div>
           <div style="display: flex; gap: 0.5rem;">
@@ -520,7 +521,7 @@ const AdminView = {
                   <th style="padding: 0.9rem 1rem;">Case Ref / Institution</th>
                   <th style="padding: 0.9rem 1rem;">Claimant Details</th>
                   <th style="padding: 0.9rem 1rem;">Authority Status</th>
-                  <th style="padding: 0.9rem 1rem;">Accreditation Evidence</th>
+                  <th style="padding: 0.9rem 1rem;">Accreditation & NaSIA Evidence</th>
                   <th style="padding: 0.9rem 1rem;">Submitted</th>
                   <th style="padding: 0.9rem 1rem; text-align: right;">Review Action</th>
                 </tr>
@@ -539,10 +540,22 @@ const AdminView = {
                     <td style="padding: 1rem;">
                       <div style="font-weight: 800; color: #0A2046;">${c.school_name || 'Institution'}</div>
                       <div style="font-size: 0.76rem; color: #64748b; font-family: monospace;">${c.id}</div>
+                      ${c.nasia_license_number || c.cross_check?.officialRecord?.nasiaLicenseNumber ? `
+                        <div style="margin-top:0.25rem;">
+                          <span class="badge" style="background:#eff6ff;color:#1d4ed8;font-size:0.68rem;font-weight:700;">
+                            NaSIA: ${c.nasia_license_number || c.cross_check?.officialRecord?.nasiaLicenseNumber}
+                          </span>
+                        </div>
+                      ` : ''}
                     </td>
                     <td style="padding: 1rem;">
                       <div style="font-weight: 700; color: #334155;">${c.claimant_name || 'Proprietor'}</div>
                       <div style="font-size: 0.78rem; color: #64748b;">${c.claimant_email || ''} &bull; <span class="badge" style="background:#e0e7ff;color:#3730a3;font-size:0.7rem;">${c.claimant_role || 'Proprietor'}</span></div>
+                      ${c.ghana_card_pin ? `
+                        <div style="font-size:0.72rem;color:#475569;font-family:monospace;margin-top:0.2rem;">
+                          🪪 ${c.ghana_card_pin}
+                        </div>
+                      ` : ''}
                     </td>
                     <td style="padding: 1rem;">
                       <span class="badge" style="background: ${c.authority_status === 'verified' ? '#dcfce7' : (c.authority_status === 'rejected' ? '#fee2e2' : '#fef3c7')}; color: ${c.authority_status === 'verified' ? '#166534' : (c.authority_status === 'rejected' ? '#991b1b' : '#92400e')}; font-weight: 800; text-transform: uppercase; font-size: 0.72rem;">
@@ -550,6 +563,13 @@ const AdminView = {
                       </span>
                     </td>
                     <td style="padding: 1rem;">
+                      ${c.cross_check ? `
+                        <div style="margin-bottom:0.35rem;">
+                          <span class="badge" style="background:${c.cross_check.confidenceScore >= 80 ? '#dcfce7' : (c.cross_check.confidenceScore >= 50 ? '#fef3c7' : '#fee2e2')};color:${c.cross_check.confidenceScore >= 80 ? '#166534' : (c.cross_check.confidenceScore >= 50 ? '#92400e' : '#991b1b')};font-weight:800;font-size:0.7rem;">
+                            ${c.cross_check.confidenceScore}% Confidence (${c.cross_check.matchStatus})
+                          </span>
+                        </div>
+                      ` : ''}
                       <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                         ${(c.evidence_documents || []).map(d => `
                           <div style="font-size: 0.78rem; display: flex; align-items: center; gap: 0.35rem;">
@@ -564,12 +584,15 @@ const AdminView = {
                       ${c.submitted_at ? new Date(c.submitted_at).toLocaleDateString() : 'Recent'}
                     </td>
                     <td style="padding: 1rem; text-align: right;">
-                      <div style="display: inline-flex; gap: 0.4rem;">
+                      <div style="display: inline-flex; gap: 0.35rem; flex-wrap: wrap; justify-content: flex-end;">
+                        <button class="btn-pill btn-outline btn-admin-case-dossier" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;">
+                          🔍 Dossier
+                        </button>
                         <button class="btn-pill btn-emerald btn-admin-case-approve" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.75rem;">
                           ✓ Approve
                         </button>
                         <button class="btn-pill btn-outline btn-admin-case-info" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;">
-                          ? Request Info
+                          ? Info
                         </button>
                         <button class="btn-pill btn-outline btn-admin-case-reject" data-case-id="${c.id}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem; color: #dc2626; border-color: #fca5a5;">
                           ✕ Reject
@@ -3684,7 +3707,16 @@ const AdminView = {
     // OPTION B: SUPER ADMIN GOVERNANCE LISTENERS
     // ========================================================================
 
-    // 1. Regulatory Verification Desk (SCH-005)
+    // 1. Regulatory Verification Desk (SCH-005 & Package C)
+    document.querySelectorAll('.btn-admin-case-dossier').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const caseId = btn.getAttribute('data-case-id');
+        const list = this.cachedVerificationCases || [];
+        const targetCase = list.find(c => c.id === caseId) || { id: caseId, school_name: 'Institution' };
+        Modals.openCaseDossierModal(targetCase, () => App.refreshCurrentView());
+      });
+    });
+
     document.querySelectorAll('.btn-admin-case-approve').forEach(btn => {
       btn.addEventListener('click', async () => {
         const caseId = btn.getAttribute('data-case-id');

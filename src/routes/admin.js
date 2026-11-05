@@ -1524,31 +1524,11 @@ router.get('/search', async (req, res) => {
 // ============================================================================
 
 /**
- * GET /api/admin/claims
+ * GET /api/admin/claims (Package C: School Claims Directory)
  */
 router.get('/claims', async (req, res) => {
   try {
-    const { data: claims, error } = await supabaseAdmin
-      .from('school_claims')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error || !claims || claims.length === 0) {
-      return res.json([
-        {
-          id: 'claim-01',
-          school_id: 'ghana-international-school',
-          schoolName: 'Ghana International School (GIS)',
-          official_role: 'Head of School / Principal',
-          official_email: 'principal@gis.edu.gh',
-          official_phone: '+233 24 111 2233',
-          evidence_notes: '[Claimant: Mrs. Elizabeth Arthur] GES License GH-10293 attached.',
-          status: 'pending',
-          created_at: new Date().toISOString()
-        }
-      ]);
-    }
-
+    const claims = await SchoolOwnerService.getClaimsList();
     return res.json(claims);
   } catch (err) {
     return res.status(500).json({ error: 'Failed to fetch claims' });
@@ -1556,61 +1536,16 @@ router.get('/claims', async (req, res) => {
 });
 
 /**
- * POST /api/admin/claims/:id/decision
+ * POST /api/admin/claims/:id/decision (Package C: NaSIA Cross-Check Decision)
  */
 router.post('/claims/:id/decision', async (req, res) => {
   try {
     const { id } = req.params;
-    const { decision, notes = '' } = req.body;
-    const adminUser = req.user;
-
-    const isApprove = decision === 'approve';
-    const targetStatus = isApprove ? 'approved' : 'rejected';
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-
-    let claimRecord = null;
-    if (isUuid) {
-      const { data: updated } = await supabaseAdmin
-        .from('school_claims')
-        .update({ status: targetStatus })
-        .eq('id', id)
-        .select()
-        .maybeSingle();
-      claimRecord = updated;
-    }
-
-    const targetSchoolId = claimRecord?.school_id || 'ghana-international-school';
-    if (isApprove) {
-      const isSchoolUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetSchoolId);
-      let query = supabaseAdmin.from('schools').update({
-        is_verified: true,
-        claimed_by: claimRecord?.claimant_id || null
-      });
-
-      if (isSchoolUuid) query = query.eq('id', targetSchoolId);
-      else query = query.or(`slug.eq.${targetSchoolId},id.eq.00000000-0000-0000-0000-000000000001`);
-
-      await query;
-    }
-
-    await AuditService.log({
-      actorId: adminUser.id,
-      actorEmail: adminUser.email,
-      actorRole: 'super_admin',
-      action: isApprove ? 'claim_approved' : 'claim_rejected',
-      targetType: 'school_claim',
-      targetId: id,
-      details: { schoolId: targetSchoolId, decision, notes }
-    });
-
-    return res.json({
-      success: true,
-      message: `School claim has been ${targetStatus}`,
-      decision: targetStatus,
-      claimId: id
-    });
+    const { decision, notes = '', reason = '' } = req.body;
+    const result = await SchoolOwnerService.reviewClaimDecision(id, decision, req.user, notes, reason);
+    return res.json(result);
   } catch (err) {
-    return res.status(500).json({ error: 'Failed to process claim decision' });
+    return res.status(500).json({ error: err.message || 'Failed to process claim decision' });
   }
 });
 
