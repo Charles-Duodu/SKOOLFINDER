@@ -2780,37 +2780,244 @@ body.has-comparison-dock .sd-chat-window {
   background: var(--theme-b-canvas, #F7F9FC);
 }
 
+/* ==========================================================================
+   SKOOLFINDER GHANA - SCHOOL PROPRIETOR PORTAL SIDEBAR (ENTERPRISE SAAS)
+   ========================================================================== */
+
+.owner-shell {
+  display: flex;
+  min-height: calc(100vh - 72px);
+  background: var(--theme-b-canvas, #F7F9FC);
+  position: relative;
+}
+
 .owner-sidebar {
-  width: 280px;
-  background: #0A2046;
-  color: #ffffff;
+  width: 290px;
+  background: #081B3B;
+  color: #F5F8FF;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid #24466F;
+  box-shadow: 2px 0 16px rgba(4, 15, 33, 0.25);
+  z-index: 100;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* School Identity Header Card */
 .owner-sidebar-header {
-  padding: 1.25rem 1.15rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.25rem 1.15rem 1rem;
+  border-bottom: 1px solid #24466F;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: #081B3B;
+  position: relative;
 }
 
+.owner-brand-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #1769C7;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(23, 105, 199, 0.35);
+  flex-shrink: 0;
+}
+
+.owner-brand-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.owner-brand-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  color: #F5F8FF;
+  letter-spacing: -0.01em;
+}
+
+.owner-brand-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.owner-tier-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(233, 185, 73, 0.18);
+  color: #E9B949;
+  border: 1px solid rgba(233, 185, 73, 0.3);
+}
+
+.owner-status-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  background: rgba(8, 127, 112, 0.22);
+  color: #5eead4;
+  border: 1px solid rgba(8, 127, 112, 0.35);
+}
+
+.owner-status-badge.pending {
+  background: rgba(169, 191, 221, 0.15);
+  color: #A9BFDD;
+  border-color: rgba(169, 191, 221, 0.25);
+}
+
+/* Scrollable Nav Container */
 .owner-sidebar-nav {
-  padding: 0.75rem 0.5rem;
+  padding: 0.85rem 0.65rem 1.5rem;
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.owner-nav-group-title {
-  font-size: 0.65rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #94a3b8;
-  padding: 0.75rem 0.75rem 0.25rem;
+.owner-sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+.owner-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.owner-sidebar-nav::-webkit-scrollbar-thumb {
+  background: #24466F;
+  border-radius: 99px;
 }
 
-.owner-nav-item {
+/* Category Container */
+.owner-nav-category {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  transition: background 0.2s ease;
+}
+
+.owner-nav-category-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.62rem 0.8rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #A9BFDD;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  user-select: none;
+}
+
+.owner-nav-category-toggle:hover {
+  background: #15345C;
+  color: #F5F8FF;
+  border-color: #24466F;
+}
+
+.owner-nav-category.expanded > .owner-nav-category-toggle,
+.owner-nav-category.has-active > .owner-nav-category-toggle {
+  background: #102A50;
+  color: #F5F8FF;
+  border-color: rgba(36, 70, 111, 0.7);
+}
+
+.owner-nav-category-toggle .category-left {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.owner-nav-category-toggle .category-icon {
+  width: 18px;
+  height: 18px;
+  color: #A9BFDD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.owner-nav-category-toggle:hover .category-icon,
+.owner-nav-category.has-active > .owner-nav-category-toggle .category-icon {
+  color: #F5F8FF;
+}
+
+.owner-nav-category-toggle .category-label {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.owner-nav-category-toggle .category-chevron {
+  width: 15px;
+  height: 15px;
+  color: #7e9bbd;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owner-nav-category.expanded > .owner-nav-category-toggle .category-chevron {
+  transform: rotate(90deg);
+  color: #F5F8FF;
+}
+
+/* Submenu Container */
+.owner-nav-submenu {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.25rem 0 0.4rem 0.5rem;
+  margin-left: 0.5rem;
+  border-left: 1.5px solid rgba(36, 70, 111, 0.4);
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: max-height 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease,
+              transform 0.2s ease,
+              padding 0.2s ease;
+  pointer-events: none;
+}
+
+.owner-nav-category.expanded .owner-nav-submenu {
+  max-height: 600px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Submenu Items */
+.owner-nav-subitem {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2818,50 +3025,73 @@ body.has-comparison-dock .sd-chat-window {
   padding: 0.52rem 0.75rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: #A9BFDD;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
   text-align: left;
-  margin-bottom: 2px;
+  text-decoration: none;
   position: relative;
 }
 
-.owner-nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+.owner-nav-subitem:hover {
+  background: #15345C;
+  color: #F5F8FF;
 }
 
-.owner-nav-item.active {
-  background: #1266C4;
-  color: #ffffff;
+.owner-nav-subitem.active {
+  background: #1769C7;
+  color: #FFFFFF;
   font-weight: 700;
-  box-shadow: 0 2px 6px rgba(18, 102, 196, 0.35);
+  box-shadow: 0 2px 8px rgba(23, 105, 199, 0.45);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.owner-nav-content {
+.owner-nav-subitem .subitem-left {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
   min-width: 0;
   flex: 1;
-  pointer-events: none;
 }
 
-.owner-nav-title {
+.owner-nav-subitem .subitem-icon {
+  width: 16px;
+  height: 16px;
+  color: inherit;
+  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.owner-nav-subitem.active .subitem-icon {
+  opacity: 1;
+}
+
+.owner-nav-subitem .subitem-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.owner-nav-subitem .subitem-title {
   font-size: 0.82rem;
-  font-weight: 600;
   line-height: 1.25;
   color: inherit;
-  transition: color 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.owner-nav-subtitle {
-  font-size: 0.69rem;
+.owner-nav-subitem .subitem-subtitle {
+  font-size: 0.68rem;
   font-weight: 400;
-  color: #94a3b8;
+  color: #7e9bbd;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
@@ -2869,20 +3099,67 @@ body.has-comparison-dock .sd-chat-window {
   max-height: 0;
   opacity: 0;
   transform: translateY(-2px);
-  transition: max-height 0.22s ease, opacity 0.2s ease, transform 0.2s ease, margin-top 0.2s ease;
+  transition: max-height 0.2s ease, opacity 0.2s ease, transform 0.2s ease, margin-top 0.2s ease;
   pointer-events: none;
 }
 
-.owner-nav-item:hover .owner-nav-subtitle,
-.owner-nav-item:focus-visible .owner-nav-subtitle {
-  max-height: 20px;
-  opacity: 0.92;
+.owner-nav-subitem:hover .subitem-subtitle,
+.owner-nav-subitem:focus-visible .subitem-subtitle {
+  max-height: 18px;
+  opacity: 0.95;
   transform: translateY(0);
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
-.owner-nav-item.active .owner-nav-subtitle {
+.owner-nav-subitem.active .subitem-subtitle {
   color: #dbeafe;
+}
+
+.owner-nav-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  letter-spacing: 0.02em;
+}
+
+/* Sidebar Footer Concept Note */
+.owner-sidebar-footer {
+  padding: 0.85rem 1.15rem;
+  border-top: 1px solid #24466F;
+  font-size: 0.72rem;
+  line-height: 1.45;
+  color: #7e9bbd;
+  background: #081B3B;
+}
+
+/* Mobile Drawer & Backdrop */
+.owner-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 1040;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.owner-mobile-drawer-btn {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  background: #081B3B;
+  color: #F5F8FF;
+  border: 1px solid #24466F;
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 1rem;
 }
 
 .owner-nav-badge {
@@ -2961,11 +3238,32 @@ body.has-comparison-dock .sd-chat-window {
   .owner-shell {
     flex-direction: column;
   }
+  .owner-mobile-drawer-btn {
+    display: inline-flex;
+  }
+  .owner-sidebar-backdrop.visible {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
   .owner-sidebar {
-    width: 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 290px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 1050;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+  }
+  .owner-sidebar.open {
+    transform: translateX(0);
   }
   .owner-main-content {
-    padding: 1.25rem;
+    padding: 1.25rem 1rem 4rem;
+    width: 100%;
   }
 }
 

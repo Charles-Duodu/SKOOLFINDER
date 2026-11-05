@@ -319,11 +319,401 @@ const DashboardView = {
   },
 
   /**
+   * Enterprise Line-Icon Library (Lucide/Heroicons SVG style)
+   */
+  renderNavIcon(name, size = 18) {
+    const icons = {
+      'chevron-down': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>`,
+      'chevron-right': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>`,
+      'dashboard': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="3" width="7" height="7" rx="1.5"></rect><rect x="14" y="14" width="7" height="7" rx="1.5"></rect><rect x="3" y="14" width="7" height="7" rx="1.5"></rect></svg>`,
+      'landmark': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="2" y1="22" x2="22" y2="22"></line><line x1="4" y1="18" x2="20" y2="18"></line><line x1="6" y1="18" x2="6" y2="9"></line><line x1="10" y1="18" x2="10" y2="9"></line><line x1="14" y1="18" x2="14" y2="9"></line><line x1="18" y1="18" x2="18" y2="9"></line><polygon points="12 2 2 7 22 7"></polygon></svg>`,
+      'building': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22V7l8-4 8 4v15"></path><path d="M12 3v19"></path><path d="M8 11h.01"></path><path d="M16 11h.01"></path><path d="M8 15h.01"></path><path d="M16 15h.01"></path></svg>`,
+      'school': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m4 6 8-4 8 4"></path><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"></path><path d="M14 22v-4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v4"></path><path d="M18 5v17"></path><path d="M6 5v17"></path><circle cx="12" cy="9" r="2"></circle></svg>`,
+      'shield-check': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><path d="m9 12 2 2 4-4"></path></svg>`,
+      'users': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>`,
+      'user-check': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>`,
+      'clipboard-list': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><path d="M12 11h4"></path><path d="M12 16h4"></path><path d="M8 11h.01"></path><path d="M8 16h.01"></path></svg>`,
+      'graduation-cap': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10v6M2 10l10-5 10 5-10 5z"></path><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path></svg>`,
+      'user-plus': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg>`,
+      'messages-square': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4c0-1.1.9-2 2-2h8a2 2 0 0 1 2 2v5Z"></path><path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1"></path></svg>`,
+      'credit-card': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"></rect><line x1="2" x2="22" y1="10" y2="10"></line></svg>`,
+      'receipt': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"></path><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path><path d="M12 6v12"></path></svg>`,
+      'trending-up': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`,
+      'truck': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg>`,
+      'package': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>`,
+      'network': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path><line x1="12" y1="12" x2="12" y2="8"></line></svg>`,
+      'globe': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`,
+      'briefcase': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="7" rx="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>`,
+      'megaphone': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>`,
+      'zap': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+      'book-open': `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>`
+    };
+    return icons[name] || icons['building'];
+  },
+
+  /**
+   * Returns parent category ID for a given active tab
+   */
+  getCategoryForTab(tabId) {
+    const map = {
+      'overview': 'executive',
+      'myschool': 'identity',
+      'regulatory': 'identity',
+      'staff': 'governance',
+      'audit': 'governance',
+      'admissions': 'admissions',
+      'inquiries': 'admissions',
+      'subscription': 'billing',
+      'intelligence': 'intelligence',
+      'operations': 'operations',
+      'group': 'trust',
+      'recruiting': 'marketplace',
+      'procurement': 'marketplace',
+      'promotions': 'expansions',
+      'webhooks': 'expansions',
+      'academics': 'upcoming'
+    };
+    return map[tabId] || 'executive';
+  },
+
+  /**
+   * Retrieves expanded categories from localStorage, guaranteeing active tab is expanded
+   */
+  getExpandedCategories() {
+    const activeCategory = this.getCategoryForTab(this.activeTab);
+    let saved = [];
+    try {
+      const raw = localStorage.getItem('skoolfinder_owner_sidebar_expanded');
+      if (raw) saved = JSON.parse(raw);
+    } catch (e) {
+      saved = [];
+    }
+    if (!Array.isArray(saved) || saved.length === 0) {
+      saved = ['executive', 'identity'];
+    }
+    if (activeCategory && !saved.includes(activeCategory)) {
+      saved.push(activeCategory);
+    }
+    return saved;
+  },
+
+  /**
+   * Navigation category tree configuration
+   */
+  getNavCategories(school, kpis, seatQuotas, applications, enquiriesData, subscription, vacanciesData, tendersData) {
+    return [
+      {
+        id: 'executive',
+        title: 'Executive Command',
+        icon: 'dashboard',
+        items: [
+          {
+            tab: 'overview',
+            title: 'Dashboard Overview',
+            subtitle: 'Command metrics & KPI snapshot',
+            icon: 'dashboard'
+          }
+        ]
+      },
+      {
+        id: 'identity',
+        title: 'Institutional Identity',
+        icon: 'landmark',
+        items: [
+          {
+            tab: 'myschool',
+            title: 'My School & Profile',
+            subtitle: 'Profile draft & live directory',
+            icon: 'building'
+          },
+          {
+            tab: 'regulatory',
+            title: 'Regulatory & NaSIA',
+            subtitle: 'Licenses & Act 1023 proof',
+            icon: 'shield-check'
+          }
+        ]
+      },
+      {
+        id: 'governance',
+        title: 'People & Governance',
+        icon: 'users',
+        items: [
+          {
+            tab: 'staff',
+            title: 'Staff & Seat Quotas',
+            subtitle: 'Team seats & permissions',
+            icon: 'user-check',
+            badge: `${seatQuotas?.allocated ?? 0}/${seatQuotas?.total ?? 3}`,
+            badgeStyle: 'background: rgba(255,255,255,0.15); color: #fff;'
+          },
+          {
+            tab: 'audit',
+            title: 'Compliance Audit Log',
+            subtitle: 'Activity & mutation history',
+            icon: 'clipboard-list'
+          }
+        ]
+      },
+      {
+        id: 'admissions',
+        title: 'Admissions & Growth',
+        icon: 'graduation-cap',
+        items: [
+          {
+            tab: 'admissions',
+            title: 'Admissions Pipeline',
+            subtitle: '12-stage intake & dossiers',
+            icon: 'user-plus',
+            badge: `${applications?.length || kpis?.totalApplications || 14}`,
+            badgeStyle: 'background: #10b981; color: #fff;'
+          },
+          {
+            tab: 'inquiries',
+            title: 'Enquiries & Tours',
+            subtitle: 'Parent leads & walkthroughs',
+            icon: 'messages-square',
+            badge: `${enquiriesData?.stats?.total || kpis?.totalEnquiries || 28}`,
+            badgeStyle: 'background: #3b82f6; color: #fff;'
+          }
+        ]
+      },
+      {
+        id: 'billing',
+        title: 'Subscription & Billing',
+        icon: 'credit-card',
+        items: [
+          {
+            tab: 'subscription',
+            title: 'Plan Tier & Seats',
+            subtitle: 'Paystack billing & receipts',
+            icon: 'receipt',
+            badge: 'ACTIVE',
+            badgeStyle: 'background: #f59e0b; color: #000; font-weight: 800;'
+          }
+        ]
+      },
+      {
+        id: 'intelligence',
+        title: 'Predictive Intelligence',
+        icon: 'trending-up',
+        items: [
+          {
+            tab: 'intelligence',
+            title: 'Predictive Yield & Cash Flow',
+            subtitle: 'Yield & cash flow model',
+            icon: 'trending-up',
+            badge: 'AI INTEL',
+            badgeStyle: 'background: #8b5cf6; color: #fff;'
+          }
+        ]
+      },
+      {
+        id: 'operations',
+        title: 'Campus Operations & Logistics',
+        icon: 'truck',
+        items: [
+          {
+            tab: 'operations',
+            title: 'Assets, Library & Fleet',
+            subtitle: 'Fixed assets, LMS & buses',
+            icon: 'package',
+            badge: 'ACTIVE',
+            badgeStyle: 'background: #0ea5e9; color: #fff;'
+          }
+        ]
+      },
+      {
+        id: 'trust',
+        title: 'Multi-Campus Trust',
+        icon: 'network',
+        items: [
+          {
+            tab: 'group',
+            title: 'Trust Network Controller',
+            subtitle: 'Multi-campus trust branches',
+            icon: 'network',
+            badge: 'NETWORK',
+            badgeStyle: 'background: #f59e0b; color: #000; font-weight: 800;'
+          }
+        ]
+      },
+      {
+        id: 'marketplace',
+        title: 'Institutional Marketplace',
+        icon: 'briefcase',
+        items: [
+          {
+            tab: 'recruiting',
+            title: 'Teacher Recruiting',
+            subtitle: 'Teaching jobs & NTC dossiers',
+            icon: 'user-check',
+            badge: `${vacanciesData?.vacancies?.length || 0} JOBS`,
+            badgeStyle: 'background: #10b981; color: #fff;'
+          },
+          {
+            tab: 'procurement',
+            title: 'B2B Procurement RFQs',
+            subtitle: 'Tenders & 50/50 MoMo escrow',
+            icon: 'briefcase',
+            badge: `${tendersData?.tenders?.length || 0} RFQS`,
+            badgeStyle: 'background: #0ea5e9; color: #fff;'
+          }
+        ]
+      },
+      {
+        id: 'expansions',
+        title: 'Expansions & Integrations',
+        icon: 'zap',
+        items: [
+          {
+            tab: 'promotions',
+            title: 'Sponsored Ads & Promotions',
+            subtitle: 'Top spotlight campaigns',
+            icon: 'megaphone',
+            badge: 'PROMO',
+            badgeStyle: 'background: #f59e0b; color: #000; font-weight: 800;'
+          },
+          {
+            tab: 'webhooks',
+            title: 'Webhooks & Automated Alerts',
+            subtitle: 'ERP webhooks, SMS & alerts',
+            icon: 'zap',
+            badge: 'ALERTS',
+            badgeStyle: 'background: #06b6d4; color: #fff;'
+          }
+        ]
+      },
+      {
+        id: 'upcoming',
+        title: 'Upcoming Modules',
+        icon: 'book-open',
+        items: [
+          {
+            tab: 'academics',
+            title: 'Student Academics & SIS',
+            subtitle: 'Academics & report cards',
+            icon: 'book-open',
+            badge: 'Coming Soon',
+            badgeStyle: 'background: #334155; color: #94a3b8;',
+            disabled: true
+          }
+        ]
+      }
+    ];
+  },
+
+  /**
+   * Renders the interactive expandable enterprise navigation sidebar
+   */
+  renderSidebar(school, kpis, seatQuotas, applications, enquiriesData, subscription, vacanciesData, tendersData) {
+    const expandedCategories = this.getExpandedCategories();
+    const categories = this.getNavCategories(school, kpis, seatQuotas, applications, enquiriesData, subscription, vacanciesData, tendersData);
+    const tierRaw = subscription?.tier || school?.active_tier || 'Free';
+    const tierLabel = tierRaw.charAt(0).toUpperCase() + tierRaw.slice(1) + ' Tier';
+    const isVerified = (school?.authority_status === 'verified');
+    const statusLabel = isVerified ? 'Verified' : 'Pending';
+
+    return `
+      <aside class="owner-sidebar" id="owner-proprietor-sidebar" aria-label="School Proprietor Navigation">
+        <!-- School Identity Header Card -->
+        <div class="owner-sidebar-header">
+          <div class="owner-brand-icon" aria-hidden="true">
+            ${this.renderNavIcon('school', 22)}
+          </div>
+          <div class="owner-brand-meta">
+            <div class="owner-brand-name" title="${school?.name || 'School Command Center'}">
+              ${school?.name || 'Ghana International School'}
+            </div>
+            <div class="owner-brand-badges">
+              <span class="owner-tier-badge">${tierLabel}</span>
+              <span class="owner-status-badge ${isVerified ? 'verified' : 'pending'}">${statusLabel}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable Navigation Tree -->
+        <nav class="owner-sidebar-nav" role="navigation" aria-label="Proprietor Modules">
+          ${categories.map(cat => {
+            const isExpanded = expandedCategories.includes(cat.id);
+            const hasActiveChild = cat.items.some(item => item.tab === this.activeTab);
+            const categoryClass = [
+              'owner-nav-category',
+              isExpanded ? 'expanded' : '',
+              hasActiveChild ? 'has-active' : ''
+            ].filter(Boolean).join(' ');
+
+            return `
+              <div class="${categoryClass}" data-category-id="${cat.id}">
+                <button class="owner-nav-category-toggle"
+                        type="button"
+                        aria-expanded="${isExpanded ? 'true' : 'false'}"
+                        aria-controls="submenu-${cat.id}"
+                        data-category-toggle="${cat.id}">
+                  <span class="category-left">
+                    <span class="category-icon" aria-hidden="true">${this.renderNavIcon(cat.icon, 18)}</span>
+                    <span class="category-label">${cat.title}</span>
+                  </span>
+                  <span class="category-chevron" aria-hidden="true">
+                    ${this.renderNavIcon('chevron-right', 14)}
+                  </span>
+                </button>
+
+                <div class="owner-nav-submenu" id="submenu-${cat.id}" role="region" aria-label="${cat.title} items">
+                  ${cat.items.map(item => {
+                    if (item.disabled) {
+                      return `
+                        <div class="owner-nav-subitem" style="opacity: 0.5; cursor: not-allowed;" title="${item.subtitle || item.title}">
+                          <div class="subitem-left">
+                            <span class="subitem-icon" aria-hidden="true">${this.renderNavIcon(item.icon, 16)}</span>
+                            <div class="subitem-text">
+                              <span class="subitem-title">${item.title}</span>
+                              <span class="subitem-subtitle">${item.subtitle || ''}</span>
+                            </div>
+                          </div>
+                          ${item.badge ? `<span class="owner-nav-badge" style="${item.badgeStyle || ''}">${item.badge}</span>` : ''}
+                        </div>
+                      `;
+                    }
+
+                    const isActive = (this.activeTab === item.tab);
+                    return `
+                      <button class="owner-nav-subitem ${isActive ? 'active' : ''}"
+                              type="button"
+                              data-owner-tab="${item.tab}"
+                              title="${item.subtitle || item.title}"
+                              ${isActive ? 'aria-current="page"' : ''}>
+                        <div class="subitem-left">
+                          <span class="subitem-icon" aria-hidden="true">${this.renderNavIcon(item.icon, 16)}</span>
+                          <div class="subitem-text">
+                            <span class="subitem-title">${item.title}</span>
+                            <span class="subitem-subtitle">${item.subtitle || ''}</span>
+                          </div>
+                        </div>
+                        ${item.badge ? `<span class="owner-nav-badge" style="${item.badgeStyle || ''}">${item.badge}</span>` : ''}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </nav>
+
+        <!-- Sidebar Concept Footer Note -->
+        <div class="owner-sidebar-footer">
+          Interactive layout concept. Click the main categories to expand or collapse the submenu.
+        </div>
+      </aside>
+    `;
+  },
+
+  /**
    * Master 12-Group School Owner & Proprietor Shell (Blueprint v2.0 §9.1)
    */
   async render(schoolId = 'ab5af86d-c902-4853-9528-d6200104b5f6') {
     // If not authenticated and not explicitly in demo mode, show the onboarding wizard
-    const isAuthedStaff = State.isAuthenticated() && ['school_admin', 'super_admin'].includes(State.currentUser?.role);
+    const isAuthedStaff = State.isAuthenticated() && ['school_admin', 'super_admin', 'primary_proprietor', 'school_owner'].includes(State.currentUser?.role);
     if (!isAuthedStaff && !this.isDemoMode) {
       return this.renderProprietorLanding();
     }
@@ -439,173 +829,14 @@ const DashboardView = {
 
     return `
       <div class="owner-shell">
-        <!-- 12-GROUP SIDEBAR NAVIGATION (Blueprint v2.0 §9.1) -->
-        <aside class="owner-sidebar">
-          <div class="owner-sidebar-header">
-            <div style="width: 42px; height: 42px; border-radius: 10px; background: #1266C4; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-              🏫
-            </div>
-            <div style="overflow: hidden;">
-              <div style="font-weight: 800; font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; color: #ffffff;" title="${school.name}">
-                ${school.name}
-              </div>
-              <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
-                <span class="owner-nav-badge" style="background: rgba(213, 166, 59, 0.25); color: #fbbf24; text-transform: uppercase;">
-                  ${subscription?.tier || school.active_tier || 'Free'} Tier
-                </span>
-                <span class="owner-nav-badge" style="background: rgba(16, 185, 129, 0.25); color: #6ee7b7;">
-                  ${school.authority_status === 'verified' ? '🛡️ Verified' : '⏳ Pending'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <nav class="owner-sidebar-nav">
-            <!-- Group 1: Command & Core -->
-            <div class="owner-nav-group-title">Executive Command</div>
-            <button class="owner-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-owner-tab="overview" title="Command metrics & school KPI snapshot">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Dashboard Overview</span>
-                <span class="owner-nav-subtitle">Command metrics & KPI snapshot</span>
-              </div>
-            </button>
-
-            <!-- Group 2: Institutional Identity -->
-            <div class="owner-nav-group-title">Institutional Identity</div>
-            <button class="owner-nav-item ${this.activeTab === 'myschool' ? 'active' : ''}" data-owner-tab="myschool" title="Public profile draft & live directory updates">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">My School & Profile</span>
-                <span class="owner-nav-subtitle">Profile draft & live directory</span>
-              </div>
-            </button>
-            <button class="owner-nav-item ${this.activeTab === 'regulatory' ? 'active' : ''}" data-owner-tab="regulatory" title="NaSIA license & compliance accreditation">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Regulatory & NaSIA</span>
-                <span class="owner-nav-subtitle">Licenses & Act 1023 proof</span>
-              </div>
-            </button>
-
-            <!-- Group 3: Operations & Governance -->
-            <div class="owner-nav-group-title">People & Governance</div>
-            <button class="owner-nav-item ${this.activeTab === 'staff' ? 'active' : ''}" data-owner-tab="staff" title="Team seat allocations & role permissions">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Staff & Seat Quotas</span>
-                <span class="owner-nav-subtitle">Team seats & permissions</span>
-              </div>
-              <span class="owner-nav-badge" style="background: rgba(255,255,255,0.15); color: #fff;">${seatQuotas.allocated}/${seatQuotas.total}</span>
-            </button>
-            <button class="owner-nav-item ${this.activeTab === 'audit' ? 'active' : ''}" data-owner-tab="audit" title="Tamper-evident system activity trail">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Compliance Audit Log</span>
-                <span class="owner-nav-subtitle">Activity & mutation history</span>
-              </div>
-            </button>
-
-            <!-- Group 4: Admissions & Growth (Active Phase 2A) -->
-            <div class="owner-nav-group-title">Admissions & Growth</div>
-            <button class="owner-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-owner-tab="admissions" title="12-stage applicant dossiers & enrollment">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Admissions Pipeline</span>
-                <span class="owner-nav-subtitle">12-stage intake & dossiers</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${applications.length || kpis.totalApplications || 14}</span>
-            </button>
-            <button class="owner-nav-item ${this.activeTab === 'inquiries' ? 'active' : ''}" data-owner-tab="inquiries" title="Parent inbound leads & walkthrough booking">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Enquiries & Tours</span>
-                <span class="owner-nav-subtitle">Parent leads & walkthroughs</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #3b82f6; color: #fff;">${enquiriesData?.stats?.total || kpis.totalEnquiries || 28}</span>
-            </button>
-
-            <!-- Group 5: Commercial Subscriptions (Active Phase 2A) -->
-            <div class="owner-nav-group-title">Subscription & Billing</div>
-            <button class="owner-nav-item ${this.activeTab === 'subscription' ? 'active' : ''}" data-owner-tab="subscription" title="Commercial plan, Paystack billing & receipts">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Plan Tier & Seats</span>
-                <span class="owner-nav-subtitle">Paystack billing & receipts</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">ACTIVE</span>
-            </button>
-
-            <!-- Group 6: Institutional Intelligence (Phase 5) -->
-            <div class="owner-nav-group-title">Predictive Intelligence</div>
-            <button class="owner-nav-item ${this.activeTab === 'intelligence' ? 'active' : ''}" data-owner-tab="intelligence" title="Admissions velocity & revenue forecasting">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Predictive Yield & Cash Flow</span>
-                <span class="owner-nav-subtitle">Yield & cash flow model</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #8b5cf6; color: #fff;">AI INTEL</span>
-            </button>
-
-            <!-- Group 7: Campus Operations & Physical Logistics (Phase 5) -->
-            <div class="owner-nav-group-title">Campus Operations & Logistics</div>
-            <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations" title="Campus assets, textbook catalog & bus GPS routes">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Assets, Library & Fleet</span>
-                <span class="owner-nav-subtitle">Fixed assets, LMS & buses</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">ACTIVE</span>
-            </button>
-
-            <!-- Group 8: Multi-Campus Group (Phase 5 / DEC-02) -->
-            <div class="owner-nav-group-title">Multi-Campus Trust</div>
-            <button class="owner-nav-item ${this.activeTab === 'group' ? 'active' : ''}" data-owner-tab="group" title="Multi-campus school group administration">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Trust Network Controller</span>
-                <span class="owner-nav-subtitle">Multi-campus trust branches</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">NETWORK</span>
-            </button>
-
-            <!-- Group 9: Institutional Marketplace (Active Phase 2B & 4) -->
-            <div class="owner-nav-group-title">Institutional Marketplace</div>
-            <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting" title="Job postings & NTC-licensed teacher applicants">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Teacher Recruiting</span>
-                <span class="owner-nav-subtitle">Teaching jobs & NTC dossiers</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${vacanciesData?.vacancies?.length || 0} JOBS</span>
-            </button>
-            <button class="owner-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-owner-tab="procurement" title="Supplier tenders & 50/50 MoMo milestone escrow">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">B2B Procurement RFQs</span>
-                <span class="owner-nav-subtitle">Tenders & 50/50 MoMo escrow</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
-            </button>
-
-            <!-- Group 10: Growth, Promotions & Webhooks (Expansions) -->
-            <div class="owner-nav-group-title">Expansions & Integrations</div>
-            <button class="owner-nav-item ${this.activeTab === 'promotions' ? 'active' : ''}" data-owner-tab="promotions" title="Homepage hero & discovery spotlight campaigns">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Sponsored Ads & Promotions</span>
-                <span class="owner-nav-subtitle">Top spotlight campaigns</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">PROMO</span>
-            </button>
-            <button class="owner-nav-item ${this.activeTab === 'webhooks' ? 'active' : ''}" data-owner-tab="webhooks" title="Real-time event webhooks, SMS & WhatsApp alerts">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Webhooks & Automated Alerts</span>
-                <span class="owner-nav-subtitle">ERP webhooks, SMS & alerts</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #06b6d4; color: #fff;">ALERTS</span>
-            </button>
-
-            <!-- Group 11: Phase 3 Deferred Scope -->
-            <div class="owner-nav-group-title">Upcoming Modules</div>
-            <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;" title="Gradebook, term reports & academic records">
-              <div class="owner-nav-content">
-                <span class="owner-nav-title">Student Academics & SIS</span>
-                <span class="owner-nav-subtitle">Academics & report cards</span>
-              </div>
-              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Coming Soon</span>
-            </div>
-          </nav>
-        </aside>
+        <div class="owner-sidebar-backdrop" id="owner-sidebar-backdrop"></div>
+        ${this.renderSidebar(school, kpis, seatQuotas, applications, enquiriesData, subscription, vacanciesData, tendersData)}
 
         <!-- MAIN WORKSPACE CONTENT CONTAINER -->
         <main class="owner-main-content">
+          <button class="owner-mobile-drawer-btn" id="btn-toggle-owner-sidebar" type="button" aria-label="Open Navigation Menu">
+            ${this.renderNavIcon('dashboard', 18)} <span>Menu</span>
+          </button>
           ${this.renderActiveTabContent(school, kpis, seatQuotas, revisions, staffList, verificationDocs, tasks, auditLogs, phase2aData, phase2bData, phase5Data, expansionsData)}
         </main>
       </div>
@@ -3224,13 +3455,82 @@ const DashboardView = {
       }
     });
 
-    // 4. Tab Navigation Switches
+    // 4a. Accordion Category Toggles
+    document.querySelectorAll('[data-category-toggle]').forEach(toggleBtn => {
+      toggleBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const catId = toggleBtn.dataset.categoryToggle;
+        const catEl = toggleBtn.closest('.owner-nav-category');
+        if (!catEl) return;
+
+        const isExpanded = catEl.classList.toggle('expanded');
+        toggleBtn.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+
+        // Persist to localStorage
+        try {
+          let expanded = [];
+          const raw = localStorage.getItem('skoolfinder_owner_sidebar_expanded');
+          if (raw) expanded = JSON.parse(raw);
+          if (!Array.isArray(expanded)) expanded = [];
+
+          if (isExpanded) {
+            if (!expanded.includes(catId)) expanded.push(catId);
+          } else {
+            expanded = expanded.filter(id => id !== catId);
+          }
+          localStorage.setItem('skoolfinder_owner_sidebar_expanded', JSON.stringify(expanded));
+        } catch (err) {
+          console.warn('Could not persist sidebar state:', err);
+        }
+      };
+    });
+
+    // 4b. Tab Navigation Switches (Submenu Items)
     document.querySelectorAll('[data-owner-tab]').forEach(btn => {
-      btn.onclick = () => {
-        this.activeTab = btn.dataset.ownerTab;
+      btn.onclick = (e) => {
+        e.preventDefault();
+        const tab = btn.dataset.ownerTab;
+        this.activeTab = tab;
+
+        // Ensure parent category is expanded and saved in localStorage
+        const parentCat = this.getCategoryForTab(tab);
+        try {
+          let expanded = [];
+          const raw = localStorage.getItem('skoolfinder_owner_sidebar_expanded');
+          if (raw) expanded = JSON.parse(raw);
+          if (!Array.isArray(expanded)) expanded = [];
+          if (parentCat && !expanded.includes(parentCat)) {
+            expanded.push(parentCat);
+            localStorage.setItem('skoolfinder_owner_sidebar_expanded', JSON.stringify(expanded));
+          }
+        } catch (e) {}
+
+        // Close mobile drawer if open
+        document.getElementById('owner-proprietor-sidebar')?.classList.remove('open');
+        document.getElementById('owner-sidebar-backdrop')?.classList.remove('visible');
+
         App.navigate('schools');
       };
     });
+
+    // 4c. Mobile Sidebar Drawer & Backdrop Handlers
+    const mobileToggle = document.getElementById('btn-toggle-owner-sidebar');
+    const mobileBackdrop = document.getElementById('owner-sidebar-backdrop');
+    const sidebar = document.getElementById('owner-proprietor-sidebar');
+
+    if (mobileToggle && sidebar) {
+      mobileToggle.onclick = () => {
+        sidebar.classList.toggle('open');
+        mobileBackdrop?.classList.toggle('visible');
+      };
+    }
+    if (mobileBackdrop && sidebar) {
+      mobileBackdrop.onclick = () => {
+        sidebar.classList.remove('open');
+        mobileBackdrop.classList.remove('visible');
+      };
+    }
 
     // 5. Save Draft Profile
     document.getElementById('btn-save-profile-draft')?.addEventListener('click', async () => {

@@ -217,9 +217,9 @@ const State = {
   isSchoolAdmin(schoolId = null) {
     if (!this.currentUser) return false;
     if (this.currentUser.role === 'super_admin') return true;
-    if (this.currentUser.role === 'school_admin') {
+    if (['school_admin', 'primary_proprietor', 'school_owner'].includes(this.currentUser.role)) {
       if (!schoolId) return true;
-      return this.currentUser.schoolId === schoolId;
+      return (this.currentUser.schoolId === schoolId || this.currentUser.school_id === schoolId);
     }
     return false;
   },

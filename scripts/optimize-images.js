@@ -37,7 +37,7 @@ async function optimize() {
     await sharp(inputPath)
       .jpeg({ quality: 75, progressive: true, mozjpeg: true })
       .toFile(tempJpgPath);
-    
+
     // Replace original JPG with optimized version
     fs.renameSync(tempJpgPath, inputPath);
     const optJpgStats = fs.statSync(inputPath);
@@ -59,3 +59,4 @@ optimize().catch(err => {
   console.error('Optimization error:', err);
   process.exit(1);
 });
+
