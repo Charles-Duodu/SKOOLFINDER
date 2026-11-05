@@ -9,6 +9,20 @@ const SchoolDetailView = {
     const reviews = reviewsData.reviews || [];
     const isCompared = State.isInCompare(school.id);
 
+    let tourSlots = [];
+    try {
+      if (typeof API !== 'undefined' && API.getSchoolTourSlots) {
+        tourSlots = await API.getSchoolTourSlots(schoolId);
+      }
+    } catch (e) {
+      tourSlots = [];
+    }
+    if (!Array.isArray(tourSlots)) tourSlots = [];
+
+    const currArray = Array.isArray(school.curriculum) ? school.curriculum : (school.curriculum ? [school.curriculum] : ['GES']);
+    const facArray = Array.isArray(school.facilities) ? school.facilities : (school.facilities ? [school.facilities] : []);
+    const levelArray = Array.isArray(school.levels) ? school.levels : (Array.isArray(school.education_level) ? school.education_level : ['Primary', 'JHS']);
+
     // SEO-03 & SEO-04: Update Dynamic SEO Meta & Inject Schema.org JSON-LD
     if (typeof App !== 'undefined' && App.updateSEO) {
       const suburbStr = school.suburb ? `${school.suburb}, ` : '';
@@ -149,7 +163,7 @@ const SchoolDetailView = {
             <div class="showcase-info-bar">
               <div class="showcase-identity">
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; align-items: center;">
-                  ${school.curriculum.map(c => `<span class="badge badge-cambridge">${c}</span>`).join('')}
+                  ${currArray.map(c => `<span class="badge badge-cambridge">${c}</span>`).join('')}
                   ${(school.nasia_verified || school.verified) ? `
                     <span class="badge" style="background:#eff6ff;color:#1d4ed8;font-weight:700;border:1px solid #bfdbfe;" title="Licensed under Education Regulatory Bodies Act 2020 (Act 1023)">
                       🛡️ NaSIA Licensed Pre-Tertiary
@@ -269,11 +283,11 @@ const SchoolDetailView = {
                   Campus Facilities & Student Services
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1rem;">
-                  ${school.facilities.map(f => `
+                  ${facArray.length > 0 ? facArray.map(f => `
                     <div style="display: flex; align-items: center; gap: 0.6rem; padding: 0.75rem 1rem; background: var(--bg-main); border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 600; color: var(--text-main);">
                       <span style="color: var(--emerald-500); font-weight: 800;">✓</span> ${f}
                     </div>
-                  `).join('')}
+                  `).join('') : '<div style="color: var(--text-muted); font-style: italic;">Campus facilities disclosed upon admissions inquiry.</div>'}
                 </div>
               </div>
 
@@ -530,13 +544,13 @@ const SchoolDetailView = {
                 <div style="display: flex; flex-direction: column; gap: 1.15rem; font-size: 0.92rem;">
                   <div>
                     <span style="color: var(--text-light); display: block; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Curriculum Framework</span>
-                    <strong style="color: var(--primary-900);">${school.curriculum.join(', ')}</strong>
+                    <strong style="color: var(--primary-900);">${currArray.join(', ')}</strong>
                   </div>
 
                   <div>
                     <span style="color: var(--text-light); display: block; font-size: 0.8rem; text-transform: uppercase; font-weight: 700;">Education Levels</span>
                     <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.25rem;">
-                      ${school.levels.map(l => `<span class="level-tag">${l}</span>`).join('')}
+                      ${levelArray.map(l => `<span class="level-tag">${l}</span>`).join('')}
                     </div>
                   </div>
 

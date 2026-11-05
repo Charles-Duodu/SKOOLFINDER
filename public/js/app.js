@@ -340,7 +340,7 @@ const App = {
         mainRoot.innerHTML = content;
         SchoolDetailView.attachEvents(State.currentSchoolId);
       } else if (viewName === 'compare') {
-        content = CompareView.render();
+        content = await CompareView.render();
         mainRoot.innerHTML = content;
         CompareView.attachEvents();
       } else if (viewName === 'matchmaker') {
@@ -379,7 +379,6 @@ const App = {
         content = await ResourcesView.render();
         mainRoot.innerHTML = content;
         ResourcesView.attachEvents();
-      }
       } else if (viewName === 'for-schools') {
         content = await ForSchoolsView.render();
         mainRoot.innerHTML = content;
@@ -395,6 +394,7 @@ const App = {
         mainRoot.innerHTML = content;
         if (ForSuppliersView.afterRender) ForSuppliersView.afterRender();
         else if (ForSuppliersView.attachEvents) ForSuppliersView.attachEvents();
+      }
 
       // Render Footer
       document.getElementById('footer-root').innerHTML = Footer.render();

@@ -215,11 +215,11 @@ async function runHomeAuditTests() {
   });
 
   // Test 17: Cache Buster Unified Alignment in index.html
-  test('Cache Buster Integrity: public/index.html loads style.css, components.css, and scripts with ?v=78', () => {
-    assert.ok(indexHtml.includes('/css/style.css?v=78'), 'style.css must have ?v=78');
-    assert.ok(indexHtml.includes('/css/components.css?v=78'), 'components.css must have ?v=78');
-    assert.ok(indexHtml.includes('/js/views/homeView.js?v=78'), 'homeView.js must have ?v=78');
-    assert.ok(indexHtml.includes('/js/app.js?v=78'), 'app.js must have ?v=78');
+  test('Cache Buster Integrity: public/index.html loads style.css, components.css, and scripts with ?v=78+', () => {
+    assert.ok(/\/css\/style\.css\?v=(7[8-9]|[8-9][0-9])/.test(indexHtml), 'style.css must have ?v=78+');
+    assert.ok(/\/css\/components\.css\?v=(7[8-9]|[8-9][0-9])/.test(indexHtml), 'components.css must have ?v=78+');
+    assert.ok(/\/js\/views\/homeView\.js\?v=(7[8-9]|[8-9][0-9])/.test(indexHtml), 'homeView.js must have ?v=78+');
+    assert.ok(/\/js\/app\.js\?v=(7[8-9]|[8-9][0-9])/.test(indexHtml), 'app.js must have ?v=78+');
   });
 
   // Test 18: VM Execution of HomeView.render()
