@@ -359,7 +359,7 @@ const AdminView = {
 
             <button class="admin-nav-item ${this.activeTab === 'verification' ? 'active' : ''}" data-admin-tab="verification">
               <span class="icon-label"><span>🛡️</span> Verification Desk</span>
-              <span class="admin-badge-count" style="background:#d97706;color:#fff;">SCH-005</span>
+              <span class="admin-badge-count" style="background:#d97706;color:#fff;">QUEUE</span>
             </button>
             <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
               <span class="icon-label"><span>🏫</span> Schools (CRUD)</span>
@@ -496,7 +496,7 @@ const AdminView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §7.3 &bull; Work Package SCH-005
+              Regulatory Accreditation & Verification Review
             </div>
             <h1 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               School Ownership & Regulatory Verification Desk
@@ -2679,7 +2679,7 @@ const AdminView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §24 &bull; Commercial Control & GMV Telemetry (SUB-010)
+              Commercial Control & GMV Telemetry
             </div>
             <h2 style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Commercial Subscriptions & Platform GMV Cockpit
@@ -2742,7 +2742,7 @@ const AdminView = {
 
         <!-- 3 Approved SaaS Commercial Plans -->
         <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-          Approved Blueprint v2.0 Commercial Catalog
+          Approved Commercial Subscription Catalog
         </h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
           <div style="border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">

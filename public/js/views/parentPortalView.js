@@ -721,7 +721,7 @@ const ParentPortalView = {
         <!-- Banner -->
         <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 3px solid #D5A63B; box-shadow: var(--shadow-sm);">
           <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
-            Blueprint v4.2 &bull; Family Admissions Readiness
+            Family Admissions Readiness
           </div>
           <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.4rem 0;">
             Parent Admissions Planning Studio

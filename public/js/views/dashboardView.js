@@ -39,7 +39,7 @@ const DashboardView = {
           <div style="background: linear-gradient(135deg, #0A2046 0%, #0f172a 100%); border-radius: 20px; padding: 3rem 2.5rem; color: #ffffff; margin-bottom: 2.5rem; box-shadow: 0 10px 30px rgba(10,32,70,0.15); position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
             <div style="max-width: 780px; position: relative; z-index: 2;">
               <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #fbbf24; margin-bottom: 1.25rem;">
-                <span>🏫</span> School Owner & Proprietor Master Workspace &bull; Blueprint v2.0
+                School Owner & Proprietor Master Workspace
               </div>
               <h1 style="font-family: var(--font-heading); font-size: 2.4rem; font-weight: 800; line-height: 1.2; margin-bottom: 1rem; color: #ffffff;">
                 Power Your School Administration & Growth in Ghana
@@ -50,13 +50,13 @@ const DashboardView = {
 
               <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
                 <button id="btn-start-wizard" class="btn-pill btn-gold" style="font-size: 0.95rem; padding: 0.8rem 1.6rem; font-weight: 800;">
-                  <span>✨</span> Register Institution (4-Step Wizard)
+                  Register Institution (4-Step Wizard)
                 </button>
                 <button id="btn-launch-demo-os" class="btn-pill btn-emerald" style="font-size: 0.95rem; padding: 0.8rem 1.6rem; font-weight: 800;">
-                  <span>🚀</span> Open Interactive Demo School OS
+                  Open Interactive Demo School OS
                 </button>
                 <button id="btn-landing-signin" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);" onclick="Modals.openParentAuthModal('login')">
-                  <span>🔑</span> Sign In to Your Workspace
+                  Sign In to Your Workspace
                 </button>
               </div>
             </div>
@@ -67,7 +67,7 @@ const DashboardView = {
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; border-bottom: 1.5px solid #e2e8f0; padding-bottom: 1rem;">
               <div>
                 <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 800; font-size: 0.75rem;">
-                  SCH-001 &bull; SCH-003 ONBOARDING
+                  INSTITUTION REGISTRATION & ONBOARDING
                 </span>
                 <h2 style="font-family: var(--font-heading); font-size: 1.5rem; color: #0A2046; font-weight: 800; margin: 0.25rem 0 0 0;">
                   Institution Registration & Ownership Verification Wizard
@@ -104,7 +104,7 @@ const DashboardView = {
                 <div style="display: flex; gap: 0.75rem; max-width: 650px; margin-bottom: 1.5rem;">
                   <input type="text" id="wizard-school-search" class="form-input" placeholder="e.g. Ghana International School, SOS-HGIC, Morning Star..." style="font-size: 0.95rem; padding: 0.75rem 1rem;" />
                   <button id="btn-wizard-search-school" class="btn-pill btn-primary" style="padding: 0.75rem 1.5rem; white-space: nowrap;">
-                    <span>🔍</span> Check Directory
+                    Check Directory
                   </button>
                 </div>
 
@@ -178,7 +178,7 @@ const DashboardView = {
                   Step 3: Campus Location, GPS & Proprietor Identity
                 </h3>
                 <p style="color: #64748b; font-size: 0.88rem; margin-bottom: 1.5rem;">
-                  Provide accurate district information and primary proprietor verification coordinates (enforcing DEC-01).
+                  Provide accurate district information and primary proprietor verification coordinates .
                 </p>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
@@ -256,7 +256,7 @@ const DashboardView = {
                 </div>
 
                 <div style="background: #fffbeb; border: 1.5px solid #fef3c7; border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #92400e;">
-                  🛡️ <strong>DEC-01 Notice:</strong> Under the SkoolFinder Launch Rules, exactly one primary school workspace is assigned per proprietor account. Disputed claims are locked pending Super Admin verification.
+                  <strong>Proprietor Policy:</strong> Under the SkoolFinder Launch Rules, exactly one primary school workspace is assigned per proprietor account. Disputed claims are locked pending Super Admin verification.
                 </div>
 
                 <div style="display: flex; justify-content: space-between; margin-top: 1.5rem;">
@@ -464,94 +464,94 @@ const DashboardView = {
             <!-- Group 1: Command & Core -->
             <div class="owner-nav-group-title">Executive Command</div>
             <button class="owner-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-owner-tab="overview">
-              <span>📊 Dashboard Overview (DASH-001)</span>
+              <span>Dashboard Overview</span>
             </button>
 
             <!-- Group 2: Institutional Identity -->
             <div class="owner-nav-group-title">Institutional Identity</div>
             <button class="owner-nav-item ${this.activeTab === 'myschool' ? 'active' : ''}" data-owner-tab="myschool">
-              <span>🏫 My School & Revisions (SCH-008)</span>
+              <span>My School & Profile</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'regulatory' ? 'active' : ''}" data-owner-tab="regulatory">
-              <span>🛡️ Regulatory & NaSIA (SCH-004)</span>
+              <span>Regulatory & NaSIA</span>
             </button>
 
             <!-- Group 3: Operations & Governance -->
             <div class="owner-nav-group-title">People & Governance</div>
             <button class="owner-nav-item ${this.activeTab === 'staff' ? 'active' : ''}" data-owner-tab="staff">
-              <span>👥 Staff & Seat Quotas (SCH-009)</span>
+              <span>Staff & Seat Quotas</span>
               <span class="owner-nav-badge" style="background: rgba(255,255,255,0.15); color: #fff;">${seatQuotas.allocated}/${seatQuotas.total}</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'audit' ? 'active' : ''}" data-owner-tab="audit">
-              <span>📋 Compliance Audit (SCH-010)</span>
+              <span>Compliance Audit Log</span>
             </button>
 
             <!-- Group 4: Admissions & Growth (Active Phase 2A) -->
-            <div class="owner-nav-group-title">Admissions & Growth (Phase 2A)</div>
+            <div class="owner-nav-group-title">Admissions & Growth</div>
             <button class="owner-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-owner-tab="admissions">
-              <span>🎓 Admissions Pipeline</span>
+              <span>Admissions Pipeline</span>
               <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${applications.length || kpis.totalApplications || 14}</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'inquiries' ? 'active' : ''}" data-owner-tab="inquiries">
-              <span>📬 Enquiries & Tours</span>
+              <span>Enquiries & Tours</span>
               <span class="owner-nav-badge" style="background: #3b82f6; color: #fff;">${enquiriesData?.stats?.total || kpis.totalEnquiries || 28}</span>
             </button>
 
             <!-- Group 5: Commercial Subscriptions (Active Phase 2A) -->
-            <div class="owner-nav-group-title">Subscription & Billing (Phase 2A)</div>
+            <div class="owner-nav-group-title">Subscription & Billing</div>
             <button class="owner-nav-item ${this.activeTab === 'subscription' ? 'active' : ''}" data-owner-tab="subscription">
-              <span>💳 Plan Tier & Seats</span>
+              <span>Plan Tier & Seats</span>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">ACTIVE</span>
             </button>
 
             <!-- Group 6: Institutional Intelligence (Phase 5) -->
-            <div class="owner-nav-group-title">Predictive Intelligence (Phase 5)</div>
+            <div class="owner-nav-group-title">Predictive Intelligence</div>
             <button class="owner-nav-item ${this.activeTab === 'intelligence' ? 'active' : ''}" data-owner-tab="intelligence">
-              <span>📈 Predictive Yield & Cash Flow</span>
+              <span>Predictive Yield & Cash Flow</span>
               <span class="owner-nav-badge" style="background: #8b5cf6; color: #fff;">AI INTEL</span>
             </button>
 
             <!-- Group 7: Campus Operations & Physical Logistics (Phase 5) -->
-            <div class="owner-nav-group-title">Campus Operations & Logistics (Phase 5)</div>
+            <div class="owner-nav-group-title">Campus Operations & Logistics</div>
             <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations">
-              <span>🏢 Assets, Library & Fleet</span>
+              <span>Assets, Library & Fleet</span>
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">ACTIVE</span>
             </button>
 
             <!-- Group 8: Multi-Campus Group (Phase 5 / DEC-02) -->
-            <div class="owner-nav-group-title">Multi-Campus Trust (Phase 5)</div>
+            <div class="owner-nav-group-title">Multi-Campus Trust</div>
             <button class="owner-nav-item ${this.activeTab === 'group' ? 'active' : ''}" data-owner-tab="group">
-              <span>🌐 Trust Network Controller</span>
-              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">DEC-02</span>
+              <span>Trust Network Controller</span>
+              <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">NETWORK</span>
             </button>
 
             <!-- Group 9: Institutional Marketplace (Active Phase 2B & 4) -->
-            <div class="owner-nav-group-title">Institutional Marketplace (Phase 2B/4)</div>
+            <div class="owner-nav-group-title">Institutional Marketplace</div>
             <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting">
-              <span>🧑‍🏫 Teacher Recruiting</span>
+              <span>Teacher Recruiting</span>
               <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${vacanciesData?.vacancies?.length || 0} JOBS</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-owner-tab="procurement">
-              <span>📦 B2B Procurement RFQs</span>
+              <span>B2B Procurement RFQs</span>
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
             </button>
 
             <!-- Group 10: Growth, Promotions & Webhooks (Expansions) -->
             <div class="owner-nav-group-title">Expansions & Integrations</div>
             <button class="owner-nav-item ${this.activeTab === 'promotions' ? 'active' : ''}" data-owner-tab="promotions">
-              <span>📢 Sponsored Ads & Promotions</span>
+              <span>Sponsored Ads & Promotions</span>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">PROMO</span>
             </button>
             <button class="owner-nav-item ${this.activeTab === 'webhooks' ? 'active' : ''}" data-owner-tab="webhooks">
-              <span>⚡ Webhooks & Automated Alerts</span>
+              <span>Webhooks & Automated Alerts</span>
               <span class="owner-nav-badge" style="background: #06b6d4; color: #fff;">ALERTS</span>
             </button>
 
             <!-- Group 11: Phase 3 Deferred Scope -->
-            <div class="owner-nav-group-title">Deferred Scope</div>
+            <div class="owner-nav-group-title">Upcoming Modules</div>
             <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
-              <span>📚 Student Academics & SIS</span>
-              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Phase 3 Deferred</span>
+              <span>Student Academics & SIS</span>
+              <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Coming Soon</span>
             </div>
           </nav>
         </aside>
@@ -614,7 +614,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §9.1 &bull; DASH-001 Institutional Command Center
+              Institutional Command Center
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Executive Overview
@@ -626,7 +626,7 @@ const DashboardView = {
 
           <div style="display: flex; gap: 0.75rem;">
             <button class="btn-pill btn-outline" onclick="App.navigate('school-detail', '${school.slug || 'ghana-international-school'}')" style="font-size: 0.84rem;">
-              <span>🌐</span> View Live Public Listing
+              View Live Public Listing
             </button>
             <button class="btn-pill btn-gold" id="btn-quick-invite-staff" style="font-size: 0.84rem;">
               <span>+</span> Invite Staff Member
@@ -646,18 +646,18 @@ const DashboardView = {
             <div style="border-left: 1px solid #e2e8f0; padding-left: 1.5rem;">
               <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #64748b;">Regulatory Accreditation</div>
               <div style="font-weight: 800; color: #0A2046; display: flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
-                <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.76rem;">🛡️ NaSIA & GES Audited</span>
+                <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.76rem;">NaSIA & GES Audited</span>
               </div>
             </div>
             <div style="border-left: 1px solid #e2e8f0; padding-left: 1.5rem;">
               <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #64748b;">Commercial Subscription</div>
               <div style="font-weight: 800; color: #0A2046; display: flex; align-items: center; gap: 0.35rem; margin-top: 2px;">
-                <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.76rem;">★ ${(school.active_tier || 'Growth').toUpperCase()} Plan</span>
+                <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.76rem;">${(school.active_tier || 'Growth').toUpperCase()} Plan</span>
               </div>
             </div>
           </div>
           <div>
-            <span style="font-size: 0.8rem; color: #64748b;">DEC-01 Single-Proprietor Rule Enforced</span>
+            <span style="font-size: 0.8rem; color: #64748b;">Verified Primary Proprietor Account</span>
           </div>
         </div>
 
@@ -692,14 +692,14 @@ const DashboardView = {
           <div class="owner-card" style="margin-bottom: 0;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
               <h3 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0;">
-                👥 Team Seat Allocations (${(seatQuotas.tier || 'Growth').toUpperCase()} Tier)
+                Team Seat Allocations (${(seatQuotas.tier || 'Growth').toUpperCase()} Tier)
               </h3>
               <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 800;">
                 ${seatQuotas.allocated} of ${seatQuotas.total} Seats Used
               </span>
             </div>
             <p style="font-size: 0.84rem; color: #64748b; margin-bottom: 1rem;">
-              Tier seat limits strictly enforced per Blueprint §6.2. Free: 1, Growth: 3, Professional: 10, Enterprise: 25.
+              Workspace seat limits: Free: 1, Growth: 3, Professional: 10, Enterprise: 25.
             </p>
             <div style="height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 1rem;">
               <div style="width: ${Math.min(100, Math.round((seatQuotas.allocated / seatQuotas.total) * 100))}%; height: 100%; background: #1266C4; border-radius: 999px;"></div>
@@ -712,7 +712,7 @@ const DashboardView = {
           <!-- Actionable Task Queue -->
           <div class="owner-card" style="margin-bottom: 0;">
             <h3 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-              ⚡ Actionable Task Queue
+              Actionable Task Queue
             </h3>
             <div style="display: flex; flex-direction: column; gap: 0.65rem;">
               ${tasks.length === 0 ? `
@@ -750,7 +750,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §8.1 &bull; Work Package SCH-008
+              Public Profile Management & Revisions
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Public Profile & Revision Manager
@@ -762,10 +762,10 @@ const DashboardView = {
 
           <div style="display: flex; gap: 0.75rem;">
             <button id="btn-save-profile-draft" class="btn-pill btn-outline" style="font-size: 0.85rem;">
-              <span>💾</span> Save Draft
+              Save Draft
             </button>
             <button id="btn-publish-profile-revision" class="btn-pill btn-emerald" style="font-size: 0.85rem; font-weight: 800;">
-              <span>🚀</span> Publish to Live Directory
+              Publish to Live Directory
             </button>
           </div>
         </div>
@@ -775,7 +775,7 @@ const DashboardView = {
           <!-- Live Edit Form -->
           <div class="owner-card">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1.25rem 0;">
-              ✏️ Profile Draft Editor
+              Profile Draft Editor
             </h3>
 
             <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -821,7 +821,7 @@ const DashboardView = {
           <!-- Published vs Draft Status Card -->
           <div class="owner-card">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-              👁️ Revision Status Comparison
+              Revision Status Comparison
             </h3>
 
             <div style="background: #f8fafc; border-radius: 10px; border: 1.5px solid #e2e8f0; padding: 1.25rem; margin-bottom: 1.25rem;">
@@ -859,7 +859,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §7.2 &bull; Work Package SCH-004
+              Regulatory Accreditation & Compliance
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Regulatory Accreditation & Private Evidence
@@ -875,7 +875,7 @@ const DashboardView = {
           <!-- Upload Form -->
           <div class="owner-card">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1.25rem 0;">
-              📤 Submit Evidence Document
+              Submit Evidence Document
             </h3>
 
             <div style="display: flex; flex-direction: column; gap: 1rem;">
@@ -913,7 +913,7 @@ const DashboardView = {
           <!-- Regulatory Trust Notice -->
           <div class="owner-card">
             <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-              🛡️ Regulatory Safeguards & Trust
+              Regulatory Safeguards & Trust
             </h3>
             <p style="font-size: 0.86rem; color: #64748b; line-height: 1.6; margin-bottom: 1rem;">
               SkoolFinder Ghana complies with the <strong>Education Regulatory Bodies Act, 2020 (Act 1023)</strong> and operates in consultation with the National Schools Inspectorate Authority (NaSIA).
@@ -929,7 +929,7 @@ const DashboardView = {
         <!-- Verified Documents Registry Table -->
         <div class="owner-card">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1.25rem 0;">
-            📑 Verified Credentials Registry
+            Verified Credentials Registry
           </h3>
 
           <div style="overflow-x: auto;">
@@ -984,7 +984,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §7.1, §17.1 &bull; Work Package SCH-009
+              Team Seats & Role Governance
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Staff Directory & Seat Permissions
@@ -1018,7 +1018,7 @@ const DashboardView = {
         <!-- Staff Table -->
         <div class="owner-card">
           <h3 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0 0 1.25rem 0;">
-            👥 Authorized Staff Members
+            Authorized Staff Members
           </h3>
 
           <div style="overflow-x: auto;">
@@ -1142,7 +1142,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §11 &bull; ADM-001 to ADM-012 &bull; Admissions Lifecycle Engine
+              Admissions Lifecycle & Intake Pipeline
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Admissions Lifecycle Command
@@ -1153,10 +1153,10 @@ const DashboardView = {
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <a href="/api/schools/${school.id}/admissions/export" target="_blank" class="btn-pill btn-outline" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>📥</span> Export CSV (ADM-011)
+              Export CSV
             </a>
             <button id="btn-open-tour-modal" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>🧭</span> Schedule Tour / Exam (ADM-008)
+              Schedule Tour / Exam
             </button>
           </div>
         </div>
@@ -1165,17 +1165,17 @@ const DashboardView = {
         <div class="owner-card" style="margin-bottom: 1.5rem; background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff;">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
             <div>
-              <div style="font-size: 0.75rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">ACTIVE ACADEMIC INTAKE (ADM-001)</div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.05em;">ACTIVE ACADEMIC INTAKE</div>
               <h3 style="font-size: 1.3rem; font-weight: 800; margin: 0.2rem 0; color: #ffffff;">${activeIntake.name} &bull; ${activeIntake.academic_year || '2026/2027'}</h3>
               <div style="font-size: 0.82rem; color: #cbd5e1;">${activeIntake.term || 'Term 1'} &bull; Status: <span class="badge badge-emerald" style="text-transform: uppercase; font-size: 0.7rem;">${activeIntake.status || 'Open'}</span></div>
             </div>
             <div style="font-size: 0.85rem; background: rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.2);">
-              <span>DEC-03 Rule:</span> <strong>Admissions Active</strong> &bull; SIS Records Deferred
+              <strong>Admissions Active</strong> &bull; Student Records Direct
             </div>
           </div>
 
           <div style="border-top: 1px solid rgba(255,255,255,0.15); padding-top: 1rem;">
-            <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.65rem; color: #cbd5e1;">Class Capacity Allocations (ADM-002)</div>
+            <div style="font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.65rem; color: #cbd5e1;">Class Capacity Allocations</div>
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
               ${(activeIntake.grades_config || []).map(g => `
                 <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 0.75rem;">
@@ -1217,7 +1217,7 @@ const DashboardView = {
           <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
             <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">STAGE 5: ENROLLED</div>
             <div class="owner-kpi-val" style="font-size: 1.6rem;">${stageCounts.enrolled}</div>
-            <div style="font-size: 0.75rem; color: #64748b;">Enrolment Confirmed (DEC-03)</div>
+            <div style="font-size: 0.75rem; color: #64748b;">Enrolment Confirmed</div>
           </div>
         </div>
 
@@ -1226,7 +1226,7 @@ const DashboardView = {
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
               <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
-                Candidate Applications Dossier (ADM-004, ADM-005)
+                Candidate Applications Dossier
               </h3>
               <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
                 Review student records, transition 12-state admission machine, and confirm enrolment without requiring SIS.
@@ -1243,7 +1243,7 @@ const DashboardView = {
                   <th style="padding: 0.75rem 1rem;">Applicant & Grade</th>
                   <th style="padding: 0.75rem 1rem;">Parent / Contact</th>
                   <th style="padding: 0.75rem 1rem;">Current Status</th>
-                  <th style="padding: 0.75rem 1rem;">State Transition (ADM-007)</th>
+                  <th style="padding: 0.75rem 1rem;">State Transition</th>
                   <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
                 </tr>
               </thead>
@@ -1282,7 +1282,7 @@ const DashboardView = {
                         <option value="offered">Offered (Issue Letter)</option>
                         <option value="waitlisted">Waitlisted</option>
                         <option value="accepted">Accepted by Parent</option>
-                        <option value="enrolled">Enrolled (Confirm DEC-03)</option>
+                        <option value="enrolled">Enrolled (Confirmed)</option>
                         <option value="declined">Declined</option>
                         <option value="withdrawn">Withdrawn</option>
                       </select>
@@ -1290,7 +1290,7 @@ const DashboardView = {
                     <td style="padding: 0.85rem 1rem; text-align: right;">
                       ${app.status === 'accepted' ? `
                         <button class="btn-pill btn-emerald btn-confirm-enrolment" data-app-id="${app.id}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
-                          Confirm Enrolment (DEC-03)
+                          Confirm Enrolment
                         </button>
                       ` : (app.status === 'decision_pending' ? `
                         <button class="btn-pill btn-primary btn-issue-offer" data-app-id="${app.id}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem;">
@@ -1333,7 +1333,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §10 &bull; ENQ-001 to ENQ-008 &bull; Direct Enquiry CRM
+              Direct Enquiry & Tour CRM
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Enquiry CRM & Campus Tours Desk
@@ -1343,19 +1343,19 @@ const DashboardView = {
             </p>
           </div>
           <button id="btn-create-tour-slot" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-            <span>🧭</span> Add Campus Walkthrough Slot
+            Add Campus Walkthrough Slot
           </button>
         </div>
 
         <!-- CRM Analytics Cards (ENQ-008) -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.75rem;">
           <div class="owner-kpi-card" style="border-left: 3px solid #1266C4;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">TOTAL LEADS (ENQ-003)</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">TOTAL LEADS</div>
             <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total}</div>
             <div style="font-size: 0.75rem; color: #64748b;">${stats.new} New &bull; ${stats.contacted} Contacted</div>
           </div>
           <div class="owner-kpi-card" style="border-left: 3px solid #10b981;">
-            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CONVERSION RATE (ENQ-008)</div>
+            <div style="font-size: 0.75rem; font-weight: 700; color: #64748b;">CONVERSION RATE</div>
             <div class="owner-kpi-val" style="font-size: 1.6rem;">${stats.total > 0 ? ((stats.converted / stats.total) * 100).toFixed(1) : 28.5}%</div>
             <div style="font-size: 0.75rem; color: #64748b;">Leads Converted to Applications</div>
           </div>
@@ -1376,7 +1376,7 @@ const DashboardView = {
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
               <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
-                Direct Enquiries Inbox (ENQ-003)
+                Direct Enquiries Inbox
               </h3>
               <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
                 Click any enquiry to open the conversation thread, reply officially to parents, or log internal staff notes.
@@ -1391,9 +1391,9 @@ const DashboardView = {
                 <tr>
                   <th style="padding: 0.75rem 1rem;">Parent Name</th>
                   <th style="padding: 0.75rem 1rem;">Child & Grade</th>
-                  <th style="padding: 0.75rem 1rem;">Source (ENQ-002)</th>
-                  <th style="padding: 0.75rem 1rem;">Status (ENQ-006)</th>
-                  <th style="padding: 0.75rem 1rem;">Assigned Staff (ENQ-005)</th>
+                  <th style="padding: 0.75rem 1rem;">Source</th>
+                  <th style="padding: 0.75rem 1rem;">Status</th>
+                  <th style="padding: 0.75rem 1rem;">Assigned Staff</th>
                   <th style="padding: 0.75rem 1rem; text-align: right;">Action</th>
                 </tr>
               </thead>
@@ -1442,7 +1442,7 @@ const DashboardView = {
         <!-- Campus Tour Slots List (ADM-008) -->
         <div class="owner-card">
           <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-            🧭 Campus Walkthrough Sessions (ADM-008)
+            Campus Walkthrough Sessions
           </h3>
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
             ${tourSlots.map(s => `
@@ -1488,7 +1488,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §12 &bull; VAC-001 to VAC-006 &bull; Institutional Talent Acquisition
+              Institutional Talent Acquisition & Jobs
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Teacher Vacancies & Recruiting Desk
@@ -1499,10 +1499,10 @@ const DashboardView = {
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <button id="btn-buy-vacancy-slot" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>💳</span> Buy Add-on Slot (GH₵ 25 / 30d)
+              Buy Add-on Slot (GH₵ 25 / 30d)
             </button>
             <button id="btn-open-post-vacancy" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>➕</span> Post New Vacancy
+              Post New Vacancy
             </button>
           </div>
         </div>
@@ -1543,7 +1543,7 @@ const DashboardView = {
         <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
-              🏛️ Published Vacancies & Active Openings (${vacancies.length})
+              Published Vacancies & Active Openings (${vacancies.length})
             </h3>
             <span style="font-size: 0.8rem; color: #64748b;">
               Synced in real time to <strong>/jobs</strong> & Teachers Portal
@@ -1558,7 +1558,7 @@ const DashboardView = {
                 Publish your first vacancy to connect with thousands of vetted, NTC-licensed teachers in Greater Accra and Kumasi.
               </p>
               <button class="btn-pill btn-primary btn-open-post-vacancy-empty" style="font-size: 0.85rem;">
-                <span>➕</span> Post School Vacancy
+                Post School Vacancy
               </button>
             </div>
           ` : `
@@ -1649,7 +1649,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §13 &bull; §25 &bull; TEN-001 to TEN-006 &bull; ESC-001 to ESC-004 &bull; B2B Institutional Procurement
+              B2B Institutional Procurement & Tenders
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Procurement RFQs & MoMo Milestone Escrow
@@ -1660,10 +1660,10 @@ const DashboardView = {
           </div>
           <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
             <button id="btn-buy-tender-credits" class="btn-pill btn-gold" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>💳</span> Buy Tender Credits (GH₵ 45 / GH₵ 120)
+              Buy Tender Credits (GH₵ 45 / GH₵ 120)
             </button>
             <button id="btn-open-post-tender" class="btn-pill btn-primary" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-              <span>➕</span> Issue Procurement Tender
+              Issue Procurement Tender
             </button>
           </div>
         </div>
@@ -1704,7 +1704,7 @@ const DashboardView = {
         <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
-              📦 Active Tenders & Requests for Quotation (${tenders.length})
+              Active Tenders & Requests for Quotation (${tenders.length})
             </h3>
             <span style="font-size: 0.8rem; color: #64748b;">
               Published to accredited vendors on <strong>/suppliers</strong>
@@ -1719,7 +1719,7 @@ const DashboardView = {
                 Issue RFQs for textbooks, STEM lab kits, food supplies, and uniforms to receive competitive quotations with 50/50 escrow protection.
               </p>
               <button class="btn-pill btn-primary btn-open-post-tender-empty" style="font-size: 0.85rem;">
-                <span>➕</span> Issue First Tender
+                Issue First Tender
               </button>
             </div>
           ` : `
@@ -1803,7 +1803,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §17.1, §24 &bull; Work Package SCH-010
+              Audit Trail & System Compliance
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Immutable Audit & Compliance History
@@ -1872,7 +1872,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §6 &bull; SUB-001 to SUB-010 &bull; Commercial Subscriptions
+              Commercial Subscriptions & Seats
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Commercial Subscriptions & Quotas
@@ -2017,7 +2017,7 @@ const DashboardView = {
         <!-- Sequential Billing Invoices Ledger (SUB-009) -->
         <div class="owner-card">
           <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-            🧾 Digital Invoices & Receipts (SUB-009)
+            Digital Invoices & Receipts
           </h3>
           <p style="font-size: 0.84rem; color: #64748b; margin-bottom: 1rem;">
             Sequential, tamper-evident receipts in Ghana Cedis, strictly separated from student school fees.
@@ -2078,7 +2078,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §19.2 &bull; Module 19 Campus Physical Operations & Logistics
+              Campus Physical Operations & Logistics
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Campus Operations, Assets & Fleet
@@ -2127,7 +2127,7 @@ const DashboardView = {
         <div class="owner-card" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">🔬 Science Lab & IT Asset Registry</h3>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">Science Lab & IT Asset Registry</h3>
               <p style="font-size: 0.84rem; color: #64748b; margin: 0;">Fixed assets tagged with unique serials, room assignment, and condition logs.</p>
             </div>
           </div>
@@ -2171,7 +2171,7 @@ const DashboardView = {
         <div class="owner-card" style="margin-bottom: 2rem;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">📚 Library Cataloging & Student Book Loans</h3>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">Library Cataloging & Student Book Loans</h3>
               <p style="font-size: 0.84rem; color: #64748b; margin: 0;">WAEC Literature & Cambridge curriculum textbook inventories with lending status.</p>
             </div>
             <button class="btn-pill btn-outline" id="btn-issue-loan" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
@@ -2216,7 +2216,7 @@ const DashboardView = {
         <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">🚌 School Bus Fleet & Greater Accra Transport Routes</h3>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">School Bus Fleet & Greater Accra Transport Routes</h3>
               <p style="font-size: 0.84rem; color: #64748b; margin: 0;">Vehicle roadworthy credentials, designated stops, and passenger capacity allocations.</p>
             </div>
             <button class="btn-pill btn-outline" id="btn-add-route" style="font-size: 0.78rem; padding: 0.35rem 0.85rem;">
@@ -2267,7 +2267,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #8b5cf6; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §19.1 &bull; Module 19 Predictive Institutional Intelligence
+              Predictive Institutional Intelligence
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               Predictive Yield, Retention & Revenue
@@ -2279,7 +2279,7 @@ const DashboardView = {
 
           <div style="display: flex; gap: 0.75rem;">
             <button class="btn-pill btn-gold" id="btn-dispatch-sms-modal" style="font-size: 0.84rem;">
-              <span>📱</span> Broadcast Parent SMS
+              Broadcast Parent SMS
             </button>
           </div>
         </div>
@@ -2320,7 +2320,7 @@ const DashboardView = {
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
           <!-- Grade Capacity Forecasting -->
           <div class="owner-card">
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">🏫 Grade-Level Capacity Forecasting</h3>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Grade-Level Capacity Forecasting</h3>
             <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">Admissions yield saturation by grade cohort for Academic Year 2026/2027.</p>
             
             <div style="display: flex; flex-direction: column; gap: 0.85rem;">
@@ -2345,7 +2345,7 @@ const DashboardView = {
 
           <!-- Cohort Retention Heatmap -->
           <div class="owner-card">
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">📊 Cohort Transition Retention Heatmap</h3>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Cohort Transition Retention Heatmap</h3>
             <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0;">Student persistence across critical educational progression stages.</p>
 
             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
@@ -2372,7 +2372,7 @@ const DashboardView = {
 
         <!-- Revenue Cash Flow & Payment Channels -->
         <div class="owner-card">
-          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">💳 Tuition Cash Flow & MoMo Channel Distribution</h3>
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Tuition Cash Flow & MoMo Channel Distribution</h3>
           <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1.25rem 0;">Verified reconciliation of collected fees across Ghana payment rails.</p>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
@@ -2442,7 +2442,7 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §19.3 &bull; DEC-02 Multi-Campus Trust Controller
+              Multi-Campus Trust Controller
             </div>
             <h1 style="font-size: 2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
               ${group.name}
@@ -2485,7 +2485,7 @@ const DashboardView = {
 
         <!-- Campus Branches Table -->
         <div class="owner-card">
-          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">🏫 Group Branch Campuses & Operational Scope</h3>
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">Group Branch Campuses & Operational Scope</h3>
 
           <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.86rem;">
@@ -2512,7 +2512,7 @@ const DashboardView = {
                     <td style="padding: 0.85rem 1rem; color: #475569;">${s.staff_count} Staff</td>
                     <td style="padding: 0.85rem 1rem;">
                       <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">
-                        🛡️ Verified NaSIA
+                        Verified NaSIA
                       </span>
                     </td>
                   </tr>
@@ -2546,17 +2546,17 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §4 &bull; Commercial Promotion Engine
+              Commercial Promotion Engine
             </div>
             <h2 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-              📢 Sponsored Ads & Featured School Campaigns
+              Sponsored Ads & Featured School Campaigns
             </h2>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0; max-width: 750px;">
               Accelerate parent enquiry volume, campus tour bookings, and admission applications across Homepage Hero, Directory Spotlight, and Compare tools.
             </p>
           </div>
           <button id="btn-scroll-to-create-promo" class="btn-pill btn-gold" style="font-weight: 800; padding: 0.65rem 1.4rem;">
-            <span>✨</span> Launch New Campaign
+            Launch New Campaign
           </button>
         </div>
 
@@ -2586,9 +2586,9 @@ const DashboardView = {
 
         <!-- Approved Ghana Cedis Packages Grid -->
         <div class="owner-card" style="margin-bottom: 2rem;">
-          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">⭐ Approved Promotion Packages (Ghana Cedis)</h3>
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Promotion Packages (Ghana Cedis)</h3>
           <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.25rem 0;">
-            Locked commercial pricing approved in Master Blueprint v2.0 §4. Includes Paystack Mobile Money & Card instant checkout.
+            Standard transparent pricing. Includes Paystack Mobile Money & Card instant checkout.
           </p>
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
@@ -2624,7 +2624,7 @@ const DashboardView = {
 
         <!-- Launch New Campaign Card -->
         <div id="section-create-promo" class="owner-card" style="margin-bottom: 2rem; border-left: 4px solid #f59e0b;">
-          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">🚀 Launch New Sponsored Promotion Campaign</h3>
+          <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Launch New Sponsored Promotion Campaign</h3>
           <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.5rem 0;">
             Create high-visibility featured placement. Campaigns activate immediately upon automated Paystack Mobile Money verification.
           </p>
@@ -2693,7 +2693,7 @@ const DashboardView = {
               </div>
             </div>
             <button id="btn-submit-promo-campaign" class="btn-pill btn-primary" style="font-weight: 800; padding: 0.75rem 1.75rem; background: #0A2046;">
-              <span>💳</span> Pay with Paystack & Launch Campaign
+              Pay with Paystack & Launch Campaign
             </button>
           </div>
         </div>
@@ -2701,7 +2701,7 @@ const DashboardView = {
         <!-- Campaigns Table -->
         <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">📋 Campaigns Management Ledger</h3>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">Campaigns Management Ledger</h3>
             <span style="font-size: 0.82rem; color: #64748b;">${campaigns.length} campaigns recorded</span>
           </div>
 
@@ -2792,17 +2792,17 @@ const DashboardView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #06b6d4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Blueprint v2.0 §12 &bull; Real-time Event Integrations
+              Real-time Event Integrations & Webhooks
             </div>
             <h2 style="font-size: 1.85rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-              ⚡ Event Webhooks & Multi-Channel Alerts
+              Event Webhooks & Multi-Channel Alerts
             </h2>
             <p style="color: #64748b; font-size: 0.95rem; margin: 0; max-width: 750px;">
               Stream high-value school events (Parent Enquiries, Admissions Offers, Vendor Tenders, Fee Payments) to your School ERP, n8n, WhatsApp Cloud API, and Hubtel SMS.
             </p>
           </div>
           <button id="btn-test-webhook-ping" class="btn-pill btn-outline" style="font-weight: 800; padding: 0.65rem 1.4rem; border-color: #06b6d4; color: #0891b2;">
-            <span>🚀</span> Send Test Ping Event
+            Send Test Ping Event
           </button>
         </div>
 
@@ -2821,7 +2821,7 @@ const DashboardView = {
               </div>
             ` : ''}
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
-              <h3 style="font-weight: 800; color: #0A2046; margin: 0;">🔗 Outbound Webhook (n8n / ERP / Zapier)</h3>
+              <h3 style="font-weight: 800; color: #0A2046; margin: 0;">Outbound Webhook (n8n / ERP / Zapier)</h3>
               <span class="owner-nav-badge" style="background: #dcfce7; color: #15803d;">HMAC SHA-256</span>
             </div>
 
@@ -2872,13 +2872,13 @@ const DashboardView = {
             </div>
 
             <button id="btn-save-webhook-subscription" class="btn-pill btn-primary" style="width: 100%; font-weight: 800;">
-              💾 Save Webhook Endpoint Configuration
+              Save Webhook Endpoint Configuration
             </button>
           </div>
 
           <!-- Omnichannel Notification Preferences -->
           <div class="owner-card">
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">📱 Omnichannel Automated Alert Channels</h3>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Omnichannel Automated Alert Channels</h3>
             <p style="color: #64748b; font-size: 0.88rem; margin: 0 0 1.25rem 0;">
               Configure direct delivery channels for admissions notifications and critical alerts.
             </p>
@@ -2930,7 +2930,7 @@ const DashboardView = {
               </div>
 
               <button id="btn-save-notif-prefs" class="btn-pill btn-outline" style="width: 100%; font-weight: 700;">
-                💾 Save Alert Channel Preferences
+                Save Alert Channel Preferences
               </button>
             </div>
           </div>
@@ -2939,7 +2939,7 @@ const DashboardView = {
         <!-- Recent Webhook Delivery Logs Table -->
         <div class="owner-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">🛡️ Recent Webhook Delivery Audit Logs</h3>
+            <h3 style="font-weight: 800; color: #0A2046; margin: 0;">Recent Webhook Delivery Audit Logs</h3>
             <span style="font-size: 0.82rem; color: #64748b;">${deliveries.length} audit transmissions</span>
           </div>
 
@@ -3427,7 +3427,7 @@ const DashboardView = {
     document.querySelectorAll('.btn-confirm-enrolment').forEach(btn => {
       btn.onclick = async () => {
         const appId = btn.dataset.appId;
-        if (!confirm('Confirm enrolment for this candidate?\n\nComplies with DEC-03 (Admissions Pipeline Active; SIS database records deferred).')) return;
+        if (!confirm('Confirm enrolment for this candidate? This will update their admission status to Enrolled.')) return;
         try {
           await API.transitionApplicationStatus(schoolId, appId, {
             newStatus: 'enrolled',
@@ -3597,7 +3597,7 @@ const DashboardView = {
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                 <div>
                   <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
-                    Candidate Applications Dossier (VAC-004, VAC-005)
+                    Candidate Applications Dossier
                   </div>
                   <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
                     ${vacTitle} &bull; ${applicants.length} Applicants
@@ -3794,7 +3794,7 @@ const DashboardView = {
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                 <div>
                   <div style="font-size: 0.8rem; font-weight: 800; color: #0ea5e9; text-transform: uppercase;">
-                    Side-by-Side Bids Comparison & 50/50 Escrow Award (TEN-006, ESC-001)
+                    Side-by-Side Bids Comparison & 50/50 Escrow Award
                   </div>
                   <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
                     ${tenderTitle} &bull; ${bids.length} Competing Supplier Quotes
@@ -3916,7 +3916,7 @@ const DashboardView = {
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
                 <div>
                   <div style="font-size: 0.8rem; font-weight: 800; color: #8b5cf6; text-transform: uppercase;">
-                    50/50 MoMo Milestone Escrow Desk (ESC-001, ESC-002, ESC-003)
+                    50/50 MoMo Milestone Escrow Desk
                   </div>
                   <h3 style="font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0 0;">
                     ${tenderTitle} &bull; Escrow Contract

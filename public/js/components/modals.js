@@ -2473,7 +2473,7 @@ const Modals = {
         <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
             <span class="badge" style="background: rgba(213, 166, 59, 0.25); color: #D5A63B; border: 1px solid #D5A63B; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block;">
-              📬 Blueprint v4.2 &bull; Unified Digital Admissions &amp; Voucher Desk
+              Unified Digital Admissions &amp; Voucher Desk
             </span>
             <h3 class="modal-title" id="app-modal-title" style="color: #ffffff; font-size: 1.35rem; margin: 0.2rem 0;">
               Student Admission Application &mdash; ${targetSchool.name}
@@ -3738,7 +3738,7 @@ const Modals = {
         <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
             <span class="badge" style="background: rgba(213, 166, 59, 0.25); color: #D5A63B; border: 1px solid #D5A63B; font-weight: 800; font-size: 0.72rem; margin-bottom: 0.35rem; display: inline-block;">
-              📬 Blueprint v4.2 &bull; Direct Admissions Desk Communication
+              Direct Admissions Desk Communication
             </span>
             <h3 class="modal-title" style="color: #ffffff; font-size: 1.35rem; margin: 0.2rem 0;">
               Schedule Campus Tour &amp; Admissions Inquiry
@@ -5776,7 +5776,7 @@ const Modals = {
         <div class="modal-header" style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #fff; padding: 1.25rem 1.5rem; border-bottom: 3px solid #D5A63B;">
           <div>
             <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.4rem;">
-              <span>📥</span> Blueprint v4.2 &bull; Smart Guest Context Import
+              Smart Guest Context Import
             </div>
             <h3 class="modal-title" style="color: #fff; font-size: 1.3rem; margin-top: 0.2rem;">
               Review &amp; Import Your Saved Schools
