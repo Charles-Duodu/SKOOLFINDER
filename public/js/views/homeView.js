@@ -481,10 +481,10 @@ const HomeView = {
               </div>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button id="btn-goto-jobs" class="btn-pill btn-gold" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
-                  Explore Vacancies & Tutors &rarr;
+                  Explore Vacancies &amp; Tutors &rarr;
                 </button>
-                <button id="btn-home-post-job" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
-                  Post Vacancy
+                <button id="btn-home-view-tutor-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
+                  💳 View Educator Plans
                 </button>
               </div>
             </div>
@@ -535,8 +535,8 @@ const HomeView = {
                 <button id="btn-home-register-school" class="btn-pill" style="background: #86198f; color: #ffffff; font-size: 0.85rem; padding: 0.55rem 1rem; font-weight: 700;">
                   Claim / List School &rarr;
                 </button>
-                <button id="btn-home-school-portal" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
-                  Open School OS
+                <button id="btn-home-view-school-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
+                  💳 View School Plans
                 </button>
               </div>
             </div>
@@ -883,6 +883,8 @@ const HomeView = {
     });
     document.getElementById('btn-home-cssps-calc')?.addEventListener('click', () => App.navigate('cssps'));
     document.getElementById('btn-home-register-school')?.addEventListener('click', () => Modals.openListSchoolModal());
+    document.getElementById('btn-home-view-tutor-pricing')?.addEventListener('click', () => App.navigate('pricing', 'professionals'));
+    document.getElementById('btn-home-view-school-pricing')?.addEventListener('click', () => App.navigate('pricing', 'schools'));
     document.getElementById('btn-home-school-portal')?.addEventListener('click', () => App.navigate('schools', 'sch-gis-accra'));
 
     // Role Tour Banner Events

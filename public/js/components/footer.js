@@ -162,7 +162,7 @@ const Footer = {
     document.querySelectorAll('.footer-link-pricing').forEach(el => {
       el.onclick = (e) => {
         e.preventDefault();
-        Modals.openPricingModal();
+        App.navigate('pricing', 'schools');
       };
     });
 

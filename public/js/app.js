@@ -113,7 +113,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -181,6 +181,11 @@ const App = {
         title: 'Educational Resources & GES Academic Calendar | SkoolFinder Ghana',
         description: 'Download GES academic term schedules, BECE & WASSCE syllabi, past examination questions, and parenting guides.',
         canonicalUrl: 'https://skoolfinder.vercel.app/resources'
+      },
+      'pricing': {
+        title: 'Platform Pricing & Plans | SkoolFinder Ghana',
+        description: 'Transparent subscription pricing for Ghanaian schools, verified teachers, and private tutors. Approved Ghana Cedis plans with zero hidden fees.',
+        canonicalUrl: 'https://skoolfinder.vercel.app/pricing'
       },
       'admin': {
         title: 'SkoolFinder HQ | National School Directory Regulatory Console',
@@ -267,6 +272,10 @@ const App = {
         content = await CSSPSView.render();
         mainRoot.innerHTML = content;
         CSSPSView.attachEvents();
+      } else if (viewName === 'pricing') {
+        content = await PricingView.render(param || 'schools');
+        mainRoot.innerHTML = content;
+        PricingView.attachEvents(param || 'schools');
       } else if (viewName === 'past-questions' || viewName === 'resources') {
         content = await ResourcesView.render();
         mainRoot.innerHTML = content;
@@ -347,6 +356,8 @@ const App = {
         'directory': 'directory',
         'school-detail': 'school-detail',
         'compare': 'compare',
+        'pricing': 'pricing',
+        'plans': 'pricing',
         'cssps': 'cssps',
         'past-questions': 'resources',
         'resources': 'resources',

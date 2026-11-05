@@ -92,6 +92,11 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             </li>
+            <li>
+              <a href="/pricing" id="nav-link-pricing" class="nav-link-direct ${State.currentView === 'pricing' ? 'active' : ''}">
+                <span>💳</span> Pricing
+              </a>
+            </li>
           </ul>
 
           <!-- Nav Action Buttons: Clean & Uncluttered -->
@@ -205,6 +210,9 @@ const Navbar = {
               <a href="/directory" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
               </a>
+              <a href="/pricing" id="mob-link-pricing" class="mobile-nav-item ${State.currentView === 'pricing' ? 'active' : ''}">
+                <span>💳</span> Pricing &amp; Plans
+              </a>
               ${State.comparisonList.length > 0 ? `
                 <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">
                   <span>⚖️</span> Compare Schools (${State.comparisonList.length})
@@ -306,6 +314,11 @@ const Navbar = {
       e.preventDefault();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
       App.navigate('directory');
+    });
+
+    document.getElementById('nav-link-pricing')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('pricing');
     });
 
 
@@ -550,6 +563,12 @@ const Navbar = {
       closeMobile();
       State.filters = { search: '', region: 'All', suburb: 'All', level: 'All', curriculum: 'All', boarding: 'All', feeBand: 'All', facility: 'All' };
       App.navigate('directory');
+    });
+
+    document.getElementById('mob-link-pricing')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      closeMobile();
+      App.navigate('pricing');
     });
 
         document.getElementById('btn-navbar-exit-impersonate')?.addEventListener('click', () => {
