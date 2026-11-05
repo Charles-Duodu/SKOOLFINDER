@@ -1101,22 +1101,31 @@ const Modals = {
             <textarea id="tch-bio" class="form-textarea" rows="3" placeholder="Briefly describe your teaching philosophy, examination track record (e.g. BECE Grade 1s or IGCSE A*s), and teaching approach."></textarea>
           </div>
 
-          <!-- Subscription Tier Selection -->
+          <!-- Approved Professional Subscription Tier Selection -->
           <div style="background: var(--primary-50); border: 1.5px solid var(--primary-100); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
-            <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.5rem;">Select Your Educator Visibility Tier:</div>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-              <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
-                <input type="radio" name="tch-tier" value="Featured Pro" checked style="margin-top: 0.2rem;" />
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.6rem;">
+              Select Your Approved Professional Plan (Master Guide §10):
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.85rem;">
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; background: #ffffff; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border-light);">
+                <input type="radio" name="tch-tier" value="Free" checked style="margin-top: 0.2rem;" />
                 <div>
-                  <strong style="color: var(--gold-700);">Featured Pro Educator (Recommended)</strong>
-                  <div style="color: var(--text-muted); font-size: 0.8rem;">Top of search placement, direct WhatsApp click-to-chat button for parents, and Verified Pro badge.</div>
+                  <strong style="color: var(--primary-900);">Free Plan — GH₵ 0 / month</strong>
+                  <div style="color: var(--text-muted); font-size: 0.78rem;">1 published service, 2 CV versions, 5 tutoring responses/mo, 10 active clients.</div>
                 </div>
               </label>
-              <label style="display: flex; align-items: flex-start; gap: 0.5rem; cursor: pointer;">
-                <input type="radio" name="tch-tier" value="Standard" style="margin-top: 0.2rem;" />
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; background: #ffffff; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1.5px solid var(--theme-b-blue, #1266C4);">
+                <input type="radio" name="tch-tier" value="Plus" style="margin-top: 0.2rem;" />
                 <div>
-                  <strong>Standard Educator Profile (Free)</strong>
-                  <div style="color: var(--text-muted); font-size: 0.8rem;">Listed in general search directory.</div>
+                  <strong style="color: var(--theme-b-blue, #1266C4);">Plus Plan — GH₵ 39 / month (GH₵ 390 / year)</strong>
+                  <div style="color: var(--text-muted); font-size: 0.78rem;">5 published services, 5 CV versions, 30 tutoring responses/mo, 100 active clients.</div>
+                </div>
+              </label>
+              <label style="display: flex; align-items: flex-start; gap: 0.6rem; cursor: pointer; background: #ffffff; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1.5px solid var(--gold-500, #D5A63B);">
+                <input type="radio" name="tch-tier" value="Business" style="margin-top: 0.2rem;" />
+                <div>
+                  <strong style="color: var(--gold-700, #b45309);">Business Plan — GH₵ 99 / month (GH₵ 990 / year)</strong>
+                  <div style="color: var(--text-muted); font-size: 0.78rem;">15 published services, 15 CV versions, 100 tutoring responses/mo, 500 clients, premier ranking.</div>
                 </div>
               </label>
             </div>

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
+const { authenticate } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
 const MarketplaceService = require('../services/marketplaceService');
 
@@ -138,13 +139,33 @@ router.post('/rfqs', async (req, res) => {
 
 /**
  * GET /api/rfqs/:id/quotes
+ * Protected: Sealed bids viewable ONLY by authorized school proprietor or super admin
  */
-router.get('/rfqs/:id/quotes', async (req, res) => {
+router.get('/rfqs/:id/quotes', authenticate, async (req, res) => {
   try {
+    const rfqId = req.params.id;
+
+    // Verify RFQ exists and belongs to this school owner (or super admin)
+    if (req.user.role !== 'super_admin') {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rfqId);
+      if (isUuid) {
+        const { data: rfq } = await supabaseAdmin
+          .from('rfqs')
+          .select('id, school_id')
+          .eq('id', rfqId)
+          .maybeSingle();
+
+        const userSchoolId = req.user.school_id || req.user.schoolId;
+        if (rfq && rfq.school_id && (!userSchoolId || userSchoolId !== rfq.school_id)) {
+          return res.status(403).json({ error: 'Access denied: Sealed bids are confidential to the originating school owner' });
+        }
+      }
+    }
+
     const { data: quotes, error } = await supabaseAdmin
       .from('rfq_quotes')
       .select('*')
-      .eq('rfq_id', req.params.id);
+      .eq('rfq_id', rfqId);
 
     return res.json(quotes || []);
   } catch (err) {

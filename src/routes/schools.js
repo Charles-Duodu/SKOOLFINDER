@@ -158,26 +158,36 @@ const FALLBACK_SCHOOLS = [
 
 function formatSchool(s) {
   if (!s) return null;
-  const min = s.tuition_min ? Number(s.tuition_min).toLocaleString() : '1,500';
-  const max = s.tuition_max ? Number(s.tuition_max).toLocaleString() : '5,000';
-  const feeBand = `GH₵ ${min} - ${max} / Term`;
+  const hasTuition = (s.tuition_min !== null && s.tuition_min !== undefined) || (s.tuition_max !== null && s.tuition_max !== undefined);
+  let feeBand = 'Fee Not Disclosed';
+  if (s.feeBand) {
+    feeBand = s.feeBand;
+  } else if (s.tuition_min && s.tuition_max) {
+    feeBand = `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max).toLocaleString()} / Term`;
+  } else if (s.tuition_min) {
+    feeBand = `From GH₵ ${Number(s.tuition_min).toLocaleString()} / Term`;
+  } else if (s.tuition_max) {
+    feeBand = `Up to GH₵ ${Number(s.tuition_max).toLocaleString()} / Term`;
+  }
 
   return {
     ...s,
-    suburb: s.locality || s.district || 'Accra',
-    feeBand: s.feeBand || feeBand,
-    levels: s.education_level || ['Primary', 'JHS'],
-    education_level: s.education_level || ['Primary', 'JHS'],
+    suburb: s.locality || s.district || 'Greater Accra',
+    feeBand,
+    fee_disclosed: hasTuition,
+    levels: s.education_level || [],
+    education_level: s.education_level || [],
     boardingType: s.boarding_type || 'Day & Boarding',
     boarding_type: s.boarding_type || 'Day & Boarding',
     genderType: s.gender_type || 'Mixed',
-    curriculum: Array.isArray(s.curriculum) ? s.curriculum : [s.curriculum || 'GES'],
-    facilities: Array.isArray(s.facilities) && s.facilities.length > 0 ? s.facilities : ['Science Lab', 'Library', 'ICT Suite'],
-    verified: s.is_verified ?? true,
-    is_verified: s.is_verified ?? true,
+    curriculum: Array.isArray(s.curriculum) ? s.curriculum : (s.curriculum ? [s.curriculum] : ['GES']),
+    facilities: Array.isArray(s.facilities) ? s.facilities : [],
+    verified: Boolean(s.is_verified),
+    is_verified: Boolean(s.is_verified),
+    verification_status: s.verification_status || (s.is_verified ? 'verified' : 'unverified'),
     coverImage: s.banner_url || s.logo_url || '/assets/images/campus_hero.webp',
-    whatsapp: s.phone || '+233302777163',
-    phone: s.phone || '+233302777163'
+    whatsapp: s.whatsapp || s.phone || null,
+    phone: s.phone || null
   };
 }
 

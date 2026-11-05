@@ -119,8 +119,8 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-admin-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.85rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #3b82f6; box-shadow: 0 4px 12px rgba(9,30,66,0.3);">
-                <span>🛡️</span> Admin Sign In
+              <button id="btn-nav-signin" class="btn-pill btn-primary nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 700;">
+                <span>👤</span> Sign In
               </button>
             `}
 
@@ -406,6 +406,9 @@ const Navbar = {
       Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
     };
 
+    document.getElementById('btn-nav-signin')?.addEventListener('click', () => {
+      Modals.openLoginModal({ initialTab: 'signin' });
+    });
     document.getElementById('btn-nav-admin-signin')?.addEventListener('click', handleAdminSignInModal);
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', handleAdminSignInModal);
 

@@ -108,9 +108,9 @@ const SuppliersView = {
                       </div>
 
                       <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
-                        <button class="btn-pill btn-outline btn-view-quotes" data-rfq-id="${r.id}" style="font-size: 0.82rem; padding: 0.45rem 0.85rem;">
-                          📋 View Quotes (${r.quotesReceived || 0})
-                        </button>
+                        <span class="badge" style="background: rgba(10,32,70,0.06); color: var(--theme-b-navy, #0A2046); font-size: 0.78rem; padding: 0.35rem 0.65rem;">
+                          🔒 Sealed Bids
+                        </span>
                         <button class="btn-pill btn-gold btn-submit-bid" data-rfq-id="${r.id}">
                           Submit Quotation Bid &rarr;
                         </button>
@@ -217,16 +217,6 @@ const SuppliersView = {
         const rfqs = await API.getRFQs();
         const rfq = rfqs.find(r => r.id === rfqId);
         if (rfq) Modals.openSubmitQuoteModal(rfq);
-      };
-    });
-
-    // View Quotes buttons
-    document.querySelectorAll('.btn-view-quotes').forEach(btn => {
-      btn.onclick = async () => {
-        const rfqId = btn.dataset.rfqId;
-        const rfqs = await API.getRFQs();
-        const rfq = rfqs.find(r => r.id === rfqId);
-        if (rfq) Modals.openRFQQuotesModal(rfq);
       };
     });
 

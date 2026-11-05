@@ -50,7 +50,7 @@ const Footer = {
                 <li><a href="/teachers" class="footer-portal-link" data-portal="teachers">🧑‍🏫 Teachers & Tutors Portal</a></li>
                 <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers B2B Portal</a></li>
                 <li><a href="/schools" class="footer-portal-link" data-portal="schools">🏫 School Management OS</a></li>
-                <li><a href="/admin" class="footer-portal-link" data-portal="admin">🛡️ Super Admin Console</a></li>
+                <li><a href="#" class="footer-link-verification">🛡️ How We Verify Information</a></li>
               </ul>
             </div>
 
@@ -133,6 +133,20 @@ const Footer = {
           App.navigate('schools', State.currentUser?.schoolId || 'sch-gis-accra');
         } else {
           App.navigate(portal);
+        }
+      };
+    });
+
+    document.querySelectorAll('.footer-link-verification').forEach(el => {
+      el.onclick = (e) => {
+        e.preventDefault();
+        if (State.currentView !== 'home') {
+          App.navigate('home');
+          setTimeout(() => {
+            window.scrollTo({ top: 500, behavior: 'smooth' });
+          }, 200);
+        } else {
+          window.scrollTo({ top: 500, behavior: 'smooth' });
         }
       };
     });
