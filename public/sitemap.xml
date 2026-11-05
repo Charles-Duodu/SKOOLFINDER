@@ -3,119 +3,151 @@
   <!-- Core Platform Landing & Search -->
   <url>
     <loc>https://skoolfinder.vercel.app/</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/directory</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://skoolfinder.vercel.app/cssps</loc>
-    <lastmod>2026-11-01</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/compare</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://skoolfinder.vercel.app/matchmaker</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://skoolfinder.vercel.app/cssps</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/resources</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- 5 Dedicated SaaS Portals -->
+  <!-- Dedicated Public Persona Landing Pages -->
   <url>
-    <loc>https://skoolfinder.vercel.app/parents</loc>
-    <lastmod>2026-11-01</lastmod>
-    <changefreq>daily</changefreq>
+    <loc>https://skoolfinder.vercel.app/for-schools</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://skoolfinder.vercel.app/for-teachers</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://skoolfinder.vercel.app/for-suppliers</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://skoolfinder.vercel.app/pricing</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+
+  <!-- Dedicated Portals -->
+  <url>
+    <loc>https://skoolfinder.vercel.app/parents</loc>
+    <lastmod>2026-11-05</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://skoolfinder.vercel.app/teachers</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/suppliers</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/schools</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Verified School Showcase Profiles -->
+  <!-- Verified School Showcase Profiles (Canonical URLs) -->
   <url>
     <loc>https://skoolfinder.vercel.app/schools/ab5af86d-c902-4853-9528-d6200104b5f6</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://skoolfinder.vercel.app/school-detail/ab5af86d-c902-4853-9528-d6200104b5f6</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://skoolfinder.vercel.app/schools/ghana-international-school</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/schools/47508357-d2b3-4a6a-b6a9-21e037ef9dd2</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://skoolfinder.vercel.app/school-detail/47508357-d2b3-4a6a-b6a9-21e037ef9dd2</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://skoolfinder.vercel.app/schools/sos-hermann-gmeiner-international-college</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/schools/sch-03</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://skoolfinder.vercel.app/school-detail/sch-03</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://skoolfinder.vercel.app/schools/achimoto-school</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/schools/sch-04</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://skoolfinder.vercel.app/school-detail/sch-04</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://skoolfinder.vercel.app/schools/lincoln-community-school</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
     <loc>https://skoolfinder.vercel.app/schools/sch-05</loc>
-    <lastmod>2026-11-01</lastmod>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://skoolfinder.vercel.app/school-detail/sch-05</loc>
-    <lastmod>2026-11-01</lastmod>
+    <loc>https://skoolfinder.vercel.app/schools/prempeh-college</loc>
+    <lastmod>2026-11-05</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
   </url>

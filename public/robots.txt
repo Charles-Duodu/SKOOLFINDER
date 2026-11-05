@@ -1,5 +1,30 @@
+# SkoolFinder Ghana — Search Engine Crawler Directives (robots.txt)
+# Website: https://skoolfinder.vercel.app/
+# Target: All accredited search engine crawlers (Googlebot, Bingbot, Applebot, etc.)
+
 User-agent: *
 Allow: /
-Disallow: /api/
+Allow: /directory
+Allow: /schools/
+Allow: /for-schools
+Allow: /for-teachers
+Allow: /for-suppliers
+Allow: /pricing
+Allow: /compare
+Allow: /matchmaker
+Allow: /cssps
+Allow: /resources
+Allow: /assets/
+Allow: /css/
+Allow: /js/
 
+# Disallow internal APIs and administrative back-office portals
+Disallow: /api/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /super-admin
+Disallow: /scratch/
+
+# Host and Sitemap references
+Host: https://skoolfinder.vercel.app
 Sitemap: https://skoolfinder.vercel.app/sitemap.xml

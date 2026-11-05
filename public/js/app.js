@@ -9,8 +9,8 @@ const App = {
     this.debounceTimer = setTimeout(func, delay);
   },
 
-  // SEO-03: Dynamic Meta, Canonical & OpenGraph Tag Manager
-  updateSEO({ title, description, ogTitle, ogDescription, ogImage, canonicalUrl } = {}) {
+  // SEO-03 & SEO-04: Dynamic Meta, Canonical, OpenGraph & Schema.org Rich Snippets Manager
+  updateSEO({ title, description, keywords, ogTitle, ogDescription, ogImage, canonicalUrl, breadcrumbs, schema } = {}) {
     if (title) {
       document.title = title;
     }
@@ -23,6 +23,16 @@ const App = {
         document.head.appendChild(metaDesc);
       }
       metaDesc.setAttribute('content', description);
+    }
+
+    if (keywords) {
+      let metaKey = document.querySelector('meta[name="keywords"]');
+      if (!metaKey) {
+        metaKey = document.createElement('meta');
+        metaKey.setAttribute('name', 'keywords');
+        document.head.appendChild(metaKey);
+      }
+      metaKey.setAttribute('content', keywords);
     }
 
     const fullCanonical = canonicalUrl || (window.location.origin + window.location.pathname);
@@ -56,10 +66,57 @@ const App = {
     setMeta('property', 'og:description', finalOgDesc);
     setMeta('property', 'og:image', finalOgImage);
     setMeta('property', 'og:url', fullCanonical);
+    setMeta('property', 'og:site_name', 'SkoolFinder Ghana');
+    setMeta('property', 'og:locale', 'en_GH');
 
+    setMeta('name', 'twitter:card', 'summary_large_image');
     setMeta('name', 'twitter:title', finalOgTitle);
     setMeta('name', 'twitter:description', finalOgDesc);
     setMeta('name', 'twitter:image', finalOgImage);
+    setMeta('name', 'twitter:site', '@SkoolFinderGH');
+    setMeta('name', 'twitter:creator', '@SkoolFinderGH');
+
+    // BreadcrumbList Schema.org injection
+    const oldBreadcrumb = document.getElementById('schema-dynamic-breadcrumbs');
+    if (oldBreadcrumb) oldBreadcrumb.remove();
+
+    if (Array.isArray(breadcrumbs) && breadcrumbs.length > 0) {
+      try {
+        const breadcrumbData = {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": breadcrumbs.map((b, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "name": b.name,
+            "item": b.url.startsWith('http') ? b.url : `https://skoolfinder.vercel.app${b.url}`
+          }))
+        };
+        const scriptTag = document.createElement('script');
+        scriptTag.type = 'application/ld+json';
+        scriptTag.id = 'schema-dynamic-breadcrumbs';
+        scriptTag.textContent = JSON.stringify(breadcrumbData, null, 2);
+        document.head.appendChild(scriptTag);
+      } catch (err) {
+        console.warn('Breadcrumb schema injection notice:', err);
+      }
+    }
+
+    // Dynamic Route Schema.org injection (FAQPage, Product, etc.)
+    const oldDynamicSchema = document.getElementById('schema-dynamic-jsonld');
+    if (oldDynamicSchema) oldDynamicSchema.remove();
+
+    if (schema && typeof schema === 'object') {
+      try {
+        const scriptTag = document.createElement('script');
+        scriptTag.type = 'application/ld+json';
+        scriptTag.id = 'schema-dynamic-jsonld';
+        scriptTag.textContent = JSON.stringify(schema, null, 2);
+        document.head.appendChild(scriptTag);
+      } catch (err) {
+        console.warn('Dynamic route schema injection notice:', err);
+      }
+    }
   },
 
   async navigate(viewName, param = null, updateUrl = true) {
@@ -135,57 +192,79 @@ const App = {
       'home': {
         title: 'SkoolFinder Ghana | Verified School Directory & Educational Procurement',
         description: 'Discover, compare, and connect with accredited pre-schools, basic schools, and senior high schools in Greater Accra and Kumasi. Access educational suppliers and teacher recruitment.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/'
+        keywords: 'Ghana schools, schools in Accra, schools in Kumasi, Cambridge schools Ghana, Montessori Accra, GES basic schools, East Legon schools, Cantonments schools, school directory Ghana',
+        canonicalUrl: 'https://skoolfinder.vercel.app/',
+        breadcrumbs: [{ name: 'Home', url: '/' }]
       },
       'directory': {
         title: 'Accredited Schools Directory in Accra & Kumasi | SkoolFinder Ghana',
         description: 'Search and filter verified pre-schools, primary, JHS, and senior high schools in Ghana by curriculum, fees, boarding options, and facilities.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/directory'
+        keywords: 'Accra school directory, Kumasi schools, primary schools Ghana, JHS schools Accra, SHS schools Ghana, international schools Accra',
+        canonicalUrl: 'https://skoolfinder.vercel.app/directory',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Schools Directory', url: '/directory' }]
       },
       'compare': {
         title: 'Compare Schools in Ghana | SkoolFinder Academic Comparison Tool',
         description: 'Compare fees, curricula, class sizes, boarding, and facilities side-by-side between top schools in Accra, Tema, and Kumasi.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/compare'
+        keywords: 'compare schools Ghana, school fee comparison Accra, Cambridge vs GES comparison, top schools compare',
+        canonicalUrl: 'https://skoolfinder.vercel.app/compare',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Schools Directory', url: '/directory' }, { name: 'Compare Schools', url: '/compare' }]
       },
       'matchmaker': {
         title: "Child's Educational Fit Adviser & Matchmaker | SkoolFinder Ghana",
         description: 'Find the ideal school in Ghana for your child. Transparent 2-step matchmaker based on verified curriculum, location, boarding, and family priorities.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/matchmaker'
+        keywords: 'school matchmaker Ghana, school selector Accra, best school for my child Ghana',
+        canonicalUrl: 'https://skoolfinder.vercel.app/matchmaker',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Schools Directory', url: '/directory' }, { name: 'Fit Matchmaker', url: '/matchmaker' }]
       },
       'parents': {
         title: 'Parent Admissions Hub | SkoolFinder Ghana',
         description: 'Book campus tours, apply for admission vouchers, save shortlist schools, and track application status for your children.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/parents'
+        keywords: 'parent admissions Ghana, school tour booking, admissions vouchers MoMo, parent portal Accra',
+        canonicalUrl: 'https://skoolfinder.vercel.app/parents',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parents Portal', url: '/parents' }]
       },
       'teachers': {
         title: 'Teaching & Educational Vacancies in Ghana | SkoolFinder Careers',
         description: 'Browse verified teaching opportunities, subject specialist roles, and administrative positions at accredited schools across Ghana.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/teachers'
+        keywords: 'teaching jobs Ghana, education vacancies Accra, teacher recruitment Ghana, Cambridge teacher jobs',
+        canonicalUrl: 'https://skoolfinder.vercel.app/teachers',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Teachers & Careers', url: '/teachers' }]
       },
       'suppliers': {
         title: 'Educational Procurement & B2B School Marketplace | SkoolFinder Ghana',
         description: 'Connect accredited schools with verified Ghanaian suppliers for uniforms, stationery, STEM equipment, catering, and bus transport.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/suppliers'
+        keywords: 'school procurement Ghana, educational suppliers Accra, school uniforms bulk, school catering contracts',
+        canonicalUrl: 'https://skoolfinder.vercel.app/suppliers',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Suppliers Marketplace', url: '/suppliers' }]
       },
       'schools': {
         title: 'School Proprietor & Administrator Portal | SkoolFinder Ghana',
         description: 'Manage your verified school listing, respond to parent enquiries, track profile analytics, and receive admission applications.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/schools'
+        keywords: 'school management OS Ghana, proprietor dashboard, admissions CRM Ghana, school leads',
+        canonicalUrl: 'https://skoolfinder.vercel.app/schools',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'School Management OS', url: '/schools' }]
       },
       'cssps': {
         title: 'CSSPS Placement Predictor & BECE Cut-Off Points | SkoolFinder Ghana',
         description: 'Predict senior high school placement eligibility in Ghana using your BECE aggregate and Category A, B, C school options.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/cssps'
+        keywords: 'CSSPS predictor Ghana, BECE aggregate calculator, category A schools cut off, SHS placement Ghana',
+        canonicalUrl: 'https://skoolfinder.vercel.app/cssps',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'CSSPS Placement Predictor', url: '/cssps' }]
       },
       'resources': {
         title: 'Educational Resources & GES Academic Calendar | SkoolFinder Ghana',
         description: 'Download GES academic term schedules, BECE & WASSCE syllabi, past examination questions, and parenting guides.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/resources'
+        keywords: 'GES calendar 2026, BECE past questions download, WASSCE syllabi, Ghana education resources',
+        canonicalUrl: 'https://skoolfinder.vercel.app/resources',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Resource Centre', url: '/resources' }]
       },
       'pricing': {
         title: 'Platform Pricing & Plans | SkoolFinder Ghana',
         description: 'Transparent subscription pricing for Ghanaian schools, verified teachers, and private tutors. Approved Ghana Cedis plans with zero hidden fees.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/pricing'
+        keywords: 'SkoolFinder pricing, school subscription plans Ghana, teacher pro membership price',
+        canonicalUrl: 'https://skoolfinder.vercel.app/pricing',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Pricing & Plans', url: '/pricing' }]
       },
       'admin': {
         title: 'SkoolFinder HQ | National School Directory Regulatory Console',
@@ -195,20 +274,25 @@ const App = {
       'for-schools': {
         title: 'For Schools & Proprietors | Accelerate Admissions & NaSIA Accreditation | SkoolFinder Ghana',
         description: 'Claim your school profile, cross-check NaSIA regulatory status, automate mobile money admission vouchers, and capture parent WhatsApp inquiries.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/for-schools'
+        keywords: 'for schools Ghana, list school Accra, NaSIA accreditation check, claim school profile',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-schools',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'For Schools & Proprietors', url: '/for-schools' }]
       },
       'for-teachers': {
         title: 'For Teachers & Educators | Verified NTC Licensure & Direct Parent Tutoring | SkoolFinder Ghana',
         description: 'Apply directly to top accredited Ghanaian schools without agent commissions, showcase your NTC licensure badge, and unlock direct parent tutoring consultations.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/for-teachers'
+        keywords: 'for teachers Ghana, NTC teacher verification, home tutor jobs Accra, educator pro plan',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-teachers',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'For Teachers & Educators', url: '/for-teachers' }]
       },
       'for-suppliers': {
         title: 'For Educational Suppliers & Contractors | Guaranteed Milestone MoMo Escrow | SkoolFinder Ghana',
         description: 'Bid on verified school procurement tenders across Ghana. Receive official LPOs with guaranteed milestone mobile money and bank escrow.',
-        canonicalUrl: 'https://skoolfinder.vercel.app/for-suppliers'
+        keywords: 'school tenders Ghana, educational supplier registration, school procurement RFQ, MoMo escrow Ghana',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-suppliers',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'For Suppliers & Vendors', url: '/for-suppliers' }]
       }
     };
-
     if (viewName !== 'school-detail') {
       // Remove any lingering school-specific JSON-LD
       const oldSchema = document.getElementById('schema-school-jsonld');

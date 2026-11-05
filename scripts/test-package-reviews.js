@@ -302,11 +302,11 @@ async function runReviewTests() {
   });
 
   // Test 15: Cache Buster in public/index.html
-  test('public/index.html incremented to ?v=76 across all scripts', () => {
+  test('public/index.html incremented to ?v=76+ across all scripts', () => {
     const html = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-    assert.ok(html.includes('/js/api.js?v=76'), 'api.js must have ?v=76');
-    assert.ok(html.includes('/js/components/modals.js?v=76'), 'modals.js must have ?v=76');
-    assert.ok(html.includes('/js/views/schoolDetailView.js?v=76'), 'schoolDetailView.js must have ?v=76');
+    assert.ok(/\/js\/api\.js\?v=(7[6-9]|[8-9][0-9])/.test(html), 'api.js must have ?v=76+');
+    assert.ok(/\/js\/components\/modals\.js\?v=(7[6-9]|[8-9][0-9])/.test(html), 'modals.js must have ?v=76+');
+    assert.ok(/\/js\/views\/schoolDetailView\.js\?v=(7[6-9]|[8-9][0-9])/.test(html), 'schoolDetailView.js must have ?v=76+');
   });
 
   console.log('\n========================================================================');
@@ -318,3 +318,4 @@ runReviewTests().catch(err => {
   console.error("Test execution failed:", err);
   process.exit(1);
 });
+

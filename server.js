@@ -53,6 +53,19 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(morgan('dev'));
 
+// SEO: Explicit Sitemaps & Robots.txt endpoints with correct Content-Type headers
+app.get('/sitemap.xml', (req, res) => {
+  const sitemapPath = path.join(__dirname, 'public', 'sitemap.xml');
+  res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+  res.sendFile(sitemapPath);
+});
+
+app.get('/robots.txt', (req, res) => {
+  const robotsPath = path.join(__dirname, 'public', 'robots.txt');
+  res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+  res.sendFile(robotsPath);
+});
+
 // Static files (Vanilla JS SPA)
 app.use(express.static(path.join(__dirname, 'public')));
 

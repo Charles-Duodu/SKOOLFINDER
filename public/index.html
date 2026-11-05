@@ -29,6 +29,52 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
+  <!-- Schema.org WebSite & Organization Structured Data (Rich Snippets) -->
+  <script type="application/ld+json" id="schema-root-jsonld">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://skoolfinder.vercel.app/#website",
+        "url": "https://skoolfinder.vercel.app/",
+        "name": "SkoolFinder Ghana",
+        "description": "Ghana's verified pre-tertiary education directory and institutional procurement network.",
+        "inLanguage": "en-GH",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://skoolfinder.vercel.app/directory?search={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "EducationalOrganization",
+        "@id": "https://skoolfinder.vercel.app/#organization",
+        "name": "SkoolFinder Ghana",
+        "alternateName": "SkoolFinder",
+        "url": "https://skoolfinder.vercel.app/",
+        "logo": "https://skoolfinder.vercel.app/assets/icons/icon-512x512.png",
+        "email": "info@skoolfinder.com.gh",
+        "telephone": "+233302777163",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Accra",
+          "addressRegion": "Greater Accra",
+          "addressCountry": "GH"
+        },
+        "sameAs": [
+          "https://twitter.com/SkoolFinderGH",
+          "https://facebook.com/SkoolFinderGhana",
+          "https://linkedin.com/company/skoolfinder-ghana"
+        ]
+      }
+    ]
+  }
+  </script>
+
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
 
@@ -76,31 +122,31 @@
   <div id="mobile-dock-root"></div>
 
   <!-- Client Application Scripts -->
-  <script src="/js/api.js?v=76" defer></script>
-  <script src="/js/state.js?v=76" defer></script>
-  <script src="/js/components/modals.js?v=76" defer></script>
-  <script src="/js/components/navbar.js?v=76" defer></script>
-  <script src="/js/components/mobileNav.js?v=76" defer></script>
-  <script src="/js/components/footer.js?v=76" defer></script>
-  <script src="/js/components/chatbot.js?v=76" defer></script>
-  <script src="/js/views/homeView.js?v=76" defer></script>
-  <script src="/js/views/directoryView.js?v=76" defer></script>
-  <script src="/js/views/schoolDetailView.js?v=76" defer></script>
-  <script src="/js/views/compareView.js?v=76" defer></script>
-  <script src="/js/views/matchmakerView.js?v=76" defer></script>
-  <script src="/js/views/suppliersView.js?v=76" defer></script>
-  <script src="/js/views/jobsView.js?v=76" defer></script>
-  <script src="/js/views/dashboardView.js?v=76" defer></script>
-  <script src="/js/views/csspsView.js?v=76" defer></script>
-  <script src="/js/views/resourcesView.js?v=76" defer></script>
-  <script src="/js/views/parentPortalView.js?v=76" defer></script>
-  <script src="/js/views/teachersView.js?v=76" defer></script>
-  <script src="/js/views/adminView.js?v=76" defer></script>
-  <script src="/js/views/pricingView.js?v=76" defer></script>
-  <script src="/js/views/forSchoolsView.js?v=76" defer></script>
-  <script src="/js/views/forTeachersView.js?v=76" defer></script>
-  <script src="/js/views/forSuppliersView.js?v=76" defer></script>
-  <script src="/js/app.js?v=76" defer></script>
+  <script src="/js/api.js?v=77" defer></script>
+  <script src="/js/state.js?v=77" defer></script>
+  <script src="/js/components/modals.js?v=77" defer></script>
+  <script src="/js/components/navbar.js?v=77" defer></script>
+  <script src="/js/components/mobileNav.js?v=77" defer></script>
+  <script src="/js/components/footer.js?v=77" defer></script>
+  <script src="/js/components/chatbot.js?v=77" defer></script>
+  <script src="/js/views/homeView.js?v=77" defer></script>
+  <script src="/js/views/directoryView.js?v=77" defer></script>
+  <script src="/js/views/schoolDetailView.js?v=77" defer></script>
+  <script src="/js/views/compareView.js?v=77" defer></script>
+  <script src="/js/views/matchmakerView.js?v=77" defer></script>
+  <script src="/js/views/suppliersView.js?v=77" defer></script>
+  <script src="/js/views/jobsView.js?v=77" defer></script>
+  <script src="/js/views/dashboardView.js?v=77" defer></script>
+  <script src="/js/views/csspsView.js?v=77" defer></script>
+  <script src="/js/views/resourcesView.js?v=77" defer></script>
+  <script src="/js/views/parentPortalView.js?v=77" defer></script>
+  <script src="/js/views/teachersView.js?v=77" defer></script>
+  <script src="/js/views/adminView.js?v=77" defer></script>
+  <script src="/js/views/pricingView.js?v=77" defer></script>
+  <script src="/js/views/forSchoolsView.js?v=77" defer></script>
+  <script src="/js/views/forTeachersView.js?v=77" defer></script>
+  <script src="/js/views/forSuppliersView.js?v=77" defer></script>
+  <script src="/js/app.js?v=77" defer></script>
   <!-- PWA Service Worker Registration & Environment Check -->
   <script>
     if (window.location.protocol === 'file:') {

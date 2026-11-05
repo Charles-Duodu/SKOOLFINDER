@@ -22,10 +22,16 @@ const SchoolDetailView = {
       App.updateSEO({
         title: schoolTitle,
         description: schoolDesc,
+        keywords: `${school.name}, ${suburbStr}schools, ${regionStr} schools, ${currStr}, Ghana accredited school`,
         ogTitle: `${school.name} — Verified School in Ghana`,
         ogDescription: schoolDesc,
         ogImage: schoolImg,
-        canonicalUrl: `https://skoolfinder.vercel.app/schools/${school.id}`
+        canonicalUrl: `https://skoolfinder.vercel.app/schools/${school.id}`,
+        breadcrumbs: [
+          { name: 'Home', url: '/' },
+          { name: 'Schools Directory', url: '/directory' },
+          { name: school.name, url: `/schools/${school.id}` }
+        ]
       });
 
       // Inject Schema.org EducationalOrganization / School structured data
@@ -35,10 +41,12 @@ const SchoolDetailView = {
           "@type": "School",
           "@id": `https://skoolfinder.vercel.app/schools/${school.id}#school`,
           "name": school.name,
+          "alternateName": school.shortName || school.slug || school.name,
           "description": school.description || school.about || school.motto || `${school.name} is an accredited educational institution in ${suburbStr}${regionStr}, Ghana.`,
           "url": `https://skoolfinder.vercel.app/schools/${school.id}`,
           "image": schoolImg,
           "telephone": school.phone || school.whatsapp || "+233302777163",
+          "email": school.email || "admissions@skoolfinder.com.gh",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": school.address || school.suburb || "Accra",
@@ -65,13 +73,37 @@ const SchoolDetailView = {
               }
             }))
           },
+          ...(Array.isArray(school.facilities) && school.facilities.length > 0 ? {
+            "amenityFeature": school.facilities.map(f => ({
+              "@type": "LocationFeatureSpecification",
+              "name": f,
+              "value": true
+            }))
+          } : {}),
           "aggregateRating": {
             "@type": "AggregateRating",
             "ratingValue": (ratingSummary.averageOverall || school.rating || 4.8).toString(),
             "bestRating": "5",
             "worstRating": "1",
             "ratingCount": (ratingSummary.totalReviews || (school.reviews && school.reviews.length) || 12).toString()
-          }
+          },
+          ...(Array.isArray(reviews) && reviews.length > 0 ? {
+            "review": reviews.slice(0, 5).map(r => ({
+              "@type": "Review",
+              "author": {
+                "@type": "Person",
+                "name": r.authorName || "Verified Parent"
+              },
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": (r.overallRating || 5).toString(),
+                "bestRating": "5",
+                "worstRating": "1"
+              },
+              "reviewBody": r.comment || r.content || r.headline || "",
+              "datePublished": r.date ? new Date(r.date).toISOString().split('T')[0] : "2026-10-15"
+            }))
+          } : {})
         };
 
         let scriptTag = document.getElementById('schema-school-jsonld');
