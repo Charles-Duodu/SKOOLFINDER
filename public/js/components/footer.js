@@ -48,7 +48,9 @@ const Footer = {
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
                 <li><a href="/parents" class="footer-portal-link" data-portal="parents">👨‍👩‍👧 Parents Family Hub</a></li>
                 <li><a href="/teachers" class="footer-portal-link" data-portal="teachers">🧑‍🏫 Teachers & Tutors Portal</a></li>
+                <li><a href="/for-teachers" class="footer-persona-link" data-view="for-teachers" style="color: #a7f3d0;">✦ Why Join: For Teachers</a></li>
                 <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers B2B Portal</a></li>
+                <li><a href="/for-suppliers" class="footer-persona-link" data-view="for-suppliers" style="color: #fde68a;">✦ Why Join: For Suppliers</a></li>
                 <li><a href="/schools" class="footer-portal-link" data-portal="schools">🏫 School Management OS</a></li>
                 <li><a href="#" class="footer-link-verification">🛡️ How We Verify Information</a></li>
               </ul>
@@ -60,6 +62,7 @@ const Footer = {
                 For Schools
               </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
+                <li><a href="/for-schools" class="footer-persona-link" data-view="for-schools" style="color: #bfdbfe; font-weight: 700;">🏛️ Why Join: For Schools & Heads</a></li>
                 <li><a href="#" class="footer-link-claim">Claim Your School Profile</a></li>
                 <li><a href="#" class="footer-link-pricing">Pricing & Monetization Packages</a></li>
                 <li><a href="#" class="footer-link-leads">Lead Generation Analytics</a></li>
@@ -122,6 +125,18 @@ const Footer = {
         e.preventDefault();
         State.filters.boarding = 'Boarding';
         App.navigate('directory');
+      };
+    });
+
+    document.querySelectorAll('.footer-persona-link').forEach(el => {
+      el.onclick = (e) => {
+        e.preventDefault();
+        const view = el.getAttribute('data-view');
+        if (view && typeof App !== 'undefined' && App.navigate) {
+          App.navigate(view);
+        } else if (view) {
+          window.location.hash = '#/' + view;
+        }
       };
     });
 

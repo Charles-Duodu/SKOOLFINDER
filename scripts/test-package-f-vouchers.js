@@ -415,11 +415,11 @@ async function runPackageFTests() {
     assert.ok(apiContent.includes('getSchoolVouchers(schoolId, query = {})'), 'api.js must contain getSchoolVouchers');
     assert.ok(apiContent.includes('redeemSchoolVoucher(schoolId, redeemData = {})'), 'api.js must contain redeemSchoolVoucher');
 
-    // 5. index.html cache buster incremented to v=74
+    // 5. index.html cache buster incremented to v=74+
     const htmlContent = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-    assert.ok(htmlContent.includes('/js/api.js?v=74'), 'index.html must have ?v=74 for api.js');
-    assert.ok(htmlContent.includes('/js/components/modals.js?v=74'), 'index.html must have ?v=74 for modals.js');
-    assert.ok(htmlContent.includes('/js/views/dashboardView.js?v=74'), 'index.html must have ?v=74 for dashboardView.js');
+    assert.ok(/\/js\/api\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for api.js');
+    assert.ok(/\/js\/components\/modals\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for modals.js');
+    assert.ok(/\/js\/views\/dashboardView\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for dashboardView.js');
   });
 
   console.log('\n========================================================================');
@@ -431,3 +431,4 @@ runPackageFTests().catch(err => {
   console.error('\n❌ PACKAGE F SUITE FAILED:', err);
   process.exit(1);
 });
+

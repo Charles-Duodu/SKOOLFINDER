@@ -113,7 +113,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -191,6 +191,21 @@ const App = {
         title: 'SkoolFinder HQ | National School Directory Regulatory Console',
         description: 'Administrative management console for school verification, directory moderation, and platform governance.',
         canonicalUrl: 'https://skoolfinder.vercel.app/admin'
+      },
+      'for-schools': {
+        title: 'For Schools & Proprietors | Accelerate Admissions & NaSIA Accreditation | SkoolFinder Ghana',
+        description: 'Claim your school profile, cross-check NaSIA regulatory status, automate mobile money admission vouchers, and capture parent WhatsApp inquiries.',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-schools'
+      },
+      'for-teachers': {
+        title: 'For Teachers & Educators | Verified NTC Licensure & Direct Parent Tutoring | SkoolFinder Ghana',
+        description: 'Apply directly to top accredited Ghanaian schools without agent commissions, showcase your NTC licensure badge, and unlock direct parent tutoring consultations.',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-teachers'
+      },
+      'for-suppliers': {
+        title: 'For Educational Suppliers & Contractors | Guaranteed Milestone MoMo Escrow | SkoolFinder Ghana',
+        description: 'Bid on verified school procurement tenders across Ghana. Receive official LPOs with guaranteed milestone mobile money and bank escrow.',
+        canonicalUrl: 'https://skoolfinder.vercel.app/for-suppliers'
       }
     };
 
@@ -281,6 +296,21 @@ const App = {
         mainRoot.innerHTML = content;
         ResourcesView.attachEvents();
       }
+      } else if (viewName === 'for-schools') {
+        content = await ForSchoolsView.render();
+        mainRoot.innerHTML = content;
+        if (ForSchoolsView.afterRender) ForSchoolsView.afterRender();
+        else if (ForSchoolsView.attachEvents) ForSchoolsView.attachEvents();
+      } else if (viewName === 'for-teachers') {
+        content = await ForTeachersView.render();
+        mainRoot.innerHTML = content;
+        if (ForTeachersView.afterRender) ForTeachersView.afterRender();
+        else if (ForTeachersView.attachEvents) ForTeachersView.attachEvents();
+      } else if (viewName === 'for-suppliers') {
+        content = await ForSuppliersView.render();
+        mainRoot.innerHTML = content;
+        if (ForSuppliersView.afterRender) ForSuppliersView.afterRender();
+        else if (ForSuppliersView.attachEvents) ForSuppliersView.attachEvents();
 
       // Render Footer
       document.getElementById('footer-root').innerHTML = Footer.render();
@@ -368,7 +398,10 @@ const App = {
         'suppliers': 'suppliers',
         'schools': 'schools',
         'dashboard': 'schools',
-        'admin': 'admin'
+        'admin': 'admin',
+        'for-schools': 'for-schools',
+        'for-teachers': 'for-teachers',
+        'for-suppliers': 'for-suppliers'
       };
 
       if (rootPath && routeMap[rootPath]) {

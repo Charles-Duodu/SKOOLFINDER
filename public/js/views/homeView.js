@@ -483,6 +483,9 @@ const HomeView = {
                 <button id="btn-goto-jobs" class="btn-pill btn-gold" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   Explore Vacancies &amp; Tutors &rarr;
                 </button>
+                <button id="btn-goto-for-teachers" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem; border-color: #10B981; color: #065f46;">
+                  🧑‍🏫 Why Join as Teacher &rarr;
+                </button>
                 <button id="btn-home-view-tutor-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   💳 View Educator Plans
                 </button>
@@ -509,6 +512,9 @@ const HomeView = {
                 <button id="btn-goto-suppliers" class="btn-pill btn-primary" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   Explore Suppliers & RFQs &rarr;
                 </button>
+                <button id="btn-goto-for-suppliers" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem; border-color: #D5A63B; color: #92400e;">
+                  📦 Why Join as Supplier &rarr;
+                </button>
                 <button id="btn-home-post-rfq" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   Post School RFQ
                 </button>
@@ -532,8 +538,11 @@ const HomeView = {
                 </div>
               </div>
               <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button id="btn-goto-for-schools" class="btn-pill" style="background: #0A2046; color: #ffffff; font-size: 0.85rem; padding: 0.55rem 1rem; font-weight: 700;">
+                  🏛️ Why Join as School &rarr;
+                </button>
                 <button id="btn-home-register-school" class="btn-pill" style="background: #86198f; color: #ffffff; font-size: 0.85rem; padding: 0.55rem 1rem; font-weight: 700;">
-                  Claim / List School &rarr;
+                  Claim / List School
                 </button>
                 <button id="btn-home-view-school-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.55rem 1rem;">
                   💳 View School Plans
@@ -873,6 +882,9 @@ const HomeView = {
     });
 
     // Ecosystem Navigation Links
+    document.getElementById('btn-goto-for-schools')?.addEventListener('click', () => App.navigate('for-schools'));
+    document.getElementById('btn-goto-for-teachers')?.addEventListener('click', () => App.navigate('for-teachers'));
+    document.getElementById('btn-goto-for-suppliers')?.addEventListener('click', () => App.navigate('for-suppliers'));
     document.getElementById('btn-goto-suppliers')?.addEventListener('click', () => App.navigate('suppliers'));
     document.getElementById('btn-home-post-rfq')?.addEventListener('click', () => Modals.openPostRFQModal());
     document.getElementById('btn-goto-jobs')?.addEventListener('click', () => App.navigate('jobs'));
