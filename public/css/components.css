@@ -2718,6 +2718,44 @@ body.has-comparison-dock .sd-chat-window {
   box-shadow: 0 2px 8px rgba(10, 32, 70, 0.25);
 }
 
+
+.who-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+  background: #ffffff;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 36px;
+  text-decoration: none;
+}
+
+.who-switch-btn:hover {
+  background: #eff6ff;
+  color: var(--theme-b-blue, #1266C4);
+  border-color: var(--theme-b-blue, #1266C4);
+  border-style: solid;
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .who-switch-btn {
+  background: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+[data-theme="dark"] .who-switch-btn:hover {
+  background: #1e3a8a;
+  color: #93c5fd;
+  border-color: #3b82f6;
+}
+
 .who-role-pill:focus-visible {
   outline: 2px solid var(--theme-b-blue, #1266C4);
   outline-offset: 2px;

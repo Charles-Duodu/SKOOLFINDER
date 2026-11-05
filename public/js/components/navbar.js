@@ -3,8 +3,26 @@
  */
 const Navbar = {
   isMobileMenuOpen: false,
+  isSwitchingRole: false,
+  lastView: null,
+
+  getActivePortal() {
+    const view = State.currentView;
+    if (view === 'schools' || view === 'dashboard') return 'school';
+    if (view === 'parents' || view === 'parent-portal') return 'parent';
+    if (view === 'teachers' || view === 'jobs') return 'teacher';
+    if (view === 'suppliers') return 'supplier';
+    if (view === 'admin') return 'admin';
+    return null;
+  },
 
   render() {
+    if (this.lastView !== State.currentView) {
+      this.isSwitchingRole = false;
+      this.lastView = State.currentView;
+    }
+    const activePortal = this.getActivePortal();
+    const showOnlyActive = activePortal && !this.isSwitchingRole;
     if (typeof State !== 'undefined' && State.isWhitelabel) {
       return `
         <header class="site-header whitelabel-header" style="background: #0a1128; border-bottom: 2px solid var(--gold-500); padding: 0.75rem 0;">
@@ -115,25 +133,61 @@ const Navbar = {
           </div>
         </div>
 
-        <!-- WHO ARE YOU: SUB-HEADER STRIP -->
+        <!-- WHO ARE YOU: SUB-HEADER STRIP (Context-Aware Single Portal Isolation) -->
         <div class="who-are-you-bar">
           <div class="container who-are-you-inner">
             <span class="who-label">
-              <span>👤</span> Who Are You:
+              <span>👤</span> ${showOnlyActive ? 'Current Portal:' : 'Who Are You:'}
             </span>
             <div class="who-roles-list">
-              <a href="/parents" id="who-nav-parent" class="who-role-pill ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parent
-              </a>
-              <a href="/teachers" id="who-nav-teacher" class="who-role-pill ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
-                <span>🧑‍🏫</span> Teacher
-              </a>
-              <a href="/suppliers" id="who-nav-supplier" class="who-role-pill ${State.currentView === 'suppliers' ? 'active' : ''}">
-                <span>📦</span> Supplier
-              </a>
-              <a href="/schools" id="who-nav-school" class="who-role-pill ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
-                <span>🏫</span> School Owner / Proprietor
-              </a>
+              ${showOnlyActive ? `
+                ${activePortal === 'school' ? `
+                  <a href="/schools" id="who-nav-school" class="who-role-pill active">
+                    <span>🏫</span> School Owner / Proprietor
+                  </a>
+                ` : ''}
+                ${activePortal === 'parent' ? `
+                  <a href="/parents" id="who-nav-parent" class="who-role-pill active">
+                    <span>👨‍👩‍👧</span> Parent
+                  </a>
+                ` : ''}
+                ${activePortal === 'teacher' ? `
+                  <a href="/teachers" id="who-nav-teacher" class="who-role-pill active">
+                    <span>🧑‍🏫</span> Teacher
+                  </a>
+                ` : ''}
+                ${activePortal === 'supplier' ? `
+                  <a href="/suppliers" id="who-nav-supplier" class="who-role-pill active">
+                    <span>📦</span> Supplier
+                  </a>
+                ` : ''}
+                ${activePortal === 'admin' ? `
+                  <a href="/admin" id="who-nav-admin" class="who-role-pill active">
+                    <span>🛡️</span> Super Administrator
+                  </a>
+                ` : ''}
+                <button type="button" id="btn-switch-portal" class="who-switch-btn" title="Switch to another portal">
+                  <span>⇄</span> Switch Role
+                </button>
+              ` : `
+                <a href="/parents" id="who-nav-parent" class="who-role-pill ${activePortal === 'parent' ? 'active' : ''}">
+                  <span>👨‍👩‍👧</span> Parent
+                </a>
+                <a href="/teachers" id="who-nav-teacher" class="who-role-pill ${activePortal === 'teacher' ? 'active' : ''}">
+                  <span>🧑‍🏫</span> Teacher
+                </a>
+                <a href="/suppliers" id="who-nav-supplier" class="who-role-pill ${activePortal === 'supplier' ? 'active' : ''}">
+                  <span>📦</span> Supplier
+                </a>
+                <a href="/schools" id="who-nav-school" class="who-role-pill ${activePortal === 'school' ? 'active' : ''}">
+                  <span>🏫</span> School Owner / Proprietor
+                </a>
+                ${this.isSwitchingRole ? `
+                  <button type="button" id="btn-cancel-switch-portal" class="who-switch-btn" title="Keep current portal">
+                    <span>✕</span> Cancel
+                  </button>
+                ` : ''}
+              `}
             </div>
           </div>
         </div>
@@ -160,19 +214,52 @@ const Navbar = {
 
             <!-- Category 2: Who Are You (Singular Roles) -->
             <div class="mob-category-card" style="border: 2px solid #1266C4;">
-              <div class="mob-category-header" style="color: #0A2046; font-weight: 800;">👤 Who Are You</div>
-              <a href="/parents" id="mob-who-parent" class="mobile-nav-item ${State.currentView === 'parents' || State.currentView === 'parent-portal' ? 'active' : ''}">
-                <span>👨‍👩‍👧</span> Parent
-              </a>
-              <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item ${State.currentView === 'teachers' || State.currentView === 'jobs' ? 'active' : ''}">
-                <span>🧑‍🏫</span> Teacher
-              </a>
-              <a href="/suppliers" id="mob-who-supplier" class="mobile-nav-item ${State.currentView === 'suppliers' ? 'active' : ''}">
-                <span>📦</span> Supplier
-              </a>
-              <a href="/schools" id="mob-who-school" class="mobile-nav-item ${State.currentView === 'schools' || State.currentView === 'dashboard' ? 'active' : ''}">
-                <span>🏫</span> School Owner / Proprietor
-              </a>
+              <div class="mob-category-header" style="color: #0A2046; font-weight: 800; display: flex; justify-content: space-between; align-items: center;">
+                <span>👤 ${showOnlyActive ? 'Current Portal' : 'Who Are You'}</span>
+                ${showOnlyActive ? `
+                  <button type="button" id="mob-btn-switch-portal" style="background: none; border: none; color: #1266C4; font-size: 0.75rem; font-weight: 700; cursor: pointer; text-decoration: underline;">Switch</button>
+                ` : ''}
+              </div>
+              ${showOnlyActive ? `
+                ${activePortal === 'school' ? `
+                  <a href="/schools" id="mob-who-school" class="mobile-nav-item active">
+                    <span>🏫</span> School Owner / Proprietor
+                  </a>
+                ` : ''}
+                ${activePortal === 'parent' ? `
+                  <a href="/parents" id="mob-who-parent" class="mobile-nav-item active">
+                    <span>👨‍👩‍👧</span> Parent
+                  </a>
+                ` : ''}
+                ${activePortal === 'teacher' ? `
+                  <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item active">
+                    <span>🧑‍🏫</span> Teacher
+                  </a>
+                ` : ''}
+                ${activePortal === 'supplier' ? `
+                  <a href="/suppliers" id="mob-who-supplier" class="mobile-nav-item active">
+                    <span>📦</span> Supplier
+                  </a>
+                ` : ''}
+                ${activePortal === 'admin' ? `
+                  <a href="/admin" id="mob-who-admin" class="mobile-nav-item active">
+                    <span>🛡️</span> Super Administrator
+                  </a>
+                ` : ''}
+              ` : `
+                <a href="/parents" id="mob-who-parent" class="mobile-nav-item ${activePortal === 'parent' ? 'active' : ''}">
+                  <span>👨‍👩‍👧</span> Parent
+                </a>
+                <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item ${activePortal === 'teacher' ? 'active' : ''}">
+                  <span>🧑‍🏫</span> Teacher
+                </a>
+                <a href="/suppliers" id="mob-who-supplier" class="mobile-nav-item ${activePortal === 'supplier' ? 'active' : ''}">
+                  <span>📦</span> Supplier
+                </a>
+                <a href="/schools" id="mob-who-school" class="mobile-nav-item ${activePortal === 'school' ? 'active' : ''}">
+                  <span>🏫</span> School Owner / Proprietor
+                </a>
+              `}
             </div>
 
             <!-- Bottom Guided Tour & Auth -->
@@ -230,9 +317,32 @@ const Navbar = {
       if (drawer) drawer.classList.remove('open');
     };
 
+    // Sub-header portal switch toggles
+    document.getElementById('btn-switch-portal')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.isSwitchingRole = true;
+      document.getElementById('header-root').innerHTML = this.render();
+      this.attachEvents();
+    });
+
+    document.getElementById('mob-btn-switch-portal')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.isSwitchingRole = true;
+      document.getElementById('header-root').innerHTML = this.render();
+      this.attachEvents();
+    });
+
+    document.getElementById('btn-cancel-switch-portal')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.isSwitchingRole = false;
+      document.getElementById('header-root').innerHTML = this.render();
+      this.attachEvents();
+    });
+
     // Role 1: Parent
     const handleParentNav = (e) => {
       e.preventDefault();
+      this.isSwitchingRole = false;
       closeMobDrawer();
       App.navigate('parents');
     };
@@ -244,6 +354,7 @@ const Navbar = {
     // Role 2: Teacher
     const handleTeacherNav = (e) => {
       e.preventDefault();
+      this.isSwitchingRole = false;
       closeMobDrawer();
       App.navigate('teachers');
     };
@@ -255,6 +366,7 @@ const Navbar = {
     // Role 3: Supplier
     const handleSupplierNav = (e) => {
       e.preventDefault();
+      this.isSwitchingRole = false;
       closeMobDrawer();
       App.navigate('suppliers');
     };
@@ -266,6 +378,7 @@ const Navbar = {
     // Role 4: School Owner / Proprietor
     const handleSchoolNav = (e) => {
       e.preventDefault();
+      this.isSwitchingRole = false;
       closeMobDrawer();
       App.navigate('schools', State.currentUser?.schoolId || 'sch-gis-accra');
     };
@@ -277,6 +390,7 @@ const Navbar = {
     // Portal 5: Super Admin
     const handleAdminNav = (e) => {
       e.preventDefault();
+      this.isSwitchingRole = false;
       closeMobDrawer();
       if (!State.isAuthenticated() || !State.isSuperAdmin()) {
         Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
@@ -307,7 +421,7 @@ const Navbar = {
 
     document.getElementById('btn-nav-my-portal')?.addEventListener('click', () => {
       const role = State.currentUser?.role;
-      if (role === 'school_admin') {
+      if (role === 'school_admin' || role === 'primary_proprietor' || role === 'school_owner') {
         App.navigate('schools', State.currentUser?.schoolId || 'ghana-international-school');
       } else if (role === 'teacher') {
         App.navigate('teachers');
