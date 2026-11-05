@@ -463,94 +463,142 @@ const DashboardView = {
           <nav class="owner-sidebar-nav">
             <!-- Group 1: Command & Core -->
             <div class="owner-nav-group-title">Executive Command</div>
-            <button class="owner-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-owner-tab="overview">
-              <span>Dashboard Overview</span>
+            <button class="owner-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-owner-tab="overview" title="Command metrics & school KPI snapshot">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Dashboard Overview</span>
+                <span class="owner-nav-subtitle">Command metrics & KPI snapshot</span>
+              </div>
             </button>
 
             <!-- Group 2: Institutional Identity -->
             <div class="owner-nav-group-title">Institutional Identity</div>
-            <button class="owner-nav-item ${this.activeTab === 'myschool' ? 'active' : ''}" data-owner-tab="myschool">
-              <span>My School & Profile</span>
+            <button class="owner-nav-item ${this.activeTab === 'myschool' ? 'active' : ''}" data-owner-tab="myschool" title="Public profile draft & live directory updates">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">My School & Profile</span>
+                <span class="owner-nav-subtitle">Profile draft & live directory</span>
+              </div>
             </button>
-            <button class="owner-nav-item ${this.activeTab === 'regulatory' ? 'active' : ''}" data-owner-tab="regulatory">
-              <span>Regulatory & NaSIA</span>
+            <button class="owner-nav-item ${this.activeTab === 'regulatory' ? 'active' : ''}" data-owner-tab="regulatory" title="NaSIA license & compliance accreditation">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Regulatory & NaSIA</span>
+                <span class="owner-nav-subtitle">Licenses & Act 1023 proof</span>
+              </div>
             </button>
 
             <!-- Group 3: Operations & Governance -->
             <div class="owner-nav-group-title">People & Governance</div>
-            <button class="owner-nav-item ${this.activeTab === 'staff' ? 'active' : ''}" data-owner-tab="staff">
-              <span>Staff & Seat Quotas</span>
+            <button class="owner-nav-item ${this.activeTab === 'staff' ? 'active' : ''}" data-owner-tab="staff" title="Team seat allocations & role permissions">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Staff & Seat Quotas</span>
+                <span class="owner-nav-subtitle">Team seats & permissions</span>
+              </div>
               <span class="owner-nav-badge" style="background: rgba(255,255,255,0.15); color: #fff;">${seatQuotas.allocated}/${seatQuotas.total}</span>
             </button>
-            <button class="owner-nav-item ${this.activeTab === 'audit' ? 'active' : ''}" data-owner-tab="audit">
-              <span>Compliance Audit Log</span>
+            <button class="owner-nav-item ${this.activeTab === 'audit' ? 'active' : ''}" data-owner-tab="audit" title="Tamper-evident system activity trail">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Compliance Audit Log</span>
+                <span class="owner-nav-subtitle">Activity & mutation history</span>
+              </div>
             </button>
 
             <!-- Group 4: Admissions & Growth (Active Phase 2A) -->
             <div class="owner-nav-group-title">Admissions & Growth</div>
-            <button class="owner-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-owner-tab="admissions">
-              <span>Admissions Pipeline</span>
+            <button class="owner-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-owner-tab="admissions" title="12-stage applicant dossiers & enrollment">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Admissions Pipeline</span>
+                <span class="owner-nav-subtitle">12-stage intake & dossiers</span>
+              </div>
               <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${applications.length || kpis.totalApplications || 14}</span>
             </button>
-            <button class="owner-nav-item ${this.activeTab === 'inquiries' ? 'active' : ''}" data-owner-tab="inquiries">
-              <span>Enquiries & Tours</span>
+            <button class="owner-nav-item ${this.activeTab === 'inquiries' ? 'active' : ''}" data-owner-tab="inquiries" title="Parent inbound leads & walkthrough booking">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Enquiries & Tours</span>
+                <span class="owner-nav-subtitle">Parent leads & walkthroughs</span>
+              </div>
               <span class="owner-nav-badge" style="background: #3b82f6; color: #fff;">${enquiriesData?.stats?.total || kpis.totalEnquiries || 28}</span>
             </button>
 
             <!-- Group 5: Commercial Subscriptions (Active Phase 2A) -->
             <div class="owner-nav-group-title">Subscription & Billing</div>
-            <button class="owner-nav-item ${this.activeTab === 'subscription' ? 'active' : ''}" data-owner-tab="subscription">
-              <span>Plan Tier & Seats</span>
+            <button class="owner-nav-item ${this.activeTab === 'subscription' ? 'active' : ''}" data-owner-tab="subscription" title="Commercial plan, Paystack billing & receipts">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Plan Tier & Seats</span>
+                <span class="owner-nav-subtitle">Paystack billing & receipts</span>
+              </div>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">ACTIVE</span>
             </button>
 
             <!-- Group 6: Institutional Intelligence (Phase 5) -->
             <div class="owner-nav-group-title">Predictive Intelligence</div>
-            <button class="owner-nav-item ${this.activeTab === 'intelligence' ? 'active' : ''}" data-owner-tab="intelligence">
-              <span>Predictive Yield & Cash Flow</span>
+            <button class="owner-nav-item ${this.activeTab === 'intelligence' ? 'active' : ''}" data-owner-tab="intelligence" title="Admissions velocity & revenue forecasting">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Predictive Yield & Cash Flow</span>
+                <span class="owner-nav-subtitle">Yield & cash flow model</span>
+              </div>
               <span class="owner-nav-badge" style="background: #8b5cf6; color: #fff;">AI INTEL</span>
             </button>
 
             <!-- Group 7: Campus Operations & Physical Logistics (Phase 5) -->
             <div class="owner-nav-group-title">Campus Operations & Logistics</div>
-            <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations">
-              <span>Assets, Library & Fleet</span>
+            <button class="owner-nav-item ${this.activeTab === 'operations' ? 'active' : ''}" data-owner-tab="operations" title="Campus assets, textbook catalog & bus GPS routes">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Assets, Library & Fleet</span>
+                <span class="owner-nav-subtitle">Fixed assets, LMS & buses</span>
+              </div>
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">ACTIVE</span>
             </button>
 
             <!-- Group 8: Multi-Campus Group (Phase 5 / DEC-02) -->
             <div class="owner-nav-group-title">Multi-Campus Trust</div>
-            <button class="owner-nav-item ${this.activeTab === 'group' ? 'active' : ''}" data-owner-tab="group">
-              <span>Trust Network Controller</span>
+            <button class="owner-nav-item ${this.activeTab === 'group' ? 'active' : ''}" data-owner-tab="group" title="Multi-campus school group administration">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Trust Network Controller</span>
+                <span class="owner-nav-subtitle">Multi-campus trust branches</span>
+              </div>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">NETWORK</span>
             </button>
 
             <!-- Group 9: Institutional Marketplace (Active Phase 2B & 4) -->
             <div class="owner-nav-group-title">Institutional Marketplace</div>
-            <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting">
-              <span>Teacher Recruiting</span>
+            <button class="owner-nav-item ${this.activeTab === 'recruiting' ? 'active' : ''}" data-owner-tab="recruiting" title="Job postings & NTC-licensed teacher applicants">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Teacher Recruiting</span>
+                <span class="owner-nav-subtitle">Teaching jobs & NTC dossiers</span>
+              </div>
               <span class="owner-nav-badge" style="background: #10b981; color: #fff;">${vacanciesData?.vacancies?.length || 0} JOBS</span>
             </button>
-            <button class="owner-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-owner-tab="procurement">
-              <span>B2B Procurement RFQs</span>
+            <button class="owner-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-owner-tab="procurement" title="Supplier tenders & 50/50 MoMo milestone escrow">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">B2B Procurement RFQs</span>
+                <span class="owner-nav-subtitle">Tenders & 50/50 MoMo escrow</span>
+              </div>
               <span class="owner-nav-badge" style="background: #0ea5e9; color: #fff;">${tendersData?.tenders?.length || 0} RFQS</span>
             </button>
 
             <!-- Group 10: Growth, Promotions & Webhooks (Expansions) -->
             <div class="owner-nav-group-title">Expansions & Integrations</div>
-            <button class="owner-nav-item ${this.activeTab === 'promotions' ? 'active' : ''}" data-owner-tab="promotions">
-              <span>Sponsored Ads & Promotions</span>
+            <button class="owner-nav-item ${this.activeTab === 'promotions' ? 'active' : ''}" data-owner-tab="promotions" title="Homepage hero & discovery spotlight campaigns">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Sponsored Ads & Promotions</span>
+                <span class="owner-nav-subtitle">Top spotlight campaigns</span>
+              </div>
               <span class="owner-nav-badge" style="background: #f59e0b; color: #000; font-weight: 800;">PROMO</span>
             </button>
-            <button class="owner-nav-item ${this.activeTab === 'webhooks' ? 'active' : ''}" data-owner-tab="webhooks">
-              <span>Webhooks & Automated Alerts</span>
+            <button class="owner-nav-item ${this.activeTab === 'webhooks' ? 'active' : ''}" data-owner-tab="webhooks" title="Real-time event webhooks, SMS & WhatsApp alerts">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Webhooks & Automated Alerts</span>
+                <span class="owner-nav-subtitle">ERP webhooks, SMS & alerts</span>
+              </div>
               <span class="owner-nav-badge" style="background: #06b6d4; color: #fff;">ALERTS</span>
             </button>
 
             <!-- Group 11: Phase 3 Deferred Scope -->
             <div class="owner-nav-group-title">Upcoming Modules</div>
-            <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;">
-              <span>Student Academics & SIS</span>
+            <div class="owner-nav-item" style="opacity: 0.55; cursor: not-allowed;" title="Gradebook, term reports & academic records">
+              <div class="owner-nav-content">
+                <span class="owner-nav-title">Student Academics & SIS</span>
+                <span class="owner-nav-subtitle">Academics & report cards</span>
+              </div>
               <span class="owner-nav-badge" style="background: #334155; color: #94a3b8;">Coming Soon</span>
             </div>
           </nav>

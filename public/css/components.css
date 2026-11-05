@@ -2823,9 +2823,10 @@ body.has-comparison-dock .sd-chat-window {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   text-align: left;
   margin-bottom: 2px;
+  position: relative;
 }
 
 .owner-nav-item:hover {
@@ -2838,6 +2839,50 @@ body.has-comparison-dock .sd-chat-window {
   color: #ffffff;
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(18, 102, 196, 0.35);
+}
+
+.owner-nav-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  flex: 1;
+  pointer-events: none;
+}
+
+.owner-nav-title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.25;
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+.owner-nav-subtitle {
+  font-size: 0.69rem;
+  font-weight: 400;
+  color: #94a3b8;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-2px);
+  transition: max-height 0.22s ease, opacity 0.2s ease, transform 0.2s ease, margin-top 0.2s ease;
+  pointer-events: none;
+}
+
+.owner-nav-item:hover .owner-nav-subtitle,
+.owner-nav-item:focus-visible .owner-nav-subtitle {
+  max-height: 20px;
+  opacity: 0.92;
+  transform: translateY(0);
+  margin-top: 3px;
+}
+
+.owner-nav-item.active .owner-nav-subtitle {
+  color: #dbeafe;
 }
 
 .owner-nav-badge {
