@@ -23,26 +23,20 @@ function generateSlug(name) {
 }
 
 /**
- * Middleware: Admin guard with resilient developer/production claim handling
+ * Middleware: Admin guard with strict JWT & Super Admin role enforcement (CR-01 Hardening)
  */
 function adminGuard(req, res, next) {
   const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authenticate(req, res, () => {
-      if (req.user && req.user.role !== 'super_admin') {
-        return res.status(403).json({ error: 'Forbidden: Super Administrator credentials required' });
-      }
-      next();
-    });
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authentication token required. Super Administrator session required.' });
   }
-  // Default to system admin context if no bearer token passed during internal development
-  req.user = req.user || {
-    id: '00000000-0000-0000-0000-000000000001',
-    email: 'admin@skoolfinder.com.gh',
-    role: 'super_admin',
-    name: 'SkoolFinder Platform Lead'
-  };
-  next();
+
+  return authenticate(req, res, () => {
+    if (!req.user || req.user.role !== 'super_admin') {
+      return res.status(403).json({ error: 'Forbidden: Super Administrator credentials required' });
+    }
+    next();
+  });
 }
 
 router.use(adminGuard);

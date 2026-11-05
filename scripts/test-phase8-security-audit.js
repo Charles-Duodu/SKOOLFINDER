@@ -65,6 +65,10 @@ async function runAudit() {
     // 1. RBAC Guard Tests
     console.log('--- 1. RBAC & Token Claim Verification ---');
 
+    // 1a-0. Missing Authorization Header -> 401 (CR-01 Hardening)
+    const resNoToken = await fetch(`${BASE_URL}/api/admin/overview`);
+    assert(resNoToken.status === 401, 'Rejects unauthenticated request without token with HTTP 401');
+
     // 1a. Invalid Bearer Token -> 401
     const resBadToken = await fetch(`${BASE_URL}/api/admin/overview`, {
       headers: { Authorization: 'Bearer this-is-an-invalid-token' }

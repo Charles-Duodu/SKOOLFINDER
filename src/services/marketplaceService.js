@@ -1514,6 +1514,35 @@ class MarketplaceService {
     app.offerLetter = offerLetter;
     IN_MEMORY_APPLICATIONS.set(applicationId, app);
 
+    // Persist to Supabase job_offers table if valid UUID (DEC-026)
+    const isAppUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(applicationId);
+    const isSchUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(schoolId);
+    if (isAppUuid && isSchUuid) {
+      try {
+        await supabaseAdmin
+          .from('job_offers')
+          .insert({
+            offer_number: offerLetter.offerNumber,
+            application_id: applicationId,
+            school_id: schoolId,
+            candidate_name: app.full_name,
+            candidate_email: app.email,
+            position_title: offerLetter.positionTitle,
+            department: offerLetter.department,
+            gross_salary_ghs: offerLetter.grossSalaryGhs,
+            contract_type: 'full_time',
+            term_start_date: offerLetter.termStartDate,
+            probation_months: offerLetter.probationMonths,
+            benefits: offerLetter.benefits,
+            signatory_name: offerData.signatoryName || 'School HR Recruiter',
+            signatory_role: offerData.signatoryRole || 'Head of School / HR',
+            status: 'pending_candidate_acceptance'
+          });
+      } catch (e) {
+        console.warn('Supabase job_offers insert notice:', e.message);
+      }
+    }
+
     this.recordAuditLog({
       schoolId,
       actorName: offerData.signatoryName || 'School HR Recruiter',
@@ -1534,15 +1563,11 @@ class MarketplaceService {
    * Candidate reviews and responds to an employment offer letter
    */
   static async respondTeacherOfferLetter(applicationId, responseData = {}) {
-    let offer = IN_MEMORY_OFFER_LETTERS.get(applicationId);
+    let offer = await this.getTeacherOfferLetter(applicationId);
     const app = IN_MEMORY_APPLICATIONS.get(applicationId);
 
     if (!offer) {
-      if (app && app.offerLetter) {
-        offer = app.offerLetter;
-      } else {
-        throw new Error('Offer letter not found for this candidate');
-      }
+      throw new Error('Offer letter not found for this candidate');
     }
 
     const decision = (responseData.decision || 'accepted').toLowerCase();
@@ -1550,9 +1575,24 @@ class MarketplaceService {
 
     if (decision === 'accepted') {
       offer.status = 'accepted';
-      offer.candidateSignature = responseData.candidateSignature || responseData.signature || app.full_name;
+      offer.candidateSignature = responseData.candidateSignature || responseData.signature || app?.full_name || 'Candidate';
       offer.responseDate = now;
       if (app) app.status = 'accepted';
+
+      // Persist status update to Supabase
+      const isAppUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(applicationId);
+      if (isAppUuid) {
+        try {
+          await supabaseAdmin
+            .from('job_offers')
+            .update({
+              status: 'accepted',
+              candidate_signature: offer.candidateSignature,
+              response_date: now
+            })
+            .eq('application_id', applicationId);
+        } catch (e) {}
+      }
 
       this.recordAuditLog({
         schoolId: offer.schoolId,
@@ -1574,6 +1614,21 @@ class MarketplaceService {
       offer.responseDate = now;
       if (app) app.status = 'declined';
 
+      // Persist status update to Supabase
+      const isAppUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(applicationId);
+      if (isAppUuid) {
+        try {
+          await supabaseAdmin
+            .from('job_offers')
+            .update({
+              status: 'declined',
+              decline_reason: offer.declineReason,
+              response_date: now
+            })
+            .eq('application_id', applicationId);
+        } catch (e) {}
+      }
+
       this.recordAuditLog({
         schoolId: offer.schoolId,
         actorName: app?.full_name || 'Educator Candidate',
@@ -1592,15 +1647,49 @@ class MarketplaceService {
   }
 
   /**
-   * Retrieves an offer letter by application ID
+   * Retrieves an offer letter by application ID (with Supabase persistence check)
    */
-  static getTeacherOfferLetter(applicationId) {
-    const offer = IN_MEMORY_OFFER_LETTERS.get(applicationId);
+  static async getTeacherOfferLetter(applicationId) {
+    let offer = IN_MEMORY_OFFER_LETTERS.get(applicationId);
     if (!offer) {
       const app = IN_MEMORY_APPLICATIONS.get(applicationId);
-      return app?.offerLetter || null;
+      if (app?.offerLetter) offer = app.offerLetter;
     }
-    return offer;
+    if (!offer) {
+      const isAppUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(applicationId);
+      if (isAppUuid) {
+        try {
+          const { data: dbOffer, error } = await supabaseAdmin
+            .from('job_offers')
+            .select('*')
+            .eq('application_id', applicationId)
+            .maybeSingle();
+
+          if (!error && dbOffer) {
+            offer = {
+              id: dbOffer.id,
+              offerNumber: dbOffer.offer_number,
+              applicationId: dbOffer.application_id,
+              schoolId: dbOffer.school_id,
+              candidateName: dbOffer.candidate_name,
+              candidateEmail: dbOffer.candidate_email,
+              positionTitle: dbOffer.position_title,
+              department: dbOffer.department,
+              grossSalaryGhs: Number(dbOffer.gross_salary_ghs),
+              termStartDate: dbOffer.term_start_date,
+              probationMonths: dbOffer.probation_months,
+              benefits: dbOffer.benefits,
+              issuedAt: dbOffer.issued_at,
+              status: dbOffer.status,
+              responseDate: dbOffer.response_date,
+              candidateSignature: dbOffer.candidate_signature
+            };
+            IN_MEMORY_OFFER_LETTERS.set(applicationId, offer);
+          }
+        } catch (e) {}
+      }
+    }
+    return offer || null;
   }
 
   /**

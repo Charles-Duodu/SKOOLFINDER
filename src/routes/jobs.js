@@ -76,7 +76,7 @@ router.post('/:id/apply', async (req, res) => {
  */
 router.get('/applications/:appId/offer', async (req, res) => {
   try {
-    const offer = MarketplaceService.getTeacherOfferLetter(req.params.appId);
+    const offer = await MarketplaceService.getTeacherOfferLetter(req.params.appId);
     if (!offer) return res.status(404).json({ error: 'Employment offer letter not found' });
     return res.json({ success: true, offer });
   } catch (err) {

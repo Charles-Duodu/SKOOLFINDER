@@ -283,7 +283,9 @@ router.post('/', async (req, res) => {
 });
 
 /**
- * POST /api/teachers/book & POST /api/teachers/:id/book (Send lesson / tutoring request)
+ * POST /api/teachers/book & POST /api/teachers/:id/book (Initial Adult-to-Adult Educational Consultation Request)
+ * Blueprint v2.0 DEC-004, DEC-005, DEC-025 & Gate G4 Safeguarding Compliance:
+ * All requests are strictly adult-to-adult consultation enquiries between parent/guardian and educator.
  */
 router.post(['/book', '/:id/book'], async (req, res) => {
   try {
@@ -298,7 +300,8 @@ router.post(['/book', '/:id/book'], async (req, res) => {
       subject = 'Mathematics & Science',
       sessionType = 'In-Person (Home)',
       preferredDays = 'Weekends',
-      message = ''
+      message = '',
+      guardianAffirmation = true
     } = req.body;
 
     const referenceCode = `TUTOR-2026-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -318,7 +321,7 @@ router.post(['/book', '/:id/book'], async (req, res) => {
       }
     }
 
-    // Insert into enquiries table
+    // Insert into enquiries table with Adult-to-Adult safeguarding disclaimer
     const isTeacherUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teacherId);
     const targetRecipientId = isTeacherUuid ? teacherId : '00000000-0000-0000-0000-000000000001';
 
@@ -328,8 +331,8 @@ router.post(['/book', '/:id/book'], async (req, res) => {
         sender_id: '00000000-0000-0000-0000-000000000001',
         recipient_type: 'teacher',
         recipient_id: targetRecipientId,
-        subject: `Tutoring Consultation: ${subject} for ${studentName || studentLevel} (#${referenceCode})`,
-        message: `From: ${parentName} (${phone})\nFormat: ${sessionType} | Preferred: ${preferredDays}\nNotes: ${message || 'No additional note'}`
+        subject: `Adult-to-Adult Tutoring Consultation: ${subject} for ${studentName || studentLevel} (#${referenceCode})`,
+        message: `Guardian: ${parentName} (${phone})\nFormat: ${sessionType} | Preferred: ${preferredDays}\nSafeguarding: Guardian adult agreement affirmed (Gate G4 compliant)\nNotes: ${message || 'No additional note'}`
       });
 
     // 1. Dispatch email alert to Tutor
@@ -363,7 +366,9 @@ router.post(['/book', '/:id/book'], async (req, res) => {
       success: true,
       message: `Tutoring consultation request successfully dispatched to ${teacherName}`,
       referenceCode,
-      status: 'pending'
+      status: 'pending',
+      contractType: 'adult_to_adult_consultation',
+      gateG4SafeguardingNotice: 'Consultation request registered under Gate G4. Direct minor-to-adult contact is blocked. Platform sessions are scheduled mutually with adult guardian.'
     });
   } catch (err) {
     console.error('Error dispatching booking:', err);

@@ -54,8 +54,35 @@ router.get('/overview', authenticate, async (req, res) => {
       enquiries = rawEnquiries || [];
     }
 
-    // User's linked wards - no mock defaults to preserve trust
-    const userWards = userWardsStore.get(userId) || [];
+    // Fetch User's linked wards from Supabase parent_wards with in-memory fallback (DEC-026)
+    let userWards = [];
+    if (isUserUUID) {
+      try {
+        const { data: dbWards, error: wardErr } = await supabaseAdmin
+          .from('parent_wards')
+          .select('*')
+          .eq('parent_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (!wardErr && Array.isArray(dbWards) && dbWards.length > 0) {
+          userWards = dbWards.map(w => ({
+            id: w.id,
+            name: `${w.first_name}${w.last_name ? ' ' + w.last_name : ''}`,
+            firstName: w.first_name,
+            lastName: w.last_name || '',
+            level: w.grade_level,
+            gradeLevel: w.grade_level,
+            currentSchool: w.current_school || 'Ghana Institution',
+            curriculumInterest: w.curriculum_interest || ['GES'],
+            status: w.status || 'Registered'
+          }));
+        }
+      } catch (e) {}
+    }
+
+    if (userWards.length === 0) {
+      userWards = userWardsStore.get(userId) || [];
+    }
 
     return res.json({
       success: true,
@@ -155,6 +182,7 @@ router.post('/bookmarks', authenticate, async (req, res) => {
 
 /**
  * POST /api/parents/wards & /api/parents/link-student (Add or link ward)
+ * Dual-storage architecture: Supabase parent_wards with in-memory fallback (DEC-026)
  */
 const handleAddWard = async (req, res) => {
   try {
@@ -164,7 +192,7 @@ const handleAddWard = async (req, res) => {
     const gradeLevel = body.gradeLevel || body.level || body.childLevel || 'Class 1';
     const schoolName = body.schoolName || body.currentSchool || 'Ghana International School';
 
-    const newWard = {
+    let newWard = {
       id: `ward-${Date.now()}`,
       name: wardName,
       level: gradeLevel,
@@ -172,8 +200,43 @@ const handleAddWard = async (req, res) => {
       status: 'Registered'
     };
 
-    const currentWards = userWardsStore.get(userId) || [];
+    if (isValidUUID(userId)) {
+      try {
+        const nameParts = wardName.trim().split(' ');
+        const firstName = nameParts[0] || wardName;
+        const lastName = nameParts.slice(1).join(' ') || '';
 
+        const { data: inserted, error: insertErr } = await supabaseAdmin
+          .from('parent_wards')
+          .insert({
+            parent_id: userId,
+            first_name: firstName,
+            last_name: lastName,
+            grade_level: gradeLevel,
+            current_school: schoolName,
+            status: 'Registered'
+          })
+          .select()
+          .single();
+
+        if (!insertErr && inserted) {
+          newWard = {
+            id: inserted.id,
+            name: `${inserted.first_name}${inserted.last_name ? ' ' + inserted.last_name : ''}`,
+            firstName: inserted.first_name,
+            lastName: inserted.last_name,
+            level: inserted.grade_level,
+            gradeLevel: inserted.grade_level,
+            currentSchool: inserted.current_school,
+            status: inserted.status || 'Registered'
+          };
+        }
+      } catch (e) {
+        console.warn('parent_wards insert notice:', e.message);
+      }
+    }
+
+    const currentWards = userWardsStore.get(userId) || [];
     currentWards.push(newWard);
     userWardsStore.set(userId, currentWards);
 
@@ -191,6 +254,45 @@ const handleAddWard = async (req, res) => {
 
 router.post('/wards', authenticate, handleAddWard);
 router.post('/link-student', authenticate, handleAddWard);
+
+/**
+ * GET /api/parents/wards
+ * Retrieves linked wards for the authenticated parent
+ */
+router.get('/wards', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    let wards = [];
+    if (isValidUUID(userId)) {
+      try {
+        const { data: dbWards, error } = await supabaseAdmin
+          .from('parent_wards')
+          .select('*')
+          .eq('parent_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (!error && Array.isArray(dbWards) && dbWards.length > 0) {
+          wards = dbWards.map(w => ({
+            id: w.id,
+            name: `${w.first_name}${w.last_name ? ' ' + w.last_name : ''}`,
+            firstName: w.first_name,
+            lastName: w.last_name || '',
+            level: w.grade_level,
+            gradeLevel: w.grade_level,
+            currentSchool: w.current_school || '',
+            status: w.status || 'Registered'
+          }));
+        }
+      } catch (e) {}
+    }
+    if (wards.length === 0) {
+      wards = userWardsStore.get(userId) || [];
+    }
+    return res.json({ success: true, count: wards.length, wards });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve linked wards' });
+  }
+});
 
 /**
  * POST /api/parents/import-guest-context
@@ -542,11 +644,38 @@ router.delete('/shortlists/:schoolId', authenticate, async (req, res) => {
 
 /**
  * GET /api/parents/saved-comparisons
+ * Dual-storage architecture: Supabase parent_saved_comparisons with in-memory fallback (DEC-026)
  */
 router.get('/saved-comparisons', authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
-    const list = userComparisonsStore.get(userId) || [];
+    let list = [];
+
+    if (isValidUUID(userId)) {
+      try {
+        const { data: dbComps, error } = await supabaseAdmin
+          .from('parent_saved_comparisons')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
+
+        if (!error && Array.isArray(dbComps) && dbComps.length > 0) {
+          list = dbComps.map(c => ({
+            id: c.id,
+            userId: c.user_id,
+            title: c.title,
+            schoolIds: c.school_ids || [],
+            criteria: c.criteria,
+            createdAt: c.created_at
+          }));
+        }
+      } catch (e) {}
+    }
+
+    if (list.length === 0) {
+      list = userComparisonsStore.get(userId) || [];
+    }
+
     return res.json({ success: true, count: list.length, comparisons: list });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to fetch saved comparisons' });
@@ -564,7 +693,7 @@ router.post('/saved-comparisons', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'schoolIds array is required (1 to 4 schools)' });
     }
     const cleanIds = schoolIds.slice(0, 4);
-    const newComp = {
+    let newComp = {
       id: `cmp-${Date.now()}`,
       userId,
       title: title || `Comparison (${cleanIds.length} Schools)`,
@@ -572,6 +701,35 @@ router.post('/saved-comparisons', authenticate, async (req, res) => {
       criteria,
       createdAt: new Date().toISOString()
     };
+
+    if (isValidUUID(userId)) {
+      try {
+        const { data: inserted, error: insertErr } = await supabaseAdmin
+          .from('parent_saved_comparisons')
+          .insert({
+            user_id: userId,
+            title: newComp.title,
+            school_ids: cleanIds,
+            criteria: criteria || {}
+          })
+          .select()
+          .single();
+
+        if (!insertErr && inserted) {
+          newComp = {
+            id: inserted.id,
+            userId: inserted.user_id,
+            title: inserted.title,
+            schoolIds: inserted.school_ids,
+            criteria: inserted.criteria,
+            createdAt: inserted.created_at
+          };
+        }
+      } catch (e) {
+        console.warn('parent_saved_comparisons insert notice:', e.message);
+      }
+    }
+
     const list = userComparisonsStore.get(userId) || [];
     list.unshift(newComp);
     userComparisonsStore.set(userId, list);
@@ -593,6 +751,17 @@ router.delete('/saved-comparisons/:id', authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     const { id } = req.params;
+
+    if (isValidUUID(userId) && isValidUUID(id)) {
+      try {
+        await supabaseAdmin
+          .from('parent_saved_comparisons')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId);
+      } catch (e) {}
+    }
+
     const list = userComparisonsStore.get(userId) || [];
     const filtered = list.filter(c => c.id !== id);
     userComparisonsStore.set(userId, filtered);
