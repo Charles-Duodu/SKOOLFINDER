@@ -61,6 +61,71 @@ router.post('/register', async (req, res) => {
       }
     }
 
+    // Check if profile already exists in profiles table
+    const { data: existingProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('*')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingProfile) {
+      if (role === 'super_admin') {
+        // Authorized upgrade of existing profile to super_admin
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
+        const { data: updatedProfile, error: updateErr } = await supabaseAdmin
+          .from('profiles')
+          .update({
+            role: 'super_admin',
+            active_persona: 'super_admin',
+            password_hash: passwordHash,
+            full_name: fullName || existingProfile.full_name,
+            phone: phone || existingProfile.phone,
+            status: 'active'
+          })
+          .eq('id', existingProfile.id)
+          .select()
+          .single();
+
+        if (updateErr) {
+          return res.status(500).json({ error: 'Failed to update admin profile: ' + updateErr.message });
+        }
+
+        const token = jwt.sign(
+          {
+            id: updatedProfile.id,
+            auth_user_id: updatedProfile.auth_user_id,
+            email: updatedProfile.email,
+            role: 'super_admin',
+            active_persona: 'super_admin',
+            activePersona: 'super_admin',
+            full_name: updatedProfile.full_name
+          },
+          JWT_SECRET,
+          { expiresIn: '7d' }
+        );
+
+        return res.status(201).json({
+          success: true,
+          message: 'Super Admin credentials registered & activated successfully',
+          token,
+          user: {
+            id: updatedProfile.id,
+            email: updatedProfile.email,
+            name: updatedProfile.full_name,
+            fullName: updatedProfile.full_name,
+            role: 'super_admin',
+            activePersona: 'super_admin',
+            availablePersonas: ['super_admin', 'school_admin', 'teacher', 'parent'],
+            phone: updatedProfile.phone,
+            status: 'active'
+          }
+        });
+      }
+
+      return res.status(400).json({ error: 'An account with this email already exists. Please sign in.' });
+    }
+
     // 1. Create or register in Supabase Auth
     let authUserId = null;
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
