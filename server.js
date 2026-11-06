@@ -27,6 +27,7 @@ const regionsRoutes = require('./src/routes/regions');
 const regulatoryRoutes = require('./src/routes/regulatory');
 const policyRoutes = require('./src/routes/policy');
 const casesRoutes = require('./src/routes/cases');
+const aiRoutes = require('./src/routes/ai');
 const { supabaseAdmin } = require('./src/config/supabase');
 const { strictLimiter, standardLimiter } = require('./src/middleware/rateLimiter');
 const errorHandler = require('./src/middleware/errorHandler');
@@ -100,6 +101,8 @@ app.use('/api/regulatory', regulatoryRoutes);
 app.use('/api/policy', policyRoutes);
 app.use('/api/cases', casesRoutes);
 app.use('/api/admin/cases', casesRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/admin', aiRoutes);
 app.use('/api', rfqsRoutes);
 
 // Helpful reviews upvote and reply

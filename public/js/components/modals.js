@@ -13839,6 +13839,211 @@ const Modals = {
   },
 
   // ============================================================================
+  // PHASE 6: COMMUNICATIONS DISPATCH TEST & N8N AUTOMATION WORKFLOW MODALS
+  // ============================================================================
+
+  openDispatchTestModal(onDispatched) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 580px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Module 6.1 • Omnichannel Notification Rails
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Dispatch Carrier Test Notification
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-dispatch-test" style="padding: 1.5rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: #475569;">
+            Test live delivery across <strong>Hubtel Ghana SMS API</strong>, <strong>Resend Transactional Email</strong>, or <strong>WhatsApp Business Cloud API</strong> with real-time delivery receipt recording.
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+              Target Delivery Channel *
+            </label>
+            <select id="dispatch-channel" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff; font-weight: 600;">
+              <option value="SMS">Hubtel Ghana SMS API (Sender ID: SKOOLFINDER &bull; GH₵ 0.045 / unit)</option>
+              <option value="EMAIL">Resend Transactional Email (Domain: skoolfinder.com.gh &bull; Free Tier)</option>
+              <option value="WHATSAPP">WhatsApp Cloud API (Accredited Business Account &bull; GH₵ 0.065 / msg)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+              Recipient Mobile / Email *
+            </label>
+            <input type="text" id="dispatch-recipient" class="form-input" value="+233 24 411 9922" placeholder="e.g. +233 24 411 9922 or admin@skoolfinder.com.gh" required style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem;">
+            <div style="font-size: 0.72rem; color: #64748b; margin-top: 0.25rem;">Enter Ghanaian international MSISDN (+233...) for SMS/WhatsApp, or valid email for Resend.</div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+              Notification Purpose / Template *
+            </label>
+            <select id="dispatch-template" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+              <option value="Admissions MoMo Voucher PIN Delivery">Admissions MoMo Voucher PIN Delivery</option>
+              <option value="Campus Tour Booking Confirmation">Campus Tour Booking Confirmation</option>
+              <option value="Gate G4 Safeguarding Officer Alert">Gate G4 Safeguarding Officer Alert</option>
+              <option value="Executive System Health Check">Executive System Health Check</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; color: #0f172a; margin-bottom: 0.35rem;">
+              Message Content Payload *
+            </label>
+            <textarea id="dispatch-message" rows="3" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-family: inherit;" required>[SkoolFinder Test] Connectivity verified. Hubtel SMS gateway rail is fully operational under NCA Sender ID: SKOOLFINDER.</textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-outline" id="btn-cancel-dispatch" style="padding: 0.5rem 1.1rem; font-size: 0.85rem; cursor: pointer;">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-submit-dispatch" style="padding: 0.5rem 1.3rem; font-size: 0.85rem; font-weight: 800; cursor: pointer;">
+              🚀 Execute Test Dispatch
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-dispatch').onclick = () => this.close();
+
+    const channelSelect = document.getElementById('dispatch-channel');
+    const recipientInput = document.getElementById('dispatch-recipient');
+    const messageInput = document.getElementById('dispatch-message');
+
+    channelSelect.onchange = () => {
+      const ch = channelSelect.value;
+      if (ch === 'EMAIL') {
+        recipientInput.value = 'omotade.duodu@gmail.com';
+        messageInput.value = 'Resend Transactional Email rail operational. Domain skoolfinder.com.gh verified with SPF & DKIM pass.';
+      } else if (ch === 'WHATSAPP') {
+        recipientInput.value = '+233 24 551 2299';
+        messageInput.value = 'Hello from SkoolFinder Ghana! Your campus tour booking has been confirmed. Tap link for Google Maps navigation.';
+      } else {
+        recipientInput.value = '+233 24 411 9922';
+        messageInput.value = '[SkoolFinder Test] Connectivity verified. Hubtel SMS gateway rail is fully operational under NCA Sender ID: SKOOLFINDER.';
+      }
+    };
+
+    document.getElementById('form-dispatch-test').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-dispatch');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Dispatching...';
+
+      try {
+        const payload = {
+          channel: channelSelect.value,
+          recipient: recipientInput.value.trim(),
+          template: document.getElementById('dispatch-template').value,
+          message: messageInput.value.trim()
+        };
+
+        const res = await API.dispatchAdminTestMessage(payload);
+        this.close();
+        State.showToast(`✓ ${res.message || 'Notification dispatched successfully!'}`, 'success');
+        if (onDispatched) onDispatched(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = '🚀 Execute Test Dispatch';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openWorkflowDetailsModal(workflow, onTriggered) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 620px;">
+        <div class="modal-header" style="border-bottom: 2px solid #6366f1;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #6366f1; text-transform: uppercase;">
+              Module 7.1 • Self-Hosted n8n Automation Engine
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              ${workflow.name}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-size: 0.85rem; color: #0f172a; margin-bottom: 0.75rem; line-height: 1.5;">
+              ${workflow.description}
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; font-size: 0.8rem;">
+              <div><strong style="color: #64748b;">Trigger Type:</strong> <span>${workflow.trigger}</span></div>
+              <div><strong style="color: #64748b;">Workflow State:</strong> <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 700;">${workflow.status}</span></div>
+              <div><strong style="color: #64748b;">Total Executions:</strong> <span>${workflow.executionsCount} runs</span></div>
+              <div><strong style="color: #64748b;">Avg Latency:</strong> <span>${workflow.avgExecutionMs} ms</span></div>
+              <div><strong style="color: #64748b;">Last Run:</strong> <span>${new Date(workflow.lastRun).toLocaleString()}</span></div>
+              <div><strong style="color: #64748b;">Failure Rate:</strong> <span style="color: #166534; font-weight: 700;">${workflow.failureCount === 0 ? '0% (Clean)' : workflow.failureCount + ' errors'}</span></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.78rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.35rem;">
+              Workflow Execution Contract &amp; n8n Webhook Node
+            </label>
+            <pre style="background: #0f172a; color: #38bdf8; padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.75rem; overflow-x: auto; font-family: monospace; margin: 0;">{
+  "workflow_id": "${workflow.id}",
+  "engine": "n8n_self_hosted_v1.82",
+  "trigger_mechanism": "${workflow.trigger}",
+  "retry_policy": "exponential_backoff_3_attempts",
+  "dpc_act_843_encryption": "enforced_aes256"
+}</pre>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button class="btn-pill btn-outline" id="btn-close-wf" style="padding: 0.5rem 1.1rem; font-size: 0.85rem; cursor: pointer;">Close</button>
+            <button class="btn-pill btn-primary" id="btn-trigger-wf-now" style="background: #6366f1; padding: 0.5rem 1.3rem; font-size: 0.85rem; font-weight: 800; cursor: pointer;">
+              ⚡ Execute Workflow Trigger Now
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-wf').onclick = () => this.close();
+
+    document.getElementById('btn-trigger-wf-now').onclick = async () => {
+      const btn = document.getElementById('btn-trigger-wf-now');
+      btn.disabled = true;
+      btn.innerText = 'Triggering...';
+
+      try {
+        const res = await API.triggerAdminWorkflow(workflow.id);
+        this.close();
+        State.showToast(`✓ ${res.message || 'Workflow executed successfully!'}`, 'success');
+        if (onTriggered) onTriggered(res);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = '⚡ Execute Workflow Trigger Now';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  // ============================================================================
   // PACKAGE B: TOUR SCHEDULING & CONFIRMATION MANAGEMENT MODALS
   // ============================================================================
 

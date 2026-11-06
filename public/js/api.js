@@ -872,6 +872,94 @@ const API = {
     return result;
   },
 
+  // ---------------------------------------------------------------------------
+  // PHASE 6: COMMUNICATIONS, INTEGRATIONS & COPILOT API METHODS
+  // ---------------------------------------------------------------------------
+
+  async getAdminCommunicationsOverview() {
+    const res = await fetch(`${this.baseUrl}/admin/communications/overview`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load communications gateway overview");
+    return res.json();
+  },
+
+  async dispatchAdminTestMessage(data) {
+    const res = await fetch(`${this.baseUrl}/admin/communications/dispatch-test`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to dispatch test notification");
+    return result;
+  },
+
+  async refreshAdminCarrierBalance() {
+    const res = await fetch(`${this.baseUrl}/admin/communications/refresh-balance`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to refresh carrier balance");
+    return result;
+  },
+
+  async getAdminIntegrationsWorkflows() {
+    const res = await fetch(`${this.baseUrl}/admin/integrations/workflows`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load n8n automated workflows");
+    return res.json();
+  },
+
+  async triggerAdminWorkflow(id) {
+    const res = await fetch(`${this.baseUrl}/admin/integrations/workflows/${id}/trigger`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to trigger automated workflow");
+    return result;
+  },
+
+  async toggleAdminWorkflow(id) {
+    const res = await fetch(`${this.baseUrl}/admin/integrations/workflows/${id}/toggle`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to toggle workflow status");
+    return result;
+  },
+
+  async getAdminSystemHealth() {
+    const res = await fetch(`${this.baseUrl}/admin/integrations/system-health`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load system infrastructure health");
+    return res.json();
+  },
+
+  async queryAdminCopilot(query, context = {}) {
+    const res = await fetch(`${this.baseUrl}/admin/copilot/query`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ query, context })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to query Operations Copilot");
+    return result;
+  },
+
+  async getAICopilotStatus() {
+    const res = await fetch(`${this.baseUrl}/ai/status`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load Copilot grounding status");
+    return res.json();
+  },
+
   async adminSearch(q) {
     const res = await fetch(`${this.baseUrl}/admin/search?q=${encodeURIComponent(q)}`, {
       headers: this.getAuthHeaders()
