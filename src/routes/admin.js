@@ -11,6 +11,8 @@ const MarketplaceService = require('../services/marketplaceService');
 const EscrowService = require('../services/escrowService');
 const { WebhookService, IN_MEMORY_WEBHOOK_DELIVERIES, IN_MEMORY_WEBHOOK_SUBSCRIPTIONS } = require('../services/webhookService');
 const { NationalIntegrationsService } = require('../services/nationalIntegrationsService');
+const { reconciliationService } = require('../services/reconciliationService');
+const { commercialCRMService } = require('../services/crmService');
 
 /**
  * Helper to generate URL-safe slugs
@@ -1055,12 +1057,16 @@ let SEED_SUBSCRIPTIONS = [
     region: 'Greater Accra',
     plan: 'Enterprise Tier',
     plan_tier: 'enterprise',
-    price_ghs: 2200.00,
-    mrr_ghs: 733.33,
-    billing_interval: 'termly',
+    price_ghs: 6500.00,
+    mrr_ghs: 541.67,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-01-15',
-    channel: 'Visa Direct'
+    channel: 'Visa Direct',
+    staff_seats_used: 24,
+    staff_seats_limit: 'Unlimited',
+    enquiries_used_month: 168,
+    enquiries_quota_month: 'Unlimited'
   },
   {
     id: 'sub-sch-stroses',
@@ -1070,12 +1076,16 @@ let SEED_SUBSCRIPTIONS = [
     region: 'Eastern Region',
     plan: 'Growth Tier',
     plan_tier: 'growth',
-    price_ghs: 950.00,
-    mrr_ghs: 316.66,
-    billing_interval: 'termly',
+    price_ghs: 990.00,
+    mrr_ghs: 82.50,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-01-20',
-    channel: 'MTN MoMo Auto-Debit'
+    channel: 'MTN MoMo Auto-Debit',
+    staff_seats_used: 2,
+    staff_seats_limit: 3,
+    enquiries_used_month: 19,
+    enquiries_quota_month: 25
   },
   {
     id: 'sub-sch-achimota',
@@ -1083,14 +1093,18 @@ let SEED_SUBSCRIPTIONS = [
     school_name: 'Achimota Basic & Senior High',
     school_slug: 'sch-achimota-accra',
     region: 'Greater Accra',
-    plan: 'Enterprise Tier',
-    plan_tier: 'enterprise',
-    price_ghs: 2200.00,
-    mrr_ghs: 733.33,
-    billing_interval: 'termly',
+    plan: 'Pro Tier',
+    plan_tier: 'pro',
+    price_ghs: 2490.00,
+    mrr_ghs: 207.50,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-01-10',
-    channel: 'MTN MoMo Auto-Debit'
+    channel: 'MTN MoMo Auto-Debit',
+    staff_seats_used: 8,
+    staff_seats_limit: 10,
+    enquiries_used_month: 74,
+    enquiries_quota_month: 100
   },
   {
     id: 'sub-sch-morningstar',
@@ -1098,15 +1112,19 @@ let SEED_SUBSCRIPTIONS = [
     school_name: 'Morning Star School',
     school_slug: 'sch-morningstar-cantonments',
     region: 'Greater Accra',
-    plan: 'Growth Tier',
-    plan_tier: 'growth',
-    price_ghs: 950.00,
-    mrr_ghs: 316.66,
-    billing_interval: 'termly',
+    plan: 'Pro Tier',
+    plan_tier: 'pro',
+    price_ghs: 2490.00,
+    mrr_ghs: 207.50,
+    billing_interval: 'annual',
     status: 'grace_period',
     grace_days_remaining: 3,
     renewal_date: '2026-11-05',
-    channel: 'Telecel Cash'
+    channel: 'Telecel Cash',
+    staff_seats_used: 9,
+    staff_seats_limit: 10,
+    enquiries_used_month: 88,
+    enquiries_quota_month: 100
   },
   {
     id: 'sub-sch-sos',
@@ -1116,12 +1134,16 @@ let SEED_SUBSCRIPTIONS = [
     region: 'Eastern Region',
     plan: 'Growth Tier',
     plan_tier: 'growth',
-    price_ghs: 950.00,
-    mrr_ghs: 316.66,
-    billing_interval: 'termly',
+    price_ghs: 990.00,
+    mrr_ghs: 82.50,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-02-01',
-    channel: 'MTN MoMo Auto-Debit'
+    channel: 'MTN MoMo Auto-Debit',
+    staff_seats_used: 3,
+    staff_seats_limit: 3,
+    enquiries_used_month: 22,
+    enquiries_quota_month: 25
   },
   {
     id: 'sub-sch-romanridge',
@@ -1129,14 +1151,18 @@ let SEED_SUBSCRIPTIONS = [
     school_name: 'Roman Ridge School',
     school_slug: 'sch-romanridge-accra',
     region: 'Greater Accra',
-    plan: 'Starter Tier',
-    plan_tier: 'starter',
-    price_ghs: 450.00,
-    mrr_ghs: 150.00,
-    billing_interval: 'termly',
+    plan: 'Free Tier',
+    plan_tier: 'free',
+    price_ghs: 0.00,
+    mrr_ghs: 0.00,
+    billing_interval: 'monthly',
     status: 'past_due',
     renewal_date: '2026-10-28',
-    channel: 'AT Money'
+    channel: 'AT Money',
+    staff_seats_used: 1,
+    staff_seats_limit: 1,
+    enquiries_used_month: 5,
+    enquiries_quota_month: 5
   },
   {
     id: 'sub-sch-presec',
@@ -1146,12 +1172,16 @@ let SEED_SUBSCRIPTIONS = [
     region: 'Greater Accra',
     plan: 'Enterprise Tier',
     plan_tier: 'enterprise',
-    price_ghs: 2200.00,
-    mrr_ghs: 733.33,
-    billing_interval: 'termly',
+    price_ghs: 6500.00,
+    mrr_ghs: 541.67,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-01-18',
-    channel: 'Visa Direct'
+    channel: 'Visa Direct',
+    staff_seats_used: 16,
+    staff_seats_limit: 'Unlimited',
+    enquiries_used_month: 120,
+    enquiries_quota_month: 'Unlimited'
   },
   {
     id: 'sub-sch-ridge',
@@ -1159,14 +1189,18 @@ let SEED_SUBSCRIPTIONS = [
     school_name: 'Ridge Church School',
     school_slug: 'sch-ridge-church',
     region: 'Greater Accra',
-    plan: 'Starter Tier',
-    plan_tier: 'starter',
-    price_ghs: 450.00,
-    mrr_ghs: 150.00,
-    billing_interval: 'termly',
+    plan: 'Growth Tier',
+    plan_tier: 'growth',
+    price_ghs: 990.00,
+    mrr_ghs: 82.50,
+    billing_interval: 'annual',
     status: 'active',
     renewal_date: '2027-02-15',
-    channel: 'MTN MoMo Auto-Debit'
+    channel: 'MTN MoMo Auto-Debit',
+    staff_seats_used: 2,
+    staff_seats_limit: 3,
+    enquiries_used_month: 18,
+    enquiries_quota_month: 25
   }
 ];
 
@@ -1361,6 +1395,8 @@ router.get('/finance/subscriptions', async (req, res) => {
     return res.json({
       success: true,
       total: list.length,
+      totalSubscriptions: list.length,
+      totalGmvGhs: list.reduce((acc, s) => acc + (Number(s.price_ghs) || 0), 0),
       subscriptions: list
     });
   } catch (err) {
@@ -1387,18 +1423,31 @@ router.patch('/finance/subscriptions/:id', async (req, res) => {
 
     if (plan) {
       sub.plan = plan;
-      if (plan.toLowerCase().includes('enterprise')) {
-        sub.price_ghs = 2200;
-        sub.mrr_ghs = 733.33;
+      const p = plan.toLowerCase();
+      if (p.includes('enterprise')) {
+        sub.price_ghs = 6500;
+        sub.mrr_ghs = 541.67;
         sub.plan_tier = 'enterprise';
-      } else if (plan.toLowerCase().includes('growth')) {
-        sub.price_ghs = 950;
-        sub.mrr_ghs = 316.66;
+        sub.staff_seats_limit = 'Unlimited';
+        sub.enquiries_quota_month = 'Unlimited';
+      } else if (p.includes('pro')) {
+        sub.price_ghs = 2490;
+        sub.mrr_ghs = 207.50;
+        sub.plan_tier = 'pro';
+        sub.staff_seats_limit = 10;
+        sub.enquiries_quota_month = 100;
+      } else if (p.includes('growth')) {
+        sub.price_ghs = 990;
+        sub.mrr_ghs = 82.50;
         sub.plan_tier = 'growth';
+        sub.staff_seats_limit = 3;
+        sub.enquiries_quota_month = 25;
       } else {
-        sub.price_ghs = 450;
-        sub.mrr_ghs = 150;
-        sub.plan_tier = 'starter';
+        sub.price_ghs = 0;
+        sub.mrr_ghs = 0;
+        sub.plan_tier = 'free';
+        sub.staff_seats_limit = 1;
+        sub.enquiries_quota_month = 5;
       }
     }
 
@@ -1531,6 +1580,81 @@ router.post('/finance/escrow/:bookingId/refund', async (req, res) => {
       adminUser: req.user,
       reason: reason || 'Super Admin approved parent refund'
     });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * MODULE 4.2: FINANCIAL RECONCILIATION & ANOMALY ENGINE (POL-008, POL-010)
+ * ============================================================================
+ */
+
+router.get('/finance/reconciliation', async (req, res) => {
+  try {
+    const data = await reconciliationService.getReconciliationOverview();
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/finance/reconcile-scan', async (req, res) => {
+  try {
+    const result = await reconciliationService.runReconciliationScan(req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/finance/reconcile/:anomalyId', async (req, res) => {
+  try {
+    const result = await reconciliationService.resolveDiscrepancy(req.params.anomalyId, req.body, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * MODULE 4.3: COMMERCIAL CRM & ENTERPRISE INSTITUTIONAL PIPELINE
+ * ============================================================================
+ */
+
+router.get('/crm/pipeline', async (req, res) => {
+  try {
+    const data = await commercialCRMService.getPipelineOverview();
+    return res.json(data);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+router.post('/crm/leads', async (req, res) => {
+  try {
+    const result = await commercialCRMService.createLead(req.body, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.patch('/crm/leads/:id/stage', async (req, res) => {
+  try {
+    const result = await commercialCRMService.updateLeadStage(req.params.id, req.body, req.user);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+router.post('/crm/leads/:id/invoice', async (req, res) => {
+  try {
+    const result = await commercialCRMService.dispatchInvoice(req.params.id, req.body, req.user);
     return res.json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
@@ -2620,7 +2744,15 @@ router.post('/professionals/:id/vet', async (req, res) => {
 router.get('/subscriptions', async (req, res) => {
   try {
     const data = await AdmissionsSubscriptionService.adminListSubscriptions();
-    return res.json({ success: true, ...data });
+    const subs = (data && data.subscriptions && data.subscriptions.length > 0) ? data.subscriptions : SEED_SUBSCRIPTIONS;
+    const totalGmv = data?.totalGmvGhs || subs.reduce((acc, s) => acc + (Number(s.price_ghs) || Number(s.amount) || 0), 0);
+    return res.json({
+      success: true,
+      totalSubscriptions: subs.length,
+      totalGmvGhs: totalGmv,
+      subscriptions: subs,
+      invoices: data?.invoices || []
+    });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

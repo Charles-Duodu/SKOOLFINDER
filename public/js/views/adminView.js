@@ -41,12 +41,13 @@ const AdminView = {
 
     let usersData = { users: [], total: 0 };
     let verificationCases = [];
-    let financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] };
+    let financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [], reconciliation: { summary: {}, anomalies: [] }, escrow: { holdings: [], metrics: {} } };
     let admissionsData = { applications: [], total: 0 };
     let teachersData = { teachers: [], total: 0 };
     let rfqsData = { rfqs: [], total: 0 };
     let suppliersData = { suppliers: [], total: 0 };
     let commercialData = { subscriptions: [], totalGmvGhs: 0 };
+    let crmData = { metrics: {}, stages: {}, leads: [] };
     let escrowDisputes = [];
     let telemetryData = { telemetry: {}, sms: {}, deliveries: [] };
     let auditLogsData = [];
@@ -83,22 +84,28 @@ const AdminView = {
             q: this.userSearchTerm || ''
           }).catch(() => ({ users: [], total: 0 }))
         );
-      } else if (this.activeTab === 'finance' || this.activeTab === 'subscriptions') {
+      } else if (this.activeTab === 'finance' || this.activeTab === 'subscriptions' || this.activeTab === 'crm') {
         promises.push(
           Promise.all([
             API.getAdminFinanceSummary().catch(() => ({ summary: {} })),
             API.getAdminTransactions({ q: this.txSearchTerm, channel: this.txChannelFilter, status: this.txStatusFilter }).catch(() => ({ transactions: [] })),
             API.getAdminVouchers({ q: this.voucherSearchTerm, status: this.voucherStatusFilter }).catch(() => ({ vouchers: [] })),
-            API.getAdminSubscriptions().catch(() => ({ subscriptions: [] }))
-          ]).then(([sumRes, txRes, vouchRes, subRes]) => {
+            API.getAdminSubscriptions().catch(() => ({ subscriptions: [] })),
+            API.getAdminReconciliation().catch(() => ({ summary: {}, anomalies: [] })),
+            API.getAdminEscrowHoldings().catch(() => ({ holdings: [], metrics: {} })),
+            API.getAdminCRMPipeline().catch(() => ({ metrics: {}, stages: {}, leads: [] }))
+          ]).then(([sumRes, txRes, vouchRes, subRes, reconRes, escRes, crmRes]) => {
             financeData = {
-              summary: sumRes.summary || {},
-              transactions: txRes.transactions || [],
-              vouchers: vouchRes.vouchers || [],
-              subscriptions: subRes.subscriptions || []
+              summary: sumRes?.summary || {},
+              transactions: txRes?.transactions || [],
+              vouchers: vouchRes?.vouchers || [],
+              subscriptions: subRes?.subscriptions || [],
+              reconciliation: reconRes || { summary: {}, anomalies: [] },
+              escrow: escRes || { holdings: [], metrics: {} }
             };
             commercialData = subRes || { subscriptions: [] };
-          }).catch(err => console.warn('Finance data load notice:', err))
+            crmData = crmRes || { metrics: {}, stages: {}, leads: [] };
+          }).catch(err => console.warn('Finance/CRM data load notice:', err))
         );
       } else if (this.activeTab === 'admissions') {
         promises.push(
@@ -560,14 +567,14 @@ const AdminView = {
 
           <!-- Dynamic Active View Container -->
           <div style="padding: 2rem; flex: 1;">
-            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData, auditLogsData)}
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, crmData, escrowDisputes, telemetryData, auditLogsData)}
           </div>
         </main>
       </div>
     `;
   },
 
-  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, crmData = { metrics: {}, stages: {}, leads: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
     switch (this.activeTab) {
       // Group 1: Command & Work
       case 'overview':
@@ -602,7 +609,7 @@ const AdminView = {
       case 'finance':
         return this.renderFinanceDesk(financeData);
       case 'crm':
-        return this.renderCommercialCRM(overview);
+        return this.renderCommercialCRM(crmData);
 
       // Group 5: Trust & Governance
       case 'verification':
@@ -2344,6 +2351,13 @@ const AdminView = {
     const transactions = financeData.transactions || [];
     const vouchers = financeData.vouchers || [];
     const subscriptions = financeData.subscriptions || [];
+    const reconciliation = financeData.reconciliation || { summary: {}, anomalies: [] };
+    const anomalies = reconciliation.anomalies || [];
+    const unresolvedAnomalies = anomalies.filter(a => !a.resolved);
+    const reconSummary = reconciliation.summary || {};
+    const escrow = financeData.escrow || { holdings: [], metrics: {} };
+    const escrowHoldings = escrow.holdings || [];
+    const escrowMetrics = escrow.metrics || {};
 
     const currentSubTab = this.financeSubTab || 'transactions';
     const currentRailFilter = this.txChannelFilter || 'All';
@@ -2374,7 +2388,7 @@ const AdminView = {
               </span>
             </div>
             <p style="color: #64748b; font-size: 0.9rem; margin: 0.25rem 0 0 0;">
-              Real-time payment settlements across Ghanaian mobile money rails (MTN, Telecel, AT), admission vouchers & SaaS billing.
+              Real-time payment settlements across Ghanaian mobile money rails (MTN, Telecel, AT), MoMo escrow, Paystack reconciliation & SaaS billing.
             </p>
           </div>
           <button id="btn-export-financial-ledger" class="btn-pill btn-secondary" style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.1rem;">
@@ -2409,7 +2423,7 @@ const AdminView = {
             </div>
             <div class="admin-kpi-value">GH₵ ${mrrFormatted}</div>
             <div class="admin-kpi-sub">
-              <span class="badge-positive">↑ 12.4%</span>
+              <span class="badge-positive">${summary.activeSaaSSchools || 14} Active</span>
               <span class="badge-subtle">institutional subscriptions</span>
             </div>
           </div>
@@ -2429,18 +2443,18 @@ const AdminView = {
             </div>
           </div>
 
-          <!-- Card 4: Admission Vouchers -->
+          <!-- Card 4: Escrow In Trust -->
           <div class="admin-kpi-card">
             <div class="admin-kpi-top">
-              <div class="admin-kpi-label">ADMISSION VOUCHERS</div>
-              <div style="width: 36px; height: 36px; border-radius: 8px; background: #fdf2f8; color: #db2777; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
-                🎫
+              <div class="admin-kpi-label">ESCROW IN TRUST</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #faf5ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                ⚖️
               </div>
             </div>
-            <div class="admin-kpi-value">${summary.vouchersIssuedCount || 426} Sold</div>
+            <div class="admin-kpi-value">GH₵ ${parseFloat(escrowMetrics.totalHeldGhs || escrowHoldings.filter(h => h.status === 'held_in_escrow').reduce((s, h) => s + Number(h.amount_ghs || 0), 0) || 800).toLocaleString()}</div>
             <div class="admin-kpi-sub">
-              <span class="badge-positive">GH₵ 85,200</span>
-              <span class="badge-subtle">face value generated</span>
+              <span class="badge-positive">${escrowHoldings.filter(h => h.status === 'held_in_escrow').length} Active Holds</span>
+              <span class="badge-subtle">tutoring & tenders</span>
             </div>
           </div>
         </div>
@@ -2562,16 +2576,22 @@ const AdminView = {
           </div>
         </div>
 
-        <!-- Sub-Tabs: Transactions vs Vouchers vs Subscriptions -->
+        <!-- Sub-Tabs: Transactions vs Reconciliation vs Escrow vs Vouchers vs Subscriptions -->
         <div class="admin-chart-card">
-          <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.25rem; padding-bottom: 0;">
-            <button class="btn-finance-subtab ${currentSubTab === 'transactions' ? 'active' : ''}" data-subtab="transactions" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'transactions' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'transactions' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+          <div style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 1.25rem; padding-bottom: 0; overflow-x: auto;">
+            <button class="btn-finance-subtab ${currentSubTab === 'transactions' ? 'active' : ''}" data-subtab="transactions" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'transactions' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'transactions' ? '#2563eb' : 'transparent'}; margin-bottom: -2px; white-space: nowrap;">
               <span>💳</span> Transactions Ledger (${transactions.length})
             </button>
-            <button class="btn-finance-subtab ${currentSubTab === 'vouchers' ? 'active' : ''}" data-subtab="vouchers" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'vouchers' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'vouchers' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+            <button class="btn-finance-subtab ${currentSubTab === 'reconciliation' ? 'active' : ''}" data-subtab="reconciliation" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'reconciliation' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'reconciliation' ? '#2563eb' : 'transparent'}; margin-bottom: -2px; white-space: nowrap;">
+              <span>🔍</span> Paystack &amp; MoMo Reconciliation ${unresolvedAnomalies.length > 0 ? `<span class="badge" style="background:#fee2e2;color:#dc2626;font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:999px;font-weight:800;margin-left:0.25rem;">${unresolvedAnomalies.length} Flagged</span>` : `(All Matched)`}
+            </button>
+            <button class="btn-finance-subtab ${currentSubTab === 'escrow' ? 'active' : ''}" data-subtab="escrow" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'escrow' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'escrow' ? '#2563eb' : 'transparent'}; margin-bottom: -2px; white-space: nowrap;">
+              <span>⚖️</span> MoMo Escrow Holdings (${escrowHoldings.length})
+            </button>
+            <button class="btn-finance-subtab ${currentSubTab === 'vouchers' ? 'active' : ''}" data-subtab="vouchers" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'vouchers' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'vouchers' ? '#2563eb' : 'transparent'}; margin-bottom: -2px; white-space: nowrap;">
               <span>🎫</span> Admission Vouchers (${vouchers.length})
             </button>
-            <button class="btn-finance-subtab ${currentSubTab === 'subscriptions' ? 'active' : ''}" data-subtab="subscriptions" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'subscriptions' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'subscriptions' ? '#2563eb' : 'transparent'}; margin-bottom: -2px;">
+            <button class="btn-finance-subtab ${currentSubTab === 'subscriptions' ? 'active' : ''}" data-subtab="subscriptions" style="background: none; border: none; padding: 0.65rem 1.1rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: ${currentSubTab === 'subscriptions' ? '#2563eb' : '#64748b'}; border-bottom: 2px solid ${currentSubTab === 'subscriptions' ? '#2563eb' : 'transparent'}; margin-bottom: -2px; white-space: nowrap;">
               <span>📑</span> Institutional SaaS Plans (${subscriptions.length})
             </button>
           </div>
@@ -2718,8 +2738,269 @@ const AdminView = {
                 </tbody>
               </table>
             </div>
+          ` : currentSubTab === 'reconciliation' ? `
+            <!-- SUBTAB 2: PAYSTACK & MOMO AUTOMATED RECONCILIATION -->
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                    <span style="font-size:0.75rem;font-weight:800;color:#2563eb;text-transform:uppercase;background:#eff6ff;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid #bfdbfe;">
+                      POL-008 &bull; POL-010 &bull; Continuous Audit Engine
+                    </span>
+                    <span class="badge" style="background:#ecfdf5;color:#047857;font-weight:800;font-size:0.72rem;border:1px solid #a7f3d0;">
+                      SHA-256 Chained
+                    </span>
+                  </div>
+                  <h3 style="font-size:1.2rem;font-weight:800;color:#0A2046;margin:0 0 0.25rem 0;">
+                    Automated Paystack &amp; Multi-Rail MoMo Reconciliation Engine
+                  </h3>
+                  <p style="color:#64748b;font-size:0.85rem;margin:0;">
+                    Automated verification cross-matching telco carrier webhooks (MTN MoMo, Telecel Cash, AT Money) and Paystack provider settlements against internal orders.
+                  </p>
+                </div>
+                <button id="btn-run-reconcile-scan" class="btn-pill btn-primary" style="font-weight:800;font-size:0.85rem;padding:0.6rem 1.2rem;display:flex;align-items:center;gap:0.5rem;">
+                  <span>⚡</span> Run Automated Paystack Reconciliation Scan
+                </button>
+              </div>
+
+              <!-- Mini KPI Row -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">TOTAL AUDITED ORDERS</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#0f172a;margin-top:0.2rem;">${reconSummary.totalAudited || 840}</div>
+                  <div style="font-size:0.72rem;color:#10b981;font-weight:700;">Multi-rail settlement sync</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">AUTOMATED MATCH RATE</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#10b981;margin-top:0.2rem;">${reconSummary.matchRatePercentage || '99.6%'}</div>
+                  <div style="font-size:0.72rem;color:#64748b;">Zero false-positive threshold</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">UNRESOLVED ANOMALIES</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:${unresolvedAnomalies.length > 0 ? '#dc2626' : '#10b981'};margin-top:0.2rem;">
+                    ${unresolvedAnomalies.length} Flagged
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">Requires officer sign-off</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">EXPOSURE AT RISK</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#0f172a;margin-top:0.2rem;">
+                    GH₵ ${unresolvedAnomalies.reduce((sum, a) => sum + (a.internal_amount_ghs || 0), 0).toFixed(2)}
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">Held in suspense ledger</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Anomalies Table -->
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:0.86rem;text-align:left;">
+                <thead>
+                  <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">EXCEPTION REF &amp; CHANNEL</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">LOCAL vs PROVIDER STATUS</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">DISCREPANCY TYPE</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">SEVERITY</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">AMOUNT (GHS)</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">PAYER &amp; DESCRIPTION</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;text-align:right;">RESOLUTION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${anomalies.length === 0 ? `
+                    <tr>
+                      <td colspan="7" style="padding:2.5rem;text-align:center;color:#64748b;">
+                        <div style="font-size:1.8rem;margin-bottom:0.4rem;">🎉</div>
+                        <div style="font-weight:700;color:#0f172a;">Zero reconciliation discrepancies! All transactions fully synchronized with Paystack.</div>
+                      </td>
+                    </tr>
+                  ` : anomalies.map(a => `
+                    <tr style="border-bottom:1px solid #f1f5f9;background:${a.resolved ? '#fff' : '#fffcf5'};">
+                      <td style="padding:0.9rem 1rem;">
+                        <div style="font-weight:800;color:#0A2046;font-family:monospace;">${a.reference}</div>
+                        <div style="font-size:0.75rem;color:#64748b;">${a.channel} &bull; ${a.id}</div>
+                      </td>
+                      <td style="padding:0.9rem 1rem;">
+                        <div style="font-size:0.76rem;">Internal: <span class="badge" style="background:#f1f5f9;color:#475569;font-weight:700;">${a.internal_status}</span></div>
+                        <div style="font-size:0.76rem;margin-top:0.2rem;">Provider: <span class="badge" style="background:${a.provider_status === 'success' ? '#dcfce7' : '#fee2e2'};color:${a.provider_status === 'success' ? '#166534' : '#991b1b'};font-weight:700;">${a.provider_status}</span></div>
+                      </td>
+                      <td style="padding:0.9rem 1rem;">
+                        <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.74rem;">
+                          ${a.discrepancy_type.replace(/_/g, ' ')}
+                        </span>
+                      </td>
+                      <td style="padding:0.9rem 1rem;">
+                        <span class="badge" style="background:${a.severity === 'high' ? '#fee2e2' : a.severity === 'medium' ? '#fef3c7' : '#e0f2fe'};color:${a.severity === 'high' ? '#991b1b' : a.severity === 'medium' ? '#92400e' : '#075985'};font-weight:800;font-size:0.72rem;text-transform:uppercase;">
+                          ${a.severity}
+                        </span>
+                      </td>
+                      <td style="padding:0.9rem 1rem;font-weight:800;color:#0f172a;">
+                        GH₵ ${parseFloat(a.internal_amount_ghs || 0).toFixed(2)}
+                      </td>
+                      <td style="padding:0.9rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;font-size:0.82rem;">${a.payer_name} (${a.payer_phone})</div>
+                        <div style="font-size:0.74rem;color:#64748b;margin-top:0.15rem;">${a.description}</div>
+                      </td>
+                      <td style="padding:0.9rem 1rem;text-align:right;">
+                        ${a.resolved ? `
+                          <span class="badge" style="background:#f0fdf4;color:#16a34a;font-weight:800;font-size:0.72rem;border:1px solid #bbf7d0;">
+                            ✓ Cleared
+                          </span>
+                        ` : `
+                          <button class="btn-pill btn-resolve-discrepancy" data-anomaly='${JSON.stringify(a).replace(/'/g, "&#39;")}' style="padding:0.35rem 0.8rem;font-size:0.75rem;background:#ecfdf5;color:#047857;border:1.5px solid #a7f3d0;font-weight:800;cursor:pointer;border-radius:999px;">
+                            ✅ Resolve
+                          </button>
+                        `}
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : currentSubTab === 'escrow' ? `
+            <!-- SUBTAB 3: MOMO ESCROW HOLDINGS LEDGER -->
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:1.25rem;margin-bottom:1.5rem;">
+              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1.25rem;">
+                <div>
+                  <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+                    <span style="font-size:0.75rem;font-weight:800;color:#7c3aed;text-transform:uppercase;background:#faf5ff;padding:0.2rem 0.5rem;border-radius:4px;border:1px solid #e9d5ff;">
+                      DEC-011 &bull; POL-008 &bull; Lesson &amp; Milestone Trust
+                    </span>
+                    <span class="badge" style="background:#ecfdf5;color:#047857;font-weight:800;font-size:0.72rem;border:1px solid #a7f3d0;">
+                      MoMo Payout Ready
+                    </span>
+                  </div>
+                  <h3 style="font-size:1.2rem;font-weight:800;color:#0A2046;margin:0 0 0.25rem 0;">
+                    Mobile Money Escrow Holdings &amp; Settlement Ledger
+                  </h3>
+                  <p style="color:#64748b;font-size:0.85rem;margin:0;">
+                    Funds held in trust for private tutoring lessons and procurement tenders. Automated 90/10 split with instant disbursement to educator MoMo wallets upon session completion.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Mini KPI Row -->
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;">
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">TOTAL HELD IN TRUST</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#7c3aed;margin-top:0.2rem;">
+                    GH₵ ${(escrowMetrics.totalHeldGhs || escrowHoldings.filter(h => h.status === 'held_in_escrow').reduce((s, h) => s + Number(h.amount_ghs || 0), 0)).toLocaleString()}
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">Pending delivery sign-off</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">TOTAL DISBURSED (90%)</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#10b981;margin-top:0.2rem;">
+                    GH₵ ${(escrowMetrics.totalDisbursedGhs || escrowHoldings.filter(h => h.status === 'disbursed').reduce((s, h) => s + Number(h.net_disbursement_ghs || 0), 0)).toLocaleString()}
+                  </div>
+                  <div style="font-size:0.72rem;color:#10b981;font-weight:700;">Settled to MoMo wallets</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">ACTIVE ESCROW HOLDS</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:#0f172a;margin-top:0.2rem;">
+                    ${escrowHoldings.filter(h => h.status === 'held_in_escrow').length} Active
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">Lessons in progress</div>
+                </div>
+                <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">
+                  <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">DISPUTED ESCROWS</div>
+                  <div style="font-size:1.3rem;font-weight:800;color:${escrowHoldings.filter(h => h.status === 'disputed').length > 0 ? '#ea580c' : '#10b981'};margin-top:0.2rem;">
+                    ${escrowHoldings.filter(h => h.status === 'disputed').length} Disputed
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">Requires Super Admin arbitration</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Escrow Holdings Table -->
+            <div style="overflow-x:auto;">
+              <table style="width:100%;border-collapse:collapse;font-size:0.86rem;text-align:left;">
+                <thead>
+                  <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">BOOKING REF &amp; DATE</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">PARENT (PAYER)</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">EDUCATOR / PAYEE</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">MOMO PAYOUT WALLET</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">HELD / NET (GHS)</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;">STATUS</th>
+                    <th style="padding:0.85rem 1rem;color:#64748b;font-weight:700;text-align:right;">ADMINISTRATIVE ACTION</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${escrowHoldings.length === 0 ? `
+                    <tr>
+                      <td colspan="7" style="padding:2.5rem;text-align:center;color:#64748b;">
+                        <div style="font-size:1.8rem;margin-bottom:0.4rem;">⚖️</div>
+                        <div style="font-weight:700;color:#0f172a;">No lesson escrow holdings currently registered.</div>
+                      </td>
+                    </tr>
+                  ` : escrowHoldings.map(h => {
+                    const bookingId = h.booking_id || h.id;
+                    const heldGhs = parseFloat(h.amount_ghs || 0).toFixed(2);
+                    const netGhs = parseFloat(h.net_disbursement_ghs || (h.amount_ghs * 0.9) || 0).toFixed(2);
+                    return `
+                      <tr style="border-bottom:1px solid #f1f5f9;">
+                        <td style="padding:0.9rem 1rem;">
+                          <div style="font-weight:800;color:#0A2046;font-family:monospace;">${h.booking_reference || bookingId}</div>
+                          <div style="font-size:0.75rem;color:#64748b;">${h.funded_at ? new Date(h.funded_at).toLocaleDateString('en-GB') : 'Recent'} &bull; ${h.payment_channel || 'MTN MoMo'}</div>
+                        </td>
+                        <td style="padding:0.9rem 1rem;">
+                          <div style="font-weight:700;color:#0f172a;">${h.payer_name || 'Parent User'}</div>
+                          <div style="font-size:0.75rem;color:#64748b;">${h.payer_phone || 'N/A'}</div>
+                        </td>
+                        <td style="padding:0.9rem 1rem;">
+                          <div style="font-weight:700;color:#0A2046;">${h.payee_name || 'Verified Educator'}</div>
+                          <div style="font-size:0.75rem;color:#15803d;font-weight:600;">NTC Licenced Educator</div>
+                        </td>
+                        <td style="padding:0.9rem 1rem;">
+                          <div style="font-weight:700;color:#0f172a;">${h.payee_momo_network || 'MTN MoMo'}</div>
+                          <div style="font-size:0.75rem;color:#64748b;font-family:monospace;">${h.payee_momo_number || '+233 24 000 0000'}</div>
+                        </td>
+                        <td style="padding:0.9rem 1rem;">
+                          <div style="font-weight:800;color:#0f172a;">GH₵ ${heldGhs}</div>
+                          <div style="font-size:0.74rem;color:#15803d;font-weight:700;">Net: GH₵ ${netGhs} (90%)</div>
+                        </td>
+                        <td style="padding:0.9rem 1rem;">
+                          ${h.status === 'held_in_escrow' ? `
+                            <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.72rem;border:1px solid #bfdbfe;">
+                              ⏳ Held in Escrow
+                            </span>
+                          ` : h.status === 'disputed' ? `
+                            <span class="badge" style="background:#fff7ed;color:#c2410c;font-weight:800;font-size:0.72rem;border:1px solid #fed7aa;">
+                              ⚠️ Disputed
+                            </span>
+                          ` : h.status === 'disbursed' ? `
+                            <span class="badge" style="background:#f0fdf4;color:#15803d;font-weight:800;font-size:0.72rem;border:1px solid #bbf7d0;">
+                              ✓ Disbursed
+                            </span>
+                          ` : `
+                            <span class="badge" style="background:#faf5ff;color:#7c3aed;font-weight:800;font-size:0.72rem;border:1px solid #e9d5ff;">
+                              ↩ Refunded
+                            </span>
+                          `}
+                        </td>
+                        <td style="padding:0.9rem 1rem;text-align:right;">
+                          ${(h.status === 'held_in_escrow' || h.status === 'disputed') ? `
+                            <div style="display:inline-flex;gap:0.35rem;">
+                              <button class="btn-pill btn-admin-disburse-escrow" data-booking-id="${bookingId}" data-amount="${netGhs}" data-payee="${h.payee_name || 'Educator'}" style="padding:0.35rem 0.75rem;font-size:0.74rem;background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;font-weight:800;cursor:pointer;border-radius:999px;">
+                                💸 Disburse
+                              </button>
+                              <button class="btn-pill btn-admin-refund-escrow" data-booking-id="${bookingId}" data-payer="${h.payer_name || 'Parent'}" data-amount="${heldGhs}" style="padding:0.35rem 0.75rem;font-size:0.74rem;background:#fef2f2;color:#b91c1c;border:1.5px solid #fecaca;font-weight:800;cursor:pointer;border-radius:999px;">
+                                ↩️ Refund
+                              </button>
+                            </div>
+                          ` : `
+                            <span style="font-size:0.75rem;color:#94a3b8;font-weight:600;">Settled &bull; Sealed</span>
+                          `}
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
           ` : currentSubTab === 'vouchers' ? `
-            <!-- SUBTAB 2: ADMISSION VOUCHERS REGISTER -->
+            <!-- SUBTAB 4: ADMISSION VOUCHERS REGISTER -->
             <div style="overflow-x: auto;">
               <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
                 <thead>
@@ -2783,7 +3064,7 @@ const AdminView = {
               </table>
             </div>
           ` : `
-            <!-- SUBTAB 3: INSTITUTIONAL SAAS PLANS REGISTER -->
+            <!-- SUBTAB 5: INSTITUTIONAL SAAS PLANS REGISTER -->
             <div style="overflow-x: auto;">
               <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
                 <thead>
@@ -2791,7 +3072,7 @@ const AdminView = {
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">INSTITUTION & REGION</th>
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">PLAN TIER</th>
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">INTERVAL</th>
-                    <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">TERMLY FEE (GHS)</th>
+                    <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">ANNUAL/TERMLY FEE (GHS)</th>
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">STATUS</th>
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NEXT RENEWAL</th>
                     <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">ACTIONS</th>
@@ -2805,7 +3086,7 @@ const AdminView = {
                         <div style="font-size: 0.78rem; color: #64748b;">${s.region} &bull; ${s.channel}</div>
                       </td>
                       <td style="padding: 1rem;">
-                        <span class="badge" style="background: ${s.plan_tier === 'enterprise' ? '#fef3c7' : s.plan_tier === 'growth' ? '#dbeafe' : '#f1f5f9'}; color: ${s.plan_tier === 'enterprise' ? '#92400e' : s.plan_tier === 'growth' ? '#1e40af' : '#475569'}; font-weight: 800; font-size: 0.78rem;">
+                        <span class="badge" style="background: ${s.plan_tier === 'enterprise' ? '#fef3c7' : s.plan_tier === 'pro' ? '#dbeafe' : s.plan_tier === 'growth' ? '#ecfdf5' : '#f1f5f9'}; color: ${s.plan_tier === 'enterprise' ? '#92400e' : s.plan_tier === 'pro' ? '#1e40af' : s.plan_tier === 'growth' ? '#065f46' : '#475569'}; font-weight: 800; font-size: 0.78rem;">
                           ${s.plan}
                         </span>
                       </td>
@@ -2834,7 +3115,7 @@ const AdminView = {
                         ${s.renewal_date || 'N/A'}
                       </td>
                       <td style="padding: 1rem; text-align: right;">
-                        <button class="btn-pill btn-action-edit-sub" data-sub='${JSON.stringify(s)}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
+                        <button class="btn-pill btn-action-edit-sub" data-sub='${JSON.stringify(s).replace(/'/g, "&#39;")}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
                           <span>✏️</span> Manage Plan
                         </button>
                       </td>
@@ -2858,13 +3139,13 @@ const AdminView = {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
           <div>
             <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
-              Commercial Control & GMV Telemetry
+              Module 4.1 &bull; Commercial Control &amp; Quota Matrix
             </div>
             <h2 style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-              Commercial Subscriptions & Platform GMV Cockpit
+              Commercial Subscriptions, Entitlements &amp; Platform GMV Cockpit
             </h2>
             <p style="color: #64748b; font-size: 0.9rem; margin: 0;">
-              Real-time Ghana Cedis revenue telemetry, manual institutional tier overrides, and complimentary grace extensions.
+              Real-time Ghana Cedis revenue telemetry, staff seat &amp; parent enquiry quota matrix, manual institutional tier overrides, and complimentary grace extensions (POL-006).
             </p>
           </div>
           <button class="btn-pill btn-primary" onclick="AdminView.switchTab('finance')" style="font-size: 0.85rem; font-weight: 700;">
@@ -2919,66 +3200,126 @@ const AdminView = {
           </div>
         </div>
 
-        <!-- 3 Approved SaaS Commercial Plans -->
+        <!-- 4 Approved School SaaS Commercial Plans & Quota Matrix -->
         <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-          Approved Commercial Subscription Catalog
+          Approved School SaaS Quota Matrix (Module 4.1)
         </h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 2.25rem;">
-          <div style="border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.75rem;">GROWTH TIER</span>
-              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 990</span>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+          <!-- Free Tier -->
+          <div style="border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.15rem; background: #fff;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge" style="background:#f1f5f9;color:#475569;font-weight:800;font-size:0.72rem;">FREE TIER</span>
+              <span style="font-size: 0.72rem; color: #64748b;">Forever Free</span>
             </div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin-bottom: 0.35rem;">GH₵ 99 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
-            <ul style="font-size: 0.8rem; color: #475569; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
-              <li>3 Staff Seats &bull; 3 Active Vacancies</li>
-              <li>Full Admissions Pipeline & Form Builder</li>
-              <li>Enquiry CRM & Tour Scheduling</li>
-              <li>Standard WhatsApp/Email alerts</li>
+            <div style="font-size: 1.45rem; font-weight: 800; color: #0A2046; margin-bottom: 0.35rem;">GH₵ 0 <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.78rem; color: #475569; padding-left: 1.1rem; margin: 0.4rem 0 0 0; line-height: 1.55;">
+              <li><strong>1 Staff Seat</strong></li>
+              <li><strong>5 Parent Enquiries</strong> / mo</li>
+              <li>0 Active Vacancies</li>
+              <li>Standard Directory Listing</li>
             </ul>
           </div>
 
-          <div style="border: 2px solid #1266C4; border-radius: 12px; padding: 1.25rem; background: #f0f7ff; box-shadow: 0 4px 12px rgba(18,102,196,0.12); position: relative;">
-            <div style="position: absolute; top: -10px; right: 15px; background: #1266C4; color: #fff; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.6rem; border-radius: 999px; text-transform: uppercase;">Most Popular</div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <span class="badge" style="background:#dbeafe;color:#1e40af;font-weight:800;font-size:0.75rem;">PRO TIER</span>
-              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 2,490</span>
+          <!-- Growth Tier -->
+          <div style="border: 1.5px solid #bfdbfe; border-radius: 12px; padding: 1.15rem; background: #f8fafc;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.72rem;">GROWTH TIER</span>
+              <span style="font-size: 0.72rem; color: #64748b;">Annual: GH₵ 990</span>
             </div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #1266C4; margin-bottom: 0.35rem;">GH₵ 249 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
-            <ul style="font-size: 0.8rem; color: #334155; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
-              <li>10 Staff Seats &bull; 10 Active Vacancies</li>
-              <li>2 Included B2B Tenders per month</li>
-              <li>Virtual Tours & Enrolment Analytics</li>
-              <li>Priority Verification & Support</li>
+            <div style="font-size: 1.45rem; font-weight: 800; color: #1e40af; margin-bottom: 0.35rem;">GH₵ 99 <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.78rem; color: #475569; padding-left: 1.1rem; margin: 0.4rem 0 0 0; line-height: 1.55;">
+              <li><strong>3 Staff Seats</strong></li>
+              <li><strong>25 Parent Enquiries</strong> / mo</li>
+              <li>3 Active Vacancies</li>
+              <li>Enquiry CRM &amp; Tour Scheduling</li>
             </ul>
           </div>
 
-          <div style="border: 1.5px solid #d5a63b; border-radius: 12px; padding: 1.25rem; background: #fffcf5; box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-              <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;font-size:0.75rem;">ENTERPRISE TIER</span>
-              <span style="font-size: 0.75rem; color: #64748b;">Annual: GH₵ 4,990</span>
+          <!-- Pro Tier -->
+          <div style="border: 2px solid #1266C4; border-radius: 12px; padding: 1.15rem; background: #f0f7ff; position: relative;">
+            <div style="position: absolute; top: -10px; right: 15px; background: #1266C4; color: #fff; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 999px; text-transform: uppercase;">Most Popular</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge" style="background:#dbeafe;color:#1e40af;font-weight:800;font-size:0.72rem;">PRO TIER</span>
+              <span style="font-size: 0.72rem; color: #64748b;">Annual: GH₵ 2,490</span>
             </div>
-            <div style="font-size: 1.6rem; font-weight: 800; color: #92400e; margin-bottom: 0.35rem;">GH₵ 499 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ month</span></div>
-            <ul style="font-size: 0.8rem; color: #475569; padding-left: 1.2rem; margin: 0.5rem 0 0 0; line-height: 1.5;">
-              <li>Unlimited Staff Seats & Vacancies</li>
-              <li>5 Included B2B Tenders per month</li>
-              <li>Dedicated Account Manager</li>
-              <li>Featured Badge on Public Directory</li>
+            <div style="font-size: 1.45rem; font-weight: 800; color: #1266C4; margin-bottom: 0.35rem;">GH₵ 249 <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.78rem; color: #334155; padding-left: 1.1rem; margin: 0.4rem 0 0 0; line-height: 1.55;">
+              <li><strong>10 Staff Seats</strong></li>
+              <li><strong>100 Parent Enquiries</strong> / mo</li>
+              <li>10 Active Vacancies</li>
+              <li>2 Included B2B Tenders / mo</li>
+              <li>Virtual Tours &amp; Analytics</li>
+            </ul>
+          </div>
+
+          <!-- Enterprise Tier -->
+          <div style="border: 1.5px solid #d5a63b; border-radius: 12px; padding: 1.15rem; background: #fffcf5;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;font-size:0.72rem;">ENTERPRISE TIER</span>
+              <span style="font-size: 0.72rem; color: #64748b;">Annual: GH₵ 6,500</span>
+            </div>
+            <div style="font-size: 1.45rem; font-weight: 800; color: #92400e; margin-bottom: 0.35rem;">GH₵ 650 <span style="font-size: 0.8rem; color: #64748b; font-weight: 500;">/ month</span></div>
+            <ul style="font-size: 0.78rem; color: #475569; padding-left: 1.1rem; margin: 0.4rem 0 0 0; line-height: 1.55;">
+              <li><strong>Unlimited Staff Seats</strong></li>
+              <li><strong>Unlimited Parent Enquiries</strong></li>
+              <li>Unlimited Active Vacancies</li>
+              <li>5 Included B2B Tenders / mo</li>
+              <li>Dedicated Account Manager &amp; API</li>
             </ul>
           </div>
         </div>
 
-        <!-- Enrolled Campuses & Override Management Table -->
+        <!-- Educator Professional Subscription Quota Matrix -->
         <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
-          Campus Subscription Status & Commercial Overrides
+          Educator Professional Subscription Catalog (DEC-002, DEC-024)
         </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-bottom: 2.25rem;">
+          <div style="border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; background: #fff;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="badge" style="background:#f1f5f9;color:#475569;font-weight:800;font-size:0.72rem;">FREE EDUCATOR</span>
+              <span style="font-size:0.75rem;color:#64748b;">GH₵ 0</span>
+            </div>
+            <div style="font-size:1.2rem;font-weight:800;color:#0A2046;margin:0.25rem 0;">2 Active Applications</div>
+            <div style="font-size:0.76rem;color:#64748b;">Direct parent inquiries &bull; Standard profile listing</div>
+          </div>
+
+          <div style="border: 1.5px solid #bfdbfe; border-radius: 10px; padding: 1rem; background: #eff6ff;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="badge" style="background:#dbeafe;color:#1e40af;font-weight:800;font-size:0.72rem;">PROFESSIONAL PLUS</span>
+              <span style="font-size:0.75rem;color:#1e40af;font-weight:700;">GH₵ 39 / mo</span>
+            </div>
+            <div style="font-size:1.2rem;font-weight:800;color:#1e40af;margin:0.25rem 0;">5 Active Applications</div>
+            <div style="font-size:0.76rem;color:#475569;">Priority search ranking &bull; Verified NTC badge &bull; Direct inquiries</div>
+          </div>
+
+          <div style="border: 1.5px solid #d5a63b; border-radius: 10px; padding: 1rem; background: #fffcf5;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:800;font-size:0.72rem;">PROFESSIONAL BUSINESS</span>
+              <span style="font-size:0.75rem;color:#92400e;font-weight:700;">GH₵ 99 / mo</span>
+            </div>
+            <div style="font-size:1.2rem;font-weight:800;color:#92400e;margin:0.25rem 0;">Unlimited Applications</div>
+            <div style="font-size:0.76rem;color:#475569;">Featured hero badge &bull; 0% escrow platform surcharge &bull; Instant payout</div>
+          </div>
+        </div>
+
+        <!-- Enrolled Campuses & Override Management Table -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;">
+          <h3 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0;">
+            Active Subscribed Institutions Directory (${subscriptions.length})
+          </h3>
+          <span style="font-size:0.8rem;color:#64748b;font-weight:600;">
+            POL-006 Dual-Key Override &bull; 1-Click Grace Extension
+          </span>
+        </div>
         <div style="overflow-x: auto; background: #fff; border-radius: 12px; border: 1.5px solid #e2e8f0;">
           <table style="width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left;">
-            <thead style="background: #0A2046; color: #fff; font-size: 0.78rem; text-transform: uppercase;">
+            <thead style="background: #0A2046; color: #fff; font-size: 0.76rem; text-transform: uppercase;">
               <tr>
                 <th style="padding: 0.9rem 1rem;">School Identifier</th>
                 <th style="padding: 0.9rem 1rem;">Active Tier</th>
-                <th style="padding: 0.9rem 1rem;">Interval & Rate</th>
+                <th style="padding: 0.9rem 1rem;">Staff Seats (Used / Cap)</th>
+                <th style="padding: 0.9rem 1rem;">Enquiries (Mo / Cap)</th>
+                <th style="padding: 0.9rem 1rem;">Interval &amp; Rate</th>
                 <th style="padding: 0.9rem 1rem;">Account Status</th>
                 <th style="padding: 0.9rem 1rem;">Valid Until</th>
                 <th style="padding: 0.9rem 1rem; text-align: right;">Administrative Action</th>
@@ -2987,17 +3328,21 @@ const AdminView = {
             <tbody>
               ${subscriptions.length === 0 ? `
                 <tr>
-                  <td colspan="6" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
+                  <td colspan="8" style="padding: 2.5rem; text-align: center; color: #94a3b8;">
                     <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📑</div>
                     <div style="font-weight: 700; color: #334155;">No active school subscriptions registered</div>
                   </td>
                 </tr>
               ` : subscriptions.map(s => {
                 const schoolId = s.school_id || s.schoolId || s.id;
-                const tierName = s.tier_name || s.tier || s.plan || 'Free Tier';
+                const tierName = s.plan || s.tier_name || s.tier || 'Free Tier';
                 const status = s.status || 'active';
-                const amount = s.amount || s.price_ghs || 0;
-                const renewalDate = s.current_period_end ? new Date(s.current_period_end).toLocaleDateString() : (s.renewal_date || 'Ongoing');
+                const amount = s.price_ghs || s.amount || 0;
+                const renewalDate = s.current_period_end ? new Date(s.current_period_end).toLocaleDateString('en-GB') : (s.renewal_date || 'Ongoing');
+                const seatsUsed = s.staff_seats_used !== undefined ? s.staff_seats_used : 1;
+                const seatsLimit = s.staff_seats_limit || (tierName.toLowerCase().includes('enterprise') ? 'Unlimited' : (tierName.toLowerCase().includes('pro') ? 10 : (tierName.toLowerCase().includes('growth') ? 3 : 1)));
+                const enqUsed = s.enquiries_used_month !== undefined ? s.enquiries_used_month : 4;
+                const enqQuota = s.enquiries_quota_month || (tierName.toLowerCase().includes('enterprise') ? 'Unlimited' : (tierName.toLowerCase().includes('pro') ? 100 : (tierName.toLowerCase().includes('growth') ? 25 : 5)));
                 return `
                   <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 1rem;">
@@ -3005,23 +3350,29 @@ const AdminView = {
                       <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">${schoolId}</div>
                     </td>
                     <td style="padding: 1rem;">
-                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;text-transform:uppercase;font-size:0.75rem;">
+                      <span class="badge" style="background:${s.plan_tier === 'enterprise' ? '#fef3c7' : s.plan_tier === 'pro' ? '#dbeafe' : s.plan_tier === 'growth' ? '#ecfdf5' : '#f1f5f9'};color:${s.plan_tier === 'enterprise' ? '#92400e' : s.plan_tier === 'pro' ? '#1e40af' : s.plan_tier === 'growth' ? '#065f46' : '#475569'};font-weight:800;text-transform:uppercase;font-size:0.75rem;">
                         ${tierName}
                       </span>
                     </td>
+                    <td style="padding: 1rem; font-weight: 700; color: #0f172a;">
+                      ${seatsUsed} / <span style="color:#64748b;">${seatsLimit}</span>
+                    </td>
+                    <td style="padding: 1rem; font-weight: 700; color: #0f172a;">
+                      ${enqUsed} / <span style="color:#64748b;">${enqQuota}</span>
+                    </td>
                     <td style="padding: 1rem; font-weight: 800; color: #0f172a;">
-                      GH₵ ${parseFloat(amount).toLocaleString()} <span style="font-size: 0.76rem; font-weight: 500; color: #64748b;">/${s.billing_interval || 'mo'}</span>
+                      GH₵ ${parseFloat(amount).toLocaleString()} <span style="font-size: 0.76rem; font-weight: 500; color: #64748b;">/${s.billing_interval || 'yr'}</span>
                     </td>
                     <td style="padding: 1rem;">
                       <span class="badge" style="background: ${status === 'active' ? '#dcfce7' : status === 'grace_period' ? '#fef3c7' : '#fee2e2'}; color: ${status === 'active' ? '#166534' : status === 'grace_period' ? '#92400e' : '#991b1b'}; font-weight: 800; text-transform: uppercase; font-size: 0.72rem;">
-                        ${status}
+                        ${status === 'grace_period' ? `⚠️ Grace (${s.grace_days_remaining || 3}d left)` : status}
                       </span>
                     </td>
                     <td style="padding: 1rem; color: #64748b; font-size: 0.82rem;">
                       ${renewalDate}
                     </td>
                     <td style="padding: 1rem; text-align: right;">
-                      <button class="btn-pill btn-action-override-sub-tier" data-school-id="${schoolId}" data-current-tier="${s.tier || s.plan || 'free'}" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; background: #eff6ff; color: #1266C4; border: 1.5px solid #bfdbfe; font-weight: 800; cursor: pointer; border-radius: 999px;">
+                      <button class="btn-pill btn-action-override-sub-tier" data-sub='${JSON.stringify(s).replace(/'/g, "&#39;")}' data-school-id="${schoolId}" data-current-tier="${s.plan_tier || s.tier || 'free'}" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; background: #eff6ff; color: #1266C4; border: 1.5px solid #bfdbfe; font-weight: 800; cursor: pointer; border-radius: 999px;">
                         ⚡ Override Tier / Grace
                       </button>
                     </td>
@@ -4016,40 +4367,189 @@ const AdminView = {
   },
 
   /**
-   * Group 4.3: Commercial CRM
+   * Group 4.3: Commercial CRM & Enterprise Sales Pipeline
    */
-  renderCommercialCRM(overview) {
+  renderCommercialCRM(crmData = {}) {
+    const metrics = crmData.metrics || {};
+    const stages = crmData.stages || {
+      prospect: [],
+      trial: [],
+      proposal: [],
+      contracted: [],
+      renewal_due: []
+    };
+    const leads = crmData.leads || [];
+
+    const totalPipelineValue = metrics.totalPipelineValueGhs || leads.reduce((s, l) => s + (l.contract_value_ghs || 0), 0);
+    const contractedAnnual = metrics.contractedAnnualGhs || (stages.contracted || []).reduce((s, l) => s + (l.contract_value_ghs || 0), 0);
+    const mrrGhs = metrics.monthlyRecurringRevenueGhs || Math.round(contractedAnnual / 12);
+    const renewalAtRisk = metrics.renewalAtRiskValueGhs || (stages.renewal_due || []).reduce((s, l) => s + (l.contract_value_ghs || 0), 0);
+    const conversionRate = metrics.conversionRatePercentage || '64.2%';
+
+    const stageConfig = [
+      { key: 'prospect', label: '1. Prospecting', color: '#64748b', bg: '#f1f5f9', badgeBg: '#e2e8f0', desc: 'Cold outreach & NaSIA register' },
+      { key: 'trial', label: '2. Demo / Trial', color: '#0284c7', bg: '#f0f9ff', badgeBg: '#e0f2fe', desc: '14-day School OS pilot active' },
+      { key: 'proposal', label: '3. Proposal Sent', color: '#d97706', bg: '#fffbeb', badgeBg: '#fef3c7', desc: 'Executive quote with Board' },
+      { key: 'contracted', label: '4. Contract Active', color: '#16a34a', bg: '#f0fdf4', badgeBg: '#dcfce7', desc: 'Signed annual SaaS client' },
+      { key: 'renewal_due', label: '5. Renewal Due (<30d)', color: '#dc2626', bg: '#fef2f2', badgeBg: '#fee2e2', desc: 'Urgent renewal prompt' }
+    ];
+
     return `
       <div>
+        <!-- Top Bar -->
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 4.3 &bull; Enterprise Institutional Sales
+              Module 4.3 &bull; Enterprise Institutional Pipeline
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
-              Commercial CRM &amp; Pipeline
+              Commercial CRM &amp; Institutional Sales Pipeline
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Enterprise institutional sales pipeline: Prospect &rarr; Proposal &rarr; Negotiation &rarr; Contracted &rarr; Renewal.
+              Enterprise institutional sales pipeline across Greater Accra &amp; Ashanti: Prospect &rarr; Demo / Trial &rarr; Proposal &rarr; Contracted &rarr; 30-Day Renewal.
             </p>
           </div>
+          <button id="btn-open-add-lead-modal" class="btn-pill btn-primary" style="font-weight:800;font-size:0.85rem;padding:0.6rem 1.25rem;display:flex;align-items:center;gap:0.5rem;">
+            <span>➕</span> Add Enterprise Lead
+          </button>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
-            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">PROSPECTING</div>
-            <div style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:0.25rem 0;">42 Schools</div>
-            <div style="font-size:0.75rem;color:#2563eb;">Accra Metro &bull; Kumasi</div>
+
+        <!-- 5 Real-Time KPI Cards -->
+        <div class="admin-kpi-grid" style="margin-bottom:1.75rem;">
+          <div class="admin-kpi-card" style="border-top:4px solid #2563eb;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">TOTAL PIPELINE VALUE</div>
+              <div style="width:34px;height:34px;border-radius:8px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">
+                🇬🇭
+              </div>
+            </div>
+            <div class="admin-kpi-value">GH₵ ${totalPipelineValue.toLocaleString()}</div>
+            <div class="admin-kpi-sub"><span class="badge-positive">${leads.length} Total Institutions</span><span class="badge-subtle">in funnel</span></div>
           </div>
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
-            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">PROPOSALS SENT</div>
-            <div style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:0.25rem 0;">18 Schools</div>
-            <div style="font-size:0.75rem;color:#f59e0b;">GH₵ 45,000 Pipeline</div>
+
+          <div class="admin-kpi-card" style="border-top:4px solid #10b981;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">CONTRACTED ANNUAL VALUE</div>
+              <div style="width:34px;height:34px;border-radius:8px;background:#ecfdf5;color:#059669;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">
+                📈
+              </div>
+            </div>
+            <div class="admin-kpi-value">GH₵ ${contractedAnnual.toLocaleString()}</div>
+            <div class="admin-kpi-sub"><span class="badge-positive">MRR: GH₵ ${mrrGhs.toLocaleString()}</span><span class="badge-subtle">settled</span></div>
           </div>
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
-            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">CONTRACTED (ACTIVE MRR)</div>
-            <div style="font-size:1.4rem;font-weight:800;color:#10b981;margin:0.25rem 0;">20 Schools</div>
-            <div style="font-size:0.75rem;color:#10b981;">GH₵ 17,500 / month</div>
+
+          <div class="admin-kpi-card" style="border-top:4px solid #f59e0b;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">WIN / CONVERSION RATE</div>
+              <div style="width:34px;height:34px;border-radius:8px;background:#fffbeb;color:#d97706;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">
+                🎯
+              </div>
+            </div>
+            <div class="admin-kpi-value">${conversionRate}</div>
+            <div class="admin-kpi-sub"><span class="badge-positive">Top Performer</span><span class="badge-subtle">Accra & Kumasi</span></div>
           </div>
+
+          <div class="admin-kpi-card" style="border-top:4px solid #dc2626;">
+            <div class="admin-kpi-top">
+              <div class="admin-kpi-label">30-DAY RENEWAL WATCHLIST</div>
+              <div style="width:34px;height:34px;border-radius:8px;background:#fef2f2;color:#dc2626;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">
+                ⏳
+              </div>
+            </div>
+            <div class="admin-kpi-value" style="color:#dc2626;">GH₵ ${renewalAtRisk.toLocaleString()}</div>
+            <div class="admin-kpi-sub"><span class="badge-positive" style="color:#dc2626;">${(stages.renewal_due || []).length} Expiring</span><span class="badge-subtle">prompt via MoMo</span></div>
+          </div>
+        </div>
+
+        <!-- 5-Stage Kanban Board Container -->
+        <div style="display:grid;grid-template-columns:repeat(5, minmax(290px, 1fr));gap:1rem;overflow-x:auto;padding-bottom:1.5rem;align-items:start;">
+          ${stageConfig.map(cfg => {
+            const stageLeads = stages[cfg.key] || [];
+            const stageValue = stageLeads.reduce((s, l) => s + (l.contract_value_ghs || 0), 0);
+            return `
+              <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:1rem;display:flex;flex-direction:column;min-height:550px;">
+                <!-- Column Header -->
+                <div style="margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid ${cfg.color}33;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.25rem;">
+                    <span style="font-weight:800;font-size:0.85rem;color:${cfg.color};">
+                      ${cfg.label}
+                    </span>
+                    <span class="badge" style="background:${cfg.badgeBg};color:${cfg.color};font-weight:800;font-size:0.75rem;padding:0.15rem 0.5rem;border-radius:999px;">
+                      ${stageLeads.length}
+                    </span>
+                  </div>
+                  <div style="font-size:0.72rem;color:#64748b;">${cfg.desc}</div>
+                  <div style="font-size:0.8rem;font-weight:800;color:#0f172a;margin-top:0.35rem;">GH₵ ${stageValue.toLocaleString()}</div>
+                </div>
+
+                <!-- Cards List -->
+                <div style="display:flex;flex-direction:column;gap:0.85rem;flex:1;">
+                  ${stageLeads.length === 0 ? `
+                    <div style="padding:2rem 1rem;text-align:center;color:#94a3b8;font-size:0.8rem;border:1.5px dashed #cbd5e1;border-radius:8px;">
+                      No active leads in this stage
+                    </div>
+                  ` : stageLeads.map(lead => `
+                    <div class="crm-lead-card" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;box-shadow:0 2px 5px rgba(0,0,0,0.03);display:flex;flex-direction:column;gap:0.6rem;">
+                      <!-- Card Header -->
+                      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;">
+                        <div style="font-weight:800;font-size:0.92rem;color:#0A2046;line-height:1.25;">
+                          ${lead.school_name}
+                        </div>
+                        <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.68rem;font-weight:800;white-space:nowrap;">
+                          ${lead.target_plan || 'Pro Tier'}
+                        </span>
+                      </div>
+
+                      <!-- Sub Location & Curriculum -->
+                      <div style="font-size:0.75rem;color:#64748b;display:flex;flex-direction:column;gap:0.15rem;">
+                        <div>📍 ${lead.district}, ${lead.region}</div>
+                        <div>📚 ${lead.curriculum} &bull; ${lead.student_count || 500} students</div>
+                      </div>
+
+                      <!-- Contact Person -->
+                      <div style="background:#f8fafc;padding:0.5rem 0.65rem;border-radius:6px;font-size:0.75rem;border:1px solid #f1f5f9;">
+                        <div style="font-weight:700;color:#0f172a;">👤 ${lead.contact_name}</div>
+                        <div style="color:#64748b;font-family:monospace;margin-top:0.1rem;">📞 ${lead.phone}</div>
+                      </div>
+
+                      <!-- Deal Value & Notes -->
+                      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.1rem;">
+                        <span style="font-size:0.75rem;color:#64748b;">Annual Value:</span>
+                        <span style="font-size:0.95rem;font-weight:800;color:#0f172a;">GH₵ ${parseFloat(lead.contract_value_ghs || 0).toLocaleString()}</span>
+                      </div>
+
+                      <div style="font-size:0.72rem;color:#64748b;background:#fafafa;padding:0.4rem;border-radius:4px;border-left:2px solid ${cfg.color};line-height:1.35;">
+                        ${lead.last_interaction || 'Lead created.'}
+                      </div>
+
+                      ${lead.stage === 'renewal_due' ? `
+                        <div style="background:#fef2f2;border:1px solid #fecaca;padding:0.5rem;border-radius:6px;display:flex;flex-direction:column;gap:0.35rem;">
+                          <div style="font-size:0.72rem;font-weight:800;color:#dc2626;">
+                            ⚠️ Renewal Due: ${lead.expiry_date || 'Expires in 12 days'}
+                          </div>
+                          <button class="btn-pill btn-dispatch-momo-invoice" data-lead-id="${lead.id}" style="padding:0.35rem 0.6rem;font-size:0.74rem;background:#dc2626;color:#ffffff;border:none;font-weight:800;cursor:pointer;border-radius:6px;width:100%;text-align:center;">
+                            📲 Send MoMo Renewal Invoice Prompt
+                          </button>
+                        </div>
+                      ` : ''}
+
+                      <!-- Quick Stage Changer -->
+                      <div style="margin-top:0.25rem;border-top:1px solid #f1f5f9;padding-top:0.5rem;display:flex;align-items:center;justify-content:space-between;gap:0.4rem;">
+                        <span style="font-size:0.7rem;font-weight:700;color:#64748b;">Stage:</span>
+                        <select class="crm-stage-select" data-lead-id="${lead.id}" style="padding:0.25rem 0.45rem;border-radius:6px;border:1px solid #cbd5e1;font-size:0.74rem;font-weight:700;background:#fff;color:#0f172a;outline:none;cursor:pointer;">
+                          <option value="prospect" ${lead.stage === 'prospect' ? 'selected' : ''}>1. Prospecting</option>
+                          <option value="trial" ${lead.stage === 'trial' ? 'selected' : ''}>2. Demo / Trial</option>
+                          <option value="proposal" ${lead.stage === 'proposal' ? 'selected' : ''}>3. Proposal Sent</option>
+                          <option value="contracted" ${lead.stage === 'contracted' ? 'selected' : ''}>4. Contract Active</option>
+                          <option value="renewal_due" ${lead.stage === 'renewal_due' ? 'selected' : ''}>5. Renewal Due (<30d)</option>
+                        </select>
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -4288,9 +4788,9 @@ const AdminView = {
     `;
   },
 
-  switchTab(tabName) {
+  async switchTab(tabName) {
     this.activeTab = tabName;
-    App.refreshCurrentView();
+    return await App.refreshCurrentView();
   },
 
   initListeners() {
@@ -4987,26 +5487,138 @@ const AdminView = {
       });
     });
 
-    // 2. Commercial Subscriptions Tier Override (SUB-010)
+    // 2. Commercial Subscriptions Tier Override (SUB-010, POL-006)
     document.querySelectorAll('.btn-action-override-sub-tier').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const schoolId = btn.getAttribute('data-school-id');
-        const currentTier = btn.getAttribute('data-current-tier') || 'free';
-        const targetTier = prompt(`Select override subscription tier for ${schoolId}:\nOptions: free, growth, professional, enterprise`, currentTier === 'free' ? 'growth' : 'professional');
-        if (!targetTier) return;
-        
-        const daysInput = prompt('Enter subscription validity days (e.g. 30, 90, 365):', '30');
-        const days = parseInt(daysInput, 10) || 30;
+      btn.addEventListener('click', () => {
+        try {
+          const subData = btn.getAttribute('data-sub');
+          const sub = subData ? JSON.parse(subData) : {
+            school_id: btn.getAttribute('data-school-id'),
+            school_name: btn.getAttribute('data-school-id'),
+            plan_tier: btn.getAttribute('data-current-tier') || 'free'
+          };
+          this.openTierOverrideModal(sub);
+        } catch (e) {
+          console.warn('Tier override parse error:', e);
+        }
+      });
+    });
 
+    // MODULE 4.2 & 4.3 LISTENERS (PHASE 3)
+    // Run automated reconciliation scan
+    document.getElementById('btn-run-reconcile-scan')?.addEventListener('click', async () => {
+      const btn = document.getElementById('btn-run-reconcile-scan');
+      try {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳</span> Scanning Paystack Settlement Gateway...';
+        const result = await API.triggerReconciliationScan();
+        State.showToast(`✓ ${result.message}`, 'success');
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡</span> Run Automated Paystack Reconciliation Scan';
+        }
+      }
+    });
+
+    // Resolve financial discrepancy
+    document.querySelectorAll('.btn-resolve-discrepancy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        try {
+          const anomalyData = btn.getAttribute('data-anomaly');
+          const anomaly = anomalyData ? JSON.parse(anomalyData) : null;
+          if (anomaly) this.openReconciliationResolutionModal(anomaly);
+        } catch (e) {
+          console.warn('Anomaly parse error:', e);
+        }
+      });
+    });
+
+    // MoMo Lesson Escrow Disburse Payout
+    document.querySelectorAll('.btn-admin-disburse-escrow').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bookingId = btn.getAttribute('data-booking-id');
+        const payee = btn.getAttribute('data-payee') || 'Educator';
+        const amount = btn.getAttribute('data-amount') || '0';
+        if (!confirm(`Are you sure you want to release and disburse GH₵ ${amount} to ${payee}'s Mobile Money wallet?`)) return;
+
+        const notes = prompt(`Enter payout authorization note (Super Admin sign-off):`, `Approved lesson payout by Super Admin`) || 'Approved lesson payout';
         try {
           btn.disabled = true;
-          btn.innerText = 'Overriding...';
-          await API.adminOverrideSchoolTier(schoolId, targetTier.toLowerCase().trim(), days);
-          State.showToast(`✓ School tier upgraded to ${targetTier.toUpperCase()} for ${days} days!`, 'success');
+          btn.innerText = 'Disbursing...';
+          await API.adminDisburseLessonEscrow(bookingId, notes);
+          State.showToast(`✓ GH₵ ${amount} disbursed to ${payee} via MoMo payout!`, 'success');
           App.refreshCurrentView();
         } catch (err) {
           State.showToast(err.message, 'error');
           btn.disabled = false;
+          btn.innerText = '💸 Disburse';
+        }
+      });
+    });
+
+    // MoMo Lesson Escrow Refund to Parent
+    document.querySelectorAll('.btn-admin-refund-escrow').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const bookingId = btn.getAttribute('data-booking-id');
+        const payer = btn.getAttribute('data-payer') || 'Parent';
+        const amount = btn.getAttribute('data-amount') || '0';
+        if (!confirm(`Are you sure you want to REFUND GH₵ ${amount} back to ${payer}'s Mobile Money account?`)) return;
+
+        const reason = prompt(`Enter dispute arbitration refund reason:`, `Parent cancellation / service not delivered`) || 'Refunded by Super Admin';
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Refunding...';
+          await API.adminRefundLessonEscrow(bookingId, reason);
+          State.showToast(`✓ GH₵ ${amount} refunded to ${payer} MoMo wallet.`, 'info');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+          btn.innerText = '↩️ Refund';
+        }
+      });
+    });
+
+    // Open Add Enterprise Lead Modal
+    document.getElementById('btn-open-add-lead-modal')?.addEventListener('click', () => {
+      this.openAddLeadModal();
+    });
+
+    // Commercial CRM Stage Switcher
+    document.querySelectorAll('.crm-stage-select').forEach(sel => {
+      sel.addEventListener('change', async (e) => {
+        const leadId = sel.getAttribute('data-lead-id');
+        const newStage = e.target.value;
+        const notes = prompt(`Enter stage transition notes for ${leadId}:`, `Moved to ${newStage.toUpperCase()} by Super Admin`) || '';
+        try {
+          sel.disabled = true;
+          await API.updateAdminCRMLeadStage(leadId, newStage, notes);
+          State.showToast(`✓ Lead stage updated to ${newStage.toUpperCase()}!`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          sel.disabled = false;
+        }
+      });
+    });
+
+    // Dispatch MoMo Renewal Invoice Prompt
+    document.querySelectorAll('.btn-dispatch-momo-invoice').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const leadId = btn.getAttribute('data-lead-id');
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Dispatching MoMo Prompt...';
+          const res = await API.dispatchAdminCRMInvoice(leadId);
+          State.showToast(`✓ ${res.message}`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message, 'error');
+          btn.disabled = false;
+          btn.innerText = '📲 Send MoMo Renewal Invoice Prompt';
         }
       });
     });
@@ -5435,6 +6047,377 @@ const AdminView = {
           btn.disabled = false;
           btn.innerText = '⚖️ Execute Independent Dual Sign-Off (POL-003)';
         }
+      }
+    });
+  },
+
+  /**
+   * Institutional Subscription Tier & Grace Extension Modal (POL-006)
+   */
+  openTierOverrideModal(sub = {}) {
+    const old = document.getElementById('tier-override-modal-backdrop');
+    if (old) old.remove();
+
+    const schoolId = sub.school_id || sub.schoolId || sub.id || 'Unknown';
+    const schoolName = sub.school_name || sub.school_id || 'Institutional Campus';
+    const currentTier = (sub.plan_tier || sub.plan || 'growth').toLowerCase();
+
+    const backdrop = document.createElement('div');
+    backdrop.id = 'tier-override-modal-backdrop';
+    backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,32,70,0.75);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;';
+
+    backdrop.innerHTML = `
+      <div style="background:#ffffff;border-radius:16px;max-width:560px;width:100%;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;border:1px solid #e2e8f0;">
+        <div style="background:linear-gradient(135deg, #0A2046 0%, #17386d 100%);padding:1.25rem 1.5rem;color:#ffffff;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:800;color:#f59e0b;letter-spacing:0.05em;text-transform:uppercase;">
+              POL-006 &bull; Commercial Entitlement Override
+            </div>
+            <h2 style="font-size:1.25rem;font-weight:800;margin:0.2rem 0 0 0;color:#fff;">
+              ${schoolName}
+            </h2>
+          </div>
+          <button id="btn-close-tier-modal" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+          <div style="background:#f8fafc;padding:0.85rem 1rem;border-radius:8px;border:1px solid #e2e8f0;font-size:0.82rem;">
+            <div><strong>School ID:</strong> <span style="font-family:monospace;color:#64748b;">${schoolId}</span></div>
+            <div style="margin-top:0.25rem;"><strong>Current Status:</strong> <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;text-transform:uppercase;">${sub.status || 'Active'}</span> &bull; Current Plan: <strong>${sub.plan || currentTier}</strong></div>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:0.4rem;">
+              Target Subscription Tier
+            </label>
+            <select id="modal-override-tier" style="width:100%;padding:0.6rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.88rem;background:#fff;font-weight:600;outline:none;">
+              <option value="free" ${currentTier.includes('free') ? 'selected' : ''}>Free Tier (1 Staff Seat &bull; 5 Enquiries/mo &bull; GH₵ 0)</option>
+              <option value="growth" ${currentTier.includes('growth') ? 'selected' : ''}>Growth Tier (3 Staff Seats &bull; 25 Enquiries/mo &bull; GH₵ 99/mo)</option>
+              <option value="pro" ${currentTier.includes('pro') ? 'selected' : ''}>Pro Tier (10 Staff Seats &bull; 100 Enquiries/mo &bull; GH₵ 249/mo)</option>
+              <option value="enterprise" ${currentTier.includes('enterprise') ? 'selected' : ''}>Enterprise Tier (Unlimited Seats &amp; Enquiries &bull; GH₵ 650/mo)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:0.4rem;">
+              Extend Complimentary Grace Period (Days)
+            </label>
+            <select id="modal-override-grace" style="width:100%;padding:0.6rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.88rem;background:#fff;font-weight:600;outline:none;">
+              <option value="0">0 days (No grace extension)</option>
+              <option value="7">7 days (1 week grace)</option>
+              <option value="14" selected>14 days (Standard grace window)</option>
+              <option value="30">30 days (1 month grace waiver)</option>
+              <option value="60">60 days (Board executive override)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:0.4rem;">
+              Mandatory Commercial Justification Note <span style="color:#ef4444;">*</span>
+            </label>
+            <textarea id="modal-override-notes" rows="3" placeholder="Enter rationale for tier override or grace period grant (e.g. Approved pilot program, cheque clearance in progress, headmaster requested demo period)..." style="width:100%;padding:0.6rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;"></textarea>
+            <span style="font-size:0.72rem;color:#64748b;">This note is permanently recorded in the SHA-256 tamper-evident governance ledger.</span>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:1rem 1.5rem;display:flex;justify-content:flex-end;gap:0.75rem;">
+          <button id="btn-cancel-tier-modal" class="btn-pill btn-outline" style="font-size:0.85rem;padding:0.5rem 1.1rem;cursor:pointer;">Cancel</button>
+          <button id="btn-confirm-tier-override" class="btn-pill btn-primary" style="font-size:0.85rem;padding:0.5rem 1.3rem;font-weight:800;cursor:pointer;">
+            Confirm Tier Override &amp; Extension
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+    const closeModal = () => backdrop.remove();
+    document.getElementById('btn-close-tier-modal')?.addEventListener('click', closeModal);
+    document.getElementById('btn-cancel-tier-modal')?.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+
+    document.getElementById('btn-confirm-tier-override')?.addEventListener('click', async () => {
+      const tier = document.getElementById('modal-override-tier')?.value;
+      const graceDays = parseInt(document.getElementById('modal-override-grace')?.value || '0', 10);
+      const notes = document.getElementById('modal-override-notes')?.value.trim();
+
+      if (!notes) {
+        State.showToast('Please enter an administrative justification note.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirm-tier-override');
+      btn.disabled = true;
+      btn.innerText = 'Applying Override...';
+
+      try {
+        if (sub.id) {
+          await API.updateAdminSubscription(sub.id, {
+            plan: `${tier.charAt(0).toUpperCase() + tier.slice(1)} Tier`,
+            extend_grace_days: graceDays > 0 ? graceDays : undefined,
+            status: graceDays > 0 ? 'grace_period' : 'active',
+            notes
+          });
+        }
+        if (schoolId && schoolId !== 'Unknown') {
+          await API.adminOverrideSchoolTier(schoolId, tier, graceDays > 0 ? graceDays : 30);
+        }
+        State.showToast(`✓ Tier override for "${schoolName}" successfully sealed!`, 'success');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerText = 'Confirm Tier Override & Extension';
+      }
+    });
+  },
+
+  /**
+   * Financial Discrepancy Resolution Modal (POL-008, POL-010)
+   */
+  openReconciliationResolutionModal(anomaly = {}) {
+    const old = document.getElementById('reconcile-modal-backdrop');
+    if (old) old.remove();
+
+    const backdrop = document.createElement('div');
+    backdrop.id = 'reconcile-modal-backdrop';
+    backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,32,70,0.75);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;';
+
+    backdrop.innerHTML = `
+      <div style="background:#ffffff;border-radius:16px;max-width:560px;width:100%;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;border:1px solid #e2e8f0;">
+        <div style="background:linear-gradient(135deg, #0A2046 0%, #17386d 100%);padding:1.25rem 1.5rem;color:#ffffff;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:800;color:#10b981;letter-spacing:0.05em;text-transform:uppercase;">
+              POL-008 &bull; Reconciliation Exception Clearing
+            </div>
+            <h2 style="font-size:1.25rem;font-weight:800;margin:0.2rem 0 0 0;color:#fff;">
+              ${anomaly.reference}
+            </h2>
+          </div>
+          <button id="btn-close-recon-modal" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1.25rem;">
+          <div style="background:#f8fafc;padding:0.85rem 1rem;border-radius:8px;border:1px solid #e2e8f0;font-size:0.82rem;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+              <span><strong>Channel:</strong> ${anomaly.channel}</span>
+              <span><strong>Amount:</strong> GH₵ ${parseFloat(anomaly.internal_amount_ghs || 0).toFixed(2)}</span>
+            </div>
+            <div style="margin-bottom:0.25rem;"><strong>Variance Type:</strong> <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:800;">${(anomaly.discrepancy_type || '').replace(/_/g, ' ')}</span></div>
+            <div><strong>Payer:</strong> ${anomaly.payer_name} (${anomaly.payer_phone})</div>
+            <div style="margin-top:0.25rem;color:#64748b;">${anomaly.description}</div>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:0.4rem;">
+              Select Resolution Method
+            </label>
+            <select id="modal-recon-resolution" style="width:100%;padding:0.6rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.88rem;background:#fff;font-weight:600;outline:none;">
+              <option value="re-query_confirmed">Paystack Re-query Confirmed Settlement (Set Local to Success)</option>
+              <option value="manual_override">Manual Bank Statement Verification &amp; Clearance</option>
+              <option value="void_order">Void Duplicate / Orphan Internal Order</option>
+              <option value="carrier_refund">Carrier Telco Refund Initiated (Reverse Charge)</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.82rem;font-weight:700;color:#0f172a;margin-bottom:0.4rem;">
+              Audit Resolution Rationale &bull; Officer Notes <span style="color:#ef4444;">*</span>
+            </label>
+            <textarea id="modal-recon-notes" rows="3" placeholder="Enter statutory notes verifying statement match, Paystack reference cross-check, or customer confirmation..." style="width:100%;padding:0.6rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;resize:vertical;outline:none;font-family:inherit;"></textarea>
+            <span style="font-size:0.72rem;color:#64748b;">Statutory non-repudiation audit trail enforced under Bank of Ghana payment guidelines.</span>
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:1rem 1.5rem;display:flex;justify-content:flex-end;gap:0.75rem;">
+          <button id="btn-cancel-recon-modal" class="btn-pill btn-outline" style="font-size:0.85rem;padding:0.5rem 1.1rem;cursor:pointer;">Cancel</button>
+          <button id="btn-confirm-recon-resolve" class="btn-pill btn-primary" style="font-size:0.85rem;padding:0.5rem 1.3rem;font-weight:800;cursor:pointer;background:#047857;">
+            ✅ Clear Discrepancy &amp; Sign Audit
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+    const closeModal = () => backdrop.remove();
+    document.getElementById('btn-close-recon-modal')?.addEventListener('click', closeModal);
+    document.getElementById('btn-cancel-recon-modal')?.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+
+    document.getElementById('btn-confirm-recon-resolve')?.addEventListener('click', async () => {
+      const resolution = document.getElementById('modal-recon-resolution')?.value;
+      const notes = document.getElementById('modal-recon-notes')?.value.trim();
+
+      if (!notes) {
+        State.showToast('Please provide an audit resolution rationale note.', 'warning');
+        return;
+      }
+
+      const btn = document.getElementById('btn-confirm-recon-resolve');
+      btn.disabled = true;
+      btn.innerText = 'Clearing...';
+
+      try {
+        await API.resolveFinanceDiscrepancy(anomaly.id, { resolution, notes });
+        State.showToast(`✓ Discrepancy for ${anomaly.reference} resolved and sealed!`, 'success');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerText = '✅ Clear Discrepancy & Sign Audit';
+      }
+    });
+  },
+
+  /**
+   * New Enterprise Institutional Lead Modal (Module 4.3)
+   */
+  openAddLeadModal() {
+    const old = document.getElementById('add-lead-modal-backdrop');
+    if (old) old.remove();
+
+    const backdrop = document.createElement('div');
+    backdrop.id = 'add-lead-modal-backdrop';
+    backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,32,70,0.75);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;';
+
+    backdrop.innerHTML = `
+      <div style="background:#ffffff;border-radius:16px;max-width:620px;width:100%;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;border:1px solid #e2e8f0;">
+        <div style="background:linear-gradient(135deg, #0A2046 0%, #17386d 100%);padding:1.25rem 1.5rem;color:#ffffff;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:800;color:#38bdf8;letter-spacing:0.05em;text-transform:uppercase;">
+              Module 4.3 &bull; Enterprise Institutional Pipeline
+            </div>
+            <h2 style="font-size:1.25rem;font-weight:800;margin:0.2rem 0 0 0;color:#fff;">
+              ➕ Add Enterprise Institution Lead
+            </h2>
+          </div>
+          <button id="btn-close-lead-modal" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;line-height:1;">✕</button>
+        </div>
+
+        <form id="form-create-crm-lead" style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">School Name *</label>
+              <input type="text" id="lead-school-name" required placeholder="e.g. Achimota School" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;outline:none;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Contact Person *</label>
+              <input type="text" id="lead-contact-name" required placeholder="e.g. Headmaster / Administrator" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;outline:none;" />
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Phone (MoMo / SMS) *</label>
+              <input type="text" id="lead-phone" required placeholder="+233 24 000 0000" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;outline:none;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Email Address</label>
+              <input type="email" id="lead-email" placeholder="admin@school.edu.gh" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;outline:none;" />
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Region</label>
+              <select id="lead-region" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;background:#fff;outline:none;">
+                <option value="Greater Accra">Greater Accra</option>
+                <option value="Ashanti">Ashanti</option>
+                <option value="Eastern Region">Eastern Region</option>
+                <option value="Central Region">Central Region</option>
+                <option value="Western Region">Western Region</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">District / Town</label>
+              <input type="text" id="lead-district" placeholder="e.g. Cantonments, Legon" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;outline:none;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Curriculum</label>
+              <input type="text" id="lead-curriculum" placeholder="GES / Cambridge / IB" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;outline:none;" />
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Student Count</label>
+              <input type="number" id="lead-students" value="600" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;outline:none;" />
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Target Plan</label>
+              <select id="lead-plan" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;background:#fff;outline:none;">
+                <option value="Pro Tier">Pro Tier (GH₵ 2,490/yr)</option>
+                <option value="Enterprise Tier">Enterprise Tier (GH₵ 6,500/yr)</option>
+                <option value="Growth Tier">Growth Tier (GH₵ 990/yr)</option>
+              </select>
+            </div>
+            <div>
+              <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Pipeline Stage</label>
+              <select id="lead-stage" style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;background:#fff;outline:none;">
+                <option value="prospect">1. Prospecting</option>
+                <option value="trial">2. Demo / Trial</option>
+                <option value="proposal">3. Proposal Sent</option>
+                <option value="contracted">4. Contract Active</option>
+                <option value="renewal_due">5. Renewal Due (&lt;30d)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:0.3rem;">Initial Meeting Notes &amp; Next Steps</label>
+            <textarea id="lead-notes" rows="2" placeholder="e.g. Conducted School OS demo for Head of IT. Board meeting scheduled next Tuesday." style="width:100%;padding:0.55rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.82rem;outline:none;font-family:inherit;"></textarea>
+          </div>
+
+          <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:1rem 0 0 0;margin-top:0.5rem;display:flex;justify-content:flex-end;gap:0.75rem;">
+            <button type="button" id="btn-cancel-lead-modal" class="btn-pill btn-outline" style="font-size:0.85rem;padding:0.5rem 1.1rem;cursor:pointer;">Cancel</button>
+            <button type="submit" id="btn-submit-lead" class="btn-pill btn-primary" style="font-size:0.85rem;padding:0.5rem 1.3rem;font-weight:800;cursor:pointer;">
+              Add to Commercial Pipeline
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+    const closeModal = () => backdrop.remove();
+    document.getElementById('btn-close-lead-modal')?.addEventListener('click', closeModal);
+    document.getElementById('btn-cancel-lead-modal')?.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+
+    document.getElementById('form-create-crm-lead')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const plan = document.getElementById('lead-plan')?.value || 'Pro Tier';
+      const contractValue = plan.includes('Enterprise') ? 6500 : (plan.includes('Pro') ? 2490 : 990);
+
+      const payload = {
+        school_name: document.getElementById('lead-school-name')?.value.trim(),
+        contact_name: document.getElementById('lead-contact-name')?.value.trim(),
+        phone: document.getElementById('lead-phone')?.value.trim(),
+        email: document.getElementById('lead-email')?.value.trim(),
+        region: document.getElementById('lead-region')?.value,
+        district: document.getElementById('lead-district')?.value.trim() || 'Accra',
+        curriculum: document.getElementById('lead-curriculum')?.value.trim() || 'Ghana National (GES)',
+        student_count: parseInt(document.getElementById('lead-students')?.value || '500', 10),
+        target_plan: plan,
+        contract_value_ghs: contractValue,
+        stage: document.getElementById('lead-stage')?.value || 'prospect',
+        notes: document.getElementById('lead-notes')?.value.trim()
+      };
+
+      const btn = document.getElementById('btn-submit-lead');
+      btn.disabled = true;
+      btn.innerText = 'Adding Lead...';
+
+      try {
+        const res = await API.createAdminCRMLead(payload);
+        State.showToast(`✓ ${res.message}`, 'success');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerText = 'Add to Commercial Pipeline';
       }
     });
   },

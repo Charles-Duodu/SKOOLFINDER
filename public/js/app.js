@@ -423,8 +423,8 @@ const App = {
     }
   },
 
-  refreshCurrentView() {
-    this.navigate(State.currentView, State.currentSchoolId, false);
+  async refreshCurrentView() {
+    return await this.navigate(State.currentView, State.currentSchoolId, false);
   },
 
   init() {

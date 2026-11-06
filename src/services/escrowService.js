@@ -17,6 +17,73 @@ const IN_MEMORY_ESCROW = new Map(); // bookingId -> escrowRecord
 const IN_MEMORY_PROF_SUBS = new Map(); // userId -> subscriptionRecord
 const IN_MEMORY_PAYOUT_METHODS = new Map(); // professionalId -> [methods]
 
+// Pre-seed realistic Ghanaian lesson escrow records for instant live testing & admin ops
+IN_MEMORY_ESCROW.set('BKG-TUT-2026-081', {
+  id: 'BKG-TUT-2026-081',
+  booking_id: 'BKG-TUT-2026-081',
+  booking_reference: 'SF-BKG-8192-MOMO',
+  parent_id: 'usr-parent-001',
+  payer_name: 'Dr. Joseph Adjei',
+  payer_phone: '+233 24 411 9823',
+  teacher_id: 'usr-tutor-001',
+  payee_name: 'Kofi Mensah (NTC Verified STEM Tutor)',
+  payee_momo_network: 'MTN Mobile Money',
+  payee_momo_number: '+233 24 812 3456',
+  payee_momo_name: 'Kofi Mensah',
+  amount_ghs: 350.00,
+  platform_fee_ghs: 35.00,
+  net_disbursement_ghs: 315.00,
+  status: 'held_in_escrow',
+  payment_channel: 'MTN Mobile Money',
+  funded_at: new Date(Date.now() - 3600000 * 24).toISOString(),
+  created_at: new Date(Date.now() - 3600000 * 24).toISOString()
+});
+
+IN_MEMORY_ESCROW.set('BKG-TUT-2026-082', {
+  id: 'BKG-TUT-2026-082',
+  booking_id: 'BKG-TUT-2026-082',
+  booking_reference: 'SF-BKG-8193-TCEL',
+  parent_id: 'usr-parent-002',
+  payer_name: 'Grace Osei (Parent)',
+  payer_phone: '+233 20 555 1234',
+  teacher_id: 'usr-tutor-002',
+  payee_name: 'Akua Mansa (Montessori Specialist)',
+  payee_momo_network: 'Telecel Cash',
+  payee_momo_number: '+233 20 777 8899',
+  payee_momo_name: 'Akua Mansa',
+  amount_ghs: 450.00,
+  platform_fee_ghs: 45.00,
+  net_disbursement_ghs: 405.00,
+  status: 'disputed',
+  payment_channel: 'Telecel Cash',
+  funded_at: new Date(Date.now() - 3600000 * 48).toISOString(),
+  refund_reason: 'Tutor rescheduled twice without parent agreement. Parent requested full refund.',
+  created_at: new Date(Date.now() - 3600000 * 48).toISOString()
+});
+
+IN_MEMORY_ESCROW.set('BKG-TUT-2026-079', {
+  id: 'BKG-TUT-2026-079',
+  booking_id: 'BKG-TUT-2026-079',
+  booking_reference: 'SF-BKG-8179-MOMO',
+  parent_id: 'usr-parent-003',
+  payer_name: 'Emmanuel Mensah',
+  payer_phone: '+233 24 333 4455',
+  teacher_id: 'usr-tutor-003',
+  payee_name: 'Samuel Addo (WASSCE Physics Tutor)',
+  payee_momo_network: 'MTN Mobile Money',
+  payee_momo_number: '+233 24 333 4455',
+  payee_momo_name: 'Samuel Addo',
+  amount_ghs: 600.00,
+  platform_fee_ghs: 60.00,
+  net_disbursement_ghs: 540.00,
+  status: 'disbursed',
+  payment_channel: 'MTN Mobile Money',
+  funded_at: new Date(Date.now() - 3600000 * 72).toISOString(),
+  disbursed_at: new Date(Date.now() - 3600000 * 12).toISOString(),
+  disbursed_by: 'Charles Duodu (Super Admin)',
+  created_at: new Date(Date.now() - 3600000 * 72).toISOString()
+});
+
 const APPROVED_PROFESSIONAL_TIERS = {
   free: {
     name: 'Free Educator',
@@ -141,11 +208,19 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
+      for (const item of IN_MEMORY_ESCROW.values()) {
+        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
+          escrow = item;
+          break;
+        }
+      }
+    }
+    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .eq('booking_id', bookingId)
+          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}
@@ -214,11 +289,19 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
+      for (const item of IN_MEMORY_ESCROW.values()) {
+        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
+          escrow = item;
+          break;
+        }
+      }
+    }
+    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .eq('booking_id', bookingId)
+          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}
@@ -266,11 +349,19 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
+      for (const item of IN_MEMORY_ESCROW.values()) {
+        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
+          escrow = item;
+          break;
+        }
+      }
+    }
+    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .eq('booking_id', bookingId)
+          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}

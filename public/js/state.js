@@ -469,3 +469,7 @@ const State = {
     }, 3800);
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.State = State;
+}

@@ -472,6 +472,107 @@ const API = {
     return result;
   },
 
+  // MODULE 4.2 & 4.3: RECONCILIATION, ESCROW & COMMERCIAL CRM (PHASE 3)
+  async getAdminReconciliation() {
+    const res = await fetch(`${this.baseUrl}/admin/finance/reconciliation`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load reconciliation status");
+    return res.json();
+  },
+
+  async triggerReconciliationScan() {
+    const res = await fetch(`${this.baseUrl}/admin/finance/reconcile-scan`, {
+      method: 'POST',
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Reconciliation scan failed");
+    return res.json();
+  },
+
+  async resolveFinanceDiscrepancy(anomalyId, data) {
+    const res = await fetch(`${this.baseUrl}/admin/finance/reconcile/${anomalyId}`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to resolve discrepancy");
+    return result;
+  },
+
+  async getAdminEscrowHoldings(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow${query ? '?' + query : ''}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load escrow holdings");
+    return res.json();
+  },
+
+  async adminDisburseLessonEscrow(bookingId, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow/${bookingId}/disburse`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to disburse escrow funds");
+    return result;
+  },
+
+  async adminRefundLessonEscrow(bookingId, reason = '') {
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow/${bookingId}/refund`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ reason })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to refund escrow");
+    return result;
+  },
+
+  async getAdminCRMPipeline() {
+    const res = await fetch(`${this.baseUrl}/admin/crm/pipeline`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load commercial CRM pipeline");
+    return res.json();
+  },
+
+  async createAdminCRMLead(leadData) {
+    const res = await fetch(`${this.baseUrl}/admin/crm/leads`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(leadData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create CRM lead");
+    return result;
+  },
+
+  async updateAdminCRMLeadStage(leadId, stage, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/crm/leads/${leadId}/stage`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ stage, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update lead stage");
+    return result;
+  },
+
+  async dispatchAdminCRMInvoice(leadId, data = {}) {
+    const res = await fetch(`${this.baseUrl}/admin/crm/leads/${leadId}/invoice`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to dispatch invoice");
+    return result;
+  },
+
   // Phase 7: Admissions, Teachers NTC & B2B Procurement Desk
   async getAdminAdmissions(params = {}) {
     const query = new URLSearchParams(params).toString();
@@ -581,13 +682,6 @@ const API = {
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Failed to update verification");
     return result;
-  },
-
-  async getAdminSubscriptions() {
-    const res = await fetch(`${this.baseUrl}/admin/subscriptions`, {
-      headers: this.getAuthHeaders()
-    });
-    return res.json();
   },
 
   async getStats() {
