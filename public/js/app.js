@@ -178,6 +178,10 @@ const App = {
         if (window.location.pathname !== targetPath) {
           window.history.pushState({ view: viewName, param }, '', targetPath);
         }
+      } else if (viewName === 'home') {
+        if (window.location.pathname !== '/' || (window.location.hash && window.location.hash !== '')) {
+          window.history.pushState({ view: 'home' }, '', '/');
+        }
       } else {
         if (window.location.hash !== targetHash) {
           window.history.pushState({ view: viewName, param }, '', targetHash);

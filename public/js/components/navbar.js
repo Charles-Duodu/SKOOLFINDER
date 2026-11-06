@@ -126,8 +126,8 @@ const Navbar = {
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
                   ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]}
                 </span>
-                <button id="btn-nav-logout" class="btn-pill btn-outline" style="padding: 0.38rem 0.7rem; font-size: 0.78rem;" title="Sign out of account" aria-label="Sign out of account">
-                  <span>🚪</span>
+                <button id="btn-nav-logout" class="btn-pill" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.38rem 0.85rem; font-size: 0.8rem; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; cursor: pointer; border-radius: 9999px; transition: all 0.2s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'" title="Sign out of account" aria-label="Sign out of account">
+                  <span>🚪</span> Sign Out
                 </button>
               </div>
             ` : `
@@ -283,8 +283,8 @@ const Navbar = {
                 <span>🧭</span> Take 30s Guided Role Tour
               </a>
               ${State.isAuthenticated() ? `
-                <button id="mob-btn-logout" class="btn-pill btn-outline" style="width: 100%; justify-content: center; font-size: 0.88rem;">
-                  <span>🚪</span> Logout (${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]})
+                <button id="mob-btn-logout" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 0.6rem; display: flex; align-items: center; gap: 0.45rem; cursor: pointer;">
+                  <span>🚪</span> Sign Out (${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]})
                 </button>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
@@ -464,7 +464,8 @@ const Navbar = {
       }
     });
 
-    document.getElementById('btn-nav-logout')?.addEventListener('click', () => {
+    document.getElementById('btn-nav-logout')?.addEventListener('click', (e) => {
+      e.preventDefault();
       State.logout();
     });
 
@@ -476,7 +477,8 @@ const Navbar = {
       Modals.openParentAuthModal({ initialTab: 'signup' });
     });
 
-    document.getElementById('mob-btn-logout')?.addEventListener('click', () => {
+    document.getElementById('mob-btn-logout')?.addEventListener('click', (e) => {
+      e.preventDefault();
       this.isMobileMenuOpen = false;
       const drawer = document.getElementById('mobile-nav-drawer');
       if (drawer) drawer.classList.remove('open');

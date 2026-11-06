@@ -282,13 +282,16 @@ const State = {
       API.logout().catch(console.error);
     }
     this.setCurrentUser(null, null);
-    this.showToast("Signed out successfully. You are now browsing as a guest.", "info");
+    this.showToast("Signed out successfully. Returning to Home.", "info");
     if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
       document.getElementById('header-root').innerHTML = Navbar.render();
       Navbar.attachEvents();
     }
-    if (this.currentView === 'dashboard' || this.currentView === 'parent-portal') {
-      if (typeof App !== 'undefined') App.navigate('home');
+    if (typeof App !== 'undefined' && App.navigate) {
+      App.navigate('home');
+    } else {
+      window.location.hash = '';
+      window.location.href = '/';
     }
   },
 
