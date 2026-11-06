@@ -5496,7 +5496,21 @@ const Modals = {
 
       try {
         const res = await API.login(login, password);
-        handlePostAuthSuccess(res, res.user.role === 'parent' ? 'parents' : State.getUserPortal());
+        State.setCurrentUser(res.user, res.token);
+        this.close();
+
+        if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+          document.getElementById('header-root').innerHTML = Navbar.render();
+          Navbar.attachEvents();
+        }
+
+        State.showToast(`🎉 Welcome back, ${res.user.name || res.user.fullName || 'Super Admin'}!`, 'success');
+
+        if (options.onSuccess) {
+          options.onSuccess(res.user);
+        } else {
+          App.navigate('admin');
+        }
       } catch (err) {
         submitBtn.disabled = false;
         submitBtn.innerHTML = '<span>🔑</span> Sign In to Cockpit &rarr;';
