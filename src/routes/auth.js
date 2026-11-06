@@ -436,7 +436,7 @@ router.get('/me', authenticate, async (req, res) => {
  */
 router.post('/switch-persona', authenticate, async (req, res) => {
   try {
-    const { persona } = req.body;
+    const persona = req.body.persona || req.body.targetPersona;
     const validPersonas = ['parent', 'teacher', 'professional', 'school_admin', 'supplier', 'super_admin'];
     if (!persona || !validPersonas.includes(persona)) {
       return res.status(400).json({ error: `Invalid or missing persona: ${persona}. Allowed: ${validPersonas.join(', ')}` });

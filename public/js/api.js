@@ -2567,6 +2567,35 @@ const API = {
     return res.json();
   },
 
+  // ==========================================================================
+  // RELEASE 6: NATIONAL REGISTRIES & COCKPIT TELEMETRY
+  // ==========================================================================
+
+  async verifyNtcLicence(ntcData) {
+    const res = await fetch(`${this.baseUrl}/regulatory/ntc/verify-licence`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(ntcData)
+    });
+    return res.json();
+  },
+
+  async verifyNiaPin(niaData) {
+    const res = await fetch(`${this.baseUrl}/regulatory/nia/verify-pin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(niaData)
+    });
+    return res.json();
+  },
+
+  async getPlatformTelemetry() {
+    const res = await fetch(`${this.baseUrl}/admin/telemetry`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
   // PHASE 5: ADVANCED INTELLIGENCE & CAMPUS OPERATIONS
   // ==========================================================================
 
