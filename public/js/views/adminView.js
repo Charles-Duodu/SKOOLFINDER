@@ -124,7 +124,7 @@ const AdminView = {
           Promise.all([
             API.getAdminProcurementRFQs({ q: this.rfqSearchTerm, category: this.rfqCategoryFilter, status: this.rfqStatusFilter }).catch(() => ({ rfqs: [] })),
             API.getAdminProcurementSuppliers().catch(() => ({ suppliers: [] })),
-            API.getAdminEscrowDisputes().catch(() => ({ disputes: [] }))
+            (API.getAdminProcurementDisputes ? API.getAdminProcurementDisputes() : API.getAdminEscrowDisputes()).catch(() => ({ disputes: [] }))
           ]).then(([rfqRes, supRes, escRes]) => {
             rfqsData = rfqRes;
             suppliersData = supRes;
@@ -567,14 +567,14 @@ const AdminView = {
 
           <!-- Dynamic Active View Container -->
           <div style="padding: 2rem; flex: 1;">
-            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, crmData, escrowDisputes, telemetryData, auditLogsData)}
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData, auditLogsData)}
           </div>
         </main>
       </div>
     `;
   },
 
-  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, crmData = { metrics: {}, stages: {}, leads: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
     switch (this.activeTab) {
       // Group 1: Command & Work
       case 'overview':
@@ -597,7 +597,7 @@ const AdminView = {
 
       // Group 3: Operations & Support
       case 'admissions':
-        return this.renderAdmissionsDesk(admissionsData.applications || []);
+        return this.renderAdmissionsDesk(admissionsData.applications || [], admissionsData.intakeQuotas || []);
       case 'cases':
         return this.renderCasesDesk(verificationCases);
       case 'disputes':
@@ -1742,7 +1742,7 @@ const AdminView = {
   /**
    * Centralized Student Admissions Oversight Desk (Phase 7)
    */
-  renderAdmissionsDesk(applications = []) {
+  renderAdmissionsDesk(applications = [], intakeQuotas = []) {
     const currentStatus = this.admissionStatusFilter || 'All';
 
     return `
@@ -1764,6 +1764,60 @@ const AdminView = {
           </div>
         </div>
 
+        <!-- Campus Intake Quotas & Filled Seat Telemetry (POL-003) -->
+        <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+            <div>
+              <span style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em;">
+                Campus Intake Quotas & Filled Seat Telemetry (POL-003)
+              </span>
+              <h3 style="margin: 0.15rem 0 0 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">
+                Greater Accra & Ashanti Campus Capacity Tracking
+              </h3>
+            </div>
+            <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; font-size: 0.72rem;">
+              5 Partner Campuses Monitored
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem;">
+            ${(intakeQuotas && intakeQuotas.length > 0 ? intakeQuotas : [
+              { schoolName: 'Ghana International School', region: 'Greater Accra', capacity: 150, enrolled: 120 },
+              { schoolName: 'Achimota Basic & JHS', region: 'Greater Accra', capacity: 250, enrolled: 210 },
+              { schoolName: 'Morning Star School', region: 'Greater Accra', capacity: 90, enrolled: 82 },
+              { schoolName: 'PRESEC Legon', region: 'Greater Accra', capacity: 300, enrolled: 290 },
+              { schoolName: "St. Rose's Senior High", region: 'Eastern', capacity: 200, enrolled: 175 }
+            ]).map(q => {
+              const enrolled = q.enrolled || q.seatsFilled || 0;
+              const capacity = q.capacity || q.totalCapacity || 100;
+              const fillPct = q.fillPercentage || Math.round((enrolled / capacity) * 100);
+              const waitlist = q.waitlisted || (q.schoolName.includes('PRESEC') ? 45 : (q.schoolName.includes('Achimota') ? 32 : (q.schoolName.includes('Ghana Int') ? 18 : 14)));
+              const quotaStatus = q.quotaStatus || (fillPct >= 95 ? 'CRITICAL_CAPACITY' : (fillPct >= 88 ? 'NEAR_CAPACITY' : 'OPTIMAL_FILL'));
+              const statusColor = quotaStatus === 'CRITICAL_CAPACITY' ? '#dc2626' : (quotaStatus === 'NEAR_CAPACITY' ? '#d97706' : '#16a34a');
+              const barColor = quotaStatus === 'CRITICAL_CAPACITY' ? '#ef4444' : (quotaStatus === 'NEAR_CAPACITY' ? '#f59e0b' : '#10b981');
+              return `
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; background: #f8fafc;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.35rem;">
+                    <strong style="font-size: 0.84rem; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;" title="${q.schoolName}">${q.schoolName}</strong>
+                    <span style="font-size: 0.65rem; font-weight: 800; color: ${statusColor}; background: #fff; padding: 0.15rem 0.4rem; border-radius: 4px; border: 1px solid ${statusColor}33;">
+                      ${quotaStatus.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <div style="font-size: 0.74rem; color: #64748b; margin-bottom: 0.45rem;">
+                    Seats: <strong>${enrolled}</strong> / ${capacity} • Waitlist: <strong>${waitlist}</strong>
+                  </div>
+                  <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                    <div style="width: ${fillPct}%; height: 100%; background: ${barColor}; border-radius: 999px;"></div>
+                  </div>
+                  <div style="text-align: right; font-size: 0.7rem; font-weight: 800; color: #475569; margin-top: 0.25rem;">
+                    ${fillPct}% Quota Fill
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
         <!-- 4 Top KPI Cards -->
         <div class="admin-kpi-grid" style="margin-bottom: 1.75rem;">
           <div class="admin-kpi-card">
@@ -1773,7 +1827,7 @@ const AdminView = {
                 🎓
               </div>
             </div>
-            <div class="admin-kpi-value">${applications.length > 20 ? applications.length : 48} Inbound</div>
+            <div class="admin-kpi-value">${applications.length > 5 ? applications.length : 48} Inbound</div>
             <div class="admin-kpi-sub"><span class="badge-positive">↑ 18%</span><span class="badge-subtle">across campuses</span></div>
           </div>
 
@@ -1801,13 +1855,13 @@ const AdminView = {
 
           <div class="admin-kpi-card">
             <div class="admin-kpi-top">
-              <div class="admin-kpi-label">UNDER REVIEW</div>
+              <div class="admin-kpi-label">UNDER REVIEW / DISPUTES</div>
               <div style="width: 36px; height: 36px; border-radius: 8px; background: #ecfeff; color: #0891b2; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
                 ⏳
               </div>
             </div>
-            <div class="admin-kpi-value">7 Pending</div>
-            <div class="admin-kpi-sub"><span class="badge-subtle">awaiting school review</span></div>
+            <div class="admin-kpi-value">${applications.filter(a => a.status === 'disputed_voucher').length} Contested</div>
+            <div class="admin-kpi-sub"><span class="badge-subtle">POL-003 intervention desk</span></div>
           </div>
         </div>
 
@@ -1820,11 +1874,17 @@ const AdminView = {
 
           <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
             <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Status:</span>
-            ${['All', 'pending', 'exam_scheduled', 'admitted', 'declined'].map(st => {
+            ${['All', 'pending', 'exam_scheduled', 'admitted', 'waitlisted', 'declined', 'disputed_voucher'].map(st => {
               const active = currentStatus.toLowerCase() === st.toLowerCase();
-              const label = st === 'All' ? 'All Applications' : (st === 'pending' ? 'Pending Review' : (st === 'exam_scheduled' ? 'Exam Scheduled' : (st === 'admitted' ? 'Admitted' : 'Declined')));
+              let label = 'All Applications';
+              if (st === 'pending') label = 'Pending';
+              else if (st === 'exam_scheduled') label = 'Exam Scheduled';
+              else if (st === 'admitted') label = 'Admitted';
+              else if (st === 'waitlisted') label = 'Waitlisted';
+              else if (st === 'declined') label = 'Declined';
+              else if (st === 'disputed_voucher') label = '⚠️ Contested Voucher';
               return `
-                <button class="btn-admission-status-pill ${active ? 'active' : ''}" data-status="${st}" style="background: ${active ? '#2563eb' : '#f1f5f9'}; color: ${active ? '#fff' : '#475569'}; border: none; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease;">
+                <button class="btn-admission-status-pill ${active ? 'active' : ''}" data-status="${st}" style="background: ${active ? '#2563eb' : '#f1f5f9'}; color: ${active ? '#fff' : (st === 'disputed_voucher' ? '#dc2626' : '#475569')}; border: ${st === 'disputed_voucher' ? '1px solid #fecaca' : 'none'}; padding: 0.3rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 700; cursor: pointer; transition: all 0.15s ease;">
                   ${label}
                 </button>
               `;
@@ -1858,7 +1918,9 @@ const AdminView = {
                 let statusBadge = '<span class="badge badge-admissions">Pending</span>';
                 if (a.status === 'admitted') statusBadge = '<span class="badge badge-emerald">✓ Admitted</span>';
                 else if (a.status === 'exam_scheduled') statusBadge = '<span class="badge badge-gold">📝 Exam Scheduled</span>';
+                else if (a.status === 'waitlisted') statusBadge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fde68a; font-weight:700;">⏳ Waitlisted</span>';
                 else if (a.status === 'declined') statusBadge = '<span class="badge badge-rose">✕ Declined</span>';
+                else if (a.status === 'disputed_voucher') statusBadge = '<span class="badge" style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; font-weight:800;">⚠️ Contested Voucher</span>';
 
                 return `
                   <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.1s ease;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
@@ -1869,6 +1931,11 @@ const AdminView = {
                       <div style="font-size: 0.74rem; color: #64748b; margin-top: 0.15rem;">
                         ${dateFormatted}
                       </div>
+                      ${a.voucher_ref ? `
+                        <div style="margin-top: 0.2rem; font-size: 0.7rem; color: #0369a1; font-family: monospace; font-weight: 700;">
+                          🎟️ ${a.voucher_ref}
+                        </div>
+                      ` : ''}
                     </td>
 
                     <td style="padding: 1rem;">
@@ -1887,10 +1954,20 @@ const AdminView = {
 
                     <td style="padding: 1rem;">
                       ${statusBadge}
+                      ${a.entrance_exam_date ? `
+                        <div style="font-size: 0.7rem; color: #64748b; margin-top: 0.25rem;">
+                          📅 Exam: ${a.entrance_exam_date}
+                        </div>
+                      ` : ''}
                     </td>
 
                     <td style="padding: 1rem; text-align: right;">
                       <div style="display: inline-flex; gap: 0.45rem;">
+                        ${a.status === 'disputed_voucher' ? `
+                          <button class="btn-pill btn-action-arbitrate-admission-dispute" data-app='${JSON.stringify(a)}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 800; cursor: pointer;">
+                            <span>⚖️</span> Arbitrate Voucher
+                          </button>
+                        ` : ''}
                         <button class="btn-pill btn-action-review-admission" data-app='${JSON.stringify(a)}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
                           <span>🎓</span> Review / Decide
                         </button>
@@ -1922,14 +1999,14 @@ const AdminView = {
           <div>
             <div style="display: flex; align-items: center; gap: 0.6rem;">
               <h1 style="font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; letter-spacing: -0.02em;">
-                Teacher & Educator NTC Credential Vetting Desk
+                Educator Credentialing & Child Safeguarding Desk
               </h1>
               <span class="badge" style="background: #f0fdf4; color: #16a34a; font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 999px;">
-                National Teaching Council (NTC) Verified
+                NTC & Gate G4 Safeguarded
               </span>
             </div>
             <p style="color: #64748b; font-size: 0.9rem; margin: 0.25rem 0 0 0;">
-              Supervise Ghanaian educator registrations, NTC license validations, Cambridge/GES specializations, and hourly tutoring rates.
+              Supervise Ghanaian educator registrations, NTC license validations, Police CID background checks, and consultation rates.
             </p>
           </div>
         </div>
@@ -1943,7 +2020,7 @@ const AdminView = {
                 🧑‍🏫
               </div>
             </div>
-            <div class="admin-kpi-value">${teachers.length > 5 ? teachers.length : 142} Active</div>
+            <div class="admin-kpi-value">${teachers.length > 5 ? teachers.length : 142} Registered</div>
             <div class="admin-kpi-sub"><span class="badge-positive">↑ 14%</span><span class="badge-subtle">monthly growth</span></div>
           </div>
 
@@ -1951,22 +2028,22 @@ const AdminView = {
             <div class="admin-kpi-top">
               <div class="admin-kpi-label">NTC LICENSED</div>
               <div style="width: 36px; height: 36px; border-radius: 8px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
-                🛡️
+                🏛️
               </div>
             </div>
-            <div class="admin-kpi-value">118 Verified</div>
+            <div class="admin-kpi-value">${teachers.filter(t => t.ntc_license_status === 'VERIFIED' || t.verified).length} Verified</div>
             <div class="admin-kpi-sub"><span class="badge-positive">83% compliance</span><span class="badge-subtle">NTC standards</span></div>
           </div>
 
           <div class="admin-kpi-card">
             <div class="admin-kpi-top">
-              <div class="admin-kpi-label">PENDING VETTING</div>
-              <div style="width: 36px; height: 36px; border-radius: 8px; background: #fefce8; color: #ca8a04; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
-                ⏳
+              <div class="admin-kpi-label">GATE G4 CHILD-SAFE</div>
+              <div style="width: 36px; height: 36px; border-radius: 8px; background: #ecfdf5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                🛡️
               </div>
             </div>
-            <div class="admin-kpi-value">18 Pending</div>
-            <div class="admin-kpi-sub"><span class="badge-subtle">document submission</span></div>
+            <div class="admin-kpi-value">${teachers.filter(t => t.safeguarding_g4_status === 'CLEARED_G4_CHILD_SAFE').length} Cleared</div>
+            <div class="admin-kpi-sub"><span class="badge-subtle">Ghana Police CID checked</span></div>
           </div>
 
           <div class="admin-kpi-card">
@@ -1977,7 +2054,7 @@ const AdminView = {
               </div>
             </div>
             <div class="admin-kpi-value">GH₵ 110 / hr</div>
-            <div class="admin-kpi-sub"><span class="badge-subtle">private tutoring average</span></div>
+            <div class="admin-kpi-sub"><span class="badge-subtle">market benchmark compliant</span></div>
           </div>
         </div>
 
@@ -2008,59 +2085,94 @@ const AdminView = {
             <thead>
               <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
                 <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">EDUCATOR PROFILE</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SUBJECT SPECIALIZATIONS</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NTC LICENSE NO.</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">RATE (GHS)</th>
-                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">ACCREDITATION STATUS</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">SPECIALIZATIONS &amp; REGION</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">NTC ACCREDITATION</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">GATE G4 SAFEGUARDING</th>
+                <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700;">TUTORING BOOKINGS</th>
                 <th style="padding: 0.85rem 1rem; color: #64748b; font-weight: 700; text-align: right;">GOVERNANCE ACTION</th>
               </tr>
             </thead>
             <tbody>
-              ${teachers.map(t => `
-                <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.1s ease;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
-                  <td style="padding: 1rem;">
-                    <div style="font-weight: 800; color: #0f172a; font-size: 0.92rem;">${t.fullName || t.name}</div>
-                    <div style="font-size: 0.76rem; color: #64748b;">${t.title || 'Educator'} &bull; ${t.experienceYears || '5+'} yrs</div>
-                  </td>
+              ${teachers.map(t => {
+                const ntc = t.ntc_license_status || (t.verified ? 'VERIFIED' : 'PENDING_MATCH');
+                const g4 = t.safeguarding_g4_status || 'PENDING_CID_CHECK';
+                const isSuspended = !!t.direct_booking_suspended;
 
-                  <td style="padding: 1rem;">
-                    <div style="font-weight: 600; color: #1e293b;">
-                      ${Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subjects || 'General')}
-                    </div>
-                    <div style="font-size: 0.74rem; color: #64748b;">
-                      Levels: ${Array.isArray(t.levels) ? t.levels.join(', ') : 'All'}
-                    </div>
-                  </td>
+                return `
+                  <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.1s ease;" onmouseover="this.style.background='#fafafa'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 800; color: #0f172a; font-size: 0.92rem;">${t.fullName || t.name}</div>
+                      <div style="font-size: 0.76rem; color: #64748b;">${t.qualification || t.title || 'Educator'}</div>
+                      <div style="margin-top: 0.2rem;">
+                        <span class="badge" style="background: #eff6ff; color: #1e40af; font-size: 0.68rem; font-weight: 700;">
+                          ${t.rateBenchmark || 'Fair Market Benchmark'}
+                        </span>
+                      </div>
+                    </td>
 
-                  <td style="padding: 1rem;">
-                    <code style="background: #f1f5f9; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 700; color: #0f172a;">
-                      ${t.ntcLicense || 'NTC/LIC/GH-PENDING'}
-                    </code>
-                  </td>
+                    <td style="padding: 1rem;">
+                      <div style="font-weight: 600; color: #1e293b;">
+                        ${Array.isArray(t.subjects) ? t.subjects.join(', ') : (t.subject || t.subjects || 'General')}
+                      </div>
+                      <div style="font-size: 0.74rem; color: #64748b;">
+                        📍 ${t.region || 'Greater Accra'} • 💰 <strong>${t.rate || (t.hourlyRate ? 'GH₵ ' + t.hourlyRate + '/hr' : 'GH₵ 110/hr')}</strong>
+                      </div>
+                    </td>
 
-                  <td style="padding: 1rem; font-weight: 800; color: #0f172a;">
-                    GH₵ ${t.hourlyRate || 100} / hr
-                  </td>
+                    <td style="padding: 1rem;">
+                      <div style="margin-bottom: 0.25rem;">
+                        <code style="background: #f1f5f9; padding: 0.15rem 0.45rem; border-radius: 4px; font-weight: 700; color: #0f172a; font-size: 0.78rem;">
+                          ${t.ntcLicense || 'NTC/LIC/PENDING'}
+                        </code>
+                      </div>
+                      ${ntc === 'VERIFIED' ? `
+                        <span class="badge badge-success" style="font-size: 0.7rem; font-weight: 800;">✓ NTC Verified</span>
+                      ` : (ntc === 'FLAGGED_INVALID' ? `
+                        <span class="badge badge-danger" style="font-size: 0.7rem; font-weight: 800;">⛔ NTC Invalid</span>
+                      ` : `
+                        <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 800;">⏳ Match Pending</span>
+                      `)}
+                    </td>
 
-                  <td style="padding: 1rem;">
-                    ${t.verified ? `
-                      <span class="badge" style="background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; font-weight: 700;">
-                        ✓ NTC Licensed
-                      </span>
-                    ` : `
-                      <span class="badge" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-weight: 700;">
-                        ⏳ Pending Review
-                      </span>
-                    `}
-                  </td>
+                    <td style="padding: 1rem;">
+                      ${g4 === 'CLEARED_G4_CHILD_SAFE' ? `
+                        <span class="badge" style="background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-weight: 800; font-size: 0.7rem;">
+                          🛡️ G4 Child-Safe
+                        </span>
+                        <div style="font-size: 0.68rem; color: #64748b; margin-top: 0.15rem;">
+                          ${t.police_clearance_ref || 'CID Cleared'}
+                        </div>
+                      ` : (g4 === 'SAFEGUARDING_HOLD' ? `
+                        <span class="badge badge-danger" style="font-size: 0.7rem; font-weight: 800;">
+                          🚫 Safeguarding Hold
+                        </span>
+                      ` : `
+                        <span class="badge badge-warning" style="font-size: 0.7rem; font-weight: 800;">
+                          ⏳ CID Check Pending
+                        </span>
+                      `)}
+                    </td>
 
-                  <td style="padding: 1rem; text-align: right;">
-                    <button class="btn-pill btn-action-toggle-teacher-ntc" data-id="${t.id}" data-name="${t.fullName || t.name}" data-current="${t.verified}" style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: ${t.verified ? '#fef2f2' : '#f0fdf4'}; color: ${t.verified ? '#dc2626' : '#16a34a'}; border: 1px solid ${t.verified ? '#fecaca' : '#bbf7d0'}; font-weight: 700; cursor: pointer;">
-                      ${t.verified ? 'Revoke NTC Badge' : 'Approve NTC License'}
-                    </button>
-                  </td>
-                </tr>
-              `).join('')}
+                    <td style="padding: 1rem;">
+                      ${isSuspended ? `
+                        <span style="display: inline-block; padding: 0.2rem 0.5rem; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">
+                          ⛔ Suspended
+                        </span>
+                      ` : `
+                        <span style="display: inline-block; padding: 0.2rem 0.5rem; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; font-size: 0.72rem; font-weight: 800;">
+                          ✓ Open to Parents
+                        </span>
+                      `}
+                    </td>
+
+                    <td style="padding: 1rem; text-align: right;">
+                      <button class="btn-pill btn-open-teacher-dossier" data-teacher='${JSON.stringify(t)}' style="padding: 0.4rem 0.85rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 800; cursor: pointer; border-radius: 999px;">
+                        <span>🔍</span> Dossier / Vet
+                      </button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -2206,8 +2318,8 @@ const AdminView = {
                     </td>
 
                     <td style="padding: 1rem; text-align: right;">
-                      <button class="btn-pill btn-action-rfq-status" data-id="${r.id}" data-current="${r.status}" style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
-                        ${r.status === 'Open' ? 'Award Tender' : 'View Bids'}
+                      <button class="btn-pill btn-action-rfq-status" data-id="${r.id}" data-rfq='${JSON.stringify(r)}' style="padding: 0.35rem 0.75rem; font-size: 0.76rem; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 700; cursor: pointer;">
+                        ${r.status === 'Open' ? 'Review Quotes / Award' : 'View Tender Bids'}
                       </button>
                     </td>
                   </tr>
@@ -2304,35 +2416,48 @@ const AdminView = {
                       <div style="font-size: 0.82rem;">All 50/50 Mobile Money procurement milestones are in healthy standing.</div>
                     </td>
                   </tr>
-                ` : escrowDisputes.map(d => `
+                ` : escrowDisputes.map(d => {
+                  const supplier = d.vendorName || d.supplierName || 'Accredited Supplier';
+                  const amountDisplay = d.amount || (d.escrowAmountGhs ? 'GH₵ ' + Number(d.escrowAmountGhs).toLocaleString() : (d.budgetGhs ? 'GH₵ ' + Number(d.budgetGhs).toLocaleString() : 'GH₵ 18,500'));
+                  return `
                   <tr style="border-bottom: 1px solid #f1f5f9;">
                     <td style="padding: 1rem;">
-                      <div style="font-weight: 800; color: #0A2046;">${d.tenderTitle}</div>
-                      <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">${d.tenderId}</div>
+                      <div style="font-weight: 800; color: #0A2046;">${d.rfqTitle || d.tenderTitle}</div>
+                      <div style="font-size: 0.75rem; color: #64748b; font-family: monospace;">${d.id || d.tenderId || d.disputeRef}</div>
                     </td>
-                    <td style="padding: 1rem; font-weight: 700; color: #334155;">${d.schoolId}</td>
+                    <td style="padding: 1rem; font-weight: 700; color: #334155;">${d.schoolName || d.schoolId}</td>
                     <td style="padding: 1rem;">
-                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:700;">${d.supplierName}</span>
+                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:700;">${supplier}</span>
                     </td>
                     <td style="padding: 1rem;">
-                      <div style="font-weight: 800; color: #0f172a;">GH₵ ${(d.budgetGhs || 0).toLocaleString()}</div>
-                      <div style="font-size: 0.74rem; color: #dc2626; font-weight: 700;">50% MoMo Milestone Frozen</div>
+                      <div style="font-weight: 800; color: #0f172a;">${amountDisplay}</div>
+                      ${(d.status || '').startsWith('resolved') ? `
+                        <div style="font-size: 0.74rem; color: #16a34a; font-weight: 700;">✓ Milestone Escrow Settled</div>
+                      ` : `
+                        <div style="font-size: 0.74rem; color: #dc2626; font-weight: 700;">50% MoMo Milestone Frozen</div>
+                      `}
                     </td>
-                    <td style="padding: 1rem; font-size: 0.82rem; color: #dc2626;">
-                      "${d.disputeReason}"
+                    <td style="padding: 1rem; font-size: 0.82rem; color: ${(d.status || '').startsWith('resolved') ? '#166534' : '#dc2626'};">
+                      ${(d.status || '').startsWith('resolved') ? `
+                        <div><strong>Ruling:</strong> ${d.resolutionNotes || d.status}</div>
+                      ` : `
+                        "${d.reason || d.disputeReason}"
+                      `}
                     </td>
                     <td style="padding: 1rem; text-align: right;">
-                      <div style="display: inline-flex; gap: 0.4rem;">
-                        <button class="btn-pill btn-admin-escrow-refund" data-tender-id="${d.tenderId}" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;padding:0.4rem 0.8rem;font-size:0.76rem;font-weight:800;border-radius:999px;cursor:pointer;">
-                          ↩ Refund School
+                      ${(d.status || '').startsWith('resolved') ? `
+                        <span class="badge" style="background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;font-weight:800;font-size:0.75rem;padding:0.35rem 0.75rem;border-radius:999px;">
+                          ✓ RULING EXECUTED
+                        </span>
+                      ` : `
+                        <button class="btn-pill btn-admin-proc-dispute-arbitrate" data-dispute='${JSON.stringify(d)}' style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 0.4rem 0.85rem; font-size: 0.76rem; font-weight: 800; border-radius: 999px; cursor: pointer;">
+                          ⚖️ Arbitrate Dispute
                         </button>
-                        <button class="btn-pill btn-admin-escrow-disburse" data-tender-id="${d.tenderId}" style="background:#dcfce7;color:#166534;border:1px solid #86efac;padding:0.4rem 0.8rem;font-size:0.76rem;font-weight:800;border-radius:999px;cursor:pointer;">
-                          ✓ Disburse Supplier
-                        </button>
-                      </div>
+                      `}
                     </td>
                   </tr>
-                `).join('')}
+                `;
+                }).join('')}
               </tbody>
             </table>
           </div>
@@ -4788,9 +4913,9 @@ const AdminView = {
     `;
   },
 
-  async switchTab(tabName) {
+  switchTab(tabName) {
     this.activeTab = tabName;
-    return await App.refreshCurrentView();
+    App.refreshCurrentView();
   },
 
   initListeners() {
@@ -5029,6 +5154,18 @@ const AdminView = {
       });
     });
 
+    // Contested admission voucher dispute override (POL-003)
+    document.querySelectorAll('.btn-action-arbitrate-admission-dispute').forEach(btn => {
+      btn.addEventListener('click', () => {
+        try {
+          const app = JSON.parse(btn.getAttribute('data-app'));
+          Modals.openAdmissionDisputeModal(app, () => App.refreshCurrentView());
+        } catch (e) {
+          console.warn('Admission dispute parse error:', e);
+        }
+      });
+    });
+
     // Teachers search
     const tchSearchInput = document.getElementById('admin-teachers-search');
     if (tchSearchInput) {
@@ -5047,7 +5184,19 @@ const AdminView = {
       });
     });
 
-    // Toggle teacher NTC verification
+    // Open Teacher Dossier & Credentialing Modal (NTC & Gate G4 Safeguarding)
+    document.querySelectorAll('.btn-open-teacher-dossier').forEach(btn => {
+      btn.addEventListener('click', () => {
+        try {
+          const teacher = JSON.parse(btn.getAttribute('data-teacher'));
+          Modals.openTeacherDossierModal(teacher, () => App.refreshCurrentView());
+        } catch (e) {
+          console.warn('Teacher dossier parse error:', e);
+        }
+      });
+    });
+
+    // Toggle teacher NTC verification (Legacy sync)
     document.querySelectorAll('.btn-action-toggle-teacher-ntc').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
@@ -5100,20 +5249,26 @@ const AdminView = {
       });
     });
 
-    // Toggle RFQ status
+    // View RFQ Bids & Quotes Modal
     document.querySelectorAll('.btn-action-rfq-status').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const id = btn.getAttribute('data-id');
-        const current = btn.getAttribute('data-current');
-        const nextStatus = current === 'Open' ? 'Awarded' : 'Open';
-
+      btn.addEventListener('click', () => {
         try {
-          btn.disabled = true;
-          await API.updateAdminProcurementRFQStatus(id, nextStatus);
-          State.showToast(`✓ Tender status updated to ${nextStatus}.`, 'success');
-          App.refreshCurrentView();
-        } catch (err) {
-          State.showToast(err.message, 'error');
+          const rfq = JSON.parse(btn.getAttribute('data-rfq'));
+          Modals.openVendorBidsModal(rfq, () => App.refreshCurrentView());
+        } catch (e) {
+          console.warn('Vendor bids modal parse error:', e);
+        }
+      });
+    });
+
+    // Arbitrate 50/50 Milestone Escrow Dispute (ESC-003)
+    document.querySelectorAll('.btn-admin-proc-dispute-arbitrate').forEach(btn => {
+      btn.addEventListener('click', () => {
+        try {
+          const dispute = JSON.parse(btn.getAttribute('data-dispute'));
+          Modals.openArbitrateDisputeModal(dispute, () => App.refreshCurrentView());
+        } catch (e) {
+          console.warn('Arbitrate dispute modal parse error:', e);
         }
       });
     });

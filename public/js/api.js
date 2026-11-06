@@ -583,14 +583,26 @@ const API = {
     return res.json();
   },
 
-  async updateAdminAdmissionStatus(id, status) {
+  async updateAdminAdmissionStatus(id, data) {
+    const body = typeof data === 'string' ? { status: data } : data;
     const res = await fetch(`${this.baseUrl}/admin/admissions/${id}/status`, {
       method: 'PATCH',
       headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ status })
+      body: JSON.stringify(body)
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Failed to update admission status");
+    return result;
+  },
+
+  async overrideAdminAdmissionDispute(id, action, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/admissions/${id}/dispute-override`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ action, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to process dispute override");
     return result;
   },
 
@@ -611,6 +623,39 @@ const API = {
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Failed to update teacher NTC status");
+    return result;
+  },
+
+  async updateTeacherNtcStatus(id, ntc_license_status, ntcLicense = '', notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/teachers/${id}/ntc`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ ntc_license_status, ntcLicense, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update teacher NTC credential");
+    return result;
+  },
+
+  async updateTeacherSafeguardingStatus(id, safeguarding_g4_status, police_clearance_ref = '', notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/teachers/${id}/safeguarding`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ safeguarding_g4_status, police_clearance_ref, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update safeguarding clearance");
+    return result;
+  },
+
+  async toggleTeacherTutoringSuspension(id, suspended, reason = '') {
+    const res = await fetch(`${this.baseUrl}/admin/teachers/${id}/tutoring-suspension`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ suspended, reason })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update tutoring suspension");
     return result;
   },
 
@@ -645,6 +690,25 @@ const API = {
     return result;
   },
 
+  async getAdminRFQQuotes(rfqId) {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/rfqs/${rfqId}/quotes`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load quotes");
+    return res.json();
+  },
+
+  async awardAdminProcurementRFQ(rfqId, data) {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/rfqs/${rfqId}/award`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to award tender");
+    return result;
+  },
+
   async getAdminProcurementSuppliers(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/admin/procurement/suppliers?${query}`, {
@@ -665,6 +729,25 @@ const API = {
     return result;
   },
 
+  async getAdminProcurementDisputes() {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/disputes`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load procurement disputes");
+    return res.json();
+  },
+
+  async arbitrateProcurementDispute(id, resolution, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/procurement/disputes/${id}/arbitrate`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ resolution, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to arbitrate procurement dispute");
+    return result;
+  },
+
   async adminSearch(q) {
     const res = await fetch(`${this.baseUrl}/admin/search?q=${encodeURIComponent(q)}`, {
       headers: this.getAuthHeaders()
@@ -682,6 +765,13 @@ const API = {
     const result = await res.json();
     if (!res.ok) throw new Error(result.error || "Failed to update verification");
     return result;
+  },
+
+  async getAdminSubscriptions() {
+    const res = await fetch(`${this.baseUrl}/admin/subscriptions`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
   },
 
   async getStats() {

@@ -208,19 +208,11 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
-      for (const item of IN_MEMORY_ESCROW.values()) {
-        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
-          escrow = item;
-          break;
-        }
-      }
-    }
-    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
+          .eq('booking_id', bookingId)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}
@@ -289,19 +281,11 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
-      for (const item of IN_MEMORY_ESCROW.values()) {
-        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
-          escrow = item;
-          break;
-        }
-      }
-    }
-    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
+          .eq('booking_id', bookingId)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}
@@ -349,19 +333,11 @@ class EscrowService {
 
     let escrow = IN_MEMORY_ESCROW.get(String(bookingId));
     if (!escrow) {
-      for (const item of IN_MEMORY_ESCROW.values()) {
-        if (item.booking_id === bookingId || item.booking_reference === bookingId || item.id === bookingId) {
-          escrow = item;
-          break;
-        }
-      }
-    }
-    if (!escrow) {
       try {
         const { data } = await supabaseAdmin
           .from('escrow_ledgers')
           .select('*')
-          .or(`booking_id.eq.${bookingId},booking_reference.eq.${bookingId},id.eq.${bookingId}`)
+          .eq('booking_id', bookingId)
           .maybeSingle();
         if (data) escrow = data;
       } catch (e) {}

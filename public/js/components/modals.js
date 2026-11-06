@@ -12499,11 +12499,11 @@ const Modals = {
     div.id = 'modal-backdrop';
 
     div.innerHTML = `
-      <div class="modal-dialog" style="max-width: 520px;">
+      <div class="modal-dialog" style="max-width: 580px;">
         <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
           <div>
             <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
-              Admissions Governance
+              Admissions Governance & Quota Oversight
             </div>
             <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
               Review Student Application
@@ -12526,30 +12526,56 @@ const Modals = {
               <div>🏫 <strong>Target School:</strong> ${app.school_name}</div>
               <div>🎒 <strong>Previous School:</strong> ${app.previous_school || 'N/A'}</div>
               <div>👤 <strong>Parent / Guardian:</strong> ${app.parent_name} (${app.parent_phone})</div>
+              ${app.voucher_ref ? `<div>🎟️ <strong>Admission Voucher:</strong> <code style="color: #0369a1; font-weight: 700;">${app.voucher_ref}</code> (${app.voucher_fee_paid || 'GH₵ 250'} Paid)</div>` : ''}
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom: 1.5rem;">
+          <div class="form-group" style="margin-bottom: 1rem;">
             <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">Application Decision & Status *</label>
             <select id="admission-status-select" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
               <option value="pending" ${app.status === 'pending' ? 'selected' : ''}>Under Initial Review</option>
               <option value="exam_scheduled" ${app.status === 'exam_scheduled' ? 'selected' : ''}>Entrance Exam Scheduled</option>
               <option value="admitted" ${app.status === 'admitted' ? 'selected' : ''}>Admitted / Formal Offer Dispatched</option>
+              <option value="waitlisted" ${app.status === 'waitlisted' ? 'selected' : ''}>Placed on Official Waitlist</option>
               <option value="declined" ${app.status === 'declined' ? 'selected' : ''}>Application Declined</option>
+              ${app.status === 'disputed_voucher' ? '<option value="disputed_voucher" selected>Contested Voucher Dispute (POL-003)</option>' : ''}
             </select>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="https://wa.me/${(app.parent_phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hello ' + app.parent_name + ', regarding ' + app.student_name + '\'s application (' + app.application_number + ') to ' + app.school_name + '...')}" target="_blank" class="btn-pill" style="background: #25d366; color: #fff; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.82rem; padding: 0.45rem 0.85rem; border-radius: 999px;">
-              <span>📲</span> WhatsApp Parent
-            </a>
-
-            <div style="display: flex; gap: 0.75rem;">
-              <button type="button" class="btn-pill btn-secondary" id="btn-cancel-review-app">Cancel</button>
-              <button type="submit" class="btn-pill btn-primary" id="btn-confirm-review-app" style="font-weight: 800;">
-                Update Status
-              </button>
+          <!-- Entrance Exam Scheduling Details -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Entrance Exam Date</label>
+              <input type="date" id="admission-exam-date" value="${app.entrance_exam_date || ''}" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
             </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Exam Venue / Room</label>
+              <input type="text" id="admission-exam-venue" value="${app.entrance_exam_venue || ''}" placeholder="e.g. GIS Main Hall / Online" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+          </div>
+
+          <!-- Decision Notes -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Admissions Dean & Admin Notes</label>
+            <textarea id="admission-notes" rows="2" placeholder="Record interview feedback, diagnostic score or quota conditions..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;">${app.decision_notes || ''}</textarea>
+          </div>
+
+          <!-- Notification Prompt -->
+          <div style="background: #f1f5f9; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; font-weight: 600; color: #334155; cursor: pointer;">
+              <input type="checkbox" id="admission-notify-parent" checked style="accent-color: #2563eb;" />
+              <span>Send Automated SMS & WhatsApp to Parent</span>
+            </label>
+            <a href="https://wa.me/${(app.parent_phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hello ' + app.parent_name + ', regarding ' + app.student_name + '\'s application (' + app.application_number + ') to ' + app.school_name + '...')}" target="_blank" style="color: #16a34a; font-size: 0.8rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+              <span>📲</span> Open WhatsApp
+            </a>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-review-app">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-confirm-review-app" style="font-weight: 800;">
+              Save Decision
+            </button>
           </div>
         </form>
       </div>
@@ -12564,18 +12590,572 @@ const Modals = {
       e.preventDefault();
       const submitBtn = document.getElementById('btn-confirm-review-app');
       submitBtn.disabled = true;
-      submitBtn.innerText = 'Updating...';
+      submitBtn.innerText = 'Saving...';
 
       const status = document.getElementById('admission-status-select').value;
+      const exam_date = document.getElementById('admission-exam-date').value;
+      const exam_venue = document.getElementById('admission-exam-venue').value;
+      const decision_notes = document.getElementById('admission-notes').value;
+      const notify_parent = document.getElementById('admission-notify-parent').checked;
 
       try {
-        const res = await API.updateAdminAdmissionStatus(app.id, status);
+        const res = await API.updateAdminAdmissionStatus(app.id, {
+          status,
+          exam_date,
+          exam_venue,
+          decision_notes,
+          notify_parent
+        });
         this.close();
         State.showToast(`✓ Admission status for "${app.student_name}" updated to ${status}.`, 'success');
         if (onUpdated) onUpdated(res);
       } catch (err) {
         submitBtn.disabled = false;
-        submitBtn.innerText = 'Update Status';
+        submitBtn.innerText = 'Save Decision';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openAdmissionDisputeModal(app, onResolved) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 580px;">
+        <div class="modal-header" style="border-bottom: 2px solid #dc2626;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+              Contested Voucher Dispute Desk • Policy POL-003
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Admissions Voucher Dispute Intervention
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;">
+          <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 800; color: #991b1b; font-size: 0.92rem; margin-bottom: 0.35rem;">
+              ⚠️ Contested Intake Quota & Voucher Conflict
+            </div>
+            <div style="font-size: 0.82rem; color: #7f1d1d; line-height: 1.45;">
+              Parent paid for admission voucher <code>${app.voucher_ref || app.application_number}</code>. The school reached intake capacity or refused enrollment. As Super Admin, your regulatory override is required under POL-003.
+            </div>
+          </div>
+
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: block;">Student</span>
+                <strong style="color: #0f172a;">${app.student_name}</strong> (${app.grade_applying})
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: block;">Target School</span>
+                <strong style="color: #0f172a;">${app.school_name}</strong>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: block;">Parent / Guardian</span>
+                <strong style="color: #0f172a;">${app.parent_name}</strong> (${app.parent_phone})
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; display: block;">Voucher Fee Paid</span>
+                <strong style="color: #16a34a;">${app.voucher_fee_paid || 'GH₵ 250'}</strong> via MoMo Escrow
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Regulatory Decision Rationale & Audit Trail *
+            </label>
+            <textarea id="dispute-override-notes" rows="3" placeholder="Provide justification under POL-003 (e.g. Campus quota expanded by Super Admin order; or Full MoMo refund issued due to unresolvable stream capacity)..." style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;"></textarea>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+              <button type="button" class="btn-pill" id="btn-force-seat-admit" style="background: #16a34a; color: white; font-weight: 800; padding: 0.75rem 1rem; border: none; cursor: pointer; text-align: center; border-radius: 8px;">
+                ✓ Force Seat Confirmation
+                <span style="display: block; font-size: 0.72rem; font-weight: normal; opacity: 0.9;">Override quota & admit student</span>
+              </button>
+
+              <button type="button" class="btn-pill" id="btn-refund-voucher-momo" style="background: #dc2626; color: white; font-weight: 800; padding: 0.75rem 1rem; border: none; cursor: pointer; text-align: center; border-radius: 8px;">
+                ↩ Refund Admission Voucher
+                <span style="display: block; font-size: 0.72rem; font-weight: normal; opacity: 0.9;">Reverse fee to parent MoMo wallet</span>
+              </button>
+            </div>
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-dispute" style="align-self: center; margin-top: 0.25rem;">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-dispute').onclick = () => this.close();
+
+    const handleAction = async (action) => {
+      const notes = document.getElementById('dispute-override-notes').value.trim();
+      if (!notes) {
+        State.showToast('Please enter an audit trail rationale before executing override.', 'error');
+        return;
+      }
+
+      try {
+        const res = await API.overrideAdminAdmissionDispute(app.id, action, notes);
+        this.close();
+        State.showToast(`✓ Voucher dispute resolved: ${res.message || action}`, 'success');
+        if (onResolved) onResolved(res);
+      } catch (err) {
+        State.showToast(err.message, 'error');
+      }
+    };
+
+    document.getElementById('btn-force-seat-admit').onclick = () => handleAction('force_admit');
+    document.getElementById('btn-refund-voucher-momo').onclick = () => handleAction('refund_voucher');
+  },
+
+  openTeacherDossierModal(teacher, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const displayName = teacher.fullName || teacher.name || 'Educator';
+    const displaySubject = Array.isArray(teacher.subjects) ? teacher.subjects.join(', ') : (teacher.subject || teacher.subjects || 'General');
+    const displayRate = teacher.rate || (teacher.hourlyRate ? 'GH₵ ' + teacher.hourlyRate + '/hr' : 'GH₵ 120/hr');
+    const ntcStatus = teacher.ntc_license_status || (teacher.verified ? 'VERIFIED' : 'PENDING_MATCH');
+    const g4Status = teacher.safeguarding_g4_status || 'PENDING_CID_CHECK';
+    const isSuspended = !!teacher.direct_booking_suspended;
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 640px;">
+        <div class="modal-header" style="border-bottom: 2px solid #1266C4;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+              Educator Credentialing & Child Safeguarding Dossier
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              ${displayName}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+          <!-- Educator Overview Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <div>
+                <strong style="font-size: 1.05rem; color: #0f172a;">${displayName}</strong>
+                <div style="font-size: 0.82rem; color: #2563eb; font-weight: 600;">${displaySubject} • ${teacher.region || 'Greater Accra'}</div>
+              </div>
+              <span class="badge" style="background: #dbeafe; color: #1e40af; font-weight: 800; font-size: 0.72rem;">${teacher.rateBenchmark || 'Fair Market Benchmark'}</span>
+            </div>
+            <div style="display: flex; gap: 1.5rem; font-size: 0.8rem; color: #475569;">
+              <div>💼 <strong>Qualification:</strong> ${teacher.qualification || 'B.Ed Mathematics & Physics'}</div>
+              <div>💰 <strong>Consultation Rate:</strong> <span style="font-weight: 800; color: #0f172a;">${displayRate}</span></div>
+            </div>
+          </div>
+
+          <!-- Section 1: National Teaching Council (NTC) Licensing -->
+          <div style="background: #fff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 1.1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">
+                🏛️ National Teaching Council (NTC) Licensing
+              </span>
+              <span class="badge ${ntcStatus === 'VERIFIED' ? 'badge-success' : (ntcStatus === 'FLAGGED_INVALID' ? 'badge-danger' : 'badge-warning')}" style="font-size: 0.72rem; font-weight: 800;">
+                ${ntcStatus}
+              </span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div class="form-group">
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem; color: #475569;">NTC Licence Number</label>
+                <input type="text" id="teacher-ntc-license" value="${teacher.ntcLicense || ''}" placeholder="e.g. NTC-2024-GH-88192" style="width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;" />
+              </div>
+              <div class="form-group">
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem; color: #475569;">NTC Accreditation Status</label>
+                <select id="teacher-ntc-status" style="width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                  <option value="VERIFIED" ${ntcStatus === 'VERIFIED' ? 'selected' : ''}>VERIFIED (NTC Registered & Good Standing)</option>
+                  <option value="PENDING_MATCH" ${ntcStatus === 'PENDING_MATCH' ? 'selected' : ''}>PENDING_MATCH (Under Verification)</option>
+                  <option value="FLAGGED_INVALID" ${ntcStatus === 'FLAGGED_INVALID' ? 'selected' : ''}>FLAGGED_INVALID (Expired / Invalid Licence)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn-pill btn-primary" id="btn-save-teacher-ntc" style="font-size: 0.8rem; padding: 0.45rem 1rem;">
+                Update NTC Credential
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 2: Gate G4 Child-Protection Safeguarding Clearance -->
+          <div style="background: #fff; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 1.1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+              <span style="font-weight: 800; font-size: 0.92rem; color: #0f172a;">
+                🛡️ Gate G4 Child-Protection Safeguarding
+              </span>
+              <span class="badge ${g4Status === 'CLEARED_G4_CHILD_SAFE' ? 'badge-success' : (g4Status === 'SAFEGUARDING_HOLD' ? 'badge-danger' : 'badge-warning')}" style="font-size: 0.72rem; font-weight: 800;">
+                ${g4Status}
+              </span>
+            </div>
+            <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 0.75rem; line-height: 1.4;">
+              Ghana Children's Act (Act 560) compliance mandatory. NTC license verifies pedagogical credentials; Gate G4 clearance verifies criminal background & child-safe eligibility.
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div class="form-group">
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem; color: #475569;">Police CID Clearance Ref</label>
+                <input type="text" id="teacher-cid-ref" value="${teacher.police_clearance_ref || ''}" placeholder="e.g. CID-ACC-2025-9921" style="width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;" />
+              </div>
+              <div class="form-group">
+                <label style="display: block; font-size: 0.78rem; font-weight: 700; margin-bottom: 0.25rem; color: #475569;">Gate G4 Clearance Status</label>
+                <select id="teacher-g4-status" style="width: 100%; padding: 0.5rem 0.7rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; background: #fff;">
+                  <option value="CLEARED_G4_CHILD_SAFE" ${g4Status === 'CLEARED_G4_CHILD_SAFE' ? 'selected' : ''}>CLEARED_G4_CHILD_SAFE (Fully Approved)</option>
+                  <option value="PENDING_CID_CHECK" ${g4Status === 'PENDING_CID_CHECK' ? 'selected' : ''}>PENDING_CID_CHECK (Awaiting Background Check)</option>
+                  <option value="SAFEGUARDING_HOLD" ${g4Status === 'SAFEGUARDING_HOLD' ? 'selected' : ''}>SAFEGUARDING_HOLD (Prohibited from Child Access)</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn-pill btn-primary" id="btn-save-teacher-g4" style="font-size: 0.8rem; padding: 0.45rem 1rem;">
+                Update Gate G4 Clearance
+              </button>
+            </div>
+          </div>
+
+          <!-- Section 3: Direct Tutoring Parent Booking Governance (DEC-011) -->
+          <div style="background: ${isSuspended ? '#fef2f2' : '#f0fdf4'}; border: 1.5px solid ${isSuspended ? '#fecaca' : '#bbf7d0'}; border-radius: 8px; padding: 1.1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-weight: 800; font-size: 0.92rem; color: ${isSuspended ? '#991b1b' : '#166534'};">
+                📅 Direct Parent Tutoring Bookings (DEC-011)
+              </span>
+              <span class="badge ${isSuspended ? 'badge-danger' : 'badge-success'}" style="font-size: 0.72rem; font-weight: 800;">
+                ${isSuspended ? 'SUSPENDED' : 'ACTIVE / OPEN'}
+              </span>
+            </div>
+            <div style="font-size: 0.8rem; color: ${isSuspended ? '#7f1d1d' : '#14532d'}; margin-bottom: 0.75rem;">
+              ${isSuspended 
+                ? `Booking privileges currently suspended. Reason: <em>${teacher.booking_suspension_reason || 'Administrative Review / Safeguarding Check'}</em>` 
+                : 'Educator profile is active and open for direct private tutoring bookings by verified parents.'}
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn-pill" id="btn-toggle-teacher-tutoring" style="background: ${isSuspended ? '#16a34a' : '#dc2626'}; color: white; font-weight: 800; font-size: 0.8rem; padding: 0.45rem 1rem; border: none; cursor: pointer; border-radius: 999px;">
+                ${isSuspended ? '✓ Reinstate Tutoring Bookings' : '⛔ Suspend Tutoring Bookings'}
+              </button>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-close-teacher-dossier">Close Dossier</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-teacher-dossier').onclick = () => this.close();
+
+    document.getElementById('btn-save-teacher-ntc').onclick = async () => {
+      const btn = document.getElementById('btn-save-teacher-ntc');
+      btn.disabled = true;
+      btn.innerText = 'Updating...';
+      const status = document.getElementById('teacher-ntc-status').value;
+      const license = document.getElementById('teacher-ntc-license').value.trim();
+      try {
+        const res = await API.updateTeacherNtcStatus(teacher.id, status, license, 'Updated via Super Admin Dossier');
+        State.showToast(`✓ NTC license updated to ${status}.`, 'success');
+        Object.assign(teacher, res.teacher || { ntc_license_status: status, ntcLicense: license });
+        if (onUpdated) onUpdated(teacher);
+        this.openTeacherDossierModal(teacher, onUpdated);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Update NTC Credential';
+        State.showToast(err.message, 'error');
+      }
+    };
+
+    document.getElementById('btn-save-teacher-g4').onclick = async () => {
+      const btn = document.getElementById('btn-save-teacher-g4');
+      btn.disabled = true;
+      btn.innerText = 'Updating...';
+      const status = document.getElementById('teacher-g4-status').value;
+      const cidRef = document.getElementById('teacher-cid-ref').value.trim();
+      try {
+        const res = await API.updateTeacherSafeguardingStatus(teacher.id, status, cidRef, 'Updated via Super Admin Dossier');
+        State.showToast(`✓ Gate G4 Safeguarding clearance updated to ${status}.`, 'success');
+        Object.assign(teacher, res.teacher || { safeguarding_g4_status: status, police_clearance_ref: cidRef });
+        if (onUpdated) onUpdated(teacher);
+        this.openTeacherDossierModal(teacher, onUpdated);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Update Gate G4 Clearance';
+        State.showToast(err.message, 'error');
+      }
+    };
+
+    document.getElementById('btn-toggle-teacher-tutoring').onclick = async () => {
+      const newSuspended = !isSuspended;
+      const reason = newSuspended ? prompt('Enter reason for suspending tutoring bookings:', 'Pending safeguarding review') : '';
+      if (newSuspended && reason === null) return;
+
+      try {
+        const res = await API.toggleTeacherTutoringSuspension(teacher.id, newSuspended, reason || '');
+        State.showToast(newSuspended ? '⛔ Tutoring bookings suspended.' : '✓ Tutoring bookings reinstated.', 'success');
+        Object.assign(teacher, res.teacher || { direct_booking_suspended: newSuspended, booking_suspension_reason: reason });
+        if (onUpdated) onUpdated(teacher);
+        this.openTeacherDossierModal(teacher, onUpdated);
+      } catch (err) {
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openVendorBidsModal(rfq, onAwarded) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const quotes = rfq.quotes || [];
+    const isAwarded = rfq.status === 'awarded';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 680px;">
+        <div class="modal-header" style="border-bottom: 2px solid #1266C4;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+              B2B Institutional Procurement Desk
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Tender Bids & Price Quotations
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+          <!-- RFQ Snapshot -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <div>
+                <strong style="font-size: 1.05rem; color: #0f172a;">${rfq.title}</strong>
+                <div style="font-size: 0.82rem; color: #2563eb; font-weight: 700;">🏫 ${rfq.school}</div>
+              </div>
+              <span class="badge ${isAwarded ? 'badge-success' : 'badge-warning'}" style="font-size: 0.72rem; font-weight: 800;">
+                ${isAwarded ? 'AWARDED' : 'OPEN FOR BIDS'}
+              </span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: #475569;">
+              <div>📦 <strong>Category:</strong> ${rfq.category}</div>
+              <div>🔢 <strong>Quantity:</strong> ${rfq.quantity}</div>
+              <div>💰 <strong>Budget:</strong> ${rfq.budget || rfq.budgetRange || 'Negotiable'}</div>
+              <div>📅 <strong>Deadline:</strong> ${rfq.deadline || 'Ongoing'}</div>
+            </div>
+            ${isAwarded ? `
+              <div style="margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: #ecfdf5; border-radius: 6px; font-size: 0.82rem; color: #065f46; font-weight: 700;">
+                🏆 Contract Awarded to: <u>${rfq.awardedTo || 'Selected Supplier'}</u> (Escrow 50% Disbursed)
+              </div>
+            ` : ''}
+          </div>
+
+          <!-- Bids List -->
+          <h4 style="font-size: 0.95rem; font-weight: 800; color: #0f172a; margin: 0 0 0.75rem 0;">
+            Submitted Vendor Quotations (${quotes.length})
+          </h4>
+
+          ${quotes.length === 0 ? `
+            <div style="text-align: center; padding: 2rem; color: #64748b; background: #f8fafc; border-radius: 8px; font-size: 0.9rem;">
+              No quotes submitted by vendors yet for this tender.
+            </div>
+          ` : `
+            <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+              ${quotes.map(q => {
+                const isWinner = isAwarded && rfq.awardedTo === q.supplierName;
+                const quoteAmt = q.quoteAmountGhs || q.amount || 0;
+                const isGraValid = q.taxClearanceStatus === 'GRA_VERIFIED_VALID' || q.graCompliant;
+                const warrantyStr = q.warrantyMonths ? `${q.warrantyMonths} Months` : (q.warranty || '1 Year');
+                return `
+                  <div style="border: 1.5px solid ${isWinner ? '#10b981' : '#e2e8f0'}; background: ${isWinner ? '#f0fdf4' : '#fff'}; border-radius: 8px; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="flex: 1;">
+                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <strong style="color: #0f172a; font-size: 0.95rem;">${q.supplierName}</strong>
+                        <span class="badge ${isGraValid ? 'badge-success' : 'badge-warning'}" style="font-size: 0.68rem;">
+                          ${isGraValid ? '✓ GRA TIN Verified' : 'TIN Pending'}
+                        </span>
+                        ${isWinner ? '<span class="badge badge-success" style="font-weight: 800; font-size: 0.68rem;">🏆 AWARDED</span>' : ''}
+                      </div>
+                      <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 0.35rem;">
+                        TIN: <code>${q.tin || 'C001294819'}</code> • Delivery: <strong>${q.deliveryDays || '14'} Days</strong> • Warranty: <strong>${warrantyStr}</strong>
+                      </div>
+                      <div style="font-size: 0.78rem; color: #334155; font-style: italic;">
+                        "${q.notes || 'Full package compliance per tender specifications.'}"
+                      </div>
+                    </div>
+
+                    <div style="text-align: right; margin-left: 1rem; min-width: 140px;">
+                      <div style="font-size: 1.15rem; font-weight: 900; color: #1266C4; margin-bottom: 0.4rem;">
+                        GH₵ ${quoteAmt.toLocaleString()}
+                      </div>
+                      ${!isAwarded ? `
+                        <button type="button" class="btn-pill btn-primary btn-award-bid" data-quote-id="${q.id || ''}" data-supplier-id="${q.supplierId}" data-supplier-name="${q.supplierName}" data-amount="${quoteAmt}" style="font-size: 0.78rem; padding: 0.4rem 0.85rem; font-weight: 800;">
+                          Award Tender
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `}
+
+          <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-close-vendor-bids">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-close-vendor-bids').onclick = () => this.close();
+
+    div.querySelectorAll('.btn-award-bid').forEach(btn => {
+      btn.onclick = async (e) => {
+        const supplierId = btn.getAttribute('data-supplier-id');
+        const supplierName = btn.getAttribute('data-supplier-name');
+        const quoteId = btn.getAttribute('data-quote-id');
+        const bidAmount = Number(btn.getAttribute('data-amount'));
+
+        if (!confirm(`Award tender "${rfq.title}" to ${supplierName} for GH₵ ${bidAmount.toLocaleString()}? This will lock milestone escrow.`)) {
+          return;
+        }
+
+        btn.disabled = true;
+        btn.innerText = 'Awarding...';
+
+        try {
+          const res = await API.awardAdminProcurementRFQ(rfq.id, { supplierId, supplierName, bidAmount, amountGhs: bidAmount, quoteId });
+          this.close();
+          State.showToast(`🎉 Tender awarded to ${supplierName}! 50% milestone escrow contract initiated.`, 'success');
+          rfq.status = 'awarded';
+          rfq.awardedTo = supplierName;
+          if (onAwarded) onAwarded(res);
+        } catch (err) {
+          btn.disabled = false;
+          btn.innerText = 'Award Tender';
+          State.showToast(err.message, 'error');
+        }
+      };
+    });
+  },
+
+  openArbitrateDisputeModal(dispute, onResolved) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const supplier = dispute.vendorName || dispute.supplierName || 'Accredited Supplier';
+    const escrowAmount = dispute.amount || (dispute.escrowAmountGhs ? 'GH₵ ' + Number(dispute.escrowAmountGhs).toLocaleString() : (dispute.escrowAmount || 'GH₵ 18,500'));
+    const tenderTitle = dispute.rfqTitle || dispute.tenderTitle || 'Tender Milestone Dispute';
+    const reasonText = dispute.reason || dispute.disputeReason || 'Variance between delivered items and tender technical specifications.';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-header" style="border-bottom: 2px solid #dc2626;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+              Milestone Escrow Disputes Arbitration Desk (ESC-003)
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Arbitrate Escrow Dispute
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;">
+          <!-- Dispute Details Card -->
+          <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+              <div>
+                <span class="badge badge-danger" style="font-size: 0.72rem; font-family: monospace;">${dispute.id || dispute.disputeRef}</span>
+                <strong style="color: #991b1b; display: block; font-size: 0.95rem; margin-top: 0.25rem;">${tenderTitle}</strong>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 0.72rem; color: #7f1d1d; text-transform: uppercase; font-weight: 700; display: block;">Escrow in Trust</span>
+                <span style="font-size: 1.15rem; font-weight: 900; color: #991b1b;">${escrowAmount}</span>
+              </div>
+            </div>
+            <div style="font-size: 0.82rem; color: #7f1d1d; line-height: 1.45;">
+              <div>🏫 <strong>School:</strong> ${dispute.schoolName}</div>
+              <div>🚚 <strong>Supplier:</strong> ${supplier}</div>
+              <div style="margin-top: 0.35rem;">⚠️ <strong>Dispute Reason:</strong> ${reasonText}</div>
+            </div>
+          </div>
+
+          <!-- Resolution Action Selection -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Select Arbitration Ruling *
+            </label>
+            <select id="dispute-resolution-type" style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; background: #fff;">
+              <option value="split_50_50">⚖️ Split 50 / 50 Compromise (50% to Supplier, 50% Refund to School)</option>
+              <option value="release_supplier">✓ Release 100% Escrow to Supplier (Milestone Conditions Fulfilled)</option>
+              <option value="refund_school">↩ Refund 100% Escrow to School (Supplier Default / Non-Performance)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Super Admin Arbitration Justification *
+            </label>
+            <textarea id="dispute-ruling-notes" rows="3" placeholder="Provide factual audit rationale for the ruling..." style="width: 100%; padding: 0.6rem 0.85rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-arbitration">Cancel</button>
+            <button type="button" class="btn-pill btn-primary" id="btn-execute-arbitration" style="background: #dc2626; border-color: #dc2626; font-weight: 800;">
+              Execute Binding Ruling
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-arbitration').onclick = () => this.close();
+
+    document.getElementById('btn-execute-arbitration').onclick = async () => {
+      const resolution = document.getElementById('dispute-resolution-type').value;
+      const notes = document.getElementById('dispute-ruling-notes').value.trim();
+
+      if (!notes) {
+        State.showToast('Please enter an arbitration rationale before executing the ruling.', 'error');
+        return;
+      }
+
+      const btn = document.getElementById('btn-execute-arbitration');
+      btn.disabled = true;
+      btn.innerText = 'Executing...';
+
+      try {
+        const res = await API.arbitrateProcurementDispute(dispute.id, resolution, notes);
+        this.close();
+        State.showToast(`✓ Arbitration completed: ${res.message || resolution}`, 'success');
+        if (onResolved) onResolved(res);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Execute Binding Ruling';
         State.showToast(err.message, 'error');
       }
     };

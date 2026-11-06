@@ -1395,8 +1395,6 @@ router.get('/finance/subscriptions', async (req, res) => {
     return res.json({
       success: true,
       total: list.length,
-      totalSubscriptions: list.length,
-      totalGmvGhs: list.reduce((acc, s) => acc + (Number(s.price_ghs) || 0), 0),
       subscriptions: list
     });
   } catch (err) {
@@ -1919,8 +1917,35 @@ let SEED_ADMISSIONS = [
     parent_email: 'orders@crownstationery.gh',
     status: 'declined',
     status_label: 'Application Declined',
+    decision_notes: 'Class intake capacity reached for Day students. Recommended for Boarding stream.',
     submitted_at: '2026-10-18T10:10:00.000Z'
+  },
+  {
+    id: 'app-gh-07',
+    application_number: 'SF-ADM-2026-992015',
+    student_name: 'Dela Kwame Mensah',
+    grade_applying: 'JHS Form 1',
+    previous_school: 'Jack & Jill Preparatory',
+    school_name: 'Ghana International School',
+    school_id: 'ab5af86d-c902-4853-9528-d6200104b5f6',
+    parent_name: 'Dr. Joseph Adjei',
+    parent_phone: '+233 24 411 9823',
+    parent_email: 'joseph.adjei@legon.edu.gh',
+    status: 'disputed_voucher',
+    status_label: '⚠️ Admission Voucher Disputed (POL-003)',
+    voucher_code: 'SF-VOUCH-819203-MOMO',
+    voucher_amount_ghs: 200,
+    dispute_reason: 'Parent paid GH₵ 200 voucher via MoMo. System verified voucher, but school enrollment portal had temporary intake freeze.',
+    submitted_at: '2026-11-05T13:45:00.000Z'
   }
+];
+
+let SEED_CAMPUS_INTAKE_QUOTAS = [
+  { schoolId: 'ab5af86d-c902-4853-9528-d6200104b5f6', schoolName: 'Ghana International School', enrolled: 120, capacity: 150, academicYear: '2026/2027', gradeFocus: 'Primary to Cambridge A-Levels' },
+  { schoolId: 'b11b5105-e991-49fa-bd7d-78703a5632d4', schoolName: 'Achimota Basic & Senior High', enrolled: 210, capacity: 250, academicYear: '2026/2027', gradeFocus: 'JHS Form 1 & SHS Form 1' },
+  { schoolId: 'sch-morningstar-cantonments', schoolName: 'Morning Star School', enrolled: 82, capacity: 90, academicYear: '2026/2027', gradeFocus: 'KG to JHS 3' },
+  { schoolId: 'sch-presec-legon', schoolName: 'Presbyterian Boys\' Secondary (PRESEC)', enrolled: 290, capacity: 300, academicYear: '2026/2027', gradeFocus: 'SHS Form 1 (Science & General Arts)' },
+  { schoolId: 'd05ea273-b7a5-4865-999b-63753830ab7a', schoolName: 'St. Rose\'s Senior High School', enrolled: 175, capacity: 200, academicYear: '2026/2027', gradeFocus: 'SHS Form 1' }
 ];
 
 let SEED_ADMIN_TEACHERS = [
@@ -1932,12 +1957,18 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['JHS', 'SHS', 'A-Levels'],
     curricula: ['Cambridge', 'GES'],
     ntcLicense: 'NTC/LIC/GH-2023-8192',
+    ntc_license_status: 'VERIFIED',
+    safeguarding_g4_status: 'CLEARED_G4_CHILD_SAFE',
+    direct_booking_suspended: false,
+    police_clearance_ref: 'CID/ACC/2026/V-8912',
+    police_clearance_date: '2026-08-15',
     hourlyRate: 120,
+    rateBenchmark: 'Fair Market Benchmark',
     verified: true,
     rating: 4.9,
     region: 'Greater Accra',
     experienceYears: '12+',
-    qualification: 'B.Sc Physics (Legon), PGDE'
+    qualification: 'B.Sc Physics (Legon), PGDE (UCC)'
   },
   {
     id: 'tch-02',
@@ -1947,7 +1978,13 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['SHS', 'IGCSE', 'A-Levels'],
     curricula: ['Cambridge', 'IB'],
     ntcLicense: 'NTC/LIC/GH-2022-4410',
+    ntc_license_status: 'VERIFIED',
+    safeguarding_g4_status: 'CLEARED_G4_CHILD_SAFE',
+    direct_booking_suspended: false,
+    police_clearance_ref: 'CID/ACC/2025/V-3310',
+    police_clearance_date: '2025-11-10',
     hourlyRate: 150,
+    rateBenchmark: 'Premium STEM Specialist',
     verified: true,
     rating: 5.0,
     region: 'Greater Accra',
@@ -1962,7 +1999,13 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['Primary', 'JHS', 'SHS'],
     curricula: ['GES', 'Cambridge'],
     ntcLicense: 'NTC/LIC/GH-2024-1198',
+    ntc_license_status: 'VERIFIED',
+    safeguarding_g4_status: 'CLEARED_G4_CHILD_SAFE',
+    direct_booking_suspended: false,
+    police_clearance_ref: 'CID/ACC/2026/V-4421',
+    police_clearance_date: '2026-04-12',
     hourlyRate: 90,
+    rateBenchmark: 'Fair Market Benchmark',
     verified: true,
     rating: 4.8,
     region: 'Greater Accra',
@@ -1977,7 +2020,13 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['Primary', 'Early Years'],
     curricula: ['Montessori', 'GES'],
     ntcLicense: 'NTC/LIC/GH-2021-3921',
+    ntc_license_status: 'VERIFIED',
+    safeguarding_g4_status: 'CLEARED_G4_CHILD_SAFE',
+    direct_booking_suspended: false,
+    police_clearance_ref: 'CID/KMS/2026/V-7719',
+    police_clearance_date: '2026-06-20',
     hourlyRate: 85,
+    rateBenchmark: 'Fair Market Benchmark',
     verified: true,
     rating: 4.9,
     region: 'Ashanti',
@@ -1992,7 +2041,13 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['Primary', 'JHS', 'SHS'],
     curricula: ['Cambridge', 'GES'],
     ntcLicense: 'NTC/LIC/GH-PENDING',
+    ntc_license_status: 'PENDING_MATCH',
+    safeguarding_g4_status: 'PENDING_CID_CHECK',
+    direct_booking_suspended: true,
+    suspension_reason: 'Pending NTC database confirmation & police background vetting clearance.',
+    police_clearance_ref: 'CID-PENDING',
     hourlyRate: 140,
+    rateBenchmark: 'Premium STEM Specialist',
     verified: false,
     rating: 4.9,
     region: 'Greater Accra',
@@ -2007,7 +2062,13 @@ let SEED_ADMIN_TEACHERS = [
     levels: ['JHS', 'SHS'],
     curricula: ['GES'],
     ntcLicense: 'NTC/LIC/GH-2024-9912',
+    ntc_license_status: 'VERIFIED',
+    safeguarding_g4_status: 'CLEARED_G4_CHILD_SAFE',
+    direct_booking_suspended: false,
+    police_clearance_ref: 'CID/KOFORIDUA/2026/V-1102',
+    police_clearance_date: '2026-03-05',
     hourlyRate: 95,
+    rateBenchmark: 'Fair Market Benchmark',
     verified: true,
     rating: 4.7,
     region: 'Eastern Region',
@@ -2028,7 +2089,42 @@ let SEED_ADMIN_RFQS = [
     deadline: '2026-11-30',
     region: 'Greater Accra',
     status: 'Open',
-    quotesReceived: 4
+    quotesReceived: 3,
+    quotes: [
+      {
+        id: 'quote-01',
+        supplierId: 'sup-03',
+        supplierName: 'Ghana STEM & Science Equipment Hub',
+        tin: 'C0038192041',
+        quoteAmountGhs: 46500,
+        deliveryDays: 14,
+        warrantyMonths: 12,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      },
+      {
+        id: 'quote-02',
+        supplierId: 'sup-02',
+        supplierName: 'Kingdom Books & Stationery Ltd',
+        tin: 'C0084729103',
+        quoteAmountGhs: 51200,
+        deliveryDays: 21,
+        warrantyMonths: 24,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      },
+      {
+        id: 'quote-03',
+        supplierId: 'sup-04',
+        supplierName: 'E-Tech Ghana Solutions',
+        tin: 'C0099120481',
+        quoteAmountGhs: 42800,
+        deliveryDays: 10,
+        warrantyMonths: 12,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      }
+    ]
   },
   {
     id: 'rfq-02',
@@ -2041,7 +2137,31 @@ let SEED_ADMIN_RFQS = [
     deadline: '2026-11-20',
     region: 'Greater Accra',
     status: 'Open',
-    quotesReceived: 6
+    quotesReceived: 2,
+    quotes: [
+      {
+        id: 'quote-04',
+        supplierId: 'sup-01',
+        supplierName: 'Aki-Ola Publications Ghana',
+        tin: 'C0019283719',
+        quoteAmountGhs: 28500,
+        deliveryDays: 7,
+        warrantyMonths: 0,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      },
+      {
+        id: 'quote-05',
+        supplierId: 'sup-02',
+        supplierName: 'Kingdom Books & Stationery Ltd',
+        tin: 'C0084729103',
+        quoteAmountGhs: 31000,
+        deliveryDays: 10,
+        warrantyMonths: 0,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      }
+    ]
   },
   {
     id: 'rfq-03',
@@ -2054,7 +2174,20 @@ let SEED_ADMIN_RFQS = [
     deadline: '2026-12-15',
     region: 'Eastern Region',
     status: 'Under Evaluation',
-    quotesReceived: 3
+    quotesReceived: 1,
+    quotes: [
+      {
+        id: 'quote-06',
+        supplierId: 'sup-02',
+        supplierName: 'Kingdom Books & Stationery Ltd',
+        tin: 'C0084729103',
+        quoteAmountGhs: 78000,
+        deliveryDays: 25,
+        warrantyMonths: 36,
+        taxClearanceStatus: 'GRA_VERIFIED_VALID',
+        status: 'pending_review'
+      }
+    ]
   },
   {
     id: 'rfq-04',
@@ -2067,7 +2200,9 @@ let SEED_ADMIN_RFQS = [
     deadline: '2026-11-15',
     region: 'Greater Accra',
     status: 'Awarded',
-    quotesReceived: 5
+    awardedTo: 'Kingdom Books & Stationery Ltd',
+    awardedAmountGhs: 37500,
+    quotesReceived: 2
   }
 ];
 
@@ -2126,6 +2261,20 @@ let SEED_ADMIN_SUPPLIERS = [
   }
 ];
 
+let SEED_PROCUREMENT_DISPUTES = [
+  {
+    id: 'DSP-PROC-2026-001',
+    tenderId: 'rfq-04',
+    tenderTitle: 'Annual Provision of Custom Branded School Uniforms',
+    schoolName: 'Morning Star School',
+    vendorName: 'Kingdom Books & Stationery Ltd',
+    escrowAmountGhs: 18500,
+    disputeReason: 'Supplier delivered 400 of 600 sets; embroidery on badge differed slightly from sample swatch.',
+    status: 'pending_arbitration',
+    created_at: '2026-11-04'
+  }
+];
+
 /**
  * GET /api/admin/admissions
  * Master admissions application ledger across all partner schools
@@ -2171,7 +2320,8 @@ router.get('/admissions', async (req, res) => {
     return res.json({
       success: true,
       total: allApps.length,
-      applications: paginated
+      applications: paginated,
+      intakeQuotas: SEED_CAMPUS_INTAKE_QUOTAS
     });
   } catch (err) {
     console.error('GET /api/admin/admissions error:', err);
@@ -2181,12 +2331,12 @@ router.get('/admissions', async (req, res) => {
 
 /**
  * PATCH /api/admin/admissions/:id/status
- * Super Admin override for student application status
+ * Super Admin override for student application status & exam schedule
  */
 router.patch('/admissions/:id/status', async (req, res) => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // 'admitted' | 'exam_scheduled' | 'pending' | 'declined'
+    const { status, exam_date, exam_venue, decision_notes, notify_parent } = req.body || {};
     const adminUser = req.user;
 
     const app = SEED_ADMISSIONS.find(a => a.id === id);
@@ -2195,8 +2345,20 @@ router.patch('/admissions/:id/status', async (req, res) => {
     }
 
     const oldStatus = app.status;
-    app.status = status;
-    app.status_label = status === 'admitted' ? 'Admitted / Offer Dispatched' : (status === 'exam_scheduled' ? 'Entrance Exam Scheduled' : (status === 'declined' ? 'Application Declined' : 'Under Review'));
+    if (status) {
+      app.status = status;
+      app.status_label = status === 'admitted' ? 'Admitted / Offer Dispatched' :
+        (status === 'exam_scheduled' ? 'Entrance Exam Scheduled' :
+        (status === 'waitlisted' ? 'Admissions Waitlist' :
+        (status === 'declined' ? 'Application Declined' : 'Under Review')));
+    }
+    if (exam_date) app.exam_date = exam_date;
+    if (exam_venue) app.exam_venue = exam_venue;
+    if (decision_notes) app.decision_notes = decision_notes;
+    if (notify_parent !== undefined) {
+      app.notified_parent = !!notify_parent;
+      app.parent_notification_timestamp = new Date().toISOString();
+    }
 
     await AuditService.log({
       actorId: adminUser.id,
@@ -2205,16 +2367,61 @@ router.patch('/admissions/:id/status', async (req, res) => {
       action: 'admission_status_updated',
       targetType: 'admission_application',
       targetId: id,
-      details: { applicationNumber: app.application_number, studentName: app.student_name, oldStatus, newStatus: status }
+      details: { applicationNumber: app.application_number, studentName: app.student_name, oldStatus, newStatus: status, exam_date, exam_venue }
     });
 
     return res.json({
       success: true,
-      message: `Admission status for ${app.student_name} set to ${app.status_label}.`,
+      message: `Admission status for ${app.student_name} set to "${app.status_label}".`,
       application: app
     });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update admission status' });
+  }
+});
+
+/**
+ * POST /api/admin/admissions/:id/dispute-override (POL-003)
+ * Super Admin arbitration for admission vouchers and contested enrollment allocations
+ */
+router.post('/admissions/:id/dispute-override', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action, notes = '' } = req.body || {}; // 'force_admit' | 'refund_voucher'
+    const adminUser = req.user;
+
+    const app = SEED_ADMISSIONS.find(a => a.id === id);
+    if (!app) {
+      return res.status(404).json({ error: 'Admission application not found' });
+    }
+
+    if (action === 'force_admit') {
+      app.status = 'admitted';
+      app.status_label = 'Admitted (Super Admin Override POL-003)';
+      app.decision_notes = notes || 'Super Admin verified valid voucher payment; forced institutional enrollment.';
+    } else if (action === 'refund_voucher') {
+      app.status = 'voucher_refunded';
+      app.status_label = 'Voucher Refunded to MoMo (POL-003)';
+      app.decision_notes = notes || 'Admission voucher refunded directly to parent mobile money wallet.';
+    }
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: action === 'force_admit' ? 'admission_voucher_force_admitted' : 'admission_voucher_refunded',
+      targetType: 'admission_application',
+      targetId: id,
+      details: { applicationNumber: app.application_number, studentName: app.student_name, action, notes }
+    });
+
+    return res.json({
+      success: true,
+      message: `Resolution applied: ${app.status_label}`,
+      application: app
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to process dispute override' });
   }
 });
 
@@ -2265,7 +2472,7 @@ router.get('/teachers', async (req, res) => {
 
 /**
  * PATCH /api/admin/teachers/:id/verify
- * Toggle NTC License Verification badge
+ * Toggle NTC License Verification badge (legacy compatibility)
  */
 router.patch('/teachers/:id/verify', async (req, res) => {
   try {
@@ -2279,6 +2486,7 @@ router.patch('/teachers/:id/verify', async (req, res) => {
     }
 
     teacher.verified = !!verified;
+    teacher.ntc_license_status = verified ? 'VERIFIED' : 'PENDING_MATCH';
 
     await AuditService.log({
       actorId: adminUser.id,
@@ -2297,6 +2505,129 @@ router.patch('/teachers/:id/verify', async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update teacher verification' });
+  }
+});
+
+/**
+ * PATCH /api/admin/teachers/:id/ntc
+ * Comprehensive NTC Verification Engine (Module 7.2)
+ */
+router.patch('/teachers/:id/ntc', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { ntc_license_status, ntcLicense, notes = '' } = req.body || {};
+    const adminUser = req.user;
+
+    const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === id);
+    if (!teacher) {
+      return res.status(404).json({ error: 'Teacher profile not found' });
+    }
+
+    const oldStatus = teacher.ntc_license_status;
+    teacher.ntc_license_status = ntc_license_status || 'VERIFIED';
+    teacher.verified = teacher.ntc_license_status === 'VERIFIED';
+    if (ntcLicense) teacher.ntcLicense = ntcLicense;
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'teacher_ntc_status_transitioned',
+      targetType: 'teacher',
+      targetId: id,
+      details: { teacherName: teacher.fullName, ntcLicense: teacher.ntcLicense, oldStatus, newStatus: teacher.ntc_license_status, notes }
+    });
+
+    return res.json({
+      success: true,
+      message: `NTC license credential for ${teacher.fullName} transitioned to ${teacher.ntc_license_status}.`,
+      teacher
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update teacher NTC credential' });
+  }
+});
+
+/**
+ * PATCH /api/admin/teachers/:id/safeguarding (Gate G4 Compliance)
+ * Distinct Child-Protection Background Clearance (Act 560)
+ */
+router.patch('/teachers/:id/safeguarding', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { safeguarding_g4_status, police_clearance_ref, notes = '' } = req.body || {};
+    const adminUser = req.user;
+
+    const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === id);
+    if (!teacher) {
+      return res.status(404).json({ error: 'Teacher profile not found' });
+    }
+
+    const oldStatus = teacher.safeguarding_g4_status;
+    teacher.safeguarding_g4_status = safeguarding_g4_status || 'CLEARED_G4_CHILD_SAFE';
+    if (police_clearance_ref) teacher.police_clearance_ref = police_clearance_ref;
+
+    // Strict Safeguarding Rule: If placed on hold, instantly suspend direct child-facing tutoring bookings
+    if (teacher.safeguarding_g4_status === 'SAFEGUARDING_HOLD') {
+      teacher.direct_booking_suspended = true;
+      teacher.suspension_reason = notes || 'Automated Gate G4 Safeguarding Hold triggered.';
+    }
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'teacher_safeguarding_g4_transitioned',
+      targetType: 'teacher',
+      targetId: id,
+      details: { teacherName: teacher.fullName, oldStatus, newStatus: teacher.safeguarding_g4_status, police_clearance_ref, notes }
+    });
+
+    return res.json({
+      success: true,
+      message: `Gate G4 child-protection status for ${teacher.fullName} is now ${teacher.safeguarding_g4_status}.`,
+      teacher
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update teacher safeguarding clearance' });
+  }
+});
+
+/**
+ * PATCH /api/admin/teachers/:id/tutoring-suspension
+ * Direct Parent Tutoring Consultation & Booking Suspension (DEC-011)
+ */
+router.patch('/teachers/:id/tutoring-suspension', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { suspended, reason = '' } = req.body || {};
+    const adminUser = req.user;
+
+    const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === id);
+    if (!teacher) {
+      return res.status(404).json({ error: 'Teacher profile not found' });
+    }
+
+    teacher.direct_booking_suspended = !!suspended;
+    teacher.suspension_reason = suspended ? (reason || 'Direct parent bookings suspended by Super Admin regulatory order.') : null;
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: suspended ? 'teacher_tutoring_bookings_suspended' : 'teacher_tutoring_bookings_reinstated',
+      targetType: 'teacher',
+      targetId: id,
+      details: { teacherName: teacher.fullName, suspended: teacher.direct_booking_suspended, reason: teacher.suspension_reason }
+    });
+
+    return res.json({
+      success: true,
+      message: `Direct tutoring bookings for ${teacher.fullName} have been ${teacher.direct_booking_suspended ? 'Suspended' : 'Reinstated'}.`,
+      teacher
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update tutoring booking status' });
   }
 });
 
@@ -2419,6 +2750,133 @@ router.patch('/procurement/rfqs/:id/status', async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to update RFQ status' });
+  }
+});
+
+/**
+ * GET /api/admin/procurement/rfqs/:id/quotes
+ * Retrieve vendor quotes for a specific tender
+ */
+router.get('/procurement/rfqs/:id/quotes', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rfq = SEED_ADMIN_RFQS.find(r => r.id === id);
+    if (!rfq) {
+      return res.status(404).json({ error: 'Tender record not found' });
+    }
+    return res.json({
+      success: true,
+      rfqId: id,
+      rfqTitle: rfq.title,
+      quotes: rfq.quotes || []
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve quotes' });
+  }
+});
+
+/**
+ * POST /api/admin/procurement/rfqs/:id/award
+ * Super Admin awards tender to winning vendor
+ */
+router.post('/procurement/rfqs/:id/award', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quoteId, supplierName, amountGhs, notes = '' } = req.body || {};
+    const adminUser = req.user;
+
+    const rfq = SEED_ADMIN_RFQS.find(r => r.id === id);
+    if (!rfq) {
+      return res.status(404).json({ error: 'Tender record not found' });
+    }
+
+    rfq.status = 'Awarded';
+    rfq.awardedTo = supplierName || 'Winning Supplier';
+    rfq.awardedAmountGhs = Number(amountGhs) || 0;
+    rfq.award_notes = notes;
+    rfq.awarded_at = new Date().toISOString();
+
+    if (Array.isArray(rfq.quotes)) {
+      rfq.quotes.forEach(q => {
+        if (q.id === quoteId) q.status = 'awarded';
+        else q.status = 'declined';
+      });
+    }
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'rfq_tender_awarded',
+      targetType: 'procurement_rfq',
+      targetId: id,
+      details: { title: rfq.title, awardedTo: rfq.awardedTo, amountGhs: rfq.awardedAmountGhs, notes }
+    });
+
+    return res.json({
+      success: true,
+      message: `Tender "${rfq.title}" successfully awarded to ${rfq.awardedTo} for GH₵ ${rfq.awardedAmountGhs.toLocaleString()}!`,
+      rfq
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to award tender' });
+  }
+});
+
+/**
+ * GET /api/admin/procurement/disputes
+ * Milestone escrow disputes register
+ */
+router.get('/procurement/disputes', async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      total: SEED_PROCUREMENT_DISPUTES.length,
+      disputes: SEED_PROCUREMENT_DISPUTES
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch disputes' });
+  }
+});
+
+/**
+ * POST /api/admin/procurement/disputes/:id/arbitrate (ESC-003)
+ * Super Admin 50/50 or full settlement dispute arbitration
+ */
+router.post('/procurement/disputes/:id/arbitrate', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { resolution, notes = '' } = req.body || {}; // 'split_50_50' | 'refund_school' | 'release_supplier'
+    const adminUser = req.user;
+
+    const dispute = SEED_PROCUREMENT_DISPUTES.find(d => d.id === id);
+    if (!dispute) {
+      return res.status(404).json({ error: 'Dispute record not found' });
+    }
+
+    dispute.status = 'resolved';
+    dispute.resolution = resolution;
+    dispute.resolution_notes = notes;
+    dispute.resolved_at = new Date().toISOString();
+    dispute.arbitrated_by = adminUser.name || 'Super Admin';
+
+    await AuditService.log({
+      actorId: adminUser.id,
+      actorEmail: adminUser.email,
+      actorRole: 'super_admin',
+      action: 'procurement_escrow_arbitrated',
+      targetType: 'procurement_dispute',
+      targetId: id,
+      details: { disputeId: id, resolution, notes }
+    });
+
+    return res.json({
+      success: true,
+      message: `Dispute ${id} resolved via "${resolution}". Escrow payout executed according to ruling.`,
+      dispute
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to arbitrate dispute' });
   }
 });
 
@@ -2744,15 +3202,7 @@ router.post('/professionals/:id/vet', async (req, res) => {
 router.get('/subscriptions', async (req, res) => {
   try {
     const data = await AdmissionsSubscriptionService.adminListSubscriptions();
-    const subs = (data && data.subscriptions && data.subscriptions.length > 0) ? data.subscriptions : SEED_SUBSCRIPTIONS;
-    const totalGmv = data?.totalGmvGhs || subs.reduce((acc, s) => acc + (Number(s.price_ghs) || Number(s.amount) || 0), 0);
-    return res.json({
-      success: true,
-      totalSubscriptions: subs.length,
-      totalGmvGhs: totalGmv,
-      subscriptions: subs,
-      invoices: data?.invoices || []
-    });
+    return res.json({ success: true, ...data });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
