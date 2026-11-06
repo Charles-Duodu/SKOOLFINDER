@@ -221,6 +221,14 @@ const API = {
     return res.json();
   },
 
+  async getAdminAuditLogs(limit = 50) {
+    const res = await fetch(`${this.baseUrl}/admin/audit-logs?limit=${limit}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load audit logs");
+    return res.json();
+  },
+
   async getAdminSchools(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/admin/schools?${query}`, {

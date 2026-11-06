@@ -44,6 +44,7 @@ const AdminView = {
     let commercialData = { subscriptions: [], totalGmvGhs: 0 };
     let escrowDisputes = [];
     let telemetryData = { telemetry: {}, sms: {}, deliveries: [] };
+    let auditLogsData = [];
 
     try {
       const promises = [
@@ -107,7 +108,7 @@ const AdminView = {
             escrowDisputes = escRes?.disputes || [];
           }).catch(err => console.warn('Procurement load notice:', err))
         );
-      } else if (this.activeTab === 'telemetry') {
+      } else if (this.activeTab === 'telemetry' || this.activeTab === 'communications' || this.activeTab === 'integrations') {
         promises.push(
           Promise.all([
             API.getAdminWebhookTelemetry().catch(() => ({ telemetry: {} })),
@@ -120,6 +121,12 @@ const AdminView = {
               deliveries: delivRes?.deliveries || []
             };
           }).catch(err => console.warn('Telemetry load notice:', err))
+        );
+      } else if (this.activeTab === 'audit') {
+        promises.push(
+          API.getAdminAuditLogs().then(logs => {
+            auditLogsData = Array.isArray(logs) ? logs : (logs?.logs || []);
+          }).catch(err => console.warn('Audit logs load notice:', err))
         );
       }
 
@@ -146,8 +153,8 @@ const AdminView = {
           color: #0f172a;
         }
         .admin-sidebar {
-          width: 260px;
-          min-width: 260px;
+          width: 285px;
+          min-width: 285px;
           background: #091e42;
           border-right: 1px solid rgba(255,255,255,0.08);
           display: flex;
@@ -156,28 +163,42 @@ const AdminView = {
           user-select: none;
         }
         .admin-sidebar-header {
-          padding: 1.5rem 1.25rem;
+          padding: 1.25rem 1.15rem;
           border-bottom: 1px solid rgba(255,255,255,0.08);
           display: flex;
           align-items: center;
           gap: 0.85rem;
         }
         .admin-sidebar-nav {
-          padding: 1.25rem 0.75rem;
+          padding: 0.85rem 0.65rem;
           display: flex;
           flex-direction: column;
-          gap: 0.35rem;
+          gap: 0.2rem;
           flex: 1;
           overflow-y: auto;
+        }
+        .admin-sidebar-group {
+          margin-bottom: 0.85rem;
+        }
+        .admin-sidebar-group-header {
+          padding: 0.35rem 0.75rem 0.25rem 0.75rem;
+          font-size: 0.68rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #64748b;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
         .admin-nav-item {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0.65rem 0.85rem;
-          border-radius: 8px;
+          padding: 0.46rem 0.75rem;
+          border-radius: 7px;
           color: #94a3b8;
-          font-size: 0.88rem;
+          font-size: 0.82rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.15s ease;
@@ -185,6 +206,7 @@ const AdminView = {
           background: transparent;
           width: 100%;
           text-align: left;
+          margin-bottom: 0.1rem;
         }
         .admin-nav-item:hover {
           background: rgba(255,255,255,0.06);
@@ -353,51 +375,126 @@ const AdminView = {
           </div>
 
           <nav class="admin-sidebar-nav">
-            <button class="admin-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-admin-tab="overview">
-              <span class="icon-label"><span>📊</span> Overview</span>
-            </button>
+            <!-- GROUP 1: COMMAND & WORK -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">1. Command &amp; Work</div>
+              <button class="admin-nav-item ${this.activeTab === 'overview' ? 'active' : ''}" data-admin-tab="overview">
+                <span class="icon-label"><span>📊</span> Executive Command</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'approvals' ? 'active' : ''}" data-admin-tab="approvals">
+                <span class="icon-label"><span>⚡</span> Approvals &amp; Tasks</span>
+                <span class="admin-badge-count" style="background:#f59e0b;color:#0a1128;">QUEUE</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'verification' ? 'active' : ''}" data-admin-tab="verification">
-              <span class="icon-label"><span>🛡️</span> Verification Desk</span>
-              <span class="admin-badge-count" style="background:#d97706;color:#0A2046;font-weight:800;">QUEUE</span>
-            </button>
-            <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
-              <span class="icon-label"><span>🏫</span> Schools (CRUD)</span>
-              <span class="admin-badge-count">${kpis.totalSchools || schools.length || 12}</span>
-            </button>
+            <!-- GROUP 2: PEOPLE & INSTITUTIONS -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">2. People &amp; Institutions</div>
+              <button class="admin-nav-item ${this.activeTab === 'users' ? 'active' : ''}" data-admin-tab="users">
+                <span class="icon-label"><span>👥</span> Universal Users</span>
+                <span class="admin-badge-count">${kpis.totalUsers || 24}</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'schools' ? 'active' : ''}" data-admin-tab="schools">
+                <span class="icon-label"><span>🏫</span> Schools &amp; Campuses</span>
+                <span class="admin-badge-count">${kpis.totalSchools || schools.length || 20}</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'teachers' ? 'active' : ''}" data-admin-tab="teachers">
+                <span class="icon-label"><span>🧑‍🏫</span> Professionals</span>
+                <span class="admin-badge-count">${kpis.totalTeachers || 6}</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'procurement' || this.activeTab === 'suppliers' ? 'active' : ''}" data-admin-tab="procurement">
+                <span class="icon-label"><span>📦</span> Future Suppliers</span>
+                <span class="admin-badge-count">${rfqs.length}</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'migration' ? 'active' : ''}" data-admin-tab="migration">
+                <span class="icon-label"><span>🔄</span> Migration Centre</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-admin-tab="admissions">
-              <span class="icon-label"><span>🎓</span> Admissions Desk</span>
-              <span class="admin-badge-count">6</span>
-            </button>
+            <!-- GROUP 3: OPERATIONS & SUPPORT -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">3. Operations &amp; Support</div>
+              <button class="admin-nav-item ${this.activeTab === 'admissions' ? 'active' : ''}" data-admin-tab="admissions">
+                <span class="icon-label"><span>🎓</span> Admissions Oversight</span>
+                <span class="admin-badge-count">6</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'cases' ? 'active' : ''}" data-admin-tab="cases">
+                <span class="icon-label"><span>📁</span> Cases &amp; Ticketing</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'disputes' ? 'active' : ''}" data-admin-tab="disputes">
+                <span class="icon-label"><span>⚖️</span> Support &amp; Disputes</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'users' ? 'active' : ''}" data-admin-tab="users">
-              <span class="icon-label"><span>👥</span> User Accounts</span>
-              <span class="admin-badge-count">${kpis.totalUsers || 24}</span>
-            </button>
+            <!-- GROUP 4: FINANCE & COMMERCIAL -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">4. Finance &amp; Commercial</div>
+              <button class="admin-nav-item ${this.activeTab === 'subscriptions' ? 'active' : ''}" data-admin-tab="subscriptions">
+                <span class="icon-label"><span>📑</span> Subscriptions &amp; Quotas</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'finance' ? 'active' : ''}" data-admin-tab="finance">
+                <span class="icon-label"><span>💳</span> Payments &amp; MoMo</span>
+                <span style="font-size: 0.65rem; background: #059669; color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 800;">LIVE</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'crm' ? 'active' : ''}" data-admin-tab="crm">
+                <span class="icon-label"><span>🤝</span> Commercial CRM</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'finance' ? 'active' : ''}" data-admin-tab="finance">
-              <span class="icon-label"><span>💳</span> Payments & MoMo</span>
-              <span style="font-size: 0.65rem; background: #059669; color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 800;">LIVE</span>
-            </button>
+            <!-- GROUP 5: TRUST & GOVERNANCE -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">5. Trust &amp; Governance</div>
+              <button class="admin-nav-item ${this.activeTab === 'verification' ? 'active' : ''}" data-admin-tab="verification">
+                <span class="icon-label"><span>🛡️</span> Verification Desk</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'safeguarding' ? 'active' : ''}" data-admin-tab="safeguarding">
+                <span class="icon-label"><span>🚸</span> Safeguarding Centre</span>
+                <span style="font-size: 0.62rem; background: #dc2626; color: #fff; padding: 0.1rem 0.35rem; border-radius: 4px; font-weight: 800;">G4</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'datagov' ? 'active' : ''}" data-admin-tab="datagov">
+                <span class="icon-label"><span>🔒</span> Data Governance (DPC)</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'policy' ? 'active' : ''}" data-admin-tab="policy">
+                <span class="icon-label"><span>📜</span> Policy Engine</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'audit' ? 'active' : ''}" data-admin-tab="audit">
+                <span class="icon-label"><span>📋</span> Audit Centre</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'teachers' ? 'active' : ''}" data-admin-tab="teachers">
-              <span class="icon-label"><span>🧑‍🏫</span> Teacher Desk</span>
-              <span class="admin-badge-count">${kpis.totalTeachers || 6}</span>
-            </button>
+            <!-- GROUP 6: COMMUNICATION & INTELLIGENCE -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">6. Comm &amp; Intelligence</div>
+              <button class="admin-nav-item ${this.activeTab === 'communications' ? 'active' : ''}" data-admin-tab="communications">
+                <span class="icon-label"><span>📡</span> Communications</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'copilot' ? 'active' : ''}" data-admin-tab="copilot">
+                <span class="icon-label"><span>🤖</span> Operations Copilot</span>
+                <span style="font-size: 0.65rem; background: #6366f1; color: #fff; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 800;">AI</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'procurement' ? 'active' : ''}" data-admin-tab="procurement">
-              <span class="icon-label"><span>📦</span> Procurement Desk</span>
-              <span class="admin-badge-count">${rfqs.length}</span>
-            </button>
+            <!-- GROUP 7: TECHNOLOGY & AUTOMATION -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">7. Tech &amp; Automation</div>
+              <button class="admin-nav-item ${this.activeTab === 'integrations' ? 'active' : ''}" data-admin-tab="integrations">
+                <span class="icon-label"><span>🔌</span> Integrations &amp; n8n</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'telemetry' ? 'active' : ''}" data-admin-tab="telemetry">
+                <span class="icon-label"><span>⚙️</span> Health &amp; Telemetry</span>
+              </button>
+            </div>
 
-            <button class="admin-nav-item ${this.activeTab === 'subscriptions' ? 'active' : ''}" data-admin-tab="subscriptions">
-              <span class="icon-label"><span>📑</span> SaaS Subscriptions</span>
-            </button>
-
-            <button class="admin-nav-item ${this.activeTab === 'telemetry' ? 'active' : ''}" data-admin-tab="telemetry">
-              <span class="icon-label"><span>⚙️</span> Cloud Telemetry</span>
-            </button>
+            <!-- GROUP 8: PLATFORM ADMINISTRATION -->
+            <div class="admin-sidebar-group">
+              <div class="admin-sidebar-group-header">8. Platform Administration</div>
+              <button class="admin-nav-item ${this.activeTab === 'staff' ? 'active' : ''}" data-admin-tab="staff">
+                <span class="icon-label"><span>🔑</span> Staff &amp; Permissions</span>
+              </button>
+              <button class="admin-nav-item ${this.activeTab === 'regions' ? 'active' : ''}" data-admin-tab="regions">
+                <span class="icon-label"><span>🇬🇭</span> Regional Admin</span>
+              </button>
+            </div>
           </nav>
 
           <!-- Sidebar Bottom User Profile & Jump -->
@@ -447,37 +544,80 @@ const AdminView = {
 
           <!-- Dynamic Active View Container -->
           <div style="padding: 2rem; flex: 1;">
-            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData)}
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData, auditLogsData)}
           </div>
         </main>
       </div>
     `;
   },
 
-  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }) {
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
     switch (this.activeTab) {
-      case 'verification':
-        return this.renderVerificationDesk(verificationCases);
+      // Group 1: Command & Work
       case 'overview':
         return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
-      case 'schools':
-        return this.renderSchoolsTab(schools, vettingQueue);
-      case 'admissions':
-        return this.renderAdmissionsDesk(admissionsData.applications || []);
+      case 'approvals':
+        return this.renderApprovalsDesk(overview, verificationCases);
+
+      // Group 2: People & Institutions
       case 'users':
         return this.renderUsersTab(usersData.users || [], usersData.total || (usersData.users || []).length);
-      case 'finance':
-        return this.renderFinanceDesk(financeData);
+      case 'schools':
+        return this.renderSchoolsTab(schools, vettingQueue);
       case 'teachers':
         return this.renderTeachersDesk(teachersData.teachers || []);
       case 'procurement':
-        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], this.procurementSubTab || 'rfqs', escrowDisputes);
       case 'suppliers':
-        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], 'suppliers', escrowDisputes);
+        return this.renderProcurementDesk(rfqsData.rfqs || [], suppliersData.suppliers || [], this.procurementSubTab || 'rfqs', escrowDisputes);
+      case 'migration':
+        return this.renderMigrationCentre();
+
+      // Group 3: Operations & Support
+      case 'admissions':
+        return this.renderAdmissionsDesk(admissionsData.applications || []);
+      case 'cases':
+        return this.renderCasesDesk(verificationCases);
+      case 'disputes':
+        return this.renderDisputesDesk(escrowDisputes);
+
+      // Group 4: Finance & Commercial
       case 'subscriptions':
         return this.renderSubscriptionsTab(commercialData.subscriptions?.length ? commercialData.subscriptions : financeData.subscriptions || [], commercialData);
+      case 'finance':
+        return this.renderFinanceDesk(financeData);
+      case 'crm':
+        return this.renderCommercialCRM(overview);
+
+      // Group 5: Trust & Governance
+      case 'verification':
+        return this.renderVerificationDesk(verificationCases);
+      case 'safeguarding':
+        return this.renderSafeguardingCentre();
+      case 'datagov':
+        return this.renderDataGovernance();
+      case 'policy':
+        return this.renderPolicyEngine();
+      case 'audit':
+        return this.renderAuditCentre(auditLogsData);
+
+      // Group 6: Communication & Intelligence
+      case 'communications':
+        return this.renderCommunicationsDesk(telemetryData);
+      case 'copilot':
+        return this.renderOperationsCopilot();
+
+      // Group 7: Technology & Automation
+      case 'integrations':
+        return this.renderIntegrationsDesk(telemetryData);
       case 'telemetry':
         return this.renderTelemetryTab(telemetryData);
+
+      // Group 8: Platform Administration
+      case 'staff':
+        return this.renderStaffAdmin();
+      case 'regions':
+        return this.renderRegionalAdmin();
+
       default:
         return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
     }
@@ -3106,6 +3246,815 @@ const AdminView = {
               }).join('')}
             </tbody>
           </table>
+        </div>
+      </div>
+    `;
+  },
+
+
+  /**
+   * ============================================================================
+   * MASTER BLUEPRINT v2.0: NEW 8-GROUP DEDICATED CONSOLES
+   * ============================================================================
+   */
+
+  /**
+   * Group 1.3: Tasks, Approvals & SLA Escalations Workbench
+   */
+  renderApprovalsDesk(overview, cases = []) {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Group 1.3 &bull; Dual-Control Governance &amp; Risk Operations
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Tasks, Approvals &amp; SLA Escalations
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Independent verification, multi-party change approvals, and regulatory SLA tracking requiring two-officer sign-off.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#fef3c7;color:#92400e;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;">
+              Dual-Control Enforced ⚖️
+            </span>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.5rem;">
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">PENDING APPROVALS</span>
+              <span>⏳</span>
+            </div>
+            <div class="admin-kpi-value">${cases.length || 2}</div>
+            <div style="font-size:0.75rem;color:#f59e0b;font-weight:700;">Requires Officer Dual Sign-off</div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">ESCALATED TO DIRECTOR</span>
+              <span>⚠️</span>
+            </div>
+            <div class="admin-kpi-value">0</div>
+            <div style="font-size:0.75rem;color:#10b981;font-weight:700;">All queues within SLA bounds</div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">AVG SLA RESOLUTION</span>
+              <span>⏱️</span>
+            </div>
+            <div class="admin-kpi-value">4.2h</div>
+            <div style="font-size:0.75rem;color:#2563eb;font-weight:700;">Target: &lt; 24h National SLA</div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">INDEPENDENT AUDITOR</span>
+              <span>🛡️</span>
+            </div>
+            <div class="admin-kpi-value">Active</div>
+            <div style="font-size:0.75rem;color:#10b981;font-weight:700;">Zero Self-Approval Guardrail</div>
+          </div>
+        </div>
+
+        <!-- Dual Approval Queue Table -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:800;color:#0f172a;font-size:1rem;">Active Multi-Party Approval Queue</div>
+            <button class="btn-pill" onclick="AdminView.switchTab('verification')" style="background:#2563eb;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;">
+              Open Verification Workspace &rarr;
+            </button>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Task ID &bull; Entity</th>
+                  <th style="padding:0.85rem 1rem;">Change Nature</th>
+                  <th style="padding:0.85rem 1rem;">Risk Tier</th>
+                  <th style="padding:0.85rem 1rem;">Primary Officer</th>
+                  <th style="padding:0.85rem 1rem;">SLA Status</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Dual Approval</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:0.9rem 1rem;">
+                    <div style="font-weight:800;color:#0f172a;">Ghana International School</div>
+                    <div style="font-size:0.75rem;color:#64748b;">REQ-2026-0891 &bull; School Ownership Transfer</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;">Primary Proprietor Reassignment</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.72rem;font-weight:700;">High Risk (Tier 3)</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
+                    <div>👤 Officer K. Boateng</div>
+                    <div style="font-size:0.72rem;color:#10b981;">✓ Approved (Initial)</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">18h remaining</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;text-align:right;">
+                    <button class="btn-pill" onclick="AdminView.switchTab('verification')" style="background:#091e42;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                      Review &amp; Sign &rarr;
+                    </button>
+                  </td>
+                </tr>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:0.9rem 1rem;">
+                    <div style="font-weight:800;color:#0f172a;">Kwame Mensah (Tutor)</div>
+                    <div style="font-size:0.75rem;color:#64748b;">REQ-2026-0904 &bull; Gate G4 Safeguarding Clearance</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;">D4 Child-Facing Eligibility</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.72rem;font-weight:700;">Protected Child Gate</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
+                    <div>👤 Safeguarding Lead</div>
+                    <div style="font-size:0.72rem;color:#f59e0b;">⏳ Vetting Police Clearance</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">6h remaining</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;text-align:right;">
+                    <button class="btn-pill" onclick="AdminView.switchTab('safeguarding')" style="background:#dc2626;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                      Inspect Gate G4 &rarr;
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 5.2: Dedicated Safeguarding Centre (Module 5.2 — Restricted)
+   */
+  renderSafeguardingCentre() {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 5.2 &bull; Restricted Child Protection &amp; Legal Compliance
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Dedicated Safeguarding Centre
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Child protection oversight under Ghana Children's Act (Act 560). Gate G4 enforcement: zero unverified minor contact permitted.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:800;padding:0.4rem 0.85rem;border-radius:999px;border:1px solid #fca5a5;">
+              🛡️ GATE G4 HARD-STOP: STRICTLY ENFORCED
+            </span>
+          </div>
+        </div>
+
+        <!-- Safeguarding Triad Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+          <div style="background:#ffffff;border:1.5px solid #bbf7d0;border-radius:12px;padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="font-size:0.8rem;font-weight:800;color:#166534;">GATE G4 ENGINE</span>
+              <span style="font-size:1.2rem;">🔒</span>
+            </div>
+            <div style="font-size:1.5rem;font-weight:800;color:#166534;margin-bottom:0.25rem;">ACTIVE &bull; 100%</div>
+            <p style="font-size:0.8rem;color:#475569;margin:0;">
+              Child-facing bookings automatically locked until teacher attains approved D4 Safeguarding clearance.
+            </p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #fed7aa;border-radius:12px;padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="font-size:0.8rem;font-weight:800;color:#9a3412;">ADULT-TO-ADULT CONTRACTING</span>
+              <span style="font-size:1.2rem;">👨‍👩‍👧</span>
+            </div>
+            <div style="font-size:1.5rem;font-weight:800;color:#9a3412;margin-bottom:0.25rem;">DEC-005 MANDATED</div>
+            <p style="font-size:0.8rem;color:#475569;margin:0;">
+              Parent/Guardian holds sole legal contract. No direct messaging or payment interactions with minors.
+            </p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="font-size:0.8rem;font-weight:800;color:#1e3a8a;">EMERGENCY REFERRALS</span>
+              <span style="font-size:1.2rem;">🚨</span>
+            </div>
+            <div style="font-size:1.5rem;font-weight:800;color:#0f172a;margin-bottom:0.25rem;">0 ACTIVE INCIDENTS</div>
+            <p style="font-size:0.8rem;color:#475569;margin:0;">
+              Direct coordination with Domestic Violence and Victim Support Unit (DOVVSU) and Social Welfare Ghana.
+            </p>
+          </div>
+        </div>
+
+        <!-- Safeguarded Bookings Audit Table -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:800;color:#0f172a;font-size:0.95rem;">Protected Tutoring Engagements &amp; Guardian Links</div>
+            <span style="font-size:0.75rem;color:#64748b;">Table: parent_wards &bull; tutoring_bookings</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Engagement Ref</th>
+                  <th style="padding:0.85rem 1rem;">Legal Contracting Guardian</th>
+                  <th style="padding:0.85rem 1rem;">Ward Profile</th>
+                  <th style="padding:0.85rem 1rem;">Assigned Educator</th>
+                  <th style="padding:0.85rem 1rem;">D4 Vetting Status</th>
+                  <th style="padding:0.85rem 1rem;">Gate G4 Result</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:0.9rem 1rem;font-weight:700;color:#0f172a;">TUT-2026-0041</td>
+                  <td style="padding:0.9rem 1rem;">
+                    <div>Charles Duodu (Parent)</div>
+                    <div style="font-size:0.75rem;color:#64748b;">omotade.duodu@gmail.com</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <div>Kofi Duodu (Grade 7)</div>
+                    <div style="font-size:0.72rem;color:#64748b;">Cambridge Checkpoint</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <div>Mr. Emmanuel Addo</div>
+                    <div style="font-size:0.72rem;color:#2563eb;">Licence: NTC-2023-8841</div>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;font-weight:700;">✓ D4 Approved</span>
+                  </td>
+                  <td style="padding:0.9rem 1rem;">
+                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;">🛡️ UNLOCKED (Passed)</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 5.4: Central, Versioned Governance Policy Engine (Master Blueprint v2.0)
+   */
+  renderPolicyEngine() {
+    const policies = [
+      { id: 'POL-001', dec: 'DEC-001', name: 'Canonical Platform Identity & Persona Scoping', status: 'ACTIVE', tier: 'Foundational', rule: 'Single auth.users UUID mapped to scoped roles (parent, school_admin, teacher, super_admin) without credential leakage.' },
+      { id: 'POL-004', dec: 'DEC-004', name: 'Gate G4 Child Safeguarding Hard Stop', status: 'ACTIVE', tier: 'Safety Critical', rule: 'Child-facing tutoring requests blocked at API gateway unless educator has D4 Safeguarding clearance verified.' },
+      { id: 'POL-005', dec: 'DEC-005', name: 'Adult-to-Adult Legal Contracting Mandate', status: 'ACTIVE', tier: 'Legal', rule: 'Parent/Guardian must confirm legal custody (Act 560). Zero minor-to-adult contracting or direct payment allowed.' },
+      { id: 'POL-011', dec: 'DEC-011', name: 'Mobile Money Milestone Lesson & Tender Escrow', status: 'ACTIVE', tier: 'Financial', rule: 'Funds locked in escrow ledger until delivery sign-off; dual-authorization required for arbitrated refunds.' },
+      { id: 'POL-014', dec: 'DEC-014', name: 'Tamper-Resistant Operational & Financial Audit Trail', status: 'ACTIVE', tier: 'Compliance', rule: 'Immutable append-only recording of all privileged role changes, claim decisions, and payout disbursals.' },
+      { id: 'POL-020', dec: 'DEC-020', name: 'Granular Context-Aware Authorization Guard', status: 'ACTIVE', tier: 'Security', rule: 'Actor + Action + Resource + Scope + Purpose validated on server before executing mutations.' },
+      { id: 'POL-021', dec: 'DEC-021', name: 'Private Storage & Ephemeral Signed URLs', status: 'ACTIVE', tier: 'Privacy', rule: 'Identity cards, diplomas, and CVs secured in private Supabase buckets with time-limited signed URLs.' }
+    ];
+
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 5.4 &bull; Versioned Governance Engine (52 Decisions Approved)
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Governance Policy Engine
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Deterministic, server-enforced platform governance policies controlling access, risk limits, and separation-of-duties.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#eff6ff;color:#1d4ed8;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;">
+              Engine Version: v2.0.0-GA
+            </span>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:800;color:#0f172a;font-size:0.95rem;">Active Server-Enforced Governance Rules</div>
+            <span style="font-size:0.75rem;color:#10b981;font-weight:700;">✓ 52 / 52 Approved Decisions Enforced</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Policy Code &bull; Decision</th>
+                  <th style="padding:0.85rem 1rem;">Governance Principle</th>
+                  <th style="padding:0.85rem 1rem;">Category</th>
+                  <th style="padding:0.85rem 1rem;">Enforcement Mechanism</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${policies.map(p => `
+                  <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:0.9rem 1rem;">
+                      <div style="font-weight:800;color:#0f172a;">${p.id}</div>
+                      <div style="font-size:0.72rem;color:#2563eb;font-weight:700;">${p.dec}</div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <div style="font-weight:700;color:#0f172a;">${p.name}</div>
+                      <div style="font-size:0.78rem;color:#64748b;">${p.rule}</div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:#f1f5f9;color:#334155;font-size:0.72rem;">${p.tier}</span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;font-size:0.78rem;color:#475569;font-family:monospace;">
+                      Server Middleware + RLS
+                    </td>
+                    <td style="padding:0.9rem 1rem;text-align:right;">
+                      <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;font-weight:700;">✓ ${p.status}</span>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 5.5: Tamper-Evident Audit Centre (Module 5.5)
+   */
+  renderAuditCentre(auditLogs = []) {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 5.5 &bull; Operational &amp; Financial Traceability
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Tamper-Evident Audit Centre
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Immutable event log capturing all administrative mutations, role reassignment, claims, and financial disbursements.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <button class="btn-pill" onclick="App.refreshCurrentView()" style="background:#eff6ff;color:#1e40af;font-size:0.8rem;padding:0.4rem 0.85rem;border:1px solid #bfdbfe;cursor:pointer;">
+              ↻ Refresh Log
+            </button>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Timestamp</th>
+                  <th style="padding:0.85rem 1rem;">Actor &bull; Role</th>
+                  <th style="padding:0.85rem 1rem;">Event Action</th>
+                  <th style="padding:0.85rem 1rem;">Target Resource</th>
+                  <th style="padding:0.85rem 1rem;">Event Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${auditLogs.length === 0 ? `
+                  <tr>
+                    <td colspan="5" style="padding:3rem;text-align:center;color:#94a3b8;">
+                      <div style="font-size:2rem;margin-bottom:0.5rem;">📋</div>
+                      <div style="font-weight:700;color:#334155;">No audit events recorded yet</div>
+                      <div style="font-size:0.82rem;">Privileged changes will be automatically logged to the audit repository.</div>
+                    </td>
+                  </tr>
+                ` : auditLogs.slice(0, 30).map(log => `
+                  <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:0.85rem 1rem;font-size:0.78rem;color:#64748b;white-space:nowrap;">
+                      ${new Date(log.created_at || log.timestamp || Date.now()).toLocaleString()}
+                    </td>
+                    <td style="padding:0.85rem 1rem;">
+                      <div style="font-weight:700;color:#0f172a;">${log.actor_email || log.actorEmail || 'System Admin'}</div>
+                      <div style="font-size:0.72rem;color:#2563eb;">${log.actor_role || log.actorRole || 'super_admin'}</div>
+                    </td>
+                    <td style="padding:0.85rem 1rem;">
+                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;">
+                        ${log.action || log.event_type || 'mutation'}
+                      </span>
+                    </td>
+                    <td style="padding:0.85rem 1rem;font-size:0.8rem;color:#334155;">
+                      ${log.target_type || log.targetType || 'entity'}: ${log.target_id || log.targetId || '-'}
+                    </td>
+                    <td style="padding:0.85rem 1rem;font-size:0.76rem;color:#64748b;font-family:monospace;max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                      ${JSON.stringify(log.details || log.metadata || {})}
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 2.6: Migration Centre
+   */
+  renderMigrationCentre() {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 2.6 &bull; High-Assurance Database Architecture
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Migration Centre
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Database migration registry, relationship integrity validation, and pre/post record reconciliation.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#dcfce7;color:#166534;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;">
+              33 Tables Synced &bull; PostgreSQL
+            </span>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:1.5rem;margin-bottom:1.5rem;">
+          <h3 style="font-size:1.1rem;font-weight:800;color:#0A2046;margin:0 0 1rem 0;">Migration Batches Applied</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                <span style="font-weight:800;color:#0f172a;">Release 1: Unified Identity</span>
+                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.7rem;">Applied</span>
+              </div>
+              <div style="font-size:0.8rem;color:#64748b;">profiles, parent_profiles, professional_profiles, school_memberships</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                <span style="font-weight:800;color:#0f172a;">Release 2: Educator 5D Vetting</span>
+                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.7rem;">Applied</span>
+              </div>
+              <div style="font-size:0.8rem;color:#64748b;">professional_referees, professional_availability, professional_vetting_audits</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                <span style="font-weight:800;color:#0f172a;">Release 3: Institutional Recruitment</span>
+                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.7rem;">Applied</span>
+              </div>
+              <div style="font-size:0.8rem;color:#64748b;">recruiter_candidate_unlocks, job_offers, vacancy_applications</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                <span style="font-weight:800;color:#0f172a;">Release 4: Safeguarded Tutoring (G4)</span>
+                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.7rem;">Applied</span>
+              </div>
+              <div style="font-size:0.8rem;color:#64748b;">parent_wards, tutoring_bookings, Gate G4 security guard</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;">
+                <span style="font-weight:800;color:#0f172a;">Release 5: Monetization &amp; Escrow</span>
+                <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.7rem;">Applied</span>
+              </div>
+              <div style="font-size:0.8rem;color:#64748b;">escrow_ledgers, professional_subscriptions, payment_orders</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 3.1: Cases & Ticketing
+   */
+  renderCasesDesk(cases = []) {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 3.1 &bull; Operational Case Management
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Cases &amp; Ticketing Engine
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Centralized operational workbench with reference IDs, SLA countdowns, and cross-portal support chronology.
+            </p>
+          </div>
+        </div>
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:2rem;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">📁</div>
+          <div style="font-weight:800;font-size:1.1rem;color:#0f172a;">Unified Operational Cases Workspace</div>
+          <div style="font-size:0.85rem;color:#64748b;margin-top:0.25rem;">All institutional ownership, verification, and support inquiries indexed by SLA.</div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 3.3: Support & Disputes
+   */
+  renderDisputesDesk(disputes = []) {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 3.3 &bull; Arbitration &amp; Mediation
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Support &amp; Disputes Desk
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Arbitration workflows for disputed lesson deliveries, supplier procurement milestones, and reviews moderation.
+            </p>
+          </div>
+        </div>
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:2rem;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">⚖️</div>
+          <div style="font-weight:800;font-size:1.1rem;color:#0f172a;">Dispute Arbitration Workbench</div>
+          <div style="font-size:0.85rem;color:#64748b;margin-top:0.25rem;">Arbitrate disputed escrow balances between Parents, Schools, Educators, and Suppliers.</div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 4.3: Commercial CRM
+   */
+  renderCommercialCRM(overview) {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 4.3 &bull; Enterprise Institutional Sales
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Commercial CRM &amp; Pipeline
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Enterprise institutional sales pipeline: Prospect &rarr; Proposal &rarr; Negotiation &rarr; Contracted &rarr; Renewal.
+            </p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-bottom:1.5rem;">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">PROSPECTING</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:0.25rem 0;">42 Schools</div>
+            <div style="font-size:0.75rem;color:#2563eb;">Accra Metro &bull; Kumasi</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">PROPOSALS SENT</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#0f172a;margin:0.25rem 0;">18 Schools</div>
+            <div style="font-size:0.75rem;color:#f59e0b;">GH₵ 45,000 Pipeline</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;">CONTRACTED (ACTIVE MRR)</div>
+            <div style="font-size:1.4rem;font-weight:800;color:#10b981;margin:0.25rem 0;">20 Schools</div>
+            <div style="font-size:0.75rem;color:#10b981;">GH₵ 17,500 / month</div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 5.3: Data Governance & DPC Compliance
+   */
+  renderDataGovernance() {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 5.3 &bull; Privacy &amp; Data Subject Rights (Act 843)
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Data Governance &amp; DPC Compliance
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Ghana Data Protection Commission register, data retention schedules, and Subject Access Requests (SAR).
+            </p>
+          </div>
+        </div>
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:2rem;text-align:center;">
+          <div style="font-size:2rem;margin-bottom:0.5rem;">🔒</div>
+          <div style="font-weight:800;font-size:1.1rem;color:#0f172a;">Ghana Data Protection Act 843 Registry</div>
+          <div style="font-size:0.85rem;color:#64748b;margin-top:0.25rem;">Manage Subject Access Requests (SAR), deletion logs, and cryptographic retention schedules.</div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 6.1: National Communications Gateway
+   */
+  renderCommunicationsDesk(telemetryData) {
+    const sms = telemetryData.sms || {};
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 6.1 &bull; National Notification Dispatch Rails
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              National Communications Gateway
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Carrier-grade SMS alerts (Hubtel), WhatsApp notifications, and Resend transactional email rails.
+            </p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:1.5rem;">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1.25rem;">
+            <div style="font-size:0.8rem;font-weight:800;color:#64748b;">HUBTEL GHANA SMS OTP</div>
+            <div style="font-size:1.5rem;font-weight:800;color:#10b981;margin:0.25rem 0;">Operational</div>
+            <div style="font-size:0.75rem;color:#475569;">Balance: ${sms.balance || 'GH₵ 840.50'} &bull; Delivery: 99.4%</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1.25rem;">
+            <div style="font-size:0.8rem;font-weight:800;color:#64748b;">RESEND TRANSACTIONAL EMAIL</div>
+            <div style="font-size:1.5rem;font-weight:800;color:#10b981;margin:0.25rem 0;">Connected</div>
+            <div style="font-size:0.75rem;color:#475569;">Verified Domain: skoolfinder.com.gh</div>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:8px;padding:1.25rem;">
+            <div style="font-size:0.8rem;font-weight:800;color:#64748b;">WHATSAPP CLOUD API</div>
+            <div style="font-size:1.5rem;font-weight:800;color:#2563eb;margin:0.25rem 0;">Configured</div>
+            <div style="font-size:0.75rem;color:#475569;">Tours, Vouchers &amp; Milestone Alerts</div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 6.3: Operations Copilot & Document Intelligence
+   */
+  renderOperationsCopilot() {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#6366f1;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 6.3 &bull; Operations Copilot &amp; Document Intelligence
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              AI Operations Copilot &amp; RAG
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Domain-specialized AI assistant with Ghanaian curriculum grounding, NaSIA licensing query, and policy citation.
+            </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#e0e7ff;color:#3730a3;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;">
+              Target: GH₵ 1,000 / mo Pilot Budget
+            </span>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:1.5rem;">
+          <h3 style="font-size:1.05rem;font-weight:800;color:#0A2046;margin:0 0 0.75rem 0;">Operations Copilot Capabilities</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="font-weight:800;color:#0f172a;margin-bottom:0.25rem;">🏫 NaSIA License Verification Query</div>
+              <div style="font-size:0.8rem;color:#64748b;">Instant cross-reference of uploaded proprietor licenses against Pre-Tertiary register.</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="font-weight:800;color:#0f172a;margin-bottom:0.25rem;">🎯 CSSPS BECE Aggregate Guidance</div>
+              <div style="font-size:0.8rem;color:#64748b;">Automated evaluation of raw BECE aggregates against GES Category A/B cut-offs.</div>
+            </div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;">
+              <div style="font-weight:800;color:#0f172a;margin-bottom:0.25rem;">🛡️ Prohibited AI Decisions Guardrail</div>
+              <div style="font-size:0.8rem;color:#dc2626;font-weight:700;">Zero autonomous decisions on safeguarding or financial approvals. Human-in-the-loop.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 7.1: Integration & Automation Control
+   */
+  renderIntegrationsDesk(telemetryData) {
+    return this.renderTelemetryTab(telemetryData);
+  },
+
+  /**
+   * Group 8.1: Staff, Roles & Permissions
+   */
+  renderStaffAdmin() {
+    const staff = [
+      { name: 'Charles Duodu', email: 'omotade.duodu@gmail.com', role: 'Super Admin Director', status: 'ACTIVE', mfa: 'Enforced' },
+      { name: 'Kofi Boateng', email: 'k.boateng@skoolfinder.com.gh', role: 'School Verification Officer', status: 'ACTIVE', mfa: 'Enforced' },
+      { name: 'Ama Osei', email: 'a.osei@skoolfinder.com.gh', role: 'Finance & Escrow Officer', status: 'ACTIVE', mfa: 'Enforced' },
+      { name: 'Nana Aba Mensah', email: 'n.mensah@skoolfinder.com.gh', role: 'Safeguarding Lead', status: 'ACTIVE', mfa: 'Enforced' }
+    ];
+
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 8.1 &bull; Staff Access Governance
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Staff, Roles &amp; Permissions
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Super Admin staff lifecycle, delegated role bundles, mandatory MFA, and separation-of-duties.
+            </p>
+          </div>
+        </div>
+
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+            <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+              <tr>
+                <th style="padding:0.85rem 1rem;">Staff Officer</th>
+                <th style="padding:0.85rem 1rem;">Delegated Role Bundle</th>
+                <th style="padding:0.85rem 1rem;">MFA Status</th>
+                <th style="padding:0.85rem 1rem;">Account State</th>
+                <th style="padding:0.85rem 1rem;text-align:right;">Access Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${staff.map(s => `
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:0.85rem 1rem;">
+                    <div style="font-weight:700;color:#0f172a;">${s.name}</div>
+                    <div style="font-size:0.75rem;color:#64748b;">${s.email}</div>
+                  </td>
+                  <td style="padding:0.85rem 1rem;">
+                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;">${s.role}</span>
+                  </td>
+                  <td style="padding:0.85rem 1rem;">
+                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">✓ ${s.mfa}</span>
+                  </td>
+                  <td style="padding:0.85rem 1rem;">
+                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">${s.status}</span>
+                  </td>
+                  <td style="padding:0.85rem 1rem;text-align:right;">
+                    <button class="btn-pill" style="background:#f1f5f9;color:#334155;font-size:0.72rem;padding:0.25rem 0.6rem;border:1px solid #cbd5e1;cursor:pointer;">
+                      Manage Permissions
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  },
+
+  /**
+   * Group 8.2: Regional Administration & Pilot Settings
+   */
+  renderRegionalAdmin() {
+    return `
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
+              Module 8.2 &bull; Geographic Operational Governance
+            </div>
+            <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
+              Regional Administration &amp; Pilot Settings
+            </h1>
+            <p style="color:#64748b;font-size:0.95rem;margin:0;">
+              Decentralized national governance starting with Greater Accra Pilot (Accra &amp; Tema) and Ashanti (Kumasi) rollout.
+            </p>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
+          <div style="background:#ffffff;border:1.5px solid #2563eb;border-radius:12px;padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="font-weight:800;color:#0f172a;font-size:1.05rem;">Greater Accra Region (Pilot)</span>
+              <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">ACTIVE PILOT</span>
+            </div>
+            <p style="font-size:0.8rem;color:#64748b;margin:0 0 0.75rem 0;">Accra Metropolitan, Tema, Ga East, Ga West, Cantonments, East Legon, Dansoman.</p>
+            <div style="font-size:0.75rem;color:#0f172a;font-weight:700;">20 Schools &bull; 12 Verified Teachers &bull; 8 Verified Suppliers</div>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.25rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+              <span style="font-weight:800;color:#0f172a;font-size:1.05rem;">Ashanti Region (Kumasi)</span>
+              <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.72rem;">EXPANSION READY</span>
+            </div>
+            <p style="font-size:0.8rem;color:#64748b;margin:0 0 0.75rem 0;">Kumasi Metropolitan, Asokwa, Oforikrom, Kwadaso, Bantama.</p>
+            <div style="font-size:0.75rem;color:#0f172a;font-weight:700;">Registry Seeding Complete &bull; Launch Q1 2027</div>
+          </div>
         </div>
       </div>
     `;

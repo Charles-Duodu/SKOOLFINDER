@@ -5324,10 +5324,23 @@ const Modals = {
           <!-- PANE 1: Sign In                                           -->
           <!-- ========================================================= -->
           <div id="admin-pane-signin" style="display: ${mode === 'signin' ? 'block' : 'none'};">
+            <!-- Quick-Launch Card for Charles Duodu (Platform Owner) -->
+            <div style="background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1.5px solid #86efac; border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.15rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;">
+              <div>
+                <div style="font-size: 0.86rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 0.35rem;">
+                  <span>👤</span> Charles Duodu
+                </div>
+                <div style="font-size: 0.74rem; color: #15803d; font-family: monospace;">omotade.duodu@gmail.com &bull; Super Admin</div>
+              </div>
+              <button type="button" id="btn-quick-admin-login" class="btn-pill" style="background: #166534; color: #ffffff; font-size: 0.82rem; font-weight: 800; padding: 0.5rem 0.95rem; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 6px rgba(22,101,52,0.25); display: flex; align-items: center; gap: 0.35rem; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <span>⚡</span> 1-Click Launch &rarr;
+              </button>
+            </div>
+
             <form id="form-admin-auth-login">
               <div class="form-group" style="margin-bottom: 0.85rem;">
                 <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin-bottom: 0.3rem; display: block;">Email Address *</label>
-                <input type="email" id="admin-login-email" class="form-input" required style="width: 100%; padding: 0.68rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="email" id="admin-login-email" class="form-input" value="omotade.duodu@gmail.com" required style="width: 100%; padding: 0.68rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <div class="form-group" style="margin-bottom: 1.15rem;">
@@ -5335,7 +5348,7 @@ const Modals = {
                   <label class="form-label" style="font-size: 0.84rem; font-weight: 700; color: #1e293b; margin: 0;">Password *</label>
                   <button type="button" id="btn-toggle-admin-login-pass" style="background: none; border: none; color: #2563eb; font-size: 0.78rem; cursor: pointer; font-weight: 700;">Show</button>
                 </div>
-                <input type="password" id="admin-login-password" class="form-input" required style="width: 100%; padding: 0.68rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
+                <input type="password" id="admin-login-password" class="form-input" value="Omotade.kofi7" required style="width: 100%; padding: 0.68rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#2563eb'" onblur="this.style.borderColor='#cbd5e1'" />
               </div>
 
               <button type="submit" id="btn-admin-login-submit" class="btn-pill" style="width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.98rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: none; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 14px rgba(9,30,66,0.3); display: flex; align-items: center; gap: 0.5rem; transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
@@ -5439,6 +5452,37 @@ const Modals = {
     document.getElementById('admin-tab-btn-signup').onclick = () => setAdminMode('signup');
     document.getElementById('admin-switch-to-signup').onclick = () => setAdminMode('signup');
     document.getElementById('admin-switch-to-signin').onclick = () => setAdminMode('signin');
+
+    // 1-Click Launch as Charles Duodu (Super Admin)
+    const quickAdminBtn = document.getElementById('btn-quick-admin-login');
+    if (quickAdminBtn) {
+      quickAdminBtn.onclick = async () => {
+        quickAdminBtn.disabled = true;
+        quickAdminBtn.innerHTML = '<span>⏳</span> Launching Cockpit...';
+        try {
+          const res = await API.login('omotade.duodu@gmail.com', 'Omotade.kofi7');
+          State.setCurrentUser(res.user, res.token);
+          this.close();
+
+          if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+            document.getElementById('header-root').innerHTML = Navbar.render();
+            Navbar.attachEvents();
+          }
+
+          State.showToast(`🎉 Welcome back, ${res.user.name || 'Charles'}!`, 'success');
+
+          if (options.onSuccess) {
+            options.onSuccess(res.user);
+          } else {
+            App.navigate('admin');
+          }
+        } catch (err) {
+          quickAdminBtn.disabled = false;
+          quickAdminBtn.innerHTML = '<span>⚡</span> 1-Click Launch &rarr;';
+          State.showToast(err.message, 'error');
+        }
+      };
+    }
 
     // Toggle Sign In Password visibility
     const loginPass = document.getElementById('admin-login-password');

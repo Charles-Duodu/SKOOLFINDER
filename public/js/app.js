@@ -155,13 +155,17 @@ const App = {
           }
         } catch (err) {
           console.warn("Administrative session verification notice:", err.message);
-          State.setCurrentUser(null, null);
-          Modals.openLoginModal({
-            notice: "🛡️ Administrative re-authentication required.",
-            redirectView: 'admin'
-          });
-          viewName = 'home';
-          param = null;
+          if (err.message && (err.message.includes('429') || err.message.includes('Rate limit') || err.message.includes('Failed to fetch'))) {
+            // Transient rate limit or network issue; preserve session
+          } else {
+            State.setCurrentUser(null, null);
+            Modals.openLoginModal({
+              notice: "🛡️ Administrative re-authentication required.",
+              redirectView: 'admin'
+            });
+            viewName = 'home';
+            param = null;
+          }
         }
       }
     }
@@ -524,23 +528,28 @@ const App = {
 
     // Silent Session Verification (FN-08): Clean up expired JWTs automatically
     if (State.isAuthenticated() && typeof API !== 'undefined' && API.getMe) {
-      API.getMe().catch(() => {
-        console.warn("Session token expired or invalid; cleaning up stale session.");
-        State.setCurrentUser(null, null);
-        if (['schools', 'admin'].includes(State.currentView)) {
-          App.navigate('home');
-        } else if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
-          document.getElementById('header-root').innerHTML = Navbar.render();
-          Navbar.attachEvents();
+      API.getMe().catch((err) => {
+        // Only invalidate if the server explicitly rejected the token with 401 Unauthorized
+        if (err && (err.message?.includes('401') || err.message?.includes('Unauthorized') || err.message?.includes('Invalid or expired'))) {
+          console.warn("Session token expired or invalid; cleaning up stale session.");
+          State.setCurrentUser(null, null);
+          if (['schools', 'admin'].includes(State.currentView)) {
+            App.navigate('home');
+          } else if (typeof Navbar !== 'undefined' && document.getElementById('header-root')) {
+            document.getElementById('header-root').innerHTML = Navbar.render();
+            Navbar.attachEvents();
+          }
+        } else {
+          console.warn("Preserving session despite transient API notice:", err?.message);
+        }
+      });
+    }
 
     // Blueprint v4.2: 5-Tab Persistent Mobile Navigation Dock Mount
     const mobileDockRoot = document.getElementById('mobile-dock-root');
     if (mobileDockRoot && typeof MobileNav !== 'undefined') {
       mobileDockRoot.innerHTML = MobileNav.render();
       MobileNav.attachEvents();
-    }
-        }
-      });
     }
 
     // FEATURE 15: Initialize AI Admissions Chatbot

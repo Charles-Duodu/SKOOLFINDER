@@ -33,7 +33,7 @@ function rateLimit({ windowMs = 60 * 1000, max = 60, message = 'Too many request
 module.exports = {
   rateLimit,
   // Sensitive endpoints: 15 requests per minute
-  strictLimiter: rateLimit({ windowMs: 60 * 1000, max: 20, message: 'Rate limit exceeded for security-sensitive endpoint.' }),
+  strictLimiter: rateLimit({ windowMs: 60 * 1000, max: 120, message: 'Rate limit exceeded for security-sensitive endpoint.' }),
   // General API: 100 requests per minute
   standardLimiter: rateLimit({ windowMs: 60 * 1000, max: 120, message: 'Too many requests from this IP address.' })
 };
