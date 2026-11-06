@@ -2488,6 +2488,85 @@ const API = {
     return res.json();
   },
 
+  // ==========================================================================
+  // RELEASE 5: MONETIZATION, MOMO ESCROW & QUOTA LEDGERS
+  // ==========================================================================
+
+  async getProfessionalPayoutMethods() {
+    const res = await fetch(`${this.baseUrl}/teachers/payout-methods`, {
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    return res.json();
+  },
+
+  async addProfessionalPayoutMethod(payoutData) {
+    const res = await fetch(`${this.baseUrl}/teachers/payout-methods`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(payoutData)
+    });
+    return res.json();
+  },
+
+  async deleteProfessionalPayoutMethod(methodId) {
+    const res = await fetch(`${this.baseUrl}/teachers/payout-methods/${encodeURIComponent(methodId)}`, {
+      method: 'DELETE',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    return res.json();
+  },
+
+  async getProfessionalSubscription() {
+    const res = await fetch(`${this.baseUrl}/teachers/subscription`, {
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    return res.json();
+  },
+
+  async subscribeProfessionalTier(tier, interval = 'monthly') {
+    const res = await fetch(`${this.baseUrl}/teachers/subscribe`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tier, billingInterval: interval })
+    });
+    return res.json();
+  },
+
+  async fundBookingEscrow(bookingId, paymentDetails = {}) {
+    const res = await fetch(`${this.baseUrl}/parents/bookings/${encodeURIComponent(bookingId)}/fund`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(paymentDetails)
+    });
+    return res.json();
+  },
+
+  async getAdminEscrowHoldings(params = {}) {
+    const query = new URLSearchParams(params).toString();
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow?${query}`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
+  async adminDisburseEscrow(bookingId, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow/${encodeURIComponent(bookingId)}/disburse`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ notes })
+    });
+    return res.json();
+  },
+
+  async adminRefundEscrow(bookingId, reason = '') {
+    const res = await fetch(`${this.baseUrl}/admin/finance/escrow/${encodeURIComponent(bookingId)}/refund`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ reason })
+    });
+    return res.json();
+  },
+
   // PHASE 5: ADVANCED INTELLIGENCE & CAMPUS OPERATIONS
   // ==========================================================================
 

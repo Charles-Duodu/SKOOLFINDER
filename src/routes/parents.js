@@ -3,6 +3,7 @@ const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
 const TutoringService = require('../services/tutoringService');
+const EscrowService = require('../services/escrowService');
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isValidUUID = (id) => typeof id === 'string' && UUID_REGEX.test(id.trim());
 
@@ -899,6 +900,27 @@ router.patch('/bookings/:id/status', authenticate, async (req, res) => {
     if (!status) return res.status(400).json({ error: 'Target status is required' });
     const result = await TutoringService.transitionBookingStatus(id, status, req.user, req.body);
     return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/parents/bookings/:id/fund
+ * Parent funds lesson escrow for an agreed consultation or lesson agreement (DEC-011)
+ */
+router.post('/bookings/:id/fund', authenticate, async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+    const { amount, paymentReference, paymentChannel } = req.body;
+    const result = await EscrowService.fundEscrow({
+      bookingId,
+      parentUser: req.user,
+      paymentReference,
+      paymentChannel,
+      amount
+    });
+    return res.status(200).json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
   }

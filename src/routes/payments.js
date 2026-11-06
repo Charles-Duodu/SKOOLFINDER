@@ -3,6 +3,7 @@ const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const PaystackService = require('../services/paystackService');
 const EmailService = require('../services/emailService');
+const EscrowService = require('../services/escrowService');
 
 /**
  * GET /api/payments/plans
@@ -37,8 +38,35 @@ router.get('/plans', async (req, res) => {
           features: ['All Verified Features', 'Top 3 Homepage Directory Placement', 'Priority Inbound Admissions Leads', 'Wholesale Procurement RFQ Board']
         },
         {
+          id: 'plan-tch-free',
+          name: 'Free Educator Tier',
+          slug: 'teacher-free',
+          portal: 'teachers',
+          price_ghs: 0.00,
+          billing_interval: 'monthly',
+          features: ['Directory Listing upon 5D Vetting', '2 Active Vacancy Applications', 'Direct Parent Consultation Inquiries']
+        },
+        {
+          id: 'plan-tch-plus',
+          name: 'Professional Plus Tier',
+          slug: 'teacher-plus',
+          portal: 'teachers',
+          price_ghs: 39.00,
+          billing_interval: 'monthly',
+          features: ['Verified Educator Gold Badge', '5 Active Vacancy Applications', 'Priority Recruiter Candidate Search', 'Instant Parent Tutoring Alerts']
+        },
+        {
+          id: 'plan-tch-biz',
+          name: 'Professional Business Tier',
+          slug: 'teacher-business',
+          portal: 'teachers',
+          price_ghs: 99.00,
+          billing_interval: 'monthly',
+          features: ['All Plus Features', 'Unlimited Vacancy Applications', 'Featured Directory Placement', 'Direct School Recruiter Messaging']
+        },
+        {
           id: 'plan-tch-pro',
-          name: 'Pro Educator Membership',
+          name: 'Pro Educator Membership (Legacy)',
           slug: 'teacher-pro',
           portal: 'teachers',
           price_ghs: 350.00,
@@ -48,7 +76,41 @@ router.get('/plans', async (req, res) => {
       ]);
     }
 
-    return res.json(plans);
+    let finalPlans = [...plans];
+    const hasPlus = finalPlans.some(p => p.slug === 'teacher-plus');
+    if (!hasPlus && (!portal || portal === 'teachers')) {
+      finalPlans = [
+        ...finalPlans,
+        {
+          id: 'plan-tch-free',
+          name: 'Free Educator Tier',
+          slug: 'teacher-free',
+          portal: 'teachers',
+          price_ghs: 0.00,
+          billing_interval: 'monthly',
+          features: ['Directory Listing upon 5D Vetting', '2 Active Vacancy Applications', 'Direct Parent Consultation Inquiries']
+        },
+        {
+          id: 'plan-tch-plus',
+          name: 'Professional Plus Tier',
+          slug: 'teacher-plus',
+          portal: 'teachers',
+          price_ghs: 39.00,
+          billing_interval: 'monthly',
+          features: ['Verified Educator Gold Badge', '5 Active Vacancy Applications', 'Priority Recruiter Candidate Search', 'Instant Parent Tutoring Alerts']
+        },
+        {
+          id: 'plan-tch-biz',
+          name: 'Professional Business Tier',
+          slug: 'teacher-business',
+          portal: 'teachers',
+          price_ghs: 99.00,
+          billing_interval: 'monthly',
+          features: ['All Plus Features', 'Unlimited Vacancy Applications', 'Featured Directory Placement', 'Direct School Recruiter Messaging']
+        }
+      ];
+    }
+    return res.json(finalPlans);
   } catch (err) {
     return res.status(500).json({ error: 'Failed to fetch plans' });
   }
@@ -215,15 +277,31 @@ router.post('/verify', async (req, res) => {
       } catch (err) {
         console.warn('Entitlement activation notice:', err.message);
       }
-    } else if (purpose.includes('teacher')) {
+    } else if (purpose === 'professional_subscription' || purpose.includes('teacher') || purpose.includes('tier')) {
       try {
-        await supabaseAdmin
-          .from('teachers')
-          .update({ is_verified: true })
-          .eq('id', targetId);
-        console.log(`[ENTITLEMENT ACTIVATED] Teacher verified badge granted for ${targetId}`);
+        const tier = orderRecord?.metadata?.tier || (finalAmount >= 90 ? 'business' : (finalAmount > 0 ? 'plus' : 'free'));
+        await EscrowService.subscribeProfessional({
+          userId: orderRecord?.payer_user_id || targetId,
+          tier,
+          billingInterval: orderRecord?.metadata?.billingInterval || 'monthly',
+          paymentReference: reference,
+          paymentChannel: finalChannel
+        });
+        console.log(`[ENTITLEMENT ACTIVATED] Professional ${tier.toUpperCase()} subscription activated for ${targetId}`);
       } catch (err) {
-        console.warn('Teacher entitlement notice:', err.message);
+        console.warn('Professional subscription activation notice:', err.message);
+      }
+    } else if (purpose === 'tutoring_escrow' || purpose.includes('escrow')) {
+      try {
+        await EscrowService.fundEscrow({
+          bookingId: targetId,
+          paymentReference: reference,
+          paymentChannel: finalChannel,
+          amount: finalAmount
+        });
+        console.log(`[ENTITLEMENT ACTIVATED] Tutoring escrow funded for booking ${targetId}`);
+      } catch (err) {
+        console.warn('Tutoring escrow activation notice:', err.message);
       }
     }
 

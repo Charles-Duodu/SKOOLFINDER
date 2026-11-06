@@ -52,6 +52,21 @@ const AuditService = {
 
   getRecentLogs(limit = 50) {
     return inMemoryAuditLogs.slice(0, limit);
+  },
+
+  async logAction({ action, target, details = {}, actorUser = null }) {
+    const parts = (target || 'general:item').split(':');
+    const targetType = parts[0] || 'general';
+    const targetId = parts.slice(1).join(':') || 'item';
+    return this.log({
+      actorId: actorUser?.id || null,
+      actorEmail: actorUser?.email || 'admin@skoolfinder.com.gh',
+      actorRole: actorUser?.role || 'super_admin',
+      action,
+      targetType,
+      targetId,
+      details
+    });
   }
 };
 

@@ -8,6 +8,7 @@ const AuditService = require('../services/auditService');
 const SchoolOwnerService = require('../services/schoolOwnerService');
 const AdmissionsSubscriptionService = require('../services/admissionsSubscriptionService');
 const MarketplaceService = require('../services/marketplaceService');
+const EscrowService = require('../services/escrowService');
 const { WebhookService, IN_MEMORY_WEBHOOK_DELIVERIES, IN_MEMORY_WEBHOOK_SUBSCRIPTIONS } = require('../services/webhookService');
 const { NationalIntegrationsService } = require('../services/nationalIntegrationsService');
 
@@ -1474,6 +1475,65 @@ router.post('/finance/verify-transaction/:reference', async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ error: 'Transaction verification failed' });
+  }
+});
+
+/**
+ * ============================================================================
+ * RELEASE 5: SUPER ADMIN MOMO ESCROW SETTLEMENT DESK (DEC-011)
+ * ============================================================================
+ */
+
+/**
+ * GET /api/admin/finance/escrow
+ * Lists all active lesson escrow holdings, disbursed totals, and dispute queues
+ */
+router.get('/finance/escrow', async (req, res) => {
+  try {
+    const { status, limit } = req.query;
+    const result = await EscrowService.listEscrowHoldings({ status, limit });
+    return res.json(result);
+  } catch (err) {
+    console.error('GET /api/admin/finance/escrow error:', err);
+    return res.status(500).json({ error: 'Failed to fetch escrow holdings' });
+  }
+});
+
+/**
+ * POST /api/admin/finance/escrow/:bookingId/disburse
+ * Super Admin manually approves/dispatches escrow funds to educator MoMo wallet
+ */
+router.post('/finance/escrow/:bookingId/disburse', async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { notes } = req.body || {};
+    const result = await EscrowService.disburseEscrow({
+      bookingId,
+      adminUser: req.user,
+      notes: notes || 'Super Admin approved lesson payout'
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/admin/finance/escrow/:bookingId/refund
+ * Super Admin resolves dispute by refunding held escrow to parent/guardian
+ */
+router.post('/finance/escrow/:bookingId/refund', async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { reason } = req.body || {};
+    const result = await EscrowService.refundEscrow({
+      bookingId,
+      adminUser: req.user,
+      reason: reason || 'Super Admin approved parent refund'
+    });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 

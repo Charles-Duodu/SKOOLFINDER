@@ -5,6 +5,7 @@ const { authenticate, optionalAuth } = require('../middleware/auth');
 const TutoringService = require('../services/tutoringService');
 const EmailService = require('../services/emailService');
 const MarketplaceService = require('../services/marketplaceService');
+const EscrowService = require('../services/escrowService');
 
 const FALLBACK_TEACHERS = [
   {
@@ -641,6 +642,91 @@ router.post('/my-applications/:id/withdraw', authenticate, async (req, res) => {
   try {
     const userId = req.user.id;
     const result = await MarketplaceService.withdrawApplication(req.params.id, userId);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * ============================================================================
+ * RELEASE 5: MONETIZATION, MOMO PAYOUTS & SUBSCRIPTIONS (DEC-002, DEC-024)
+ * ============================================================================
+ */
+
+/**
+ * GET /api/teachers/payout-methods
+ * Authenticated educator retrieves their registered Mobile Money payout methods
+ */
+router.get('/payout-methods', authenticate, async (req, res) => {
+  try {
+    const methods = await EscrowService.listPayoutMethods(req.user.id);
+    return res.json({ success: true, count: methods.length, methods });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/teachers/payout-methods
+ * Authenticated educator adds a verified MoMo payout method (MTN MoMo, Telecel, AT)
+ */
+router.post('/payout-methods', authenticate, async (req, res) => {
+  try {
+    const { network, accountNumber, accountName, isPrimary } = req.body;
+    const result = await EscrowService.addPayoutMethod({
+      professionalId: req.user.id,
+      network,
+      accountNumber,
+      accountName,
+      isPrimary
+    });
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * DELETE /api/teachers/payout-methods/:methodId
+ * Authenticated educator removes a payout method
+ */
+router.delete('/payout-methods/:methodId', authenticate, async (req, res) => {
+  try {
+    const result = await EscrowService.removePayoutMethod(req.user.id, req.params.methodId);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/teachers/subscription
+ * Authenticated educator views their current subscription tier and entitlements
+ */
+router.get('/subscription', authenticate, async (req, res) => {
+  try {
+    const result = await EscrowService.getProfessionalSubscription({ userId: req.user.id });
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/teachers/subscribe
+ * Authenticated educator subscribes or upgrades tier (free, plus, business)
+ */
+router.post('/subscribe', authenticate, async (req, res) => {
+  try {
+    const { tier = 'plus', billingInterval = 'monthly', paymentReference, paymentChannel } = req.body;
+    const result = await EscrowService.subscribeProfessional({
+      userId: req.user.id,
+      tier,
+      billingInterval,
+      paymentReference,
+      paymentChannel
+    });
     return res.json(result);
   } catch (err) {
     return res.status(400).json({ error: err.message });
