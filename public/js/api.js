@@ -221,6 +221,52 @@ const API = {
     return res.json();
   },
 
+  // UNIFIED CASE MANAGEMENT ENGINE (MODULE 3.1 & 1.3)
+  async getCases(params = {}) {
+    const cleanParams = {};
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== '' && String(v).toLowerCase() !== 'all' && v !== 'undefined') {
+        cleanParams[k] = v;
+      }
+    }
+    const query = new URLSearchParams(cleanParams).toString();
+    const res = await fetch(`${this.baseUrl}/cases${query ? '?' + query : ''}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load operational cases");
+    return res.json();
+  },
+
+  async getCaseById(id) {
+    const res = await fetch(`${this.baseUrl}/cases/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load case details");
+    return res.json();
+  },
+
+  async submitPrimaryCaseDecision(id, decision, notes = '') {
+    const res = await fetch(`${this.baseUrl}/cases/${id}/primary-decision`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ decision, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to record primary decision");
+    return result;
+  },
+
+  async submitDualApproval(id, notes = '') {
+    const res = await fetch(`${this.baseUrl}/cases/${id}/dual-approval`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Dual approval execution failed");
+    return result;
+  },
+
   async getAdminAuditLogs(limit = 50) {
     const res = await fetch(`${this.baseUrl}/admin/audit-logs?limit=${limit}`, {
       headers: this.getAuthHeaders()

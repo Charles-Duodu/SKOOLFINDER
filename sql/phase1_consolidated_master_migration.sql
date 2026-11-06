@@ -466,3 +466,4 @@ BEGIN
 END $$;
 
 SELECT 'SkoolFinder Ghana Phase 1 Consolidated Master Migration Ready' AS migration_status;
+

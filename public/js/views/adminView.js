@@ -27,6 +27,11 @@ const AdminView = {
   rfqCategoryFilter: 'All',
   rfqStatusFilter: 'All',
   procurementSubTab: 'rfqs', // 'rfqs' | 'suppliers'
+  caseTypeFilter: 'All',
+  caseStatusFilter: 'All',
+  caseSearchTerm: '',
+  caseSearchTimer: null,
+  cachedCases: [],
 
   async render() {
     let overview = { kpis: {}, schoolsList: [] };
@@ -53,7 +58,18 @@ const AdminView = {
         API.getRFQs().catch(() => [])
       ];
 
-      if (this.activeTab === 'verification') {
+      if (this.activeTab === 'cases' || this.activeTab === 'approvals' || this.activeTab === 'overview') {
+        promises.push(
+          API.getCases({
+            status: this.caseStatusFilter !== 'All' ? this.caseStatusFilter : undefined,
+            case_type: this.caseTypeFilter !== 'All' ? this.caseTypeFilter : undefined,
+            search: this.caseSearchTerm || undefined
+          }).then(res => {
+            verificationCases = res?.cases || [];
+            this.cachedCases = verificationCases;
+          }).catch(() => [])
+        );
+      } else if (this.activeTab === 'verification') {
         promises.push(
           API.getAdminVerificationCases().then(res => {
             verificationCases = res?.queue || [];
@@ -3262,6 +3278,11 @@ const AdminView = {
    * Group 1.3: Tasks, Approvals & SLA Escalations Workbench
    */
   renderApprovalsDesk(overview, cases = []) {
+    const pendingDualCases = cases.filter(c => c.requires_dual_signoff || c.status === 'dual_approval_required');
+    const displayCases = pendingDualCases.length > 0 ? pendingDualCases : cases;
+    const pendingCount = cases.filter(c => c.status === 'dual_approval_required').length;
+    const overdueCount = cases.filter(c => c.sla_status_badge === 'OVERDUE').length;
+
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
@@ -3273,7 +3294,7 @@ const AdminView = {
               Tasks, Approvals &amp; SLA Escalations
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Independent verification, multi-party change approvals, and regulatory SLA tracking requiring two-officer sign-off.
+              Independent verification, multi-party change approvals, and regulatory SLA tracking requiring two-officer sign-off (POL-003).
             </p>
           </div>
           <div style="display:flex;gap:0.5rem;">
@@ -3290,7 +3311,7 @@ const AdminView = {
               <span class="admin-kpi-title">PENDING APPROVALS</span>
               <span>⏳</span>
             </div>
-            <div class="admin-kpi-value">${cases.length || 2}</div>
+            <div class="admin-kpi-value">${pendingCount || displayCases.length || 2}</div>
             <div style="font-size:0.75rem;color:#f59e0b;font-weight:700;">Requires Officer Dual Sign-off</div>
           </div>
           <div class="admin-kpi-card">
@@ -3298,8 +3319,10 @@ const AdminView = {
               <span class="admin-kpi-title">ESCALATED TO DIRECTOR</span>
               <span>⚠️</span>
             </div>
-            <div class="admin-kpi-value">0</div>
-            <div style="font-size:0.75rem;color:#10b981;font-weight:700;">All queues within SLA bounds</div>
+            <div class="admin-kpi-value">${overdueCount}</div>
+            <div style="font-size:0.75rem;color:${overdueCount > 0 ? '#ef4444' : '#10b981'};font-weight:700;">
+              ${overdueCount > 0 ? `${overdueCount} cases breached SLA` : 'All queues within SLA bounds'}
+            </div>
           </div>
           <div class="admin-kpi-card">
             <div class="admin-kpi-top">
@@ -3323,8 +3346,8 @@ const AdminView = {
         <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
           <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
             <div style="font-weight:800;color:#0f172a;font-size:1rem;">Active Multi-Party Approval Queue</div>
-            <button class="btn-pill" onclick="AdminView.switchTab('verification')" style="background:#2563eb;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;">
-              Open Verification Workspace &rarr;
+            <button class="btn-pill" onclick="AdminView.switchTab('cases')" style="background:#2563eb;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+              Open All Cases &rarr;
             </button>
           </div>
           <div style="overflow-x:auto;">
@@ -3340,54 +3363,40 @@ const AdminView = {
                 </tr>
               </thead>
               <tbody>
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                  <td style="padding:0.9rem 1rem;">
-                    <div style="font-weight:800;color:#0f172a;">Ghana International School</div>
-                    <div style="font-size:0.75rem;color:#64748b;">REQ-2026-0891 &bull; School Ownership Transfer</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;">Primary Proprietor Reassignment</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.72rem;font-weight:700;">High Risk (Tier 3)</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
-                    <div>👤 Officer K. Boateng</div>
-                    <div style="font-size:0.72rem;color:#10b981;">✓ Approved (Initial)</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">18h remaining</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;text-align:right;">
-                    <button class="btn-pill" onclick="AdminView.switchTab('verification')" style="background:#091e42;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
-                      Review &amp; Sign &rarr;
-                    </button>
-                  </td>
-                </tr>
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                  <td style="padding:0.9rem 1rem;">
-                    <div style="font-weight:800;color:#0f172a;">Kwame Mensah (Tutor)</div>
-                    <div style="font-size:0.75rem;color:#64748b;">REQ-2026-0904 &bull; Gate G4 Safeguarding Clearance</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;">D4 Child-Facing Eligibility</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.72rem;font-weight:700;">Protected Child Gate</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
-                    <div>👤 Safeguarding Lead</div>
-                    <div style="font-size:0.72rem;color:#f59e0b;">⏳ Vetting Police Clearance</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">6h remaining</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;text-align:right;">
-                    <button class="btn-pill" onclick="AdminView.switchTab('safeguarding')" style="background:#dc2626;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
-                      Inspect Gate G4 &rarr;
-                    </button>
-                  </td>
-                </tr>
+                ${displayCases.map(c => `
+                  <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:0.9rem 1rem;">
+                      <div style="font-weight:800;color:#0f172a;">${c.entity_name}</div>
+                      <div style="font-size:0.75rem;color:#64748b;font-family:monospace;">${c.case_ref || c.id} &bull; ${c.subject}</div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:600;">
+                        ${c.case_type === 'ownership_transfer' ? 'Proprietor Reassignment' : (c.case_type === 'safeguarding_vetting' ? 'Gate G4 Safeguarding' : c.case_type)}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:${c.risk_tier === 'safety_critical' ? '#fee2e2' : (c.risk_tier === 'tier3_high' ? '#fee2e2' : '#fef3c7')};color:${c.risk_tier === 'safety_critical' ? '#991b1b' : (c.risk_tier === 'tier3_high' ? '#991b1b' : '#92400e')};font-size:0.72rem;font-weight:700;">
+                        ${c.risk_tier === 'tier3_high' ? 'High Risk (Tier 3)' : (c.risk_tier === 'safety_critical' ? 'Safety Critical (Gate G4)' : 'Tier 2 Medium')}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
+                      <div>👤 ${c.primary_officer_name || 'Unassigned'}</div>
+                      <div style="font-size:0.72rem;color:${c.primary_signed_at ? '#10b981' : '#f59e0b'};font-weight:600;">
+                        ${c.primary_signed_at ? '✓ Signed (Initial)' : '⏳ Pending Review'}
+                      </div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:${c.sla_status_badge === 'OVERDUE' ? '#fee2e2' : (c.sla_status_badge === 'URGENT' ? '#fef3c7' : '#dcfce7')};color:${c.sla_status_badge === 'OVERDUE' ? '#991b1b' : (c.sla_status_badge === 'URGENT' ? '#92400e' : '#166534')};font-size:0.72rem;font-weight:700;">
+                        ${c.sla_label || '24h SLA'}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;text-align:right;">
+                      <button class="btn-pill btn-admin-dual-signoff" data-case-id="${c.id}" style="background:#091e42;color:#fff;font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                        Review &amp; Sign &rarr;
+                      </button>
+                    </td>
+                  </tr>
+                `).join('')}
               </tbody>
             </table>
           </div>
@@ -3794,15 +3803,20 @@ const AdminView = {
   },
 
   /**
-   * Group 3.1: Cases & Ticketing
+   * Group 3.1: Cases & Ticketing (Module 3.1 & 1.3)
    */
   renderCasesDesk(cases = []) {
+    const totalCases = cases.length;
+    const pendingDualCount = cases.filter(c => c.status === 'dual_approval_required').length;
+    const urgentCount = cases.filter(c => c.sla_status_badge === 'URGENT' || c.sla_status_badge === 'OVERDUE').length;
+    const safeguardingCount = cases.filter(c => c.case_type === 'safeguarding_vetting').length;
+
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 3.1 &bull; Operational Case Management
+              Module 3.1 &bull; Operational Case Management &amp; SLA Engine
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
               Cases &amp; Ticketing Engine
@@ -3811,11 +3825,163 @@ const AdminView = {
               Centralized operational workbench with reference IDs, SLA countdowns, and cross-portal support chronology.
             </p>
           </div>
+          <div style="display:flex;gap:0.5rem;align-items:center;">
+            <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:700;padding:0.4rem 0.85rem;border-radius:999px;">
+              ${totalCases} Active Operational Cases
+            </span>
+          </div>
         </div>
-        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:2rem;text-align:center;">
-          <div style="font-size:2rem;margin-bottom:0.5rem;">📁</div>
-          <div style="font-weight:800;font-size:1.1rem;color:#0f172a;">Unified Operational Cases Workspace</div>
-          <div style="font-size:0.85rem;color:#64748b;margin-top:0.25rem;">All institutional ownership, verification, and support inquiries indexed by SLA.</div>
+
+        <!-- Metric KPI Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.5rem;">
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">TOTAL ACTIVE CASES</span>
+              <span>📁</span>
+            </div>
+            <div class="admin-kpi-value">${totalCases}</div>
+            <div style="font-size:0.75rem;color:#2563eb;font-weight:700;">Indexed across all portals</div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">DUAL SIGN-OFF QUEUE</span>
+              <span>⚖️</span>
+            </div>
+            <div class="admin-kpi-value">${pendingDualCount}</div>
+            <div style="font-size:0.75rem;color:#f59e0b;font-weight:700;">Two-Officer Sign-off Required</div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">URGENT / SLA BREACH</span>
+              <span>⏱️</span>
+            </div>
+            <div class="admin-kpi-value">${urgentCount}</div>
+            <div style="font-size:0.75rem;color:${urgentCount > 0 ? '#ef4444' : '#10b981'};font-weight:700;">
+              ${urgentCount > 0 ? 'Requires immediate action' : 'Within SLA bounds'}
+            </div>
+          </div>
+          <div class="admin-kpi-card">
+            <div class="admin-kpi-top">
+              <span class="admin-kpi-title">SAFEGUARDING RESTRICTED</span>
+              <span>🛡️</span>
+            </div>
+            <div class="admin-kpi-value">${safeguardingCount}</div>
+            <div style="font-size:0.75rem;color:#dc2626;font-weight:700;">POL-004 Gate G4 Enforced</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:1.25rem;margin-bottom:1.5rem;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+            <!-- Type Filters -->
+            <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+              <button class="btn-pill ${this.caseTypeFilter === 'All' ? 'btn-gold' : 'btn-outline'}" data-case-filter-type="All" style="font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                All (${totalCases})
+              </button>
+              <button class="btn-pill ${this.caseTypeFilter === 'ownership_transfer' ? 'btn-gold' : 'btn-outline'}" data-case-filter-type="ownership_transfer" style="font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                🏫 Ownership Transfers
+              </button>
+              <button class="btn-pill ${this.caseTypeFilter === 'safeguarding_vetting' ? 'btn-gold' : 'btn-outline'}" data-case-filter-type="safeguarding_vetting" style="font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                🛡️ Gate G4 Safeguarding
+              </button>
+              <button class="btn-pill ${this.caseTypeFilter === 'institution_claim' ? 'btn-gold' : 'btn-outline'}" data-case-filter-type="institution_claim" style="font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                📜 NaSIA Claims
+              </button>
+              <button class="btn-pill ${this.caseTypeFilter === 'dispute_arbitration' ? 'btn-gold' : 'btn-outline'}" data-case-filter-type="dispute_arbitration" style="font-size:0.78rem;padding:0.35rem 0.75rem;cursor:pointer;">
+                ⚖️ Escrow Disputes
+              </button>
+            </div>
+
+            <!-- Search Box -->
+            <div style="flex:1;min-width:240px;max-width:360px;position:relative;">
+              <span style="position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);font-size:0.85rem;color:#94a3b8;pointer-events:none;">🔍</span>
+              <input type="text" id="admin-cases-search" value="${this.caseSearchTerm || ''}" placeholder="Search case ref, entity, or keyword..." style="width:100%;padding:0.45rem 0.75rem 0.45rem 2.2rem;border:1px solid #cbd5e1;border-radius:8px;font-size:0.85rem;outline:none;" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Cases Table -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Case Ref &bull; Subject</th>
+                  <th style="padding:0.85rem 1rem;">Entity &bull; Jurisdiction</th>
+                  <th style="padding:0.85rem 1rem;">Risk Tier</th>
+                  <th style="padding:0.85rem 1rem;">Primary Reviewer</th>
+                  <th style="padding:0.85rem 1rem;">SLA Status</th>
+                  <th style="padding:0.85rem 1rem;">Workflow Status</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${cases.length === 0 ? `
+                  <tr>
+                    <td colspan="7" style="padding:3rem;text-align:center;color:#94a3b8;">
+                      <div style="font-size:2rem;margin-bottom:0.5rem;">📁</div>
+                      <div style="font-weight:700;color:#334155;">No cases found matching criteria</div>
+                      <div style="font-size:0.82rem;">Adjust your filter selection or clear the search input.</div>
+                    </td>
+                  </tr>
+                ` : cases.map(c => `
+                  <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:0.9rem 1rem;">
+                      <div style="font-weight:800;color:#0f172a;display:flex;align-items:center;gap:0.35rem;">
+                        <span>${c.case_type === 'ownership_transfer' ? '🏫' : (c.case_type === 'safeguarding_vetting' ? '🛡️' : (c.case_type === 'institution_claim' ? '📜' : '⚖️'))}</span>
+                        <span>${c.subject}</span>
+                      </div>
+                      <div style="font-size:0.75rem;color:#64748b;font-family:monospace;margin-top:0.15rem;">
+                        ${c.case_ref || c.id} &bull; <span style="text-transform:uppercase;color:#475569;">${c.case_type}</span>
+                      </div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <div style="font-weight:700;color:#1e293b;">${c.entity_name}</div>
+                      <div style="font-size:0.75rem;color:#64748b;">${c.region || 'Ghana'} &bull; ${c.district || 'District'}</div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:${c.risk_tier === 'safety_critical' ? '#fee2e2' : (c.risk_tier === 'tier3_high' ? '#fee2e2' : '#f1f5f9')};color:${c.risk_tier === 'safety_critical' ? '#991b1b' : (c.risk_tier === 'tier3_high' ? '#991b1b' : '#334155')};font-size:0.72rem;font-weight:700;">
+                        ${c.risk_tier === 'tier3_high' ? 'High Risk (Tier 3)' : (c.risk_tier === 'safety_critical' ? 'Safety Critical (G4)' : 'Tier 2 Medium')}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;font-size:0.82rem;color:#334155;">
+                      <div>👤 ${c.primary_officer_name || 'Unassigned'}</div>
+                      <div style="font-size:0.72rem;color:${c.primary_signed_at ? '#10b981' : '#f59e0b'};font-weight:600;">
+                        ${c.primary_signed_at ? '✓ Signed (Initial)' : '⏳ Review Pending'}
+                      </div>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:${c.sla_status_badge === 'OVERDUE' ? '#fee2e2' : (c.sla_status_badge === 'URGENT' ? '#fef3c7' : '#dcfce7')};color:${c.sla_status_badge === 'OVERDUE' ? '#991b1b' : (c.sla_status_badge === 'URGENT' ? '#92400e' : '#166534')};font-size:0.72rem;font-weight:700;">
+                        ${c.sla_label || '24h SLA'}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;">
+                      <span class="badge" style="background:${c.status === 'approved_dual_completed' ? '#dcfce7' : (c.status === 'dual_approval_required' ? '#fef3c7' : (c.status === 'rejected' ? '#fee2e2' : '#eff6ff'))};color:${c.status === 'approved_dual_completed' ? '#166534' : (c.status === 'dual_approval_required' ? '#92400e' : (c.status === 'rejected' ? '#991b1b' : '#1e40af'))};font-size:0.72rem;font-weight:700;">
+                        ${c.status === 'dual_approval_required' ? 'Dual Sign-off Required' : (c.status === 'approved_dual_completed' ? '✓ Dual Sealed' : c.status)}
+                      </span>
+                    </td>
+                    <td style="padding:0.9rem 1rem;text-align:right;">
+                      <div style="display:inline-flex;gap:0.35rem;justify-content:flex-end;">
+                        <button class="btn-pill btn-admin-inspect-case" data-case-id="${c.id}" style="background:#f8fafc;border:1px solid #cbd5e1;color:#1e293b;font-size:0.76rem;padding:0.3rem 0.6rem;cursor:pointer;">
+                          🔍 Inspect
+                        </button>
+                        ${c.status === 'dual_approval_required' ? `
+                          <button class="btn-pill btn-admin-dual-signoff" data-case-id="${c.id}" style="background:#091e42;color:#fff;font-size:0.76rem;padding:0.3rem 0.65rem;cursor:pointer;">
+                            ⚖️ Dual Sign-off
+                          </button>
+                        ` : ''}
+                        ${(c.status === 'in_review' || c.status === 'submitted') ? `
+                          <button class="btn-pill btn-admin-primary-review" data-case-id="${c.id}" style="background:#2563eb;color:#fff;font-size:0.76rem;padding:0.3rem 0.65rem;cursor:pointer;">
+                            📝 Review
+                          </button>
+                        ` : ''}
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     `;
@@ -4718,6 +4884,47 @@ const AdminView = {
     // OPTION B: SUPER ADMIN GOVERNANCE LISTENERS
     // ========================================================================
 
+    // 0. Operational Cases & SLA Desk Listeners (Module 3.1 & 1.3)
+    const caseSearchInput = document.getElementById('admin-cases-search');
+    if (caseSearchInput) {
+      caseSearchInput.addEventListener('input', (e) => {
+        clearTimeout(this.caseSearchTimer);
+        this.caseSearchTimer = setTimeout(() => {
+          this.caseSearchTerm = e.target.value.trim();
+          App.refreshCurrentView();
+        }, 300);
+      });
+    }
+
+    document.querySelectorAll('[data-case-filter-type]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.getAttribute('data-case-filter-type');
+        this.caseTypeFilter = type;
+        App.refreshCurrentView();
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-inspect-case').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const caseId = btn.getAttribute('data-case-id');
+        this.openCaseModal(caseId, 'inspect');
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-dual-signoff').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const caseId = btn.getAttribute('data-case-id');
+        this.openCaseModal(caseId, 'dual');
+      });
+    });
+
+    document.querySelectorAll('.btn-admin-primary-review').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const caseId = btn.getAttribute('data-case-id');
+        this.openCaseModal(caseId, 'primary');
+      });
+    });
+
     // 1. Regulatory Verification Desk (SCH-005 & Package C)
     document.querySelectorAll('.btn-admin-case-dossier').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -4917,6 +5124,319 @@ const AdminView = {
         btn.innerText = '⚡ Test Policy Engine (Live API)';
       }
     }
+  },
+
+  async openCaseModal(caseId, initialMode = 'inspect') {
+    let c = (this.cachedCases || []).find(item => item.id === caseId || item.case_ref === caseId);
+    if (!c) {
+      try {
+        const res = await API.getCaseById(caseId);
+        c = res?.case;
+      } catch (err) {
+        console.warn('Could not fetch case details:', err);
+      }
+    }
+    if (!c) {
+      State.showToast(`Case #${caseId} not found`, 'warning');
+      return;
+    }
+
+    const old = document.getElementById('case-modal-backdrop');
+    if (old) old.remove();
+
+    const backdrop = document.createElement('div');
+    backdrop.id = 'case-modal-backdrop';
+    backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,32,70,0.75);backdrop-filter:blur(4px);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;';
+
+    backdrop.innerHTML = `
+      <div style="background:#ffffff;border-radius:16px;max-width:840px;width:100%;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);overflow:hidden;border:1px solid #e2e8f0;">
+        <!-- Modal Header -->
+        <div style="background:linear-gradient(135deg, #0A2046 0%, #17386d 100%);padding:1.25rem 1.75rem;color:#ffffff;display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#f59e0b;letter-spacing:0.05em;text-transform:uppercase;background:rgba(245,158,11,0.15);padding:0.2rem 0.5rem;border-radius:4px;border:1px solid rgba(245,158,11,0.3);">
+                ${c.case_ref || c.id}
+              </span>
+              <span class="badge" style="background:rgba(255,255,255,0.15);color:#fff;font-size:0.72rem;font-weight:700;">
+                ${c.case_type}
+              </span>
+              <span class="badge" style="background:${c.sla_status_badge === 'OVERDUE' ? '#ef4444' : (c.sla_status_badge === 'URGENT' ? '#f59e0b' : '#10b981')};color:#fff;font-size:0.7rem;font-weight:800;">
+                ⏱️ ${c.sla_label || '24h SLA'}
+              </span>
+            </div>
+            <h2 style="font-size:1.35rem;font-weight:800;margin:0;color:#fff;">
+              ${c.subject}
+            </h2>
+          </div>
+          <button id="btn-close-case-modal" style="background:none;border:none;color:#94a3b8;font-size:1.5rem;cursor:pointer;padding:0.25rem;line-height:1;">
+            ✕
+          </button>
+        </div>
+
+        <!-- Modal Body Scrollable -->
+        <div style="padding:1.5rem 1.75rem;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:1.25rem;">
+          
+          <!-- Key Meta Row -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;background:#f8fafc;padding:1rem;border-radius:10px;border:1px solid #e2e8f0;">
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;">Subject Entity</div>
+              <div style="font-weight:800;color:#0f172a;font-size:0.95rem;">${c.entity_name}</div>
+              <div style="font-size:0.76rem;color:#475569;">${c.region || 'Ghana'} &bull; ${c.district || 'District'}</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;">Risk Tier &amp; Dual Control</div>
+              <div style="font-weight:800;color:${c.risk_tier === 'tier3_high' || c.risk_tier === 'safety_critical' ? '#dc2626' : '#2563eb'};font-size:0.92rem;">
+                ${c.risk_tier === 'tier3_high' ? 'High Risk (Tier 3)' : (c.risk_tier === 'safety_critical' ? 'Safety Critical (Gate G4)' : 'Tier 2 Medium')}
+              </div>
+              <div style="font-size:0.76rem;color:#475569;">${c.requires_dual_signoff ? '⚖️ POL-003 Dual Control Enforced' : 'Single Officer Sign-off'}</div>
+            </div>
+            <div>
+              <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;">Workflow Status</div>
+              <div style="font-weight:800;color:#0f172a;font-size:0.92rem;text-transform:uppercase;">
+                ${(c.status || '').replace(/_/g, ' ')}
+              </div>
+              <div style="font-size:0.76rem;color:#475569;">Created: ${new Date(c.created_at).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <!-- Policy Guardrail Notice -->
+          ${c.case_type === 'safeguarding_vetting' ? `
+            <div style="background:#fef2f2;border:1.5px solid #fecaca;border-radius:10px;padding:0.9rem 1.1rem;display:flex;gap:0.75rem;align-items:flex-start;">
+              <span style="font-size:1.35rem;">🛡️</span>
+              <div style="font-size:0.84rem;color:#991b1b;line-height:1.45;">
+                <strong style="display:block;margin-bottom:0.15rem;">POL-004: Gate G4 Child-Facing Safeguarding Hard-Stop</strong>
+                Under the Ghana Children's Act (Act 560), this educator profile is strictly locked from minor contact until verified Criminal Record (CID) and NTC license are fully cleared.
+              </div>
+            </div>
+          ` : ''}
+
+          ${c.requires_dual_signoff ? `
+            <div style="background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:0.9rem 1.1rem;display:flex;gap:0.75rem;align-items:flex-start;">
+              <span style="font-size:1.35rem;">⚖️</span>
+              <div style="font-size:0.84rem;color:#1e40af;line-height:1.45;">
+                <strong style="display:block;margin-bottom:0.15rem;">POL-003: Two-Officer Dual Sign-off Governance Rail</strong>
+                High-risk entity updates require two distinct authorized officers. Self-approval is cryptographically rejected by the Governance Engine.
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Impact Preview & Evidence Documents -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            
+            <!-- Impact Scope -->
+            <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+              <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin-bottom:0.65rem;display:flex;align-items:center;gap:0.35rem;">
+                <span>🌐</span> Impact Preview &amp; Scope
+              </div>
+              <div style="font-size:0.82rem;display:flex;flex-direction:column;gap:0.4rem;color:#334155;">
+                ${c.impact_preview ? Object.entries(c.impact_preview).map(([k, v]) => `
+                  <div style="display:flex;justify-content:space-between;border-bottom:1px dashed #f1f5f9;padding-bottom:0.25rem;">
+                    <span style="color:#64748b;text-transform:capitalize;">${k.replace(/_/g, ' ')}:</span>
+                    <strong style="color:#0f172a;">${Array.isArray(v) ? v.join(', ') : v}</strong>
+                  </div>
+                `).join('') : '<div style="color:#94a3b8;">No direct impact recorded</div>'}
+              </div>
+            </div>
+
+            <!-- Evidence Documents -->
+            <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+              <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin-bottom:0.65rem;display:flex;align-items:center;gap:0.35rem;">
+                <span>📎</span> Verified Evidence Documents
+              </div>
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                ${(c.evidence_docs || []).map(doc => `
+                  <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;padding:0.5rem 0.75rem;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="min-width:0;flex:1;">
+                      <div style="font-size:0.8rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                        📄 ${doc.name}
+                      </div>
+                      <div style="font-size:0.7rem;color:#64748b;">${doc.type} &bull; ${doc.size || 'PDF Document'}</div>
+                    </div>
+                    <button class="btn-pill" onclick="State.showToast('Evidence document verified via secure vault.', 'info')" style="font-size:0.72rem;padding:0.2rem 0.55rem;background:#091e42;color:#fff;cursor:pointer;">
+                      Inspect
+                    </button>
+                  </div>
+                `).join('') || '<div style="color:#94a3b8;font-size:0.8rem;">No documents uploaded</div>'}
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Chronology Audit Trail -->
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+            <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.35rem;">
+              <span>📜</span> Case Chronology &amp; Non-Repudiation Trail
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.65rem;">
+              ${(c.chronology || []).map(ch => `
+                <div style="border-left:2.5px solid #2563eb;padding-left:0.75rem;font-size:0.82rem;">
+                  <div style="display:flex;justify-content:space-between;color:#64748b;font-size:0.72rem;margin-bottom:0.15rem;">
+                    <strong>👤 ${ch.author}</strong>
+                    <span>${new Date(ch.timestamp).toLocaleString()}</span>
+                  </div>
+                  <div style="color:#1e293b;font-weight:500;">${ch.text}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Officer Governance Rail Status -->
+          <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+            <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.35rem;">
+              <span>✍️</span> Officer Dual Sign-Off Status
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+              
+              <!-- Officer 1 -->
+              <div style="background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:0.85rem;">
+                <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;">Primary Reviewing Officer</div>
+                <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin:0.2rem 0;">
+                  ${c.primary_officer_name || 'Unassigned'}
+                </div>
+                <div style="font-size:0.75rem;color:${c.primary_signed_at ? '#10b981' : '#f59e0b'};font-weight:600;">
+                  ${c.primary_signed_at ? `✓ Signed: ${new Date(c.primary_signed_at).toLocaleString()}` : '⏳ Pending Review'}
+                </div>
+              </div>
+
+              <!-- Officer 2 (Dual) -->
+              <div style="background:#fff;border:1px solid #cbd5e1;border-radius:8px;padding:0.85rem;">
+                <div style="font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;">Dual-Control Approving Officer</div>
+                <div style="font-weight:800;color:#0f172a;font-size:0.88rem;margin:0.2rem 0;">
+                  ${c.dual_officer_name || (c.status === 'dual_approval_required' ? 'Awaiting 2nd Officer' : 'Not yet assigned')}
+                </div>
+                <div style="font-size:0.75rem;color:${c.dual_signed_at ? '#10b981' : (c.status === 'dual_approval_required' ? '#f59e0b' : '#64748b')};font-weight:600;">
+                  ${c.dual_signed_at ? `✓ Dual Signed: ${new Date(c.dual_signed_at).toLocaleString()}` : (c.status === 'dual_approval_required' ? '⚠️ Dual Sign-off Required' : 'Single Sign-off')}
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Action Rail Section -->
+          <div style="background:#ffffff;border:1.5px solid #2563eb;border-radius:10px;padding:1.25rem;">
+            <div style="font-weight:800;color:#0A2046;font-size:0.95rem;margin-bottom:0.5rem;">
+              Decision Rail &amp; Statutory Execution
+            </div>
+
+            ${c.status === 'dual_approval_required' ? `
+              <div>
+                <p style="font-size:0.82rem;color:#475569;margin:0 0 0.75rem 0;">
+                  As an independent authorized officer, review the uploaded statutory filings, confirm identity veracity, and apply the final cryptographic sign-off.
+                </p>
+                <div style="margin-bottom:0.75rem;">
+                  <label style="display:block;font-size:0.76rem;font-weight:700;color:#334155;margin-bottom:0.3rem;">
+                    Independent Dual-Audit Reviewer Notes (Mandatory)
+                  </label>
+                  <textarea id="case-dual-notes" rows="2" placeholder="e.g. Verified board resolution against RGD Form 3. Identity and authority confirmed." style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:0.5rem;font-size:0.82rem;outline:none;font-family:inherit;">Verified statutory filings against official registry. Approved for dual-control sealing.</textarea>
+                </div>
+                <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                  <button id="btn-execute-dual-approval" style="background:#091e42;color:#ffffff;border:none;border-radius:8px;padding:0.55rem 1.25rem;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                    ⚖️ Execute Independent Dual Sign-Off (POL-003)
+                  </button>
+                </div>
+              </div>
+            ` : (c.status === 'in_review' || c.status === 'submitted') ? `
+              <div>
+                <p style="font-size:0.82rem;color:#475569;margin:0 0 0.75rem 0;">
+                  Conduct primary assessment of the claimant's evidence documents and regulatory credentials.
+                </p>
+                <div style="margin-bottom:0.75rem;">
+                  <label style="display:block;font-size:0.76rem;font-weight:700;color:#334155;margin-bottom:0.3rem;">
+                    Primary Assessment Findings &amp; Rationale
+                  </label>
+                  <textarea id="case-primary-notes" rows="2" placeholder="Enter review notes..." style="width:100%;border:1px solid #cbd5e1;border-radius:6px;padding:0.5rem;font-size:0.82rem;outline:none;font-family:inherit;">All statutory evidence inspected. Approved for dual-control escalation.</textarea>
+                </div>
+                <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+                  <button id="btn-reject-primary-case" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:8px;padding:0.55rem 1rem;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                    ✕ Reject Case
+                  </button>
+                  <button id="btn-approve-primary-case" style="background:#16a34a;color:#ffffff;border:none;border-radius:8px;padding:0.55rem 1.25rem;font-weight:700;font-size:0.85rem;cursor:pointer;">
+                    ✓ Approve &amp; Escalate (Primary Sign-off)
+                  </button>
+                </div>
+              </div>
+            ` : `
+              <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:0.85rem;display:flex;align-items:center;gap:0.65rem;">
+                <span style="font-size:1.5rem;">🛡️</span>
+                <div style="font-size:0.85rem;color:#166534;font-weight:600;">
+                  This case has been completed and sealed. All audit signatures chained with SHA-256 HMAC non-repudiation.
+                </div>
+              </div>
+            `}
+          </div>
+
+        </div>
+
+        <!-- Modal Footer -->
+        <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:0.85rem 1.75rem;display:flex;justify-content:flex-end;">
+          <button id="btn-dismiss-case-modal" class="btn-pill btn-outline" style="font-size:0.82rem;padding:0.4rem 1rem;cursor:pointer;">
+            Close Inspector
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+
+    const closeModal = () => backdrop.remove();
+    document.getElementById('btn-close-case-modal')?.addEventListener('click', closeModal);
+    document.getElementById('btn-dismiss-case-modal')?.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', (e) => {
+      if (e.target === backdrop) closeModal();
+    });
+
+    // Primary Decision Handlers
+    document.getElementById('btn-approve-primary-case')?.addEventListener('click', async () => {
+      const notes = document.getElementById('case-primary-notes')?.value || '';
+      try {
+        const btn = document.getElementById('btn-approve-primary-case');
+        btn.disabled = true;
+        btn.innerText = 'Signing...';
+        await API.submitPrimaryCaseDecision(c.id, 'approve', notes);
+        State.showToast(`✓ Primary sign-off recorded for ${c.case_ref || c.id}! Forwarded to dual approval queue.`, 'success');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+      }
+    });
+
+    document.getElementById('btn-reject-primary-case')?.addEventListener('click', async () => {
+      const notes = document.getElementById('case-primary-notes')?.value || '';
+      if (!confirm(`Are you sure you want to reject ${c.case_ref || c.id}?`)) return;
+      try {
+        const btn = document.getElementById('btn-reject-primary-case');
+        btn.disabled = true;
+        btn.innerText = 'Rejecting...';
+        await API.submitPrimaryCaseDecision(c.id, 'reject', notes);
+        State.showToast(`Case ${c.case_ref || c.id} rejected.`, 'info');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+      }
+    });
+
+    // Dual Sign-off Handler
+    document.getElementById('btn-execute-dual-approval')?.addEventListener('click', async () => {
+      const notes = document.getElementById('case-dual-notes')?.value || '';
+      try {
+        const btn = document.getElementById('btn-execute-dual-approval');
+        btn.disabled = true;
+        btn.innerText = 'Sealing...';
+        await API.submitDualApproval(c.id, notes);
+        State.showToast(`🛡️ Dual-Control Sign-off executed for ${c.case_ref || c.id}! Transaction cryptographically sealed.`, 'success');
+        closeModal();
+        App.refreshCurrentView();
+      } catch (err) {
+        State.showToast(err.message, 'error');
+        const btn = document.getElementById('btn-execute-dual-approval');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = '⚖️ Execute Independent Dual Sign-Off (POL-003)';
+        }
+      }
+    });
   },
 
   attachEvents() {
