@@ -748,6 +748,130 @@ const API = {
     return result;
   },
 
+  // --------------------------------------------------------------------------
+  // PHASE 5: TRUST & GOVERNANCE, GATE G4 SAFEGUARDING, DPC PRIVACY,
+  // REGIONAL ADMINISTRATION & STAFF RBAC (GROUPS 5 & 8)
+  // --------------------------------------------------------------------------
+  async getAdminSafeguardingOverview() {
+    const res = await fetch(`${this.baseUrl}/admin/safeguarding/overview`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load safeguarding overview");
+    return res.json();
+  },
+
+  async createSafeguardingIncident(data) {
+    const res = await fetch(`${this.baseUrl}/admin/safeguarding/incidents`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to log safeguarding incident");
+    return result;
+  },
+
+  async updateSafeguardingIncidentStatus(id, data) {
+    const res = await fetch(`${this.baseUrl}/admin/safeguarding/incidents/${id}/status`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update incident status");
+    return result;
+  },
+
+  async emergencyFreezeEducator(teacherId, reason, dovvsuRef = '') {
+    const res = await fetch(`${this.baseUrl}/admin/safeguarding/emergency-freeze`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ teacherId, reason, dovvsuRef })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to execute emergency freeze");
+    return result;
+  },
+
+  async getAdminDataGovOverview() {
+    const res = await fetch(`${this.baseUrl}/admin/datagov/overview`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load data governance overview");
+    return res.json();
+  },
+
+  async processAdminSAR(id, action, notes = '') {
+    const res = await fetch(`${this.baseUrl}/admin/datagov/sar/${id}/process`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ action, notes })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to process SAR");
+    return result;
+  },
+
+  async getAdminRegionsList() {
+    const res = await fetch(`${this.baseUrl}/admin/regions`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load regional administration data");
+    return res.json();
+  },
+
+  async updateAdminRegionSettings(code, data) {
+    const res = await fetch(`${this.baseUrl}/admin/regions/${code}/settings`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update regional settings");
+    return result;
+  },
+
+  async getAdminStaffDirectory() {
+    const res = await fetch(`${this.baseUrl}/admin/staff`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load staff directory");
+    return res.json();
+  },
+
+  async createAdminStaffMember(data) {
+    const res = await fetch(`${this.baseUrl}/admin/staff`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to create staff member");
+    return result;
+  },
+
+  async updateAdminStaffRole(id, data) {
+    const res = await fetch(`${this.baseUrl}/admin/staff/${id}/role`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update staff permissions");
+    return result;
+  },
+
+  async toggleAdminStaffStatus(id, status) {
+    const res = await fetch(`${this.baseUrl}/admin/staff/${id}/status`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ status })
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to update staff status");
+    return result;
+  },
+
   async adminSearch(q) {
     const res = await fetch(`${this.baseUrl}/admin/search?q=${encodeURIComponent(q)}`, {
       headers: this.getAuthHeaders()

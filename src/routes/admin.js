@@ -3556,4 +3556,740 @@ router.get('/telemetry', async (req, res) => {
   }
 });
 
+/**
+ * ============================================================================
+ * PHASE 5: TRUST & GOVERNANCE, GATE G4 SAFEGUARDING, DPC PRIVACY,
+ * REGIONAL ADMINISTRATION & STAFF RBAC (GROUPS 5 & 8)
+ * ============================================================================
+ */
+
+let SEED_SAFEGUARDING_INCIDENTS = [
+  {
+    id: 'INC-SAFE-2026-001',
+    incidentRef: 'INC-SAFE-2026-001',
+    reportedAt: '2026-11-02T10:15:00Z',
+    severity: 'CRITICAL_IMMEDIATE_ACTION',
+    category: 'Unverified Minor Contact Attempt',
+    reporterName: 'Mrs. Patience Mensah (Parent)',
+    reporterPhone: '+233 24 551 2299',
+    reportedPartyName: 'Kwabena Danquah (Educator)',
+    reportedPartyId: 'tch-05',
+    schoolContext: 'Independent Tutoring / Morning Star Community',
+    allegationDetails: 'Educator attempted to initiate unchaperoned off-platform communication with student outside agreed schedule without parent guardian in chat.',
+    status: 'under_investigation',
+    coolingOffActive: true,
+    dovvsuReference: null,
+    superAdminNotes: 'Automated cooling-off invoked. Direct tutoring bookings suspended. Gate G4 placed under audit.'
+  },
+  {
+    id: 'INC-SAFE-2026-002',
+    incidentRef: 'INC-SAFE-2026-002',
+    reportedAt: '2026-10-18T14:30:00Z',
+    severity: 'MEDIUM_INVESTIGATION',
+    category: 'Curriculum & Interaction Tone Feedback',
+    reporterName: 'Mr. Emmanuel Tetteh (Parent)',
+    reporterPhone: '+233 24 998 1234',
+    reportedPartyName: 'Kofi Addo-Mensah (Educator)',
+    reportedPartyId: 'tch-03',
+    schoolContext: 'French Online Tutoring',
+    allegationDetails: 'Parent reported harsh disciplinary tone used during online session.',
+    status: 'cleared',
+    coolingOffActive: false,
+    dovvsuReference: null,
+    superAdminNotes: 'Case reviewed with audio recording consent. Guidance issued to educator on pedagogical patience; cleared of safeguarding breach.'
+  }
+];
+
+let SEED_SAFEGUARDING_ENGAGEMENTS = [
+  {
+    engagementRef: 'TUT-2026-0041',
+    guardianName: 'Charles Duodu (Parent)',
+    guardianEmail: 'omotade.duodu@gmail.com',
+    guardianPhone: '+233 24 411 9922',
+    wardName: 'Kofi Duodu',
+    wardGrade: 'Grade 7 (Cambridge Checkpoint)',
+    educatorName: 'Emmanuel Kwame Boateng',
+    educatorLicence: 'NTC/LIC/GH-2023-8192',
+    policeClearance: 'CID/ACC/2026/V-8912',
+    d4Status: 'CLEARED_G4_CHILD_SAFE',
+    gateStatus: 'UNLOCKED_PASSED',
+    lastSession: '2026-11-04 16:00'
+  },
+  {
+    engagementRef: 'TUT-2026-0042',
+    guardianName: 'Dr. Kwame Boateng',
+    guardianEmail: 'k.boateng@gmail.com',
+    guardianPhone: '+233 24 411 9922',
+    wardName: 'Nana Yaa Boateng',
+    wardGrade: 'Primary Class 4',
+    educatorName: 'Dr. Araba Mensah',
+    educatorLicence: 'NTC/LIC/GH-2022-4410',
+    policeClearance: 'CID/ACC/2025/V-3310',
+    d4Status: 'CLEARED_G4_CHILD_SAFE',
+    gateStatus: 'UNLOCKED_PASSED',
+    lastSession: '2026-11-05 15:30'
+  },
+  {
+    engagementRef: 'TUT-2026-0043',
+    guardianName: 'Mrs. Abigail Mensah',
+    guardianEmail: 'abigail.m@yahoo.com',
+    guardianPhone: '+233 50 123 4567',
+    wardName: 'Akosua Mensah',
+    wardGrade: 'SHS Form 1 (Science)',
+    educatorName: 'Kwabena Danquah',
+    educatorLicence: 'NTC/LIC/GH-2025-9988',
+    policeClearance: 'CID/ACC/2026/V-5512',
+    d4Status: 'CLEARED_G4_CHILD_SAFE',
+    gateStatus: 'UNLOCKED_PASSED',
+    lastSession: '2026-11-03 17:00'
+  }
+];
+
+let SEED_DATA_GOVERNANCE_SAR = [
+  {
+    id: 'SAR-2026-001',
+    requestType: 'Right to Data Portability (Export)',
+    dataSubjectName: 'Nana Kwame Poku (Parent)',
+    dataSubjectEmail: 'k.poku@outlook.com',
+    wardName: 'Kofi Poku',
+    statutoryBasis: 'Act 843 Section 24 (Access to Personal Data)',
+    status: 'pending_fulfillment',
+    requestedAt: '2026-11-04T09:15:00Z',
+    scope: 'All admissions records, entrance assessment scores, and MoMo voucher invoices for Roman Ridge School.',
+    exportUrl: null
+  },
+  {
+    id: 'SAR-2026-002',
+    requestType: 'Consent Revocation & PII Redaction',
+    dataSubjectName: 'Nana Ama Prempeh (Parent)',
+    dataSubjectEmail: 'orders@crownstationery.gh',
+    wardName: 'Yaw Prempeh',
+    statutoryBasis: 'Act 843 Section 20 (Right to Object / Withdraw Consent)',
+    status: 'fulfilled_redacted',
+    requestedAt: '2026-10-22T11:00:00Z',
+    scope: 'Purge declined SHS admission dossier and anonymize phone number across public index.',
+    completedAt: '2026-10-23T14:20:00Z',
+    redactionProofHash: 'sha256:7f81a982c4018e69b2d88019e12019481928371902847190283719028371'
+  }
+];
+
+let SEED_GHANA_REGIONS = [
+  {
+    code: 'GAR',
+    name: 'Greater Accra Region',
+    capital: 'Accra',
+    directorName: 'Kofi Boateng, M.Ed',
+    directorEmail: 'gar.director@skoolfinder.com.gh',
+    directorPhone: '+233 24 411 9820',
+    status: 'ACTIVE_PILOT',
+    schoolsCount: 20,
+    teachersCount: 12,
+    suppliersCount: 8,
+    studentsEnrolled: 894,
+    monthlyGmvGhs: 84500,
+    districts: ['Accra Metropolitan', 'Tema', 'Ga East', 'Ga West', 'Ayawaso West', 'La Dade-Kotopon']
+  },
+  {
+    code: 'AR',
+    name: 'Ashanti Region',
+    capital: 'Kumasi',
+    directorName: 'Dr. Osei Prempeh',
+    directorEmail: 'ashanti.director@skoolfinder.com.gh',
+    directorPhone: '+233 24 333 1199',
+    status: 'EXPANSION_PHASE_2',
+    schoolsCount: 6,
+    teachersCount: 4,
+    suppliersCount: 3,
+    studentsEnrolled: 310,
+    monthlyGmvGhs: 26000,
+    districts: ['Kumasi Metropolitan', 'Asokwa', 'Oforikrom', 'Kwadaso', 'Bantama']
+  },
+  {
+    code: 'WR',
+    name: 'Western Region',
+    capital: 'Sekondi-Takoradi',
+    directorName: 'Mrs. Esi Acquah',
+    directorEmail: 'western.director@skoolfinder.com.gh',
+    directorPhone: '+233 31 200 4455',
+    status: 'EXPANSION_PHASE_2',
+    schoolsCount: 3,
+    teachersCount: 2,
+    suppliersCount: 1,
+    studentsEnrolled: 140,
+    monthlyGmvGhs: 12000,
+    districts: ['Sekondi-Takoradi', 'Tarkwa-Nsuaem', 'Effia-Kwesimintsim']
+  },
+  {
+    code: 'ER',
+    name: 'Eastern Region',
+    capital: 'Koforidua',
+    directorName: 'Rev. Emmanuel Asare',
+    directorEmail: 'eastern.director@skoolfinder.com.gh',
+    directorPhone: '+233 34 200 7711',
+    status: 'EXPANSION_PHASE_2',
+    schoolsCount: 4,
+    teachersCount: 3,
+    suppliersCount: 2,
+    studentsEnrolled: 195,
+    monthlyGmvGhs: 15500,
+    districts: ['New Juaben North', 'New Juaben South', 'Akuapem South', 'Akwapim North']
+  },
+  {
+    code: 'CR',
+    name: 'Central Region',
+    capital: 'Cape Coast',
+    directorName: 'Prof. Kwesi Mensah',
+    directorEmail: 'central.director@skoolfinder.com.gh',
+    directorPhone: '+233 33 210 8822',
+    status: 'PLANNED_Q2',
+    schoolsCount: 2,
+    teachersCount: 1,
+    suppliersCount: 1,
+    studentsEnrolled: 80,
+    monthlyGmvGhs: 7500,
+    districts: ['Cape Coast Metropolitan', 'Komenda-Edina-Eguafo-Abirem', 'Mfantseman']
+  },
+  {
+    code: 'VR',
+    name: 'Volta Region',
+    capital: 'Ho',
+    directorName: 'Sylvanus Agbodza',
+    directorEmail: 'volta.director@skoolfinder.com.gh',
+    directorPhone: '+233 36 200 3344',
+    status: 'PLANNED_Q3',
+    schoolsCount: 1,
+    teachersCount: 1,
+    suppliersCount: 1,
+    studentsEnrolled: 45,
+    monthlyGmvGhs: 3800,
+    districts: ['Ho Municipal', 'Hohoe Municipal', 'Keta Municipal']
+  },
+  {
+    code: 'NR',
+    name: 'Northern Region',
+    capital: 'Tamale',
+    directorName: 'Alhaji Ibrahim Mustapha',
+    directorEmail: 'northern.director@skoolfinder.com.gh',
+    directorPhone: '+233 37 200 9988',
+    status: 'PLANNED_Q3',
+    schoolsCount: 1,
+    teachersCount: 1,
+    suppliersCount: 0,
+    studentsEnrolled: 35,
+    monthlyGmvGhs: 2900,
+    districts: ['Tamale Metropolitan', 'Sagnarigu', 'Yendi Municipal']
+  },
+  {
+    code: 'UER',
+    name: 'Upper East Region',
+    capital: 'Bolgatanga',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'reg.director.ue@skoolfinder.com.gh',
+    directorPhone: '+233 38 200 1100',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Bolgatanga Municipal', 'Kassena-Nankana']
+  },
+  {
+    code: 'UWR',
+    name: 'Upper West Region',
+    capital: 'Wa',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'reg.director.uw@skoolfinder.com.gh',
+    directorPhone: '+233 39 200 1100',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Wa Municipal', 'Jirapa']
+  },
+  {
+    code: 'BR',
+    name: 'Bono Region',
+    capital: 'Sunyani',
+    directorName: 'Kwaku Appiah-Kubi',
+    directorEmail: 'bono.director@skoolfinder.com.gh',
+    directorPhone: '+233 35 200 4499',
+    status: 'PLANNED_Q4',
+    schoolsCount: 1,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 25,
+    monthlyGmvGhs: 1800,
+    districts: ['Sunyani Municipal', 'Berekum East']
+  },
+  {
+    code: 'BER',
+    name: 'Bono East Region',
+    capital: 'Techiman',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'bonoeast.director@skoolfinder.com.gh',
+    directorPhone: '+233 35 200 4400',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Techiman Municipal', 'Kintampo North']
+  },
+  {
+    code: 'AHR',
+    name: 'Ahafo Region',
+    capital: 'Goaso',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'ahafo.director@skoolfinder.com.gh',
+    directorPhone: '+233 35 200 5500',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Asunafo North', 'Tano North']
+  },
+  {
+    code: 'OTI',
+    name: 'Oti Region',
+    capital: 'Dambai',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'oti.director@skoolfinder.com.gh',
+    directorPhone: '+233 36 200 8800',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Krachi East', 'Nkwanta South']
+  },
+  {
+    code: 'SAV',
+    name: 'Savannah Region',
+    capital: 'Damongo',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'savannah.director@skoolfinder.com.gh',
+    directorPhone: '+233 37 200 7700',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['West Gonja', 'East Gonja']
+  },
+  {
+    code: 'NER',
+    name: 'North East Region',
+    capital: 'Nalerigu',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'northeast.director@skoolfinder.com.gh',
+    directorPhone: '+233 37 200 6600',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['East Mamprusi', 'West Mamprusi']
+  },
+  {
+    code: 'WNR',
+    name: 'Western North Region',
+    capital: 'Sefwi Wiawso',
+    directorName: 'Pending Regional Director',
+    directorEmail: 'westernnorth.director@skoolfinder.com.gh',
+    directorPhone: '+233 31 200 8800',
+    status: 'PLANNED_Q4',
+    schoolsCount: 0,
+    teachersCount: 0,
+    suppliersCount: 0,
+    studentsEnrolled: 0,
+    monthlyGmvGhs: 0,
+    districts: ['Sefwi Wiawso', 'Bibiani-Anhwiaso-Bekwai']
+  }
+];
+
+let SEED_SUPER_ADMIN_STAFF = [
+  {
+    id: 'staff-01',
+    name: 'Charles Duodu',
+    email: 'omotade.duodu@gmail.com',
+    phone: '+233 24 411 9922',
+    role: 'super_admin',
+    roleLabel: 'Super Admin Executive Director',
+    status: 'ACTIVE',
+    mfa: 'Enforced (TOTP & SMS)',
+    lastLogin: '2026-11-06T17:42:00Z',
+    permissions: ['all_unrestricted', 'finance_arbitration', 'safeguarding_emergency_freeze', 'nasia_vetting', 'dpc_sar_processing']
+  },
+  {
+    id: 'staff-02',
+    name: 'Nana Aba Mensah',
+    email: 'n.mensah@skoolfinder.com.gh',
+    phone: '+233 50 119 4433',
+    role: 'safeguarding_lead',
+    roleLabel: 'Child Protection & Safeguarding Lead',
+    status: 'ACTIVE',
+    mfa: 'Enforced (TOTP)',
+    lastLogin: '2026-11-06T15:20:00Z',
+    permissions: ['safeguarding_g4_review', 'police_dovvsu_escalation', 'emergency_profile_freeze', 'guardian_ward_audit']
+  },
+  {
+    id: 'staff-03',
+    name: 'Kofi Boateng, M.Ed',
+    email: 'k.boateng@skoolfinder.com.gh',
+    phone: '+233 24 332 8811',
+    role: 'compliance_officer',
+    roleLabel: 'NaSIA Institutional Accreditation Auditor',
+    status: 'ACTIVE',
+    mfa: 'Enforced (TOTP)',
+    lastLogin: '2026-11-06T12:05:00Z',
+    permissions: ['nasia_cross_check', 'school_ownership_approval', 'inspection_cert_verification']
+  },
+  {
+    id: 'staff-04',
+    name: 'Ama Serwaa Osei',
+    email: 'a.osei@skoolfinder.com.gh',
+    phone: '+233 24 887 5522',
+    role: 'finance_auditor',
+    roleLabel: 'Finance & MoMo Milestone Escrow Officer',
+    status: 'ACTIVE',
+    mfa: 'Enforced (SMS OTP)',
+    lastLogin: '2026-11-06T16:10:00Z',
+    permissions: ['paystack_webhook_audit', 'escrow_50_50_arbitration', 'subscription_quota_override']
+  },
+  {
+    id: 'staff-05',
+    name: 'Dr. Joseph Adjei',
+    email: 'admissions.dean@skoolfinder.com.gh',
+    phone: '+233 24 411 9823',
+    role: 'admissions_dean',
+    roleLabel: 'Admissions & Campus Quota Dean',
+    status: 'ACTIVE',
+    mfa: 'Enforced (TOTP)',
+    lastLogin: '2026-11-06T11:45:00Z',
+    permissions: ['campus_quota_management', 'entrance_exam_scheduling', 'voucher_reconciliation']
+  }
+];
+
+// 1. SAFEGUARDING CENTRE ENDPOINTS
+router.get('/safeguarding/overview', async (req, res) => {
+  try {
+    const metrics = {
+      gateG4CompliancePct: 100,
+      clearedChildSafe: SEED_ADMIN_TEACHERS.filter(t => t.safeguarding_g4_status === 'CLEARED_G4_CHILD_SAFE').length,
+      pendingCidChecks: SEED_ADMIN_TEACHERS.filter(t => t.safeguarding_g4_status === 'PENDING_CID_CHECK').length,
+      safeguardingHolds: SEED_ADMIN_TEACHERS.filter(t => t.safeguarding_g4_status === 'SAFEGUARDING_HOLD').length,
+      activeIncidents: SEED_SAFEGUARDING_INCIDENTS.filter(i => i.status !== 'cleared').length,
+      dovvsuReferrals: SEED_SAFEGUARDING_INCIDENTS.filter(i => i.status === 'police_referred_dovvsu').length
+    };
+    return res.json({
+      success: true,
+      metrics,
+      incidents: SEED_SAFEGUARDING_INCIDENTS,
+      engagements: SEED_SAFEGUARDING_ENGAGEMENTS
+    });
+  } catch (err) {
+    console.error('GET /api/admin/safeguarding/overview error:', err);
+    return res.status(500).json({ error: 'Failed to retrieve safeguarding overview' });
+  }
+});
+
+router.post('/safeguarding/incidents', async (req, res) => {
+  try {
+    const { reportedPartyId, reportedPartyName, reporterName, reporterPhone, category, severity, allegationDetails, schoolContext } = req.body || {};
+    const id = `INC-SAFE-2026-00${SEED_SAFEGUARDING_INCIDENTS.length + 1}`;
+    const newIncident = {
+      id,
+      incidentRef: id,
+      reportedAt: new Date().toISOString(),
+      severity: severity || 'HIGH_SAFEGUARDING_REVIEW',
+      category: category || 'Minor Welfare Concern',
+      reporterName: reporterName || 'Concerned Parent',
+      reporterPhone: reporterPhone || '+233 24 000 0000',
+      reportedPartyName: reportedPartyName || 'Educator',
+      reportedPartyId: reportedPartyId || null,
+      schoolContext: schoolContext || 'Tutoring Hub',
+      allegationDetails: allegationDetails || 'Safeguarding report logged.',
+      status: 'under_investigation',
+      coolingOffActive: severity === 'CRITICAL_IMMEDIATE_ACTION',
+      dovvsuReference: null,
+      superAdminNotes: 'Report logged by Super Admin. Gate G4 review protocol initiated.'
+    };
+
+    if (severity === 'CRITICAL_IMMEDIATE_ACTION' && reportedPartyId) {
+      const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === reportedPartyId);
+      if (teacher) {
+        teacher.safeguarding_g4_status = 'SAFEGUARDING_HOLD';
+        teacher.direct_booking_suspended = true;
+        teacher.booking_suspension_reason = `Immediate Gate G4 cooling off triggered by Incident ${id}`;
+      }
+    }
+
+    SEED_SAFEGUARDING_INCIDENTS.unshift(newIncident);
+    return res.json({ success: true, incident: newIncident, message: `Safeguarding incident ${id} registered.` });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to register safeguarding incident' });
+  }
+});
+
+router.patch('/safeguarding/incidents/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, superAdminNotes = '', dovvsuReference = null } = req.body || {};
+    const incident = SEED_SAFEGUARDING_INCIDENTS.find(i => i.id === id);
+    if (!incident) return res.status(404).json({ error: 'Incident not found' });
+
+    incident.status = status || incident.status;
+    if (superAdminNotes) incident.superAdminNotes = superAdminNotes;
+    if (dovvsuReference) incident.dovvsuReference = dovvsuReference;
+
+    if (status === 'cleared') {
+      incident.coolingOffActive = false;
+    } else if (status === 'sustained_barred' && incident.reportedPartyId) {
+      incident.coolingOffActive = true;
+      const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === incident.reportedPartyId);
+      if (teacher) {
+        teacher.safeguarding_g4_status = 'SAFEGUARDING_HOLD';
+        teacher.direct_booking_suspended = true;
+        teacher.booking_suspension_reason = `Safeguarding allegation sustained. Barred permanently. DOVVSU Ref: ${dovvsuReference || 'N/A'}`;
+      }
+    }
+
+    return res.json({ success: true, incident, message: `Incident ${id} updated to status "${status}".` });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update incident status' });
+  }
+});
+
+router.post('/safeguarding/emergency-freeze', async (req, res) => {
+  try {
+    const { teacherId, reason = 'Urgent Gate G4 cooling-off invoked', dovvsuRef = null } = req.body || {};
+    const teacher = SEED_ADMIN_TEACHERS.find(t => t.id === teacherId);
+    if (!teacher) return res.status(404).json({ error: 'Educator not found' });
+
+    teacher.safeguarding_g4_status = 'SAFEGUARDING_HOLD';
+    teacher.direct_booking_suspended = true;
+    teacher.booking_suspension_reason = reason;
+
+    const incidentId = `INC-SAFE-2026-00${SEED_SAFEGUARDING_INCIDENTS.length + 1}`;
+    SEED_SAFEGUARDING_INCIDENTS.unshift({
+      id: incidentId,
+      incidentRef: incidentId,
+      reportedAt: new Date().toISOString(),
+      severity: 'CRITICAL_IMMEDIATE_ACTION',
+      category: 'Emergency Gate G4 Police Hold',
+      reporterName: 'Super Admin Directorate',
+      reporterPhone: '+233 24 411 9922',
+      reportedPartyName: teacher.fullName || teacher.name,
+      reportedPartyId: teacher.id,
+      schoolContext: 'Direct Tutoring / All Campuses',
+      allegationDetails: reason,
+      status: 'police_referred_dovvsu',
+      coolingOffActive: true,
+      dovvsuReference: dovvsuRef || `DOVVSU/HQ/2026/G4-${Math.floor(1000 + Math.random() * 9000)}`,
+      superAdminNotes: 'Emergency 1-Click Freeze executed. Direct parent access prohibited.'
+    });
+
+    return res.json({
+      success: true,
+      message: `Emergency Gate G4 freeze applied to ${teacher.fullName}. Profile locked and DOVVSU referral initiated.`,
+      teacher
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to execute emergency freeze' });
+  }
+});
+
+// 2. DATA GOVERNANCE & DPC (ACT 843) ENDPOINTS
+router.get('/datagov/overview', async (req, res) => {
+  try {
+    const overview = {
+      dpcStatus: {
+        registrationNumber: 'DPC/REG/GH-2024-81920',
+        registrationDate: '2024-01-15',
+        expiryDate: '2027-12-31',
+        complianceStatus: 'FULLY_COMPLIANT',
+        dpoOfficer: 'Charles Duodu (Executive Director)',
+        supervisoryAuthority: 'Data Protection Commission, Ghana (Act 843)'
+      },
+      metrics: {
+        piiEncryptionCoveragePct: 100,
+        fieldLevelMasking: 'Active (Guardian Mobile, Minor Birth Certs)',
+        retentionScheduleDays: 1095,
+        pendingSarCount: SEED_DATA_GOVERNANCE_SAR.filter(s => s.status === 'pending_fulfillment').length,
+        fulfilledSarCount: SEED_DATA_GOVERNANCE_SAR.filter(s => s.status !== 'pending_fulfillment').length
+      },
+      sarRequests: SEED_DATA_GOVERNANCE_SAR,
+      retentionPolicies: [
+        { category: 'Student Admissions Dossiers', retentionYears: 3, purgeAction: 'Automatic Cryptographic Redaction', legalBasis: 'Act 843 Sec 27' },
+        { category: 'Financial Paystack MoMo Invoices', retentionYears: 7, purgeAction: 'Statutory GRA Financial Archive', legalBasis: 'GRA Act 2009' },
+        { category: 'Educator NTC & Police CID Records', retentionYears: 5, purgeAction: 'Periodic Re-vetting or Purge', legalBasis: 'Education Regulatory Act 1023' }
+      ]
+    };
+    return res.json({ success: true, ...overview });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve data governance overview' });
+  }
+});
+
+router.post('/datagov/sar/:id/process', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { action, notes = '' } = req.body || {};
+    const sar = SEED_DATA_GOVERNANCE_SAR.find(s => s.id === id);
+    if (!sar) return res.status(404).json({ error: 'Subject Access Request not found' });
+
+    sar.completedAt = new Date().toISOString();
+    sar.status = action === 'export_archive' ? 'fulfilled_dispatched' : 'fulfilled_redacted';
+    sar.redactionProofHash = `sha256:${Buffer.from(`${id}-${action}-${Date.now()}`).toString('hex').slice(0, 48)}`;
+    sar.notes = notes;
+
+    return res.json({
+      success: true,
+      message: `SAR ${id} successfully fulfilled via "${action}". Cryptographic proof generated.`,
+      sar
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to process SAR request' });
+  }
+});
+
+// 3. REGIONAL ADMINISTRATION ENDPOINTS
+router.get('/regions', async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      count: SEED_GHANA_REGIONS.length,
+      regions: SEED_GHANA_REGIONS
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch regional administration data' });
+  }
+});
+
+router.patch('/regions/:code/settings', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const { directorName, directorEmail, directorPhone, status, notes = '' } = req.body || {};
+    const region = SEED_GHANA_REGIONS.find(r => r.code === code.toUpperCase());
+    if (!region) return res.status(404).json({ error: 'Region code not found' });
+
+    if (directorName) region.directorName = directorName;
+    if (directorEmail) region.directorEmail = directorEmail;
+    if (directorPhone) region.directorPhone = directorPhone;
+    if (status) region.status = status;
+    if (notes) region.notes = notes;
+
+    return res.json({
+      success: true,
+      message: `Regional administration settings for ${region.name} updated.`,
+      region
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update regional settings' });
+  }
+});
+
+// 4. SUPER ADMIN STAFF & RBAC ENDPOINTS
+router.get('/staff', async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      count: SEED_SUPER_ADMIN_STAFF.length,
+      staff: SEED_SUPER_ADMIN_STAFF
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to fetch staff directory' });
+  }
+});
+
+router.post('/staff', async (req, res) => {
+  try {
+    const { name, email, phone, role, permissions = [] } = req.body || {};
+    if (!name || !email || !role) {
+      return res.status(400).json({ error: 'Name, email, and delegated role are required' });
+    }
+
+    const id = `staff-0${SEED_SUPER_ADMIN_STAFF.length + 1}`;
+    let roleLabel = 'Super Admin Officer';
+    if (role === 'safeguarding_lead') roleLabel = 'Child Protection & Safeguarding Lead';
+    else if (role === 'compliance_officer') roleLabel = 'NaSIA Accreditation Compliance Auditor';
+    else if (role === 'admissions_dean') roleLabel = 'Admissions & Campus Quota Dean';
+    else if (role === 'finance_auditor') roleLabel = 'Finance & MoMo Milestone Escrow Officer';
+
+    const newStaff = {
+      id,
+      name,
+      email,
+      phone: phone || '+233 24 000 0000',
+      role,
+      roleLabel,
+      status: 'ACTIVE',
+      mfa: 'Enforced (TOTP Pending)',
+      lastLogin: 'Never',
+      permissions: permissions.length > 0 ? permissions : ['dashboard_read']
+    };
+
+    SEED_SUPER_ADMIN_STAFF.push(newStaff);
+    return res.json({
+      success: true,
+      message: `Staff officer ${name} granted ${roleLabel} privileges.`,
+      staff: newStaff
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to invite staff officer' });
+  }
+});
+
+router.patch('/staff/:id/role', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role, roleLabel, permissions } = req.body || {};
+    const staff = SEED_SUPER_ADMIN_STAFF.find(s => s.id === id);
+    if (!staff) return res.status(404).json({ error: 'Staff officer not found' });
+
+    if (role) staff.role = role;
+    if (roleLabel) staff.roleLabel = roleLabel;
+    if (Array.isArray(permissions)) staff.permissions = permissions;
+
+    return res.json({
+      success: true,
+      message: `Role permissions for ${staff.name} updated.`,
+      staff
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update staff permissions' });
+  }
+});
+
+router.patch('/staff/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body || {};
+    const staff = SEED_SUPER_ADMIN_STAFF.find(s => s.id === id);
+    if (!staff) return res.status(404).json({ error: 'Staff officer not found' });
+
+    if (staff.email === 'omotade.duodu@gmail.com') {
+      return res.status(403).json({ error: 'Master Super Admin account cannot be suspended or locked.' });
+    }
+
+    staff.status = status || (staff.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE');
+    return res.json({
+      success: true,
+      message: `Account status for ${staff.name} changed to ${staff.status}.`,
+      staff
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update staff status' });
+  }
+});
+
 module.exports = router;

@@ -13162,6 +13162,683 @@ const Modals = {
   },
 
   // ============================================================================
+  // PHASE 5: TRUST & GOVERNANCE, GATE G4 SAFEGUARDING, DPC PRIVACY,
+  // REGIONAL ADMINISTRATION & STAFF RBAC MODALS
+  // ============================================================================
+
+  openSafeguardingIncidentModal(incident, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const isCritical = incident.severity === 'CRITICAL_IMMEDIATE_ACTION';
+    const isCoolingOff = !!incident.coolingOffActive;
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 640px;">
+        <div class="modal-header" style="border-bottom: 2px solid #dc2626;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+              Module 5.2 • Child Protection &amp; Legal Compliance (Act 560)
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Safeguarding Incident Review: ${incident.incidentRef || incident.id}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem; max-height: 80vh; overflow-y: auto;">
+          <!-- Severity Alert Banner -->
+          <div style="background: ${isCritical ? '#fef2f2' : '#fffbeb'}; border: 1.5px solid ${isCritical ? '#fecaca' : '#fde68a'}; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+              <span class="badge ${isCritical ? 'badge-danger' : 'badge-warning'}" style="font-weight: 800; font-size: 0.72rem;">
+                ${incident.severity.replace(/_/g, ' ')}
+              </span>
+              <span style="font-size: 0.75rem; color: #64748b;">Reported: ${new Date(incident.reportedAt).toLocaleString()}</span>
+            </div>
+            <div style="font-size: 0.85rem; color: #0f172a; font-weight: 700; margin-bottom: 0.25rem;">
+              Category: ${incident.category}
+            </div>
+            <div style="font-size: 0.82rem; color: ${isCritical ? '#7f1d1d' : '#92400e'};">
+              ${isCoolingOff ? '⚠️ MANDATORY GATE G4 COOLING-OFF ACTIVE: Accused educator is barred from child-facing interactions and tutoring bookings.' : 'Standard inquiry protocol in progress.'}
+            </div>
+          </div>
+
+          <!-- Incident Dossier Details -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block;">Accused Party</span>
+                <strong style="color: #0f172a;">${incident.reportedPartyName}</strong>
+                <div style="font-size: 0.75rem; color: #2563eb;">${incident.schoolContext}</div>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block;">Reporting Guardian</span>
+                <strong style="color: #0f172a;">${incident.reporterName}</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">${incident.reporterPhone}</div>
+              </div>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.25rem;">Allegation Narrative</span>
+              <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.75rem; font-style: italic; color: #334155; line-height: 1.45;">
+                "${incident.allegationDetails}"
+              </div>
+            </div>
+          </div>
+
+          <!-- Regulatory Decision Form -->
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Regulatory Resolution Status *
+            </label>
+            <select id="incident-status-select" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+              <option value="under_investigation" ${incident.status === 'under_investigation' ? 'selected' : ''}>⏳ Under Independent Investigation (Cooling-Off Active)</option>
+              <option value="police_referred_dovvsu" ${incident.status === 'police_referred_dovvsu' ? 'selected' : ''}>🚨 Escalated to Ghana Police DOVVSU / Social Welfare</option>
+              <option value="sustained_barred" ${incident.status === 'sustained_barred' ? 'selected' : ''}>🚫 Allegation Sustained — Bar Educator Permanently</option>
+              <option value="cleared" ${incident.status === 'cleared' ? 'selected' : ''}>✓ Cleared of Allegation — Release Cooling-Off</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Ghana Police CID / DOVVSU Case Reference Number
+            </label>
+            <input type="text" id="incident-dovvsu-ref" value="${incident.dovvsuReference || ''}" placeholder="e.g. DOVVSU/HQ/2026/CID-9912" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Super Admin Incident Audit &amp; Resolution Notes *
+            </label>
+            <textarea id="incident-admin-notes" rows="3" placeholder="Record factual findings, parent interviews, audio logs review..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;">${incident.superAdminNotes || ''}</textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-incident-modal">Cancel</button>
+            <button type="button" class="btn-pill btn-primary" id="btn-save-incident-decision" style="background: #dc2626; border-color: #dc2626; font-weight: 800;">
+              Execute Incident Ruling
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-incident-modal').onclick = () => this.close();
+
+    document.getElementById('btn-save-incident-decision').onclick = async () => {
+      const status = document.getElementById('incident-status-select').value;
+      const dovvsuReference = document.getElementById('incident-dovvsu-ref').value.trim();
+      const superAdminNotes = document.getElementById('incident-admin-notes').value.trim();
+
+      const btn = document.getElementById('btn-save-incident-decision');
+      btn.disabled = true;
+      btn.innerText = 'Updating...';
+
+      try {
+        const res = await API.updateSafeguardingIncidentStatus(incident.id, {
+          status,
+          dovvsuReference,
+          superAdminNotes
+        });
+        this.close();
+        State.showToast(`✓ Safeguarding incident status updated to "${status}".`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Execute Incident Ruling';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openReportSafeguardingConcernModal(onCreated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-header" style="border-bottom: 2px solid #dc2626;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+              Module 5.2 • Emergency Gate G4 Safeguarding Protocol
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Register Safeguarding Concern
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-report-safeguarding" style="padding: 1.5rem;">
+          <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.82rem; color: #991b1b;">
+            Ghana Children's Act (Act 560) mandatory reporting: Critical concerns instantly trigger automated cooling-off and lock child-facing bookings.
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Accused Party / Educator *</label>
+              <input type="text" id="concern-party-name" required placeholder="e.g. Kwabena Danquah" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">School / Hub Context *</label>
+              <input type="text" id="concern-school-context" required placeholder="e.g. Morning Star Community / Online" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Reporting Parent / Guardian *</label>
+              <input type="text" id="concern-reporter-name" required placeholder="e.g. Mrs. Patience Mensah" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Reporter Contact Phone *</label>
+              <input type="text" id="concern-reporter-phone" required placeholder="e.g. +233 24 551 2299" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Severity Level *</label>
+              <select id="concern-severity" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option value="CRITICAL_IMMEDIATE_ACTION">🔴 CRITICAL_IMMEDIATE_ACTION (Instant Freeze)</option>
+                <option value="HIGH_SAFEGUARDING_REVIEW">🟠 HIGH_SAFEGUARDING_REVIEW (24h Audit)</option>
+                <option value="MEDIUM_INVESTIGATION">🟡 MEDIUM_INVESTIGATION (Standard Review)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Violation Category *</label>
+              <select id="concern-category" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option value="Unverified Minor Contact Attempt">Unverified Minor Contact Attempt</option>
+                <option value="Unchaperoned Off-Platform Communication">Unchaperoned Off-Platform Communication</option>
+                <option value="Physical Safety / Welfare Concern">Physical Safety / Welfare Concern</option>
+                <option value="Inappropriate Conduct or Tone">Inappropriate Conduct or Tone</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Detailed Allegation Narrative *</label>
+            <textarea id="concern-details" rows="3" required placeholder="Describe factual incident details, time, date, platform and any witness statements..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-concern">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-submit-concern" style="background: #dc2626; border-color: #dc2626; font-weight: 800;">
+              Register Incident
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-concern').onclick = () => this.close();
+
+    document.getElementById('form-report-safeguarding').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-concern');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Registering...';
+
+      const payload = {
+        reportedPartyName: document.getElementById('concern-party-name').value.trim(),
+        schoolContext: document.getElementById('concern-school-context').value.trim(),
+        reporterName: document.getElementById('concern-reporter-name').value.trim(),
+        reporterPhone: document.getElementById('concern-reporter-phone').value.trim(),
+        severity: document.getElementById('concern-severity').value,
+        category: document.getElementById('concern-category').value,
+        allegationDetails: document.getElementById('concern-details').value.trim()
+      };
+
+      try {
+        const res = await API.createSafeguardingIncident(payload);
+        this.close();
+        State.showToast(`🚨 Safeguarding incident registered! ID: ${res.incident?.id}`, 'success');
+        if (onCreated) onCreated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Register Incident';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openEmergencyFreezeModal(teacher, onFrozen) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const teacherName = teacher.fullName || teacher.name || 'Educator';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 540px;">
+        <div class="modal-header" style="border-bottom: 2px solid #dc2626;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #dc2626; text-transform: uppercase;">
+              Emergency Gate G4 Police Power Protocol
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              1-Click Profile Freeze: ${teacherName}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;">
+          <div style="background: #fef2f2; border: 1.5px solid #fecaca; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <div style="font-weight: 800; color: #991b1b; font-size: 0.92rem; margin-bottom: 0.35rem;">
+              ⛔ Immediate Child-Protection Lockout
+            </div>
+            <div style="font-size: 0.82rem; color: #7f1d1d; line-height: 1.45;">
+              This will instantly transition <strong>${teacherName}</strong> to <code>SAFEGUARDING_HOLD</code>, suspend all active tutoring bookings, block parent direct messaging, and generate a formal DOVVSU referral dossier.
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Emergency Reason &amp; Specific Allegation *
+            </label>
+            <textarea id="freeze-reason" rows="3" required placeholder="Specify urgent risk rationale..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;">Emergency Gate G4 cooling-off invoked due to safeguarding complaint.</textarea>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Police DOVVSU Referral Reference (Optional)
+            </label>
+            <input type="text" id="freeze-dovvsu-ref" placeholder="e.g. DOVVSU/HQ/2026/G4-9128" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-freeze">Cancel</button>
+            <button type="button" class="btn-pill btn-primary" id="btn-confirm-freeze" style="background: #dc2626; border-color: #dc2626; font-weight: 800;">
+              Execute Immediate Lockout
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-freeze').onclick = () => this.close();
+
+    document.getElementById('btn-confirm-freeze').onclick = async () => {
+      const reason = document.getElementById('freeze-reason').value.trim();
+      const dovvsuRef = document.getElementById('freeze-dovvsu-ref').value.trim();
+
+      const btn = document.getElementById('btn-confirm-freeze');
+      btn.disabled = true;
+      btn.innerText = 'Locking...';
+
+      try {
+        const res = await API.emergencyFreezeEducator(teacher.id, reason, dovvsuRef);
+        this.close();
+        State.showToast(`⛔ Emergency freeze applied to ${teacherName}.`, 'success');
+        if (onFrozen) onFrozen(res);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Execute Immediate Lockout';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openSARActionModal(sar, onProcessed) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 580px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Ghana Data Protection Act 843 • Statutory SAR Desk
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Process Subject Access Request: ${sar.id}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <div style="padding: 1.5rem;">
+          <!-- Request Snapshot Card -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.5rem;">
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block;">Data Subject</span>
+                <strong style="color: #0f172a;">${sar.dataSubjectName}</strong>
+                <div style="font-size: 0.75rem; color: #64748b;">${sar.dataSubjectEmail}</div>
+              </div>
+              <div>
+                <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block;">Statutory Basis</span>
+                <span class="badge" style="background: #eff6ff; color: #1e40af; font-size: 0.72rem; font-weight: 700;">${sar.statutoryBasis}</span>
+              </div>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: block; margin-bottom: 0.2rem;">Scope of Request</span>
+              <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.65rem; color: #334155; font-size: 0.82rem;">
+                ${sar.scope}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              Statutory SAR Action *
+            </label>
+            <select id="sar-action-select" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.88rem; background: #fff;">
+              <option value="export_archive">📦 Generate &amp; Dispatch Cryptographic SAR Export (Act 843 Sec 24)</option>
+              <option value="redact_pii">🔒 Execute Cryptographic Redaction &amp; Erasure (Act 843 Sec 20)</option>
+              <option value="withdraw_consent">✋ Record Parent Consent Revocation (No Erasure)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.82rem; font-weight: 700; margin-bottom: 0.35rem; color: #334155;">
+              DPO Compliance Justification &amp; Cryptographic Audit Note *
+            </label>
+            <textarea id="sar-notes" rows="3" placeholder="Record verification of guardian identity and data export checksum..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;">Data Subject identity authenticated via Ghana Card PIN and registered mobile OTP.</textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-sar">Cancel</button>
+            <button type="button" class="btn-pill btn-primary" id="btn-confirm-sar" style="font-weight: 800;">
+              Execute SAR Fulfillment
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-sar').onclick = () => this.close();
+
+    document.getElementById('btn-confirm-sar').onclick = async () => {
+      const action = document.getElementById('sar-action-select').value;
+      const notes = document.getElementById('sar-notes').value.trim();
+
+      const btn = document.getElementById('btn-confirm-sar');
+      btn.disabled = true;
+      btn.innerText = 'Processing...';
+
+      try {
+        const res = await API.processAdminSAR(sar.id, action, notes);
+        this.close();
+        State.showToast(`✓ SAR ${sar.id} processed via "${action}".`, 'success');
+        if (onProcessed) onProcessed(res);
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerText = 'Execute SAR Fulfillment';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openRegionalSettingsModal(region, onUpdated) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 560px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Module 8.2 • Regional Administration
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              Configure ${region.name} (${region.code})
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-regional-settings" style="padding: 1.5rem;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.25rem; font-size: 0.85rem; display: flex; justify-content: space-between;">
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Regional Capital</span>
+              <div style="font-weight: 800; color: #0f172a;">${region.capital}</div>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Districts Covered</span>
+              <div style="font-weight: 800; color: #2563eb;">${(region.districts || []).length} Municipalities</div>
+            </div>
+            <div>
+              <span style="color: #64748b; font-size: 0.75rem; text-transform: uppercase; font-weight: 700;">Partner Campuses</span>
+              <div style="font-weight: 800; color: #16a34a;">${region.schoolsCount || 0} Schools</div>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Regional Director Name *</label>
+            <input type="text" id="reg-director-name" value="${region.directorName || ''}" required style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Director Official Email *</label>
+              <input type="email" id="reg-director-email" value="${region.directorEmail || ''}" required style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Director Contact Phone *</label>
+              <input type="text" id="reg-director-phone" value="${region.directorPhone || ''}" required style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Operational Deployment Status *</label>
+            <select id="reg-status" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+              <option value="ACTIVE_PILOT" ${region.status === 'ACTIVE_PILOT' ? 'selected' : ''}>ACTIVE_PILOT (Live Multi-School Ecosystem)</option>
+              <option value="EXPANSION_PHASE_2" ${region.status === 'EXPANSION_PHASE_2' ? 'selected' : ''}>EXPANSION_PHASE_2 (Onboarding Campuses)</option>
+              <option value="PLANNED_Q2" ${region.status === 'PLANNED_Q2' ? 'selected' : ''}>PLANNED_Q2 (Registry Seeding)</option>
+              <option value="PLANNED_Q3" ${region.status === 'PLANNED_Q3' ? 'selected' : ''}>PLANNED_Q3 (Pilot In Planning)</option>
+              <option value="PLANNED_Q4" ${region.status === 'PLANNED_Q4' ? 'selected' : ''}>PLANNED_Q4 (Upcoming Phase)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 1.25rem;">
+            <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Regional Academic Calendar &amp; Policy Notes</label>
+            <textarea id="reg-notes" rows="2" placeholder="Record local holidays, regional mock examination windows..." style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;">${region.notes || ''}</textarea>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-reg-settings">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-save-reg-settings" style="font-weight: 800;">
+              Save Regional Settings
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-reg-settings').onclick = () => this.close();
+
+    document.getElementById('form-regional-settings').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-save-reg-settings');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...';
+
+      const data = {
+        directorName: document.getElementById('reg-director-name').value.trim(),
+        directorEmail: document.getElementById('reg-director-email').value.trim(),
+        directorPhone: document.getElementById('reg-director-phone').value.trim(),
+        status: document.getElementById('reg-status').value,
+        notes: document.getElementById('reg-notes').value.trim()
+      };
+
+      try {
+        const res = await API.updateAdminRegionSettings(region.code, data);
+        this.close();
+        State.showToast(`✓ Regional settings for "${region.name}" updated.`, 'success');
+        if (onUpdated) onUpdated(res);
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Save Regional Settings';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  openStaffMemberModal(staffMember, onSaved) {
+    this.close();
+    const div = document.createElement('div');
+    div.className = 'modal-backdrop';
+    div.id = 'modal-backdrop';
+
+    const isEdit = !!staffMember;
+    const permissions = staffMember?.permissions || ['dashboard_read'];
+
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 600px;">
+        <div class="modal-header" style="border-bottom: 2px solid #2563eb;">
+          <div>
+            <div style="font-size: 0.72rem; font-weight: 800; color: #2563eb; text-transform: uppercase;">
+              Module 8.1 • Internal Platform Administration
+            </div>
+            <h3 class="modal-title" style="margin: 0.2rem 0 0 0; font-size: 1.25rem; font-weight: 800; color: #0f172a;">
+              ${isEdit ? 'Configure Staff Permissions: ' + staffMember.name : 'Invite Internal Super Admin Officer'}
+            </h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+
+        <form id="form-staff-member" style="padding: 1.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Full Legal Name *</label>
+              <input type="text" id="staff-form-name" value="${staffMember?.name || ''}" ${isEdit ? 'readonly' : 'required'} placeholder="e.g. Ama Serwaa Osei" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; ${isEdit ? 'background:#f1f5f9;' : ''}" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Official Staff Email *</label>
+              <input type="email" id="staff-form-email" value="${staffMember?.email || ''}" ${isEdit ? 'readonly' : 'required'} placeholder="e.g. a.osei@skoolfinder.com.gh" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; ${isEdit ? 'background:#f1f5f9;' : ''}" />
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Contact Phone *</label>
+              <input type="text" id="staff-form-phone" value="${staffMember?.phone || ''}" required placeholder="+233 24 000 0000" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem;" />
+            </div>
+            <div class="form-group">
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem; color: #334155;">Delegated Role Bundle *</label>
+              <select id="staff-form-role" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; background: #fff;">
+                <option value="super_admin" ${staffMember?.role === 'super_admin' ? 'selected' : ''}>Super Admin Director (Full Access)</option>
+                <option value="safeguarding_lead" ${staffMember?.role === 'safeguarding_lead' ? 'selected' : ''}>Child Protection &amp; Gate G4 Safeguarding Lead</option>
+                <option value="compliance_officer" ${staffMember?.role === 'compliance_officer' ? 'selected' : ''}>NaSIA Accreditation Compliance Auditor</option>
+                <option value="admissions_dean" ${staffMember?.role === 'admissions_dean' ? 'selected' : ''}>Admissions &amp; Campus Quota Dean</option>
+                <option value="finance_auditor" ${staffMember?.role === 'finance_auditor' ? 'selected' : ''}>Finance &amp; MoMo Milestone Escrow Officer</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Granular Permission Matrix -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem;">
+            <span style="font-size: 0.78rem; font-weight: 800; color: #0f172a; text-transform: uppercase; display: block; margin-bottom: 0.5rem;">
+              Granular Operational Delegation
+            </span>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: #334155;">
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="admissions_manage" ${permissions.includes('admissions_manage') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>Admissions &amp; Quota Oversight</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="schools_vetting" ${permissions.includes('schools_vetting') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>NaSIA Institutional Vetting</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="safeguarding_admin" ${permissions.includes('safeguarding_admin') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>Gate G4 &amp; DOVVSU Safeguarding</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="finance_escrow" ${permissions.includes('finance_escrow') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>Paystack &amp; Milestone Escrow</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="datagov_sar" ${permissions.includes('datagov_sar') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>Act 843 DPC &amp; SAR Requests</span>
+              </label>
+              <label style="display: flex; align-items: center; gap: 0.4rem; cursor: pointer;">
+                <input type="checkbox" class="staff-perm-check" value="regional_admin" ${permissions.includes('regional_admin') || permissions.includes('all_unrestricted') ? 'checked' : ''} />
+                <span>Regional Settings Calibration</span>
+              </label>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn-pill btn-secondary" id="btn-cancel-staff-form">Cancel</button>
+            <button type="submit" class="btn-pill btn-primary" id="btn-save-staff-form" style="font-weight: 800;">
+              ${isEdit ? 'Update Staff Permissions' : 'Invite Staff Officer'}
+            </button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(div);
+
+    document.getElementById('modal-close').onclick = () => this.close();
+    document.getElementById('btn-cancel-staff-form').onclick = () => this.close();
+
+    document.getElementById('form-staff-member').onsubmit = async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-save-staff-form');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...';
+
+      const selectedPerms = Array.from(document.querySelectorAll('.staff-perm-check:checked')).map(c => c.value);
+      const role = document.getElementById('staff-form-role').value;
+
+      try {
+        if (isEdit) {
+          const res = await API.updateAdminStaffRole(staffMember.id, {
+            role,
+            permissions: selectedPerms
+          });
+          this.close();
+          State.showToast(`✓ Permissions updated for ${staffMember.name}.`, 'success');
+          if (onSaved) onSaved(res);
+        } else {
+          const res = await API.createAdminStaffMember({
+            name: document.getElementById('staff-form-name').value.trim(),
+            email: document.getElementById('staff-form-email').value.trim(),
+            phone: document.getElementById('staff-form-phone').value.trim(),
+            role,
+            permissions: selectedPerms
+          });
+          this.close();
+          State.showToast(`✓ Staff officer invited successfully.`, 'success');
+          if (onSaved) onSaved(res);
+        }
+      } catch (err) {
+        submitBtn.disabled = false;
+        submitBtn.innerText = isEdit ? 'Update Staff Permissions' : 'Invite Staff Officer';
+        State.showToast(err.message, 'error');
+      }
+    };
+  },
+
+  // ============================================================================
   // PACKAGE B: TOUR SCHEDULING & CONFIRMATION MANAGEMENT MODALS
   // ============================================================================
 

@@ -34,6 +34,19 @@ const AdminView = {
   cachedCases: [],
 
   async render() {
+    if (window.location.hash) {
+      const hashTab = window.location.hash.replace(/^#\/?/, '').trim();
+      const validTabs = [
+        'overview', 'approvals', 'users', 'schools', 'teachers', 'procurement', 'suppliers',
+        'migration', 'admissions', 'cases', 'disputes', 'subscriptions', 'finance', 'crm',
+        'verification', 'safeguarding', 'datagov', 'policy', 'audit', 'communications',
+        'copilot', 'integrations', 'telemetry', 'staff', 'regions'
+      ];
+      if (validTabs.includes(hashTab)) {
+        this.activeTab = hashTab;
+      }
+    }
+
     let overview = { kpis: {}, schoolsList: [] };
     let vettingQueue = [];
     let rfqs = [];
@@ -51,6 +64,10 @@ const AdminView = {
     let escrowDisputes = [];
     let telemetryData = { telemetry: {}, sms: {}, deliveries: [] };
     let auditLogsData = [];
+    let safeguardingData = { kpis: {}, incidents: [], engagements: [] };
+    let datagovData = { dpcCertificate: {}, retentionPolicies: [], subjectAccessRequests: [] };
+    let regionsData = { regions: [], total: 0 };
+    let staffData = { staff: [], total: 0 };
 
     try {
       const promises = [
@@ -150,6 +167,30 @@ const AdminView = {
           API.getAdminAuditLogs().then(logs => {
             auditLogsData = Array.isArray(logs) ? logs : (logs?.logs || []);
           }).catch(err => console.warn('Audit logs load notice:', err))
+        );
+      } else if (this.activeTab === 'safeguarding') {
+        promises.push(
+          API.getAdminSafeguardingOverview().then(res => {
+            safeguardingData = res || { kpis: {}, incidents: [], engagements: [] };
+          }).catch(err => console.warn('Safeguarding load notice:', err))
+        );
+      } else if (this.activeTab === 'datagov') {
+        promises.push(
+          API.getAdminDataGovOverview().then(res => {
+            datagovData = res || { dpcCertificate: {}, retentionPolicies: [], subjectAccessRequests: [] };
+          }).catch(err => console.warn('DataGov load notice:', err))
+        );
+      } else if (this.activeTab === 'regions') {
+        promises.push(
+          API.getAdminRegionsList().then(res => {
+            regionsData = res || { regions: [], total: 0 };
+          }).catch(err => console.warn('Regions load notice:', err))
+        );
+      } else if (this.activeTab === 'staff') {
+        promises.push(
+          API.getAdminStaffDirectory().then(res => {
+            staffData = res || { staff: [], total: 0 };
+          }).catch(err => console.warn('Staff load notice:', err))
         );
       }
 
@@ -567,14 +608,14 @@ const AdminView = {
 
           <!-- Dynamic Active View Container -->
           <div style="padding: 2rem; flex: 1;">
-            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData, auditLogsData)}
+            ${this.renderActiveTab(overview, schools, vettingQueue, rfqs, procurementLogs, usersData, financeData, admissionsData, teachersData, rfqsData, suppliersData, verificationCases, commercialData, escrowDisputes, telemetryData, auditLogsData, safeguardingData, datagovData, regionsData, staffData)}
           </div>
         </main>
       </div>
     `;
   },
 
-  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = []) {
+  renderActiveTab(overview, schools, vettingQueue, rfqs = [], procurementLogs = [], usersData = { users: [], total: 0 }, financeData = { summary: {}, transactions: [], vouchers: [], subscriptions: [] }, admissionsData = { applications: [] }, teachersData = { teachers: [] }, rfqsData = { rfqs: [] }, suppliersData = { suppliers: [] }, verificationCases = [], commercialData = { subscriptions: [] }, escrowDisputes = [], telemetryData = { telemetry: {}, sms: {}, deliveries: [] }, auditLogsData = [], safeguardingData = { kpis: {}, incidents: [], engagements: [] }, datagovData = { dpcCertificate: {}, retentionPolicies: [], subjectAccessRequests: [] }, regionsData = { regions: [], total: 0 }, staffData = { staff: [], total: 0 }) {
     switch (this.activeTab) {
       // Group 1: Command & Work
       case 'overview':
@@ -615,9 +656,9 @@ const AdminView = {
       case 'verification':
         return this.renderVerificationDesk(verificationCases);
       case 'safeguarding':
-        return this.renderSafeguardingCentre();
+        return this.renderSafeguardingCentre(safeguardingData);
       case 'datagov':
-        return this.renderDataGovernance();
+        return this.renderDataGovernance(datagovData);
       case 'policy':
         return this.renderPolicyEngine();
       case 'audit':
@@ -637,9 +678,9 @@ const AdminView = {
 
       // Group 8: Platform Administration
       case 'staff':
-        return this.renderStaffAdmin();
+        return this.renderStaffAdmin(staffData);
       case 'regions':
-        return this.renderRegionalAdmin();
+        return this.renderRegionalAdmin(regionsData);
 
       default:
         return this.renderOverviewTab(overview, schools, rfqs, procurementLogs);
@@ -3882,72 +3923,226 @@ const AdminView = {
   },
 
   /**
-   * Group 5.2: Dedicated Safeguarding Centre (Module 5.2 — Restricted)
+   * Group 5.2: Dedicated Safeguarding Centre (Module 5.2 — Restricted Gate G4)
    */
-  renderSafeguardingCentre() {
+  renderSafeguardingCentre(safeguardingData = {}) {
+    const kpis = safeguardingData.kpis || {
+      gateG4CompliancePct: 100,
+      clearedChildSafe: 34,
+      pendingCidChecks: 6,
+      safeguardingHolds: 2,
+      activeIncidents: 2,
+      dovvsuReferrals: 1
+    };
+    const incidents = safeguardingData.incidents || [];
+    const engagements = safeguardingData.engagements || [];
+
+    this.cachedSafeguardingIncidents = incidents;
+    this.cachedSafeguardingEngagements = engagements;
+
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#dc2626;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 5.2 &bull; Restricted Child Protection &amp; Legal Compliance
+              Module 5.1 &bull; Restricted Child Protection &amp; Legal Compliance Desk
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
-              Dedicated Safeguarding Centre
+              Child Protection &amp; Safeguarding Centre
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Child protection oversight under Ghana Children's Act (Act 560). Gate G4 enforcement: zero unverified minor contact permitted.
+              Statutory child protection oversight under Ghana Children's Act (Act 560). Non-negotiable Gate G4 enforcement: zero unverified minor contact permitted.
             </p>
           </div>
-          <div style="display:flex;gap:0.5rem;">
-            <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:800;padding:0.4rem 0.85rem;border-radius:999px;border:1px solid #fca5a5;">
-              🛡️ GATE G4 HARD-STOP: STRICTLY ENFORCED
+          <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+            <button id="btn-quick-freeze" class="btn-pill" style="background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5;font-weight:800;font-size:0.85rem;padding:0.5rem 1rem;cursor:pointer;">
+              ❄️ 1-Click Profile Freeze
+            </button>
+            <button id="btn-open-report-concern" class="btn-pill btn-primary" style="background:#dc2626;font-weight:800;font-size:0.85rem;padding:0.5rem 1.25rem;cursor:pointer;">
+              🚨 Register Safeguarding Concern
+            </button>
+          </div>
+        </div>
+
+        <!-- Safeguarding KPI Metric Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.75rem;">
+          <div style="background:#ffffff;border:1.5px solid #bbf7d0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#166534;">GATE G4 ENGINE</span>
+              <span style="font-size:1.1rem;">🔒</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#166534;">${kpis.gateG4CompliancePct || 100}%</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">Zero unverified child contact allowed</p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #bfdbfe;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#1e40af;">CLEARED CHILD-SAFE</span>
+              <span style="font-size:1.1rem;">🛡️</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#1e40af;">${kpis.clearedChildSafe || 34}</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">D4 Safeguarding vetted educators</p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #fde68a;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#854d0e;">PENDING CID CHECKS</span>
+              <span style="font-size:1.1rem;">⏳</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#854d0e;">${kpis.pendingCidChecks || 6}</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">Ghana Police CID background checks</p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #fca5a5;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#991b1b;">SAFEGUARDING HOLDS</span>
+              <span style="font-size:1.1rem;">🚫</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#991b1b;">${kpis.safeguardingHolds || 2}</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">Profiles currently frozen/suspended</p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #fed7aa;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#9a3412;">ACTIVE INCIDENTS</span>
+              <span style="font-size:1.1rem;">⚠️</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#9a3412;">${kpis.activeIncidents || 2}</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">Formal safeguarding cases opened</p>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">
+              <span style="font-size:0.75rem;font-weight:800;color:#0f172a;">DOVVSU REFERRALS</span>
+              <span style="font-size:1.1rem;">🚔</span>
+            </div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0f172a;">${kpis.dovvsuReferrals || 1}</div>
+            <p style="font-size:0.75rem;color:#475569;margin:0.25rem 0 0 0;">Ghana Police DOVVSU referrals</p>
+          </div>
+        </div>
+
+        <!-- Section 1: Active Safeguarding Incidents & Emergency Actions -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);margin-bottom:2rem;">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <div style="font-weight:800;color:#0f172a;font-size:1rem;display:flex;align-items:center;gap:0.4rem;">
+                <span>🚨</span> Active Safeguarding Incidents &amp; Cooling-Off Registry
+              </div>
+              <div style="font-size:0.78rem;color:#64748b;margin-top:0.15rem;">
+                Statutory tracking under Act 560 with 1-Click Profile Freeze &amp; DOVVSU Case Escalation.
+              </div>
+            </div>
+            <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:800;font-size:0.75rem;">
+              ${incidents.length} Registered Cases
             </span>
           </div>
+
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Case ID</th>
+                  <th style="padding:0.85rem 1rem;">Severity</th>
+                  <th style="padding:0.85rem 1rem;">Accused Educator</th>
+                  <th style="padding:0.85rem 1rem;">Reporting Party &amp; Context</th>
+                  <th style="padding:0.85rem 1rem;">Allegation</th>
+                  <th style="padding:0.85rem 1rem;">Gate G4 Lock</th>
+                  <th style="padding:0.85rem 1rem;">Status</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${incidents.length === 0 ? `
+                  <tr><td colspan="8" style="padding:2rem;text-align:center;color:#64748b;">No active safeguarding incidents reported. All child protection gates clear.</td></tr>
+                ` : incidents.map(inc => {
+                  const isCritical = inc.severity === 'CRITICAL_IMMEDIATE_ACTION';
+                  const isHigh = inc.severity === 'HIGH_SAFEGUARDING_REVIEW';
+                  const sevColor = isCritical ? '#991b1b' : (isHigh ? '#9a3412' : '#854d0e');
+                  const sevBg = isCritical ? '#fee2e2' : (isHigh ? '#ffedd5' : '#fef9c3');
+
+                  const statusLabels = {
+                    police_referred_dovvsu: '🚔 DOVVSU Police Referred',
+                    under_investigation: '🔍 Under Investigation',
+                    sustained_barred: '⛔ Sustained & Barred',
+                    cleared: '✓ Cleared'
+                  };
+                  const statusLabel = statusLabels[inc.status] || inc.status;
+
+                  return `
+                    <tr style="border-bottom:1px solid #f1f5f9;background:${inc.coolingOffHoldActive ? '#fffbfb' : '#ffffff'};">
+                      <td style="padding:0.85rem 1rem;font-weight:800;color:#0f172a;font-family:monospace;">
+                        ${inc.id}
+                        ${inc.dovvsuRef ? `<div style="font-size:0.7rem;color:#dc2626;font-weight:700;">${inc.dovvsuRef}</div>` : ''}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:${sevBg};color:${sevColor};font-weight:800;font-size:0.72rem;">
+                          ${inc.severity.replace(/_/g, ' ')}
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:800;color:#0f172a;">${inc.teacherName || inc.reportedPartyName || 'Accused Educator'}</div>
+                        <div style="font-size:0.72rem;color:#64748b;">ID: ${inc.teacherId || inc.reportedPartyId || 'tch-external'} &bull; ${inc.schoolContext || 'Independent Catchment'}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:600;color:#0f172a;">${inc.reportedBy || inc.reporterName || 'Confidential'}</div>
+                        <div style="font-size:0.72rem;color:#64748b;">${inc.reporterRole || 'Guardian'} &bull; Phone: ${inc.reporterPhone || 'Masked'}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;font-size:0.82rem;">${inc.allegationType || inc.category}</div>
+                        <div style="font-size:0.72rem;color:#475569;max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                          ${inc.details || inc.allegationDetails}
+                        </div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        ${inc.coolingOffHoldActive || inc.coolingOffActive ? `
+                          <span class="badge" style="background:#fee2e2;color:#991b1b;font-weight:800;font-size:0.72rem;border:1px solid #fca5a5;">
+                            ❄️ FROZEN / LOCKED
+                          </span>
+                        ` : `
+                          <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">
+                            Normal
+                          </span>
+                        `}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:#f1f5f9;color:#0f172a;font-weight:700;font-size:0.72rem;border:1px solid #cbd5e1;">
+                          ${statusLabel}
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;text-align:right;">
+                        <div style="display:flex;justify-content:flex-end;gap:0.4rem;">
+                          <button class="btn-action-review-incident btn-pill" data-incident-id="${inc.id}" style="background:#0A2046;color:#ffffff;font-size:0.75rem;padding:0.35rem 0.75rem;font-weight:700;cursor:pointer;">
+                            Review Case
+                          </button>
+                          ${!(inc.coolingOffHoldActive || inc.coolingOffActive) ? `
+                            <button class="btn-action-emergency-freeze btn-pill" data-teacher-id="${inc.teacherId || inc.reportedPartyId || 'tch-01'}" data-teacher-name="${inc.teacherName || inc.reportedPartyName || 'Accused Educator'}" style="background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;font-size:0.75rem;padding:0.35rem 0.65rem;font-weight:700;cursor:pointer;">
+                              ❄️ Freeze
+                            </button>
+                          ` : ''}
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Safeguarding Triad Cards -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
-          <div style="background:#ffffff;border:1.5px solid #bbf7d0;border-radius:12px;padding:1.25rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-size:0.8rem;font-weight:800;color:#166534;">GATE G4 ENGINE</span>
-              <span style="font-size:1.2rem;">🔒</span>
-            </div>
-            <div style="font-size:1.5rem;font-weight:800;color:#166534;margin-bottom:0.25rem;">ACTIVE &bull; 100%</div>
-            <p style="font-size:0.8rem;color:#475569;margin:0;">
-              Child-facing bookings automatically locked until teacher attains approved D4 Safeguarding clearance.
-            </p>
-          </div>
-
-          <div style="background:#ffffff;border:1.5px solid #fed7aa;border-radius:12px;padding:1.25rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-size:0.8rem;font-weight:800;color:#9a3412;">ADULT-TO-ADULT CONTRACTING</span>
-              <span style="font-size:1.2rem;">👨‍👩‍👧</span>
-            </div>
-            <div style="font-size:1.5rem;font-weight:800;color:#9a3412;margin-bottom:0.25rem;">DEC-005 MANDATED</div>
-            <p style="font-size:0.8rem;color:#475569;margin:0;">
-              Parent/Guardian holds sole legal contract. No direct messaging or payment interactions with minors.
-            </p>
-          </div>
-
-          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.25rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-size:0.8rem;font-weight:800;color:#1e3a8a;">EMERGENCY REFERRALS</span>
-              <span style="font-size:1.2rem;">🚨</span>
-            </div>
-            <div style="font-size:1.5rem;font-weight:800;color:#0f172a;margin-bottom:0.25rem;">0 ACTIVE INCIDENTS</div>
-            <p style="font-size:0.8rem;color:#475569;margin:0;">
-              Direct coordination with Domestic Violence and Victim Support Unit (DOVVSU) and Social Welfare Ghana.
-            </p>
-          </div>
-        </div>
-
-        <!-- Safeguarded Bookings Audit Table -->
+        <!-- Section 2: Protected Tutoring Engagements Audit Table -->
         <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;">
-            <div style="font-weight:800;color:#0f172a;font-size:0.95rem;">Protected Tutoring Engagements &amp; Guardian Links</div>
-            <span style="font-size:0.75rem;color:#64748b;">Table: parent_wards &bull; tutoring_bookings</span>
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <div style="font-weight:800;color:#0f172a;font-size:1rem;display:flex;align-items:center;gap:0.4rem;">
+                <span>🛡️</span> Protected Minor Tutoring Engagements &amp; Guardian Links
+              </div>
+              <div style="font-size:0.78rem;color:#64748b;margin-top:0.15rem;">
+                Act 560 Section 6 Mandate: Contracting strictly between verified adult guardian and accredited educator.
+              </div>
+            </div>
+            <span style="font-size:0.75rem;color:#64748b;font-weight:600;">Table: parent_wards &bull; tutoring_bookings</span>
           </div>
+
           <div style="overflow-x:auto;">
             <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
               <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
@@ -3958,30 +4153,62 @@ const AdminView = {
                   <th style="padding:0.85rem 1rem;">Assigned Educator</th>
                   <th style="padding:0.85rem 1rem;">D4 Vetting Status</th>
                   <th style="padding:0.85rem 1rem;">Gate G4 Result</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                  <td style="padding:0.9rem 1rem;font-weight:700;color:#0f172a;">TUT-2026-0041</td>
-                  <td style="padding:0.9rem 1rem;">
-                    <div>Charles Duodu (Parent)</div>
-                    <div style="font-size:0.75rem;color:#64748b;">omotade.duodu@gmail.com</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <div>Kofi Duodu (Grade 7)</div>
-                    <div style="font-size:0.72rem;color:#64748b;">Cambridge Checkpoint</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <div>Mr. Emmanuel Addo</div>
-                    <div style="font-size:0.72rem;color:#2563eb;">Licence: NTC-2023-8841</div>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;font-weight:700;">✓ D4 Approved</span>
-                  </td>
-                  <td style="padding:0.9rem 1rem;">
-                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;">🛡️ UNLOCKED (Passed)</span>
-                  </td>
-                </tr>
+                ${engagements.length === 0 ? `
+                  <tr><td colspan="7" style="padding:2rem;text-align:center;color:#64748b;">No active tutoring engagements registered.</td></tr>
+                ` : engagements.map(eng => {
+                  const isHold = (eng.gateStatus || eng.gateG4Status) === 'LOCKED_SAFEGUARDING_HOLD';
+                  const d4Cleared = (eng.d4Status || eng.vettingStatus) === 'CLEARED_G4_CHILD_SAFE' || (eng.d4Status || eng.vettingStatus) === 'd4_approved';
+                  const d4Flagged = (eng.d4Status || eng.vettingStatus) === 'FLAGGED_SAFEGUARDING_HOLD' || (eng.d4Status || eng.vettingStatus) === 'flagged_hold';
+
+                  return `
+                    <tr style="border-bottom:1px solid #f1f5f9;background:${isHold ? '#fff5f5' : '#ffffff'};">
+                      <td style="padding:0.85rem 1rem;font-weight:700;color:#0f172a;font-family:monospace;">
+                        ${eng.engagementRef || eng.id}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;">${eng.guardianName}</div>
+                        <div style="font-size:0.75rem;color:#64748b;">${eng.guardianEmail} &bull; ${eng.guardianPhone || ''}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;">${eng.wardName}</div>
+                        <div style="font-size:0.72rem;color:#64748b;">${eng.wardGrade || eng.curriculum || 'Standard Profile'}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;">${eng.educatorName || eng.teacherName}</div>
+                        <div style="font-size:0.72rem;color:#2563eb;">${eng.educatorLicence || eng.teacherLicence || 'Licence: Verified'}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        ${d4Cleared ? `
+                          <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;font-weight:700;">✓ D4 Approved</span>
+                        ` : (d4Flagged ? `
+                          <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.72rem;font-weight:800;">⛔ Flagged Hold</span>
+                        ` : `
+                          <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.72rem;font-weight:700;">⏳ Pending Check</span>
+                        `)}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        ${isHold ? `
+                          <span class="badge" style="background:#fee2e2;color:#991b1b;font-size:0.72rem;font-weight:800;border:1px solid #fca5a5;">
+                            🔒 HARD STOP LOCKED
+                          </span>
+                        ` : `
+                          <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;border:1px solid #bfdbfe;">
+                            🛡️ UNLOCKED (Passed)
+                          </span>
+                        `}
+                      </td>
+                      <td style="padding:0.85rem 1rem;text-align:right;">
+                        <button class="btn-action-emergency-freeze btn-pill" data-teacher-id="${eng.educatorId || eng.teacherId || 'tch-01'}" data-teacher-name="${eng.educatorName || eng.teacherName || 'Accused Educator'}" style="background:#f1f5f9;color:#334155;border:1px solid #cbd5e1;font-size:0.72rem;padding:0.3rem 0.6rem;cursor:pointer;">
+                          Safety Audit
+                        </button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
               </tbody>
             </table>
           </div>
@@ -4681,28 +4908,202 @@ const AdminView = {
   },
 
   /**
-   * Group 5.3: Data Governance & DPC Compliance
+   * Group 5.3: Data Governance & DPC Compliance (Ghana Data Protection Act 2012, Act 843)
    */
-  renderDataGovernance() {
+  renderDataGovernance(datagovData = {}) {
+    const cert = datagovData.dpcCertificate || {
+      regNumber: datagovData.dpcStatus?.registrationNumber || 'DPC/REG/GH-2024-81920',
+      act: datagovData.dpcStatus?.supervisoryAuthority || 'Ghana Data Protection Act 2012 (Act 843)',
+      status: datagovData.dpcStatus?.complianceStatus || 'ACTIVE_COMPLIANCE',
+      dpoName: datagovData.dpcStatus?.dpoOfficer || 'Barrister Kofi Boateng',
+      dpoContact: 'dpo@skoolfinder.com.gh',
+      renewalDate: datagovData.dpcStatus?.expiryDate || '2027-09-30'
+    };
+    const policies = datagovData.retentionPolicies || [
+      { category: 'Child Safeguarding Records', retentionYears: 7, lawfulBasis: 'Act 560 & Act 843 Statutory Obligation' },
+      { category: 'Financial Ledger & MoMo Escrow', retentionYears: 10, lawfulBasis: 'Bank of Ghana PSA Act 987 & Revenue Records' },
+      { category: 'Teacher Credentials & Police Vetting', retentionYears: 5, lawfulBasis: 'National Teaching Council (NTC) Standards' },
+      { category: 'Unsuccessful Inquiries & Prospect Logs', retentionYears: 1, lawfulBasis: 'Data Minimization Schedule (Automated Purge)' }
+    ];
+    const sars = datagovData.subjectAccessRequests?.length ? datagovData.subjectAccessRequests : (datagovData.sarRequests || []);
+    this.cachedSARs = sars;
+
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 5.3 &bull; Privacy &amp; Data Subject Rights (Act 843)
+              Module 5.3 &bull; Privacy &amp; Data Subject Rights (Ghana Act 843)
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
               Data Governance &amp; DPC Compliance
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Ghana Data Protection Commission register, data retention schedules, and Subject Access Requests (SAR).
+              Ghana Data Protection Commission register, automated statutory data retention schedules, and Subject Access Requests (SAR).
             </p>
           </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#dcfce7;color:#166534;font-weight:800;padding:0.4rem 0.85rem;border-radius:999px;border:1px solid #86efac;">
+              ✓ DPC REGISTERED &bull; ${cert.regNumber}
+            </span>
+          </div>
         </div>
-        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;padding:2rem;text-align:center;">
-          <div style="font-size:2rem;margin-bottom:0.5rem;">🔒</div>
-          <div style="font-weight:800;font-size:1.1rem;color:#0f172a;">Ghana Data Protection Act 843 Registry</div>
-          <div style="font-size:0.85rem;color:#64748b;margin-top:0.25rem;">Manage Subject Access Requests (SAR), deletion logs, and cryptographic retention schedules.</div>
+
+        <!-- DPC Statutory Registration & Governance Card -->
+        <div style="background:linear-gradient(135deg, #0A2046 0%, #1e3a8a 100%);border-radius:12px;padding:1.5rem;color:#ffffff;margin-bottom:1.75rem;box-shadow:0 4px 12px rgba(10,32,70,0.15);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+            <div>
+              <div style="font-size:0.75rem;color:#38bdf8;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;">
+                Republic of Ghana &bull; Data Protection Commission Certificate
+              </div>
+              <div style="font-size:1.4rem;font-weight:800;margin-top:0.2rem;">
+                Official Data Controller: SkoolFinder Platform Ghana Ltd
+              </div>
+              <div style="font-size:0.85rem;color:#cbd5e1;margin-top:0.25rem;">
+                Registration Code: <strong style="color:#ffffff;font-family:monospace;">${cert.regNumber}</strong> &bull; Lawful Authority: <strong>${cert.act}</strong>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,0.1);padding:0.6rem 1rem;border-radius:8px;border:1px solid rgba(255,255,255,0.2);text-align:right;">
+              <div style="font-size:0.72rem;color:#94a3b8;font-weight:700;text-transform:uppercase;">Compliance State</div>
+              <div style="font-size:1rem;font-weight:900;color:#4ade80;">✓ ${cert.status}</div>
+              <div style="font-size:0.7rem;color:#cbd5e1;margin-top:0.15rem;">Renewal Date: ${cert.renewalDate}</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;background:rgba(0,0,0,0.2);padding:1rem;border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-size:0.82rem;">
+            <div>
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;">Appointed DPO</div>
+              <div style="font-weight:800;color:#ffffff;margin-top:0.15rem;">${cert.dpoName}</div>
+              <div style="font-size:0.72rem;color:#38bdf8;">${cert.dpoContact}</div>
+            </div>
+            <div>
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;">Section 20 Right to Object</div>
+              <div style="font-weight:700;color:#ffffff;margin-top:0.15rem;">Consent Revocation Desk</div>
+              <div style="font-size:0.72rem;color:#cbd5e1;">Zero dark patterns for parent opt-outs</div>
+            </div>
+            <div>
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;">Section 24 Data Access</div>
+              <div style="font-weight:700;color:#ffffff;margin-top:0.15rem;">Subject Access Requests</div>
+              <div style="font-size:0.72rem;color:#cbd5e1;">Cryptographic ZIP archive exports</div>
+            </div>
+            <div>
+              <div style="color:#94a3b8;font-size:0.72rem;font-weight:700;text-transform:uppercase;">Section 28 PII Masking</div>
+              <div style="font-weight:700;color:#ffffff;margin-top:0.15rem;">Field-Level Masking</div>
+              <div style="font-size:0.72rem;color:#cbd5e1;">Ghana Card PINs &amp; minors phone masks</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Statutory Retention Schedules -->
+        <div style="margin-bottom:2rem;">
+          <h2 style="font-size:1.1rem;font-weight:800;color:#0A2046;margin:0 0 0.85rem 0;">
+            Statutory Data Retention &amp; Auto-Purge Schedules
+          </h2>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1rem;">
+            ${policies.map(p => `
+              <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:10px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.4rem;">
+                  <span style="font-size:0.85rem;font-weight:800;color:#0f172a;">${p.category}</span>
+                  <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.72rem;">${p.retentionYears} Years</span>
+                </div>
+                <p style="font-size:0.76rem;color:#64748b;margin:0;line-height:1.4;">
+                  Legal Basis: <strong>${p.lawfulBasis}</strong>
+                </p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Subject Access Requests (SAR) Desk -->
+        <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+            <div>
+              <div style="font-weight:800;color:#0f172a;font-size:1rem;display:flex;align-items:center;gap:0.4rem;">
+                <span>📋</span> Subject Access Requests (SAR) &amp; Consent Revocations (Act 843)
+              </div>
+              <div style="font-size:0.78rem;color:#64748b;margin-top:0.15rem;">
+                Parent rights under Act 843 Section 20 (Revocation) and Section 24 (Portability Export).
+              </div>
+            </div>
+            <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;font-size:0.75rem;">
+              ${sars.length} Filed Requests
+            </span>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">SAR Ref</th>
+                  <th style="padding:0.85rem 1rem;">Data Subject</th>
+                  <th style="padding:0.85rem 1rem;">Statutory Request Type</th>
+                  <th style="padding:0.85rem 1rem;">Requested Scope</th>
+                  <th style="padding:0.85rem 1rem;">Filed Date</th>
+                  <th style="padding:0.85rem 1rem;">Status</th>
+                  <th style="padding:0.85rem 1rem;">Proof Hash</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sars.length === 0 ? `
+                  <tr><td colspan="8" style="padding:2rem;text-align:center;color:#64748b;">No Subject Access Requests pending. Data privacy register clear.</td></tr>
+                ` : sars.map(s => {
+                  const reqTypeStr = (s.requestType || '').toLowerCase();
+                  const isExport = reqTypeStr.includes('export') || reqTypeStr.includes('portability');
+                  const statusColors = {
+                    pending_review: { bg: '#fef3c7', text: '#92400e', label: '⏳ Pending Review' },
+                    pending_fulfillment: { bg: '#fef3c7', text: '#92400e', label: '⏳ Pending Fulfillment' },
+                    processed_exported: { bg: '#dcfce7', text: '#166534', label: '✓ Exported' },
+                    fulfilled_redacted: { bg: '#f1f5f9', text: '#475569', label: '🗑️ Redacted / Erased' },
+                    redacted_erased: { bg: '#f1f5f9', text: '#475569', label: '🗑️ Redacted / Erased' },
+                    rejected: { bg: '#fee2e2', text: '#991b1b', label: '✕ Rejected' }
+                  };
+                  const st = statusColors[s.status] || { bg: '#f1f5f9', text: '#334155', label: s.status };
+                  const proof = s.proofHash || s.redactionProofHash;
+
+                  return `
+                    <tr style="border-bottom:1px solid #f1f5f9;">
+                      <td style="padding:0.85rem 1rem;font-weight:800;color:#0f172a;font-family:monospace;">
+                        ${s.id}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:700;color:#0f172a;">${s.dataSubject || s.dataSubjectName}</div>
+                        <div style="font-size:0.72rem;color:#64748b;">${s.email || s.dataSubjectEmail}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:${isExport ? '#eff6ff' : '#fee2e2'};color:${isExport ? '#1e40af' : '#991b1b'};font-weight:700;font-size:0.72rem;">
+                          ${isExport ? '📦 Data Portability Export' : '⛔ Consent Revocation & Erasure'}
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;font-size:0.8rem;color:#475569;">
+                        ${s.scope}
+                      </td>
+                      <td style="padding:0.85rem 1rem;font-size:0.78rem;color:#64748b;">
+                        ${new Date(s.requestedAt).toLocaleDateString()}
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:${st.bg};color:${st.text};font-weight:800;font-size:0.72rem;">
+                          ${st.label}
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        ${proof ? `
+                          <code style="font-size:0.7rem;background:#f8fafc;padding:0.2rem 0.4rem;border-radius:4px;border:1px solid #e2e8f0;color:#0284c7;" title="${proof}">
+                            ${proof.substring(0, 16)}...
+                          </code>
+                        ` : '<span style="font-size:0.72rem;color:#94a3b8;">Pending generation</span>'}
+                      </td>
+                      <td style="padding:0.85rem 1rem;text-align:right;">
+                        <button class="btn-action-process-sar btn-pill btn-primary" data-sar-id="${s.id}" style="font-size:0.75rem;padding:0.35rem 0.8rem;font-weight:700;cursor:pointer;">
+                          Process SAR
+                        </button>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     `;
@@ -4803,111 +5204,275 @@ const AdminView = {
   },
 
   /**
-   * Group 8.1: Staff, Roles & Permissions
+   * Group 8.1: Staff Access Governance & Granular RBAC (Module 8.1)
    */
-  renderStaffAdmin() {
-    const staff = [
-      { name: 'Charles Duodu', email: 'omotade.duodu@gmail.com', role: 'Super Admin Director', status: 'ACTIVE', mfa: 'Enforced' },
-      { name: 'Kofi Boateng', email: 'k.boateng@skoolfinder.com.gh', role: 'School Verification Officer', status: 'ACTIVE', mfa: 'Enforced' },
-      { name: 'Ama Osei', email: 'a.osei@skoolfinder.com.gh', role: 'Finance & Escrow Officer', status: 'ACTIVE', mfa: 'Enforced' },
-      { name: 'Nana Aba Mensah', email: 'n.mensah@skoolfinder.com.gh', role: 'Safeguarding Lead', status: 'ACTIVE', mfa: 'Enforced' }
+  renderStaffAdmin(staffData = {}) {
+    const staff = staffData.staff || [
+      { id: 'staff-01', name: 'Charles Duodu', email: 'omotade.duodu@gmail.com', role: 'super_admin', roleLabel: 'Super Admin Director', status: 'ACTIVE', mfaEnforced: true, lastLogin: '2026-11-06T12:30:00Z', permissions: ['all_permissions'] },
+      { id: 'staff-02', name: 'Kofi Boateng', email: 'k.boateng@skoolfinder.com.gh', role: 'compliance_officer', roleLabel: 'Compliance & Verification Officer', status: 'ACTIVE', mfaEnforced: true, lastLogin: '2026-11-06T10:15:00Z', permissions: ['verify_schools', 'manage_disputes', 'review_sar'] },
+      { id: 'staff-03', name: 'Ama Osei', email: 'a.osei@skoolfinder.com.gh', role: 'finance_auditor', roleLabel: 'Finance & Escrow Auditor', status: 'ACTIVE', mfaEnforced: true, lastLogin: '2026-11-06T09:40:00Z', permissions: ['audit_transactions', 'clear_reconciliation', 'manage_escrow'] },
+      { id: 'staff-04', name: 'Nana Aba Mensah', email: 'n.mensah@skoolfinder.com.gh', role: 'safeguarding_lead', roleLabel: 'Safeguarding Lead (Act 560)', status: 'ACTIVE', mfaEnforced: true, lastLogin: '2026-11-05T16:20:00Z', permissions: ['manage_safeguarding', 'emergency_freeze', 'dovvsu_referrals'] },
+      { id: 'staff-05', name: 'Kwame Asante', email: 'k.asante@skoolfinder.com.gh', role: 'admissions_dean', roleLabel: 'Admissions & Regional Dean', status: 'ACTIVE', mfaEnforced: true, lastLogin: '2026-11-05T11:05:00Z', permissions: ['manage_admissions', 'regional_oversight', 'review_leads'] }
     ];
+
+    this.cachedStaff = staff;
+    const activeCount = staff.filter(s => s.status === 'ACTIVE').length;
 
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 8.1 &bull; Staff Access Governance
+              Module 8.1 &bull; Staff Access Governance &amp; Granular RBAC
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
               Staff, Roles &amp; Permissions
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Super Admin staff lifecycle, delegated role bundles, mandatory MFA, and separation-of-duties.
+              Super Admin staff lifecycle, delegated role bundles, mandatory MFA enforcement, and separation-of-duties.
             </p>
+          </div>
+          <div>
+            <button id="btn-open-invite-staff" class="btn-pill btn-primary" style="font-weight:800;font-size:0.85rem;padding:0.5rem 1.25rem;cursor:pointer;">
+              ➕ Invite Staff Officer
+            </button>
           </div>
         </div>
 
+        <!-- Staff Governance Stats Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.75rem;">
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;">Total Staff Directory</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0A2046;margin:0.25rem 0 0.15rem 0;">${staff.length} Officers</div>
+            <div style="font-size:0.75rem;color:#10b981;font-weight:700;">${activeCount} Active &bull; ${staff.length - activeCount} Suspended</div>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #bbf7d0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#166534;text-transform:uppercase;">MFA Compliance</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#166534;margin:0.25rem 0 0.15rem 0;">100% Enforced</div>
+            <div style="font-size:0.75rem;color:#475569;">Mandatory FIDO2 / TOTP auth</div>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #bfdbfe;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#1e40af;text-transform:uppercase;">Role Separation (POL-003)</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#1e40af;margin:0.25rem 0 0.15rem 0;">5 Bundles</div>
+            <div style="font-size:0.75rem;color:#475569;">Zero dual-role conflict permitted</div>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #fed7aa;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#9a3412;text-transform:uppercase;">Password Exposure</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#9a3412;margin:0.25rem 0 0.15rem 0;">DEC-006 Zero</div>
+            <div style="font-size:0.75rem;color:#475569;">No plaintext passwords visible</div>
+          </div>
+        </div>
+
+        <!-- Staff Officers Table -->
         <div style="background:#ffffff;border-radius:12px;border:1.5px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-          <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
-            <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
-              <tr>
-                <th style="padding:0.85rem 1rem;">Staff Officer</th>
-                <th style="padding:0.85rem 1rem;">Delegated Role Bundle</th>
-                <th style="padding:0.85rem 1rem;">MFA Status</th>
-                <th style="padding:0.85rem 1rem;">Account State</th>
-                <th style="padding:0.85rem 1rem;text-align:right;">Access Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${staff.map(s => `
-                <tr style="border-bottom:1px solid #f1f5f9;">
-                  <td style="padding:0.85rem 1rem;">
-                    <div style="font-weight:700;color:#0f172a;">${s.name}</div>
-                    <div style="font-size:0.75rem;color:#64748b;">${s.email}</div>
-                  </td>
-                  <td style="padding:0.85rem 1rem;">
-                    <span class="badge" style="background:#eff6ff;color:#1e40af;font-size:0.72rem;font-weight:700;">${s.role}</span>
-                  </td>
-                  <td style="padding:0.85rem 1rem;">
-                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">✓ ${s.mfa}</span>
-                  </td>
-                  <td style="padding:0.85rem 1rem;">
-                    <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">${s.status}</span>
-                  </td>
-                  <td style="padding:0.85rem 1rem;text-align:right;">
-                    <button class="btn-pill" style="background:#f1f5f9;color:#334155;font-size:0.72rem;padding:0.25rem 0.6rem;border:1px solid #cbd5e1;cursor:pointer;">
-                      Manage Permissions
-                    </button>
-                  </td>
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid #e2e8f0;background:#fafafa;display:flex;justify-content:space-between;align-items:center;">
+            <div style="font-weight:800;color:#0f172a;font-size:0.95rem;">Internal Staff Directory &bull; Access Ledger</div>
+            <span style="font-size:0.75rem;color:#64748b;">Table: staff_profiles &bull; role_assignments</span>
+          </div>
+
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:0.88rem;">
+              <thead style="background:#0A2046;color:#ffffff;font-size:0.78rem;text-transform:uppercase;">
+                <tr>
+                  <th style="padding:0.85rem 1rem;">Staff Officer</th>
+                  <th style="padding:0.85rem 1rem;">Delegated Role Bundle</th>
+                  <th style="padding:0.85rem 1rem;">MFA Status</th>
+                  <th style="padding:0.85rem 1rem;">Account State</th>
+                  <th style="padding:0.85rem 1rem;">Last Activity</th>
+                  <th style="padding:0.85rem 1rem;text-align:right;">Access Actions</th>
                 </tr>
-              `).join('')}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${staff.map(s => {
+                  const isSuspended = s.status === 'SUSPENDED';
+                  const roleBadgeColors = {
+                    super_admin: { bg: '#e0e7ff', text: '#3730a3' },
+                    safeguarding_lead: { bg: '#fee2e2', text: '#991b1b' },
+                    compliance_officer: { bg: '#dcfce7', text: '#166534' },
+                    finance_auditor: { bg: '#fef3c7', text: '#92400e' },
+                    admissions_dean: { bg: '#eff6ff', text: '#1e40af' }
+                  };
+                  const rCol = roleBadgeColors[s.role] || { bg: '#f1f5f9', text: '#334155' };
+
+                  return `
+                    <tr style="border-bottom:1px solid #f1f5f9;background:${isSuspended ? '#fff5f5' : '#ffffff'};">
+                      <td style="padding:0.85rem 1rem;">
+                        <div style="font-weight:800;color:#0f172a;">${s.name}</div>
+                        <div style="font-size:0.74rem;color:#64748b;">${s.email}</div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:${rCol.bg};color:${rCol.text};font-size:0.72rem;font-weight:800;">
+                          ${s.roleLabel || s.role.replace(/_/g, ' ')}
+                        </span>
+                        <div style="font-size:0.7rem;color:#64748b;margin-top:0.15rem;">
+                          ${(s.permissions || []).join(', ')}
+                        </div>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;font-weight:700;">
+                          ✓ MFA Enforced
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;">
+                        <span class="badge" style="background:${isSuspended ? '#fee2e2' : '#dcfce7'};color:${isSuspended ? '#991b1b' : '#166534'};font-size:0.72rem;font-weight:800;">
+                          ${s.status}
+                        </span>
+                      </td>
+                      <td style="padding:0.85rem 1rem;font-size:0.76rem;color:#64748b;">
+                        ${s.lastLogin ? new Date(s.lastLogin).toLocaleString() : 'Never logged in'}
+                      </td>
+                      <td style="padding:0.85rem 1rem;text-align:right;">
+                        <div style="display:flex;justify-content:flex-end;gap:0.4rem;">
+                          <button class="btn-action-manage-staff-perms btn-pill" data-staff-id="${s.id}" style="background:#f1f5f9;color:#334155;font-size:0.74rem;padding:0.3rem 0.65rem;border:1px solid #cbd5e1;cursor:pointer;font-weight:700;">
+                            Permissions
+                          </button>
+                          <button class="btn-action-toggle-staff-status btn-pill" data-staff-id="${s.id}" data-current-status="${s.status}" style="background:${isSuspended ? '#dcfce7' : '#fee2e2'};color:${isSuspended ? '#166534' : '#991b1b'};font-size:0.74rem;padding:0.3rem 0.65rem;border:1px solid ${isSuspended ? '#86efac' : '#fca5a5'};cursor:pointer;font-weight:700;">
+                            ${isSuspended ? 'Activate' : 'Suspend'}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     `;
   },
 
   /**
-   * Group 8.2: Regional Administration & Pilot Settings
+   * Group 8.2: Regional Administration & Pilot Settings (Ghana's 16 Regions)
    */
-  renderRegionalAdmin() {
+  renderRegionalAdmin(regionsData = {}) {
+    const regions = regionsData.regions || [
+      { code: 'GAR', name: 'Greater Accra Region', capital: 'Accra', status: 'ACTIVE_PILOT', regionalDirector: 'Dr. Kwesi Appiah', directorEmail: 'gar.director@skoolfinder.com.gh', schoolsCount: 20, teachersCount: 12, suppliersCount: 8, districts: ['Accra Metropolitan', 'Tema', 'Ga East', 'Ga West', 'Cantonments', 'East Legon', 'Dansoman'] },
+      { code: 'ASH', name: 'Ashanti Region', capital: 'Kumasi', status: 'EXPANSION_PHASE_2', regionalDirector: 'Madam Akosua Mensah', directorEmail: 'ashanti.director@skoolfinder.com.gh', schoolsCount: 15, teachersCount: 9, suppliersCount: 5, districts: ['Kumasi Metropolitan', 'Asokwa', 'Oforikrom', 'Kwadaso', 'Bantama'] },
+      { code: 'WR', name: 'Western Region', capital: 'Sekondi-Takoradi', status: 'EXPANSION_PHASE_2', regionalDirector: 'Ebenezer Quaye', directorEmail: 'wr.director@skoolfinder.com.gh', schoolsCount: 8, teachersCount: 4, suppliersCount: 3, districts: ['Sekondi-Takoradi', 'Effia-Kwesimintsim', 'Tarkwa-Nsuaem'] },
+      { code: 'CR', name: 'Central Region', capital: 'Cape Coast', status: 'PLANNED_Q3', regionalDirector: 'Pending Assignment', directorEmail: 'central.director@skoolfinder.com.gh', schoolsCount: 6, teachersCount: 3, suppliersCount: 2, districts: ['Cape Coast', 'KEEA', 'Mfantseman'] },
+      { code: 'ER', name: 'Eastern Region', capital: 'Koforidua', status: 'EXPANSION_PHASE_2', regionalDirector: 'Samuel Osei', directorEmail: 'er.director@skoolfinder.com.gh', schoolsCount: 7, teachersCount: 4, suppliersCount: 2, districts: ['New Juaben North', 'New Juaben South', 'Akuapem South'] },
+      { code: 'VR', name: 'Volta Region', capital: 'Ho', status: 'PLANNED_Q3', regionalDirector: 'Pending Assignment', directorEmail: 'volta.director@skoolfinder.com.gh', schoolsCount: 5, teachersCount: 2, suppliersCount: 1, districts: ['Ho Municipal', 'Keta', 'Hohoe'] },
+      { code: 'NR', name: 'Northern Region', capital: 'Tamale', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'nr.director@skoolfinder.com.gh', schoolsCount: 4, teachersCount: 2, suppliersCount: 1, districts: ['Tamale Metropolitan', 'Sagnarigu'] },
+      { code: 'UER', name: 'Upper East Region', capital: 'Bolgatanga', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'uer.director@skoolfinder.com.gh', schoolsCount: 3, teachersCount: 1, suppliersCount: 1, districts: ['Bolgatanga Municipal', 'Kassena-Nankana'] },
+      { code: 'UWR', name: 'Upper West Region', capital: 'Wa', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'uwr.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['Wa Municipal', 'Jirapa'] },
+      { code: 'BR', name: 'Bono Region', capital: 'Sunyani', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'br.director@skoolfinder.com.gh', schoolsCount: 3, teachersCount: 1, suppliersCount: 1, districts: ['Sunyani Municipal', 'Berekum'] },
+      { code: 'BER', name: 'Bono East Region', capital: 'Techiman', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'ber.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['Techiman Municipal', 'Kintampo'] },
+      { code: 'AHR', name: 'Ahafo Region', capital: 'Goaso', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'ahr.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['Asunafo North', 'Tano South'] },
+      { code: 'OR', name: 'Oti Region', capital: 'Dambai', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'oti.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['Krachi East', 'Nkwanta South'] },
+      { code: 'SR', name: 'Savannah Region', capital: 'Damongo', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'sr.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['West Gonja', 'East Gonja'] },
+      { code: 'NER', name: 'North East Region', capital: 'Nalerigu', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'ner.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['East Mamprusi', 'West Mamprusi'] },
+      { code: 'WNR', name: 'Western North Region', capital: 'Sefwi Wiawso', status: 'PLANNED_Q4', regionalDirector: 'Pending Assignment', directorEmail: 'wnr.director@skoolfinder.com.gh', schoolsCount: 2, teachersCount: 1, suppliersCount: 0, districts: ['Sefwi Wiawso', 'Bibiani Anhwiaso Bekwai'] }
+    ];
+
+    this.cachedRegions = regions;
+
+    const totalSchools = regions.reduce((acc, r) => acc + (r.schoolsCount || 0), 0);
+    const totalTeachers = regions.reduce((acc, r) => acc + (r.teachersCount || 0), 0);
+    const totalSuppliers = regions.reduce((acc, r) => acc + (r.suppliersCount || 0), 0);
+
     return `
       <div>
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;">
           <div>
             <div style="font-size:0.8rem;font-weight:800;color:#2563eb;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem;">
-              Module 8.2 &bull; Geographic Operational Governance
+              Module 8.2 &bull; Geographic Operational Governance (16 Regions)
             </div>
             <h1 style="font-size:1.85rem;font-weight:800;color:#0A2046;margin:0 0 0.35rem 0;">
               Regional Administration &amp; Pilot Settings
             </h1>
             <p style="color:#64748b;font-size:0.95rem;margin:0;">
-              Decentralized national governance starting with Greater Accra Pilot (Accra &amp; Tema) and Ashanti (Kumasi) rollout.
+              Decentralized national administration across Ghana's 16 official administrative regions, starting with Greater Accra (Accra &amp; Tema) and Ashanti (Kumasi).
             </p>
+          </div>
+          <div style="display:flex;gap:0.5rem;">
+            <span class="badge" style="background:#eff6ff;color:#1e40af;font-weight:800;padding:0.4rem 0.85rem;border-radius:999px;border:1px solid #bfdbfe;">
+              🇬🇭 16 Republic of Ghana Regions
+            </span>
           </div>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
-          <div style="background:#ffffff;border:1.5px solid #2563eb;border-radius:12px;padding:1.25rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-weight:800;color:#0f172a;font-size:1.05rem;">Greater Accra Region (Pilot)</span>
-              <span class="badge" style="background:#dcfce7;color:#166534;font-size:0.72rem;">ACTIVE PILOT</span>
-            </div>
-            <p style="font-size:0.8rem;color:#64748b;margin:0 0 0.75rem 0;">Accra Metropolitan, Tema, Ga East, Ga West, Cantonments, East Legon, Dansoman.</p>
-            <div style="font-size:0.75rem;color:#0f172a;font-weight:700;">20 Schools &bull; 12 Verified Teachers &bull; 8 Verified Suppliers</div>
+        <!-- Regional Metric Summary Cards -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-bottom:1.75rem;">
+          <div style="background:#ffffff;border:1.5px solid #2563eb;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#2563eb;text-transform:uppercase;">Active Pilot Zones</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0A2046;margin:0.25rem 0 0.15rem 0;">Greater Accra (GAR)</div>
+            <div style="font-size:0.75rem;color:#166534;font-weight:700;">Accra Metro &bull; Tema &bull; East Legon</div>
           </div>
 
-          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.25rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
-              <span style="font-weight:800;color:#0f172a;font-size:1.05rem;">Ashanti Region (Kumasi)</span>
-              <span class="badge" style="background:#fef3c7;color:#92400e;font-size:0.72rem;">EXPANSION READY</span>
-            </div>
-            <p style="font-size:0.8rem;color:#64748b;margin:0 0 0.75rem 0;">Kumasi Metropolitan, Asokwa, Oforikrom, Kwadaso, Bantama.</p>
-            <div style="font-size:0.75rem;color:#0f172a;font-weight:700;">Registry Seeding Complete &bull; Launch Q1 2027</div>
+          <div style="background:#ffffff;border:1.5px solid #f59e0b;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#d97706;text-transform:uppercase;">Phase 2 Expansion Ready</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0A2046;margin:0.25rem 0 0.15rem 0;">3 Regions</div>
+            <div style="font-size:0.75rem;color:#475569;">Ashanti &bull; Western &bull; Eastern</div>
           </div>
+
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;">Registered Campuses</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0A2046;margin:0.25rem 0 0.15rem 0;">${totalSchools} Schools</div>
+            <div style="font-size:0.75rem;color:#475569;">Spread across 16 regional registries</div>
+          </div>
+
+          <div style="background:#ffffff;border:1.5px solid #e2e8f0;border-radius:12px;padding:1.15rem;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;text-transform:uppercase;">Educators &amp; Suppliers</div>
+            <div style="font-size:1.6rem;font-weight:900;color:#0A2046;margin:0.25rem 0 0.15rem 0;">${totalTeachers + totalSuppliers} Entities</div>
+            <div style="font-size:0.75rem;color:#475569;">${totalTeachers} Teachers &bull; ${totalSuppliers} Vendors</div>
+          </div>
+        </div>
+
+        <!-- 16 Ghanaian Regional Cards Grid -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:1.25rem;">
+          ${regions.map(r => {
+            const statusConfig = {
+              ACTIVE_PILOT: { bg: '#dcfce7', text: '#166534', border: '#86efac', label: '🟢 ACTIVE PILOT' },
+              EXPANSION_PHASE_2: { bg: '#fef3c7', text: '#92400e', border: '#fcd34d', label: '🟡 EXPANSION READY' },
+              PLANNED_Q3: { bg: '#eff6ff', text: '#1e40af', border: '#bfdbfe', label: '🔵 PLANNED Q3' },
+              PLANNED_Q4: { bg: '#f1f5f9', text: '#475569', border: '#cbd5e1', label: '⚪ PLANNED Q4' }
+            };
+            const st = statusConfig[r.status] || { bg: '#f1f5f9', text: '#334155', border: '#cbd5e1', label: r.status };
+
+            return `
+              <div style="background:#ffffff;border:1.5px solid ${r.status === 'ACTIVE_PILOT' ? '#2563eb' : '#e2e8f0'};border-radius:12px;padding:1.25rem;box-shadow:0 2px 6px rgba(0,0,0,0.03);display:flex;flex-direction:column;justify-content:space-between;">
+                <div>
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;gap:0.5rem;">
+                    <div>
+                      <div style="font-weight:800;color:#0f172a;font-size:1.05rem;">${r.name}</div>
+                      <div style="font-size:0.75rem;color:#64748b;">Capital: <strong>${r.capital}</strong> &bull; Code: <span style="font-family:monospace;font-weight:700;">${r.code}</span></div>
+                    </div>
+                    <span class="badge" style="background:${st.bg};color:${st.text};border:1px solid ${st.border};font-size:0.7rem;font-weight:800;white-space:nowrap;">
+                      ${st.label}
+                    </span>
+                  </div>
+
+                  <div style="background:#f8fafc;padding:0.75rem;border-radius:8px;border:1px solid #f1f5f9;margin:0.75rem 0;font-size:0.78rem;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                      <span style="color:#64748b;">Regional Director:</span>
+                      <strong style="color:#0f172a;">${r.regionalDirector}</strong>
+                    </div>
+                    <div style="font-size:0.72rem;color:#2563eb;">${r.directorEmail}</div>
+                  </div>
+
+                  <div style="font-size:0.78rem;color:#0f172a;font-weight:700;display:flex;gap:0.75rem;margin-bottom:0.75rem;">
+                    <span>🏫 ${r.schoolsCount || 0} Schools</span>
+                    <span>👨‍🏫 ${r.teachersCount || 0} Teachers</span>
+                    <span>📦 ${r.suppliersCount || 0} Vendors</span>
+                  </div>
+
+                  <div style="font-size:0.72rem;color:#64748b;margin-bottom:1rem;line-height:1.4;">
+                    <strong>Districts:</strong> ${(r.districts || []).slice(0, 4).join(', ')}${(r.districts || []).length > 4 ? ` +${r.districts.length - 4} more` : ''}
+                  </div>
+                </div>
+
+                <div style="border-top:1px solid #f1f5f9;padding-top:0.75rem;display:flex;justify-content:flex-end;">
+                  <button class="btn-action-configure-region btn-pill" data-region-code="${r.code}" style="background:#f1f5f9;color:#0f172a;font-size:0.76rem;padding:0.35rem 0.85rem;border:1px solid #cbd5e1;cursor:pointer;font-weight:800;width:100%;text-align:center;">
+                    ⚙️ Configure Regional Operations
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
     `;
@@ -4925,6 +5490,7 @@ const AdminView = {
         const tab = btn.getAttribute('data-admin-tab');
         if (tab) {
           this.activeTab = tab;
+          window.location.hash = tab;
           App.refreshCurrentView();
         }
       });
@@ -5836,6 +6402,118 @@ const AdminView = {
           State.showToast(err.message || 'Redelivery failed', 'error');
           btn.disabled = false;
           btn.textContent = '↺ Re-dispatch';
+        }
+      });
+    });
+
+    // =========================================================================
+    // PHASE 5 LISTENERS: SAFEGUARDING, DPC DATA GOV, REGIONS & STAFF RBAC
+    // =========================================================================
+
+    // 1. Safeguarding: Register Safeguarding Concern
+    document.getElementById('btn-open-report-concern')?.addEventListener('click', () => {
+      Modals.openReportSafeguardingConcernModal(() => {
+        App.refreshCurrentView();
+      });
+    });
+
+    // 2. Safeguarding: Quick Emergency Profile Freeze
+    document.getElementById('btn-quick-freeze')?.addEventListener('click', () => {
+      const teacherName = prompt('Enter Teacher / Educator Name to freeze under Gate G4 emergency hold:');
+      if (!teacherName) return;
+      Modals.openEmergencyFreezeModal({ id: 'custom-' + Date.now(), name: teacherName }, () => {
+        App.refreshCurrentView();
+      });
+    });
+
+    // 3. Safeguarding: Review Incident Case
+    document.querySelectorAll('.btn-action-review-incident').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const incidentId = btn.getAttribute('data-incident-id');
+        const incident = (this.cachedSafeguardingIncidents || []).find(i => i.id === incidentId);
+        if (incident) {
+          Modals.openSafeguardingIncidentModal(incident, () => {
+            App.refreshCurrentView();
+          });
+        }
+      });
+    });
+
+    // 4. Safeguarding: Emergency 1-Click Profile Freeze on Accused Educator
+    document.querySelectorAll('.btn-action-emergency-freeze').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const teacherId = btn.getAttribute('data-teacher-id');
+        const teacherName = btn.getAttribute('data-teacher-name') || 'Accused Educator';
+        Modals.openEmergencyFreezeModal({ id: teacherId, name: teacherName }, () => {
+          App.refreshCurrentView();
+        });
+      });
+    });
+
+    // 5. Data Governance: Process Subject Access Request (SAR)
+    document.querySelectorAll('.btn-action-process-sar').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sarId = btn.getAttribute('data-sar-id');
+        const sar = (this.cachedSARs || []).find(s => s.id === sarId);
+        if (sar) {
+          Modals.openSARActionModal(sar, () => {
+            App.refreshCurrentView();
+          });
+        }
+      });
+    });
+
+    // 6. Regional Admin: Configure Regional Settings
+    document.querySelectorAll('.btn-action-configure-region').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const code = btn.getAttribute('data-region-code');
+        const region = (this.cachedRegions || []).find(r => r.code === code);
+        if (region) {
+          Modals.openRegionalSettingsModal(region, () => {
+            App.refreshCurrentView();
+          });
+        }
+      });
+    });
+
+    // 7. Staff Admin: Invite New Staff Officer
+    document.getElementById('btn-open-invite-staff')?.addEventListener('click', () => {
+      Modals.openStaffMemberModal(null, () => {
+        App.refreshCurrentView();
+      });
+    });
+
+    // 8. Staff Admin: Manage Permissions
+    document.querySelectorAll('.btn-action-manage-staff-perms').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const staffId = btn.getAttribute('data-staff-id');
+        const staffMember = (this.cachedStaff || []).find(s => s.id === staffId);
+        if (staffMember) {
+          Modals.openStaffMemberModal(staffMember, () => {
+            App.refreshCurrentView();
+          });
+        }
+      });
+    });
+
+    // 9. Staff Admin: Toggle Staff Active/Suspended State
+    document.querySelectorAll('.btn-action-toggle-staff-status').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const staffId = btn.getAttribute('data-staff-id');
+        const curStatus = btn.getAttribute('data-current-status');
+        const targetStatus = curStatus === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE';
+        const actionLabel = targetStatus === 'SUSPENDED' ? 'SUSPEND' : 'ACTIVATE';
+
+        if (!confirm(`Are you sure you want to ${actionLabel} staff officer ${staffId}?`)) return;
+
+        try {
+          btn.disabled = true;
+          await API.toggleAdminStaffStatus(staffId, targetStatus);
+          State.showToast(`✓ Staff officer ${staffId} set to ${targetStatus}!`, 'success');
+          App.refreshCurrentView();
+        } catch (err) {
+          State.showToast(err.message || 'Failed to update staff status', 'error');
+          btn.disabled = false;
         }
       });
     });
