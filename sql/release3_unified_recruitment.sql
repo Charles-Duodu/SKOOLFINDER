@@ -56,11 +56,16 @@ CREATE INDEX IF NOT EXISTS idx_vacancy_apps_tracking_ref ON public.vacancy_appli
 CREATE TABLE IF NOT EXISTS public.recruiter_candidate_unlocks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     school_id UUID NOT NULL REFERENCES public.schools(id) ON DELETE CASCADE,
-    professional_id TEXT NOT NULL, -- references professional_profiles.id or user_id
+    professional_id TEXT, -- references professional_profiles.id or user_id
     recruiter_user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
     unlocked_at TIMESTAMPTZ DEFAULT NOW(),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure all columns exist even if table was created in an earlier partial schema
+ALTER TABLE public.recruiter_candidate_unlocks ADD COLUMN IF NOT EXISTS professional_id TEXT;
+ALTER TABLE public.recruiter_candidate_unlocks ADD COLUMN IF NOT EXISTS recruiter_user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+ALTER TABLE public.recruiter_candidate_unlocks ADD COLUMN IF NOT EXISTS unlocked_at TIMESTAMPTZ DEFAULT NOW();
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_recruiter_unlocks_school_prof ON public.recruiter_candidate_unlocks(school_id, professional_id);
 CREATE INDEX IF NOT EXISTS idx_recruiter_unlocks_school ON public.recruiter_candidate_unlocks(school_id);

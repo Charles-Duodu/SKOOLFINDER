@@ -34,6 +34,29 @@ CREATE TABLE IF NOT EXISTS public.escrow_ledgers (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure all columns exist in case table was created in an earlier partial schema
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS booking_id TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS booking_reference TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payment_reference TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS amount_ghs NUMERIC(10, 2);
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS escrow_fee_ghs NUMERIC(10, 2) DEFAULT 0.00;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS net_disbursement_ghs NUMERIC(10, 2);
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payer_user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payer_name TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payer_phone TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payee_professional_id TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payee_name TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payee_momo_network TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payee_momo_number TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payee_momo_name TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'held_in_escrow';
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS funded_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS disbursed_at TIMESTAMPTZ;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS refunded_at TIMESTAMPTZ;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS disbursed_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS disbursement_notes TEXT;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS refund_reason TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_escrow_ledgers_booking ON public.escrow_ledgers(booking_id);
 CREATE INDEX IF NOT EXISTS idx_escrow_ledgers_status ON public.escrow_ledgers(status);
 CREATE INDEX IF NOT EXISTS idx_escrow_ledgers_payee ON public.escrow_ledgers(payee_professional_id);
@@ -56,6 +79,17 @@ CREATE TABLE IF NOT EXISTS public.professional_subscriptions (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS professional_id TEXT;
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE;
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS tier TEXT DEFAULT 'free';
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS amount_ghs NUMERIC(10, 2) DEFAULT 0.00;
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS billing_interval TEXT DEFAULT 'monthly';
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active';
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS payment_reference TEXT;
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS payment_channel TEXT DEFAULT 'Mobile Money (MTN MoMo)';
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS starts_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.professional_subscriptions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ;
+
 CREATE INDEX IF NOT EXISTS idx_prof_subscriptions_user ON public.professional_subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_prof_subscriptions_prof ON public.professional_subscriptions(professional_id);
 CREATE INDEX IF NOT EXISTS idx_prof_subscriptions_tier ON public.professional_subscriptions(tier);
@@ -63,15 +97,22 @@ CREATE INDEX IF NOT EXISTS idx_prof_subscriptions_tier ON public.professional_su
 -- 3. ENSURE PROFESSIONAL PAYOUT METHODS TABLE EXISTS
 CREATE TABLE IF NOT EXISTS public.professional_payout_methods (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    professional_id TEXT NOT NULL,
-    network TEXT NOT NULL CHECK (network IN ('MTN MoMo', 'Telecel Cash', 'AT Money')),
-    account_number TEXT NOT NULL,
-    account_name TEXT NOT NULL,
-    is_primary BOOLEAN NOT NULL DEFAULT true,
-    is_verified BOOLEAN NOT NULL DEFAULT true,
+    professional_id TEXT,
+    network TEXT,
+    account_number TEXT,
+    account_name TEXT,
+    is_primary BOOLEAN DEFAULT true,
+    is_verified BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS professional_id TEXT;
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS network TEXT;
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS account_number TEXT;
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS account_name TEXT;
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT true;
+ALTER TABLE public.professional_payout_methods ADD COLUMN IF NOT EXISTS is_verified BOOLEAN DEFAULT true;
 
 CREATE INDEX IF NOT EXISTS idx_prof_payout_methods_prof ON public.professional_payout_methods(professional_id);
 

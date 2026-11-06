@@ -74,6 +74,36 @@ CREATE TABLE IF NOT EXISTS public.tutoring_bookings (
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Ensure all columns exist in case table was created in an earlier partial schema
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS booking_reference TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_name TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_phone TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_email TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS ward_id UUID REFERENCES public.parent_wards(id) ON DELETE SET NULL;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS student_name TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS student_grade TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS professional_id TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS teacher_name TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS subject TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS curriculum TEXT DEFAULT 'GES';
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS session_type TEXT DEFAULT 'in_person';
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS hourly_rate NUMERIC(10, 2) DEFAULT 80.00;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS sessions_count INT DEFAULT 1;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS total_amount_ghs NUMERIC(10, 2) DEFAULT 80.00;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS scheduled_start TIMESTAMPTZ;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS scheduled_end TIMESTAMPTZ;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'consultation_requested';
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS escrow_status TEXT DEFAULT 'unfunded';
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS guardian_consent_verified BOOLEAN DEFAULT TRUE;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS safeguarding_notice TEXT DEFAULT 'All educational sessions operate under Gate G4 Safeguarding: Adult-to-Adult contracting between Guardian and Educator. Direct minor booking is prohibited.';
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS meeting_link TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS meeting_location TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS completion_notes TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_rating INT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_feedback TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS cancellation_reason TEXT;
+
 CREATE INDEX IF NOT EXISTS idx_tutoring_bookings_parent ON public.tutoring_bookings(parent_user_id);
 CREATE INDEX IF NOT EXISTS idx_tutoring_bookings_prof ON public.tutoring_bookings(professional_id);
 CREATE INDEX IF NOT EXISTS idx_tutoring_bookings_status ON public.tutoring_bookings(status);
@@ -82,14 +112,21 @@ CREATE INDEX IF NOT EXISTS idx_tutoring_bookings_ref ON public.tutoring_bookings
 -- 2. ENSURE PROFESSIONAL AVAILABILITY TABLE EXISTS (M09, AVA-01 to AVA-04)
 CREATE TABLE IF NOT EXISTS public.professional_availability (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    professional_id TEXT NOT NULL,
-    day_of_week INT NOT NULL CHECK (day_of_week BETWEEN 0 AND 6), -- 0=Sunday, 6=Saturday
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    session_format TEXT NOT NULL DEFAULT 'both' CHECK (session_format IN ('in_person', 'online', 'both')),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    professional_id TEXT,
+    day_of_week INT,
+    start_time TIME,
+    end_time TIME,
+    session_format TEXT DEFAULT 'both',
+    is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS professional_id TEXT;
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS day_of_week INT;
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS start_time TIME;
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS end_time TIME;
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS session_format TEXT DEFAULT 'both';
+ALTER TABLE public.professional_availability ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
 
 CREATE INDEX IF NOT EXISTS idx_prof_availability_prof ON public.professional_availability(professional_id);
 CREATE INDEX IF NOT EXISTS idx_prof_availability_day ON public.professional_availability(day_of_week);
