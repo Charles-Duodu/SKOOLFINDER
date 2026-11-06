@@ -2417,6 +2417,77 @@ const API = {
 ,
 
   // ==========================================================================
+  // RELEASE 4: SAFEGUARDED TUTORING & MUTUAL BOOKING ENGINE
+  // ==========================================================================
+
+  async getMyTutoringBookings() {
+    const res = await fetch(`${this.baseUrl}/parents/bookings`, {
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) return { success: false, bookings: [] };
+    return res.json();
+  },
+
+  async getEducatorBookings(status = null) {
+    const params = status ? `?status=${encodeURIComponent(status)}` : '';
+    const res = await fetch(`${this.baseUrl}/teachers/bookings/me${params}`, {
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    if (!res.ok) return { success: false, bookings: [] };
+    return res.json();
+  },
+
+  async transitionBookingStatus(bookingId, status, payload = {}) {
+    const res = await fetch(`${this.baseUrl}/teachers/bookings/${encodeURIComponent(bookingId)}/status`, {
+      method: 'PATCH',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, ...payload })
+    });
+    return res.json();
+  },
+
+  async getTeacherAvailability(teacherId) {
+    const res = await fetch(`${this.baseUrl}/teachers/${encodeURIComponent(teacherId)}/availability`);
+    if (!res.ok) return { success: false, schedule: [] };
+    return res.json();
+  },
+
+  async setTeacherAvailability(slots) {
+    const res = await fetch(`${this.baseUrl}/teachers/availability`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slots })
+    });
+    return res.json();
+  },
+
+  async parentBookTutor(bookingData) {
+    const res = await fetch(`${this.baseUrl}/parents/book`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(bookingData)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || 'Failed to book tutor');
+    return result;
+  },
+
+  async getParentBookingById(bookingId) {
+    const res = await fetch(`${this.baseUrl}/parents/bookings/${encodeURIComponent(bookingId)}`, {
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' }
+    });
+    return res.json();
+  },
+
+  async parentTransitionBooking(bookingId, status, payload = {}) {
+    const res = await fetch(`${this.baseUrl}/parents/bookings/${encodeURIComponent(bookingId)}/status`, {
+      method: 'PATCH',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status, ...payload })
+    });
+    return res.json();
+  },
+
   // PHASE 5: ADVANCED INTELLIGENCE & CAMPUS OPERATIONS
   // ==========================================================================
 

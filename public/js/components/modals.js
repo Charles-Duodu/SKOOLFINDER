@@ -1640,6 +1640,16 @@ const Modals = {
               </select>
             </div>
 
+            <!-- Gate G4 Safeguarding: Adult Guardian Affirmation -->
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem;">
+              <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer; font-size: 0.78rem; color: var(--text-main); margin: 0;">
+                <input type="checkbox" id="tutor-guardian-affirmation" required checked style="margin-top: 0.2rem; accent-color: var(--primary-color, #0A2046);" />
+                <span>
+                  <strong>Gate G4 Safeguarding:</strong> I affirm that I am the parent or legal adult guardian of this student, requesting an adult-to-adult educational consultation in compliance with Ghana child safeguarding standards.
+                </span>
+              </label>
+            </div>
+
             <div class="modal-footer" style="padding: 0.75rem 0 0; background: none; border-top: none; display: flex; justify-content: flex-end; gap: 0.5rem;">
               <button type="button" class="btn-pill btn-outline" id="btn-cancel-tch-modal">Cancel</button>
               <button type="submit" class="btn-pill btn-gold" id="btn-submit-tutor-booking">
@@ -1706,6 +1716,12 @@ const Modals = {
       const studentInfo = document.getElementById('tutor-student-info').value.trim();
       const subject = document.getElementById('tutor-subject').value.trim();
       const format = document.getElementById('tutor-format').value;
+      const guardianAffirmation = document.getElementById('tutor-guardian-affirmation')?.checked;
+
+      if (!guardianAffirmation) {
+        State.showToast('Gate G4 Safeguarding: You must affirm adult parent/guardian status before scheduling.', 'warning');
+        return;
+      }
 
       const submitBtn = document.getElementById('btn-submit-tutor-booking');
       if (submitBtn) {
@@ -1722,7 +1738,8 @@ const Modals = {
           studentName: studentInfo,
           subject,
           sessionType: format,
-          preferredDays: 'Evenings & Weekends'
+          preferredDays: 'Evenings & Weekends',
+          guardianAffirmation: true
         });
 
         this.close();

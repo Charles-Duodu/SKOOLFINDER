@@ -626,9 +626,19 @@ const TeachersView = {
             <input type="text" id="book-schedule" class="form-input" placeholder="e.g. Mondays & Wednesdays (4:30 PM)" />
           </div>
 
-          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.85rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 0.85rem; color: #166534;">Estimated Session Rate:</span>
             <strong style="font-size: 1.1rem; color: #047857;">GH₵ ${hourlyRate}/hr</strong>
+          </div>
+
+          <!-- Gate G4 Safeguarding: Adult Guardian Affirmation -->
+          <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem; margin-bottom: 1.25rem;">
+            <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer; font-size: 0.78rem; color: var(--text-main, #333); margin: 0;">
+              <input type="checkbox" id="book-guardian-affirmation" required checked style="margin-top: 0.2rem; accent-color: var(--primary-color, #0A2046);" />
+              <span>
+                <strong>Gate G4 Safeguarding:</strong> I affirm that I am the adult parent or guardian requesting an adult-to-adult educational consultation in compliance with Ghana child safeguarding standards.
+              </span>
+            </label>
           </div>
 
           <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
@@ -646,6 +656,11 @@ const TeachersView = {
 
     document.getElementById('form-submit-tutor-booking').onsubmit = async (e) => {
       e.preventDefault();
+      const guardianAffirmed = document.getElementById('book-guardian-affirmation')?.checked;
+      if (!guardianAffirmed) {
+        State.showToast('Gate G4 Safeguarding: You must affirm adult parent/guardian status before scheduling.', 'warning');
+        return;
+      }
       try {
         await API.bookTutor({
           teacherId,
@@ -657,7 +672,8 @@ const TeachersView = {
           subject: document.getElementById('book-subject').value,
           suburb: document.getElementById('book-suburb').value,
           preferredDays: document.getElementById('book-schedule').value,
-          rateAgreedGHS: hourlyRate
+          rateAgreedGHS: hourlyRate,
+          guardianAffirmation: true
         });
         backdrop.remove();
         State.showToast(`Booking requested with ${teacherName}! The educator will contact you via WhatsApp.`, 'success');
@@ -766,7 +782,8 @@ const TeachersView = {
           subject: "Cambridge Primary Science",
           suburb: "Cantonments",
           preferredDays: "Saturdays (10:00 AM)",
-          rateAgreedGHS: 140
+          rateAgreedGHS: 140,
+          guardianAffirmation: true
         });
         State.showToast("New booking created!", "success");
         App.refreshCurrentView();

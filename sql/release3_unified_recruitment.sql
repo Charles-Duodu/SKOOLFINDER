@@ -165,3 +165,4 @@ CREATE POLICY "Candidates view their own job offers" ON public.job_offers
               AND va.applicant_user_id = auth.uid()
         )
     );
+

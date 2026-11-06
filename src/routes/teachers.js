@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, optionalAuth } = require('../middleware/auth');
+const TutoringService = require('../services/tutoringService');
 const EmailService = require('../services/emailService');
 const MarketplaceService = require('../services/marketplaceService');
 
@@ -647,6 +648,61 @@ router.post('/my-applications/:id/withdraw', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/teachers/:id/availability (AVA-01)
+ * Retrieves educator weekly calendar availability schedule
+ */
+router.get('/:id/availability', async (req, res) => {
+  try {
+    const result = await TutoringService.getEducatorAvailability(req.params.id);
+    return res.json({ success: true, ...result });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/teachers/availability (AVA-02)
+ * Educator updates weekly availability schedule
+ */
+router.post('/availability', authenticate, async (req, res) => {
+  try {
+    const result = await TutoringService.setEducatorAvailability(req.user.id, req.body.slots);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/teachers/bookings/me (M08)
+ * Authenticated educator retrieves their assigned consultation bookings
+ */
+router.get('/bookings/me', authenticate, async (req, res) => {
+  try {
+    const bookings = await TutoringService.getEducatorBookings(req.user.id, req.query.status);
+    return res.json({ success: true, total: bookings.length, bookings });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * PATCH /api/teachers/bookings/:id/status (DEC-010)
+ * Transitions booking along 8-state booking machine
+ */
+router.patch('/bookings/:id/status', optionalAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ error: 'Target status is required' });
+    const result = await TutoringService.transitionBookingStatus(id, status, req.user, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
  * GET /api/teachers/:id
  */
 router.get('/:id', async (req, res) => {
@@ -706,92 +762,31 @@ router.post('/', async (req, res) => {
  * Blueprint v2.0 DEC-004, DEC-005, DEC-025 & Gate G4 Safeguarding Compliance:
  * All requests are strictly adult-to-adult consultation enquiries between parent/guardian and educator.
  */
-router.post(['/book', '/:id/book'], async (req, res) => {
+router.post(['/book', '/:id/book'], optionalAuth, async (req, res) => {
   try {
-    const teacherId = req.params.id || req.body.teacherId;
-    const {
-      parentName = 'Parent / Guardian',
-      phone = '+233 24 000 0000',
-      email: parentEmail = '',
-      studentName = 'Ward',
-      studentLevel = 'Primary',
-      gradeLevel,
-      subject = 'Mathematics & Science',
-      sessionType = 'In-Person (Home)',
-      preferredDays = 'Weekends',
-      message = '',
-      guardianAffirmation = true
-    } = req.body;
+    const teacherId = req.params.id || req.body.teacherId || req.body.teacher_id;
+    const body = { ...req.body, teacherId };
 
-    const referenceCode = `TUTOR-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+    const guardianAffirmation = body.guardianAffirmation === true || 
+                                body.guardianAffirmation === 'true' ||
+                                body.guardian_affirmation === true ||
+                                body.guardian_affirmation === 'true';
 
-    // Resolve teacher record
-    let teacherName = 'Educator';
-    let teacherEmail = process.env.TEACHER_ALERT_EMAIL || 'tutors@skoolfinder.com.gh';
-
-    if (teacherId) {
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teacherId);
-      if (isUuid) {
-        const { data: t } = await supabaseAdmin.from('teachers').select('full_name, email').eq('id', teacherId).maybeSingle();
-        if (t) {
-          teacherName = t.full_name;
-          if (t.email) teacherEmail = t.email;
-        }
-      }
-    }
-
-    // Insert into enquiries table with Adult-to-Adult safeguarding disclaimer
-    const isTeacherUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(teacherId);
-    const targetRecipientId = isTeacherUuid ? teacherId : '00000000-0000-0000-0000-000000000001';
-
-    await supabaseAdmin
-      .from('enquiries')
-      .insert({
-        sender_id: '00000000-0000-0000-0000-000000000001',
-        recipient_type: 'teacher',
-        recipient_id: targetRecipientId,
-        subject: `Adult-to-Adult Tutoring Consultation: ${subject} for ${studentName || studentLevel} (#${referenceCode})`,
-        message: `Guardian: ${parentName} (${phone})\nFormat: ${sessionType} | Preferred: ${preferredDays}\nSafeguarding: Guardian adult agreement affirmed (Gate G4 compliant)\nNotes: ${message || 'No additional note'}`
+    // Gate G4 Hard Safeguarding check
+    if (!guardianAffirmation) {
+      return res.status(403).json({
+        error: 'Gate G4 Safeguarding Violation: Unaccompanied minor booking is prohibited. All educational consultations must be affirmed and scheduled by an adult guardian.',
+        code: 'SAFEGUARDING_GATE_G4_BLOCKED'
       });
-
-    // 1. Dispatch email alert to Tutor
-    EmailService.sendTutorBookingAlert({
-      to: teacherEmail,
-      tutorName: teacherName,
-      parentName,
-      parentPhone: phone,
-      parentEmail,
-      studentName,
-      subject,
-      gradeLevel: gradeLevel || studentLevel,
-      sessionType,
-      preferredDays,
-      message,
-      referenceCode
-    }).catch(err => console.error('Tutor booking email error:', err.message));
-
-    // 2. Dispatch confirmation email to Parent
-    if (parentEmail && parentEmail.includes('@')) {
-      EmailService.sendParentTutorConfirmation({
-        to: parentEmail,
-        parentName,
-        tutorName: teacherName,
-        subject,
-        referenceCode
-      }).catch(err => console.error('Parent tutor email error:', err.message));
     }
 
-    return res.status(201).json({
-      success: true,
-      message: `Tutoring consultation request successfully dispatched to ${teacherName}`,
-      referenceCode,
-      status: 'pending',
-      contractType: 'adult_to_adult_consultation',
-      gateG4SafeguardingNotice: 'Consultation request registered under Gate G4. Direct minor-to-adult contact is blocked. Platform sessions are scheduled mutually with adult guardian.'
-    });
+    const result = await TutoringService.createBooking(body, req.user);
+    return res.status(201).json(result);
   } catch (err) {
-    console.error('Error dispatching booking:', err);
-    return res.status(500).json({ error: 'Failed to dispatch booking' });
+    if (err.code === 'SAFEGUARDING_GATE_G4_BLOCKED') {
+      return res.status(403).json({ error: err.message, code: err.code });
+    }
+    return res.status(400).json({ error: err.message });
   }
 });
 

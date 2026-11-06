@@ -158,3 +158,4 @@ CREATE POLICY "Professionals view own vetting audits" ON public.professional_vet
     professional_id IN (SELECT id FROM public.professional_profiles WHERE user_id = auth.uid())
     OR auth.role() = 'service_role'
 );
+

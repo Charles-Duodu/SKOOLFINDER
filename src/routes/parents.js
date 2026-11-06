@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
+const TutoringService = require('../services/tutoringService');
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const isValidUUID = (id) => typeof id === 'string' && UUID_REGEX.test(id.trim());
 
@@ -824,6 +825,82 @@ router.get('/vouchers/:code', async (req, res) => {
     return res.json(result);
   } catch (err) {
     return res.status(404).json({ error: err.message || 'Voucher not found' });
+  }
+});
+
+// ============================================================================
+// RELEASE 4: SAFEGUARDED TUTORING — PARENT-SIDE BOOKING ENDPOINTS
+// ============================================================================
+
+/**
+ * GET /api/parents/bookings
+ * Authenticated parent retrieves their consultation bookings via TutoringService (DEC-010)
+ */
+router.get('/bookings', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const phone = req.user.phone || req.query.phone || null;
+    const bookings = await TutoringService.getParentBookings(userId, phone);
+    return res.json({
+      success: true,
+      total: bookings.length,
+      bookings
+    });
+  } catch (err) {
+    console.error('Parent bookings retrieval error:', err);
+    return res.status(500).json({ error: 'Failed to retrieve parent bookings' });
+  }
+});
+
+/**
+ * POST /api/parents/book
+ * Parent initiates a new tutoring consultation request (Gate G4 enforced)
+ */
+router.post('/book', authenticate, async (req, res) => {
+  try {
+    const body = { ...req.body };
+    const result = await TutoringService.createBooking(body, req.user);
+    return res.status(201).json(result);
+  } catch (err) {
+    if (err.code === 'SAFEGUARDING_GATE_G4_BLOCKED') {
+      return res.status(403).json({ error: err.message, code: err.code });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+});
+
+/**
+ * GET /api/parents/bookings/:id
+ * Retrieve a specific booking by ID for this parent
+ */
+router.get('/bookings/:id', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const bookingId = req.params.id;
+    const allBookings = await TutoringService.getParentBookings(userId);
+    const booking = allBookings.find(b => b.id === bookingId);
+    if (!booking) {
+      return res.status(404).json({ error: 'Booking not found or not authorised' });
+    }
+    return res.json({ success: true, booking });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve booking' });
+  }
+});
+
+/**
+ * PATCH /api/parents/bookings/:id/status
+ * Parent transitions a booking status (e.g., parent_signoff, cancelled)
+ */
+router.patch('/bookings/:id/status', authenticate, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    if (!status) return res.status(400).json({ error: 'Target status is required' });
+    const result = await TutoringService.transitionBookingStatus(id, status, req.user, req.body);
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message });
   }
 });
 
