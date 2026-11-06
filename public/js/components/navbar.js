@@ -23,6 +23,10 @@ const Navbar = {
     }
     const activePortal = this.getActivePortal();
     const showOnlyActive = activePortal && !this.isSwitchingRole;
+    const userFirstName = (typeof State !== 'undefined' && State.currentUser) ? (() => {
+      const raw = (State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0];
+      return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    })() : '';
     if (typeof State !== 'undefined' && State.isWhitelabel) {
       return `
         <header class="site-header whitelabel-header" style="background: #0a1128; border-bottom: 2px solid var(--gold-500); padding: 0.75rem 0;">
@@ -113,18 +117,13 @@ const Navbar = {
 
             ${State.isAuthenticated() ? `
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.45rem;">
-                <!-- Persona Workspace Pill & Switcher (Release 1 DEC-001) -->
-                <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.activePersona === 'school_admin' ? 'btn-gold' : (State.currentUser.activePersona === 'teacher' ? 'btn-emerald' : 'btn-primary')}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your active workspace">
-                  <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : (State.currentUser.activePersona === 'super_admin' ? '🛡️ Admin HQ' : '👨‍👩‍👧 Parent Portal')))}</span>
-                </button>
-                <select id="select-active-persona" class="persona-select-dropdown" style="font-size: 0.74rem; font-weight: 700; padding: 0.32rem 0.55rem; border-radius: 999px; background: rgba(255,255,255,0.08); color: var(--text-heading, #1e293b); border: 1px solid var(--border-color, rgba(0,0,0,0.18)); cursor: pointer;" title="Switch active persona">
-                  <option value="parent" ${(State.currentUser.activePersona === 'parent' || !State.currentUser.activePersona) ? 'selected' : ''}>👨‍👩‍👧 Parent</option>
-                  <option value="teacher" ${State.currentUser.activePersona === 'teacher' ? 'selected' : ''}>🧑‍🏫 Educator</option>
-                  <option value="school_admin" ${State.currentUser.activePersona === 'school_admin' ? 'selected' : ''}>🏫 School</option>
-                  ${State.currentUser.role === 'super_admin' ? `<option value="super_admin" ${State.currentUser.activePersona === 'super_admin' ? 'selected' : ''}>🛡️ Super Admin</option>` : ''}
-                </select>
-                <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.78rem; padding: 0.35rem 0.65rem;" title="Logged in as ${State.currentUser.email || ''}">
-                  ${State.currentUser.avatar || '👤'} ${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]}
+                ${State.currentUser.role !== 'super_admin' ? `
+                  <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.activePersona === 'school_admin' ? 'btn-gold' : (State.currentUser.activePersona === 'teacher' ? 'btn-emerald' : 'btn-primary')}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your active workspace">
+                    <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : '👨‍👩‍👧 Parent Portal'))}</span>
+                  </button>
+                ` : ''}
+                <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.8rem; padding: 0.38rem 0.75rem; text-transform: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;" title="Logged in as ${State.currentUser.email || ''}">
+                  ${State.currentUser.avatar || '👤'} Welcome ${userFirstName}
                 </span>
                 <button id="btn-nav-logout" class="btn-pill" style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.38rem 0.85rem; font-size: 0.8rem; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; cursor: pointer; border-radius: 9999px; transition: all 0.2s;" onmouseover="this.style.background='#fecaca'" onmouseout="this.style.background='#fee2e2'" title="Sign out of account" aria-label="Sign out of account">
                   <span>🚪</span> Sign Out
@@ -283,8 +282,11 @@ const Navbar = {
                 <span>🧭</span> Take 30s Guided Role Tour
               </a>
               ${State.isAuthenticated() ? `
+                <div style="padding: 0.5rem 0.75rem; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 9999px; font-size: 0.84rem; font-weight: 700; color: #065f46; display: flex; align-items: center; justify-content: center; gap: 0.4rem;">
+                  <span>👤</span> Welcome ${userFirstName}
+                </div>
                 <button id="mob-btn-logout" class="btn-pill" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 0.6rem; display: flex; align-items: center; gap: 0.45rem; cursor: pointer;">
-                  <span>🚪</span> Sign Out (${(State.currentUser.name || State.currentUser.fullName || State.currentUser.email || 'User').split(' ')[0]})
+                  <span>🚪</span> Sign Out
                 </button>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
