@@ -112,6 +112,7 @@ CREATE TABLE IF NOT EXISTS public.school_memberships (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     UNIQUE(school_id, user_id)
 );
+ALTER TABLE public.school_memberships ADD COLUMN IF NOT EXISTS permissions JSONB DEFAULT '[]'::jsonb;
 
 -- ----------------------------------------------------------------------------
 -- 4. VERIFICATION DESK & EVIDENCE ARCHITECTURE (DEC-003, POL-021)
@@ -215,6 +216,8 @@ CREATE TABLE IF NOT EXISTS public.parent_wards (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE public.parent_wards ADD COLUMN IF NOT EXISTS ward_name TEXT;
+ALTER TABLE public.parent_wards ADD COLUMN IF NOT EXISTS current_grade TEXT;
 
 CREATE TABLE IF NOT EXISTS public.tutoring_bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -230,6 +233,12 @@ CREATE TABLE IF NOT EXISTS public.tutoring_bookings (
     parent_custody_attestation BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS booking_ref TEXT;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_id UUID REFERENCES public.profiles(id);
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS ward_id UUID REFERENCES public.parent_wards(id);
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS educator_id UUID REFERENCES public.profiles(id);
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS agreed_fee_ghs NUMERIC;
+ALTER TABLE public.tutoring_bookings ADD COLUMN IF NOT EXISTS parent_custody_attestation BOOLEAN DEFAULT TRUE;
 
 -- ----------------------------------------------------------------------------
 -- 7. RECRUITMENT & CANDIDATE UNLOCKS (DEC-002, MODULE 2.4)
@@ -253,6 +262,17 @@ CREATE TABLE IF NOT EXISTS public.teachers (
     archive_reason TEXT DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS user_id UUID REFERENCES public.profiles(id);
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS subject TEXT;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS experience_years INTEGER DEFAULT 0;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS qualification TEXT;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS ntc_license_number TEXT;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS police_clearance_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS safeguarding_d4_cleared BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS verification_status TEXT DEFAULT 'pending';
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS hourly_rate_ghs NUMERIC DEFAULT 80.00;
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS active_tier TEXT DEFAULT 'free';
 
 CREATE TABLE IF NOT EXISTS public.recruiter_candidate_unlocks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -342,6 +362,10 @@ CREATE TABLE IF NOT EXISTS public.escrow_ledgers (
     disbursed_at TIMESTAMPTZ DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS payer_id UUID REFERENCES public.profiles(id);
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS beneficiary_id UUID REFERENCES public.profiles(id);
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS platform_fee_ghs NUMERIC DEFAULT 0.00;
+ALTER TABLE public.escrow_ledgers ADD COLUMN IF NOT EXISTS net_payout_ghs NUMERIC;
 
 CREATE TABLE IF NOT EXISTS public.disputes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -415,6 +439,15 @@ CREATE TABLE IF NOT EXISTS public.audit_events (
     signature_status TEXT DEFAULT 'cryptographically_verified',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Ensure additive columns exist if table was created in an earlier partial schema
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS actor_role TEXT NOT NULL DEFAULT 'super_admin';
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS old_state JSONB DEFAULT NULL;
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS new_state JSONB DEFAULT NULL;
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS user_agent TEXT DEFAULT NULL;
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS prev_hash TEXT NOT NULL DEFAULT '0000000000000000000000000000000000000000000000000000000000000000';
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS hash TEXT NOT NULL DEFAULT '0000000000000000000000000000000000000000000000000000000000000000';
+ALTER TABLE public.audit_events ADD COLUMN IF NOT EXISTS signature_status TEXT DEFAULT 'cryptographically_verified';
 
 CREATE INDEX IF NOT EXISTS idx_audit_events_created ON public.audit_events (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_events_hash ON public.audit_events (hash);
