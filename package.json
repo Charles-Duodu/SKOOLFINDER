@@ -8,7 +8,9 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node tests/e2e_release_gates.js",
-    "test:gates": "node tests/e2e_release_gates.js"
+    "test:gates": "node tests/e2e_release_gates.js",
+    "check:prod": "node scripts/verify-production-env.js",
+    "check:cloud": "node scripts/verify-cloud-status.js"
   },
   "keywords": [
     "education",
