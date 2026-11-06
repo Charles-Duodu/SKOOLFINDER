@@ -1,12 +1,23 @@
 /**
  * SkoolFinder Ghana - Educational Suppliers & RFQ B2B Hub
- * Baseline: Master Blueprint v2.0 (SUP-01-01, SUP-01-02, SUP-03-01, SUP-03-05, SUP-05-01)
+ * Baseline: Master Blueprint v2.0 (SUP-01-01, SUP-01-02, SUP-02-04, SUP-03-01, SUP-03-05, SUP-03-08, SUP-05-01, SUP-06-03)
  */
 const SuppliersView = {
-  activeTab: 'directory', // 'directory' | 'rfqs'
+  activeTab: 'directory', // 'directory' | 'rfqs' | 'shortlist'
   activeCategory: 'All',
   selectedForCompare: new Set(),
+  shortlistedIds: new Set(),
+  cachedSuppliers: [],
   cachedCategories: null,
+
+  getGuestSessionId() {
+    let sid = localStorage.getItem('skoolfinder_guest_shortlist_session');
+    if (!sid) {
+      sid = 'gst-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('skoolfinder_guest_shortlist_session', sid);
+    }
+    return sid;
+  },
 
   getVerificationBadge(s) {
     const level = s.verification_level || s.verificationLevel || 'V0';
@@ -29,6 +40,7 @@ const SuppliersView = {
     try {
       const supRes = await API.getSuppliers(this.activeCategory);
       suppliers = Array.isArray(supRes) ? supRes : [];
+      this.cachedSuppliers = suppliers;
     } catch (e) {
       suppliers = [];
     }
@@ -39,6 +51,15 @@ const SuppliersView = {
     } catch (e) {
       rfqs = [];
     }
+
+    // Hydrate Shortlist
+    try {
+      const sid = this.getGuestSessionId();
+      const slRes = await API.getSupplierShortlist(sid);
+      if (slRes && Array.isArray(slRes.suppliers)) {
+        this.shortlistedIds = new Set(slRes.suppliers.map(s => s.id));
+      }
+    } catch (e) {}
 
     if (!categories) {
       try {
@@ -66,6 +87,12 @@ const SuppliersView = {
     const displayCategories = ['All', ...(categories ? categories.map(c => c.name || c) : defaultCategories.map(c => c.name))];
     const maxCompare = (typeof window !== 'undefined' && window.innerWidth < 768) ? 2 : 3;
 
+    // Filter by shortlist if activeTab is 'shortlist'
+    let displaySuppliers = suppliers;
+    if (this.activeTab === 'shortlist') {
+      displaySuppliers = suppliers.filter(s => this.shortlistedIds.has(s.id));
+    }
+
     return `
       <section style="background: var(--bg-main); min-height: 85vh; padding: 2.5rem 0 5rem;">
         <div class="container">
@@ -85,6 +112,9 @@ const SuppliersView = {
             </div>
 
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <button id="btn-top-my-shortlist" class="btn-pill ${this.activeTab === 'shortlist' ? 'btn-gold' : 'btn-outline'}" style="display: inline-flex; align-items: center; gap: 0.4rem;">
+                <span>⭐</span> My Shortlist (<span id="shortlist-count-badge">${this.shortlistedIds.size}</span>)
+              </button>
               <button id="btn-top-register-supplier" class="btn-pill btn-emerald" style="display: inline-flex; align-items: center; gap: 0.4rem;">
                 <span>🏢</span> Register as Supplier
               </button>
@@ -97,111 +127,154 @@ const SuppliersView = {
             </div>
           </div>
 
-          <!-- Dual Tab Switcher -->
-          <div style="display: flex; gap: 1rem; border-bottom: 2px solid var(--border-light); margin-bottom: 2rem;">
-            <button id="tab-btn-directory" class="nav-link ${this.activeTab === 'directory' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700;">
+          <!-- Triple Tab Switcher -->
+          <div style="display: flex; gap: 1rem; border-bottom: 2px solid var(--border-light); margin-bottom: 2rem; overflow-x: auto;">
+            <button id="tab-btn-directory" class="nav-link ${this.activeTab === 'directory' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
               🏢 Verified Suppliers Directory (${suppliers.length})
             </button>
-            <button id="tab-btn-rfqs" class="nav-link ${this.activeTab === 'rfqs' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700;">
+            <button id="tab-btn-shortlist" class="nav-link ${this.activeTab === 'shortlist' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
+              ⭐ School Procurement Shortlist (${this.shortlistedIds.size})
+            </button>
+            <button id="tab-btn-rfqs" class="nav-link ${this.activeTab === 'rfqs' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
               📢 Live School RFQs (${rfqs.length})
             </button>
           </div>
 
-          <!-- Tab Content: Suppliers Directory -->
-          ${this.activeTab === 'directory' ? `
+          <!-- Tab Content: Suppliers Directory / Shortlist -->
+          ${this.activeTab === 'directory' || this.activeTab === 'shortlist' ? `
             <div>
-              <!-- Category Filter Taxonomy (SUP-03-01) -->
-              <div class="supplier-category-pills" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
-                ${displayCategories.map(c => `
-                  <button class="supplier-pill ${this.activeCategory === c ? 'active' : ''}" data-cat="${c}" style="padding: 0.45rem 0.95rem; font-size: 0.85rem; border-radius: 9999px; border: 1px solid var(--border-light); background: ${this.activeCategory === c ? '#0A2046' : '#ffffff'}; color: ${this.activeCategory === c ? '#ffffff' : '#334155'}; font-weight: 600; cursor: pointer; transition: all 0.2s;">
-                    ${c}
-                  </button>
-                `).join('')}
-              </div>
-
-              <!-- Supplier Directory Grid -->
-              <div class="schools-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-                ${suppliers.map(s => {
-                  const isChecked = this.selectedForCompare.has(s.id);
-                  const isBiz = (s.account_type || s.accountType) === 'business';
-                  return `
-                    <div class="supplier-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative;">
-                      
-                      <!-- Card Header: Category + Badges -->
-                      <div>
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.5rem; flex-wrap: wrap;">
-                          <span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px;">
-                            ${s.category || 'General Supply'}
-                          </span>
-                          <div style="display: flex; align-items: center; gap: 0.4rem;">
-                            ${this.getVerificationBadge(s)}
-                          </div>
-                        </div>
-
-                        <!-- Company / Provider Title -->
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
-                          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0;">
-                            ${s.companyName || s.company_name || 'Educational Supplier'}
-                          </h3>
-                        </div>
-
-                        <!-- Account Type Pill -->
-                        <div style="margin-bottom: 0.75rem;">
-                          <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.15rem 0.45rem; border-radius: 4px;">
-                            ${isBiz ? '🏢 Registered Business (RGD/TIN)' : '👤 Qualified Individual Consultant'}
-                          </span>
-                        </div>
-
-                        <!-- Location & Coverage Area -->
-                        <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; line-height: 1.4;">
-                          <div>📍 <strong>Base:</strong> ${s.address || s.region || 'Greater Accra, Ghana'}</div>
-                          <div>🚚 <strong>Coverage:</strong> ${(Array.isArray(s.coverage) ? s.coverage : [s.service_area || 'Greater Accra', 'Nationwide']).join(', ')}</div>
-                        </div>
-
-                        <!-- Business Description -->
-                        <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1rem;">
-                          ${s.description || 'Verified Ghanaian educational wholesale vendor delivering institutional supplies to schools.'}
-                        </p>
-
-                        <!-- Catalogue Highlights -->
-                        <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem; margin-bottom: 1.25rem;">
-                          <div style="font-size: 0.75rem; font-weight: 800; color: #0A2046; text-transform: uppercase; margin-bottom: 0.35rem; letter-spacing: 0.03em;">
-                            Catalogue Highlights:
-                          </div>
-                          <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: #334155; line-height: 1.5;">
-                            ${(Array.isArray(s.catalogHighlights) ? s.catalogHighlights : ['Educational Textbooks & Syllabi', 'Institutional Supply', 'Classroom Resources']).map(item => `
-                              <li>${item}</li>
-                            `).join('')}
-                          </ul>
-                        </div>
-                      </div>
-
-                      <!-- Card Footer: Compare Checkbox & Contact Actions -->
-                      <div>
-                        <!-- Compare Checkbox (SUP-03-05) -->
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; margin-bottom: 0.75rem;">
-                          <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 700; color: #0A2046; cursor: pointer;">
-                            <input type="checkbox" class="cb-compare-supplier" data-supplier-id="${s.id}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px; accent-color: #0A2046;" />
-                            <span>Select to Compare</span>
-                          </label>
-                          <span style="font-size: 0.75rem; color: #94a3b8;">(Max ${maxCompare})</span>
-                        </div>
-
-                        <!-- Direct Contact CTA -->
-                        <div style="display: flex; gap: 0.5rem;">
-                          <a href="https://wa.me/${(s.whatsapp || s.phone || '+233302221888').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName || s.company_name || 'Vendor')},%20I%20found%20your%20business%20on%20SkoolFinder%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: #22c55e; color: #ffffff; padding: 0.55rem; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
-                            💬 WhatsApp
-                          </a>
-                          <a href="tel:${(s.phone || s.whatsapp || '+233302221888').replace(/[^0-9+]/g, '')}" class="btn-card-view" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: #f1f5f9; color: #0A2046; padding: 0.55rem; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid #e2e8f0;">
-                            📞 Call
-                          </a>
-                        </div>
-                      </div>
-
+              ${this.activeTab === 'shortlist' ? `
+                <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                  <div>
+                    <strong style="color: #854d0e;">⭐ School Procurement Shortlist (SUP-03-08)</strong>
+                    <div style="font-size: 0.85rem; color: #a16207; margin-top: 0.2rem;">
+                      Your shortlisted vendors persist across your session. Sign in to link this list to your accredited school procurement account.
                     </div>
-                  `;
-                }).join('')}
-              </div>
+                  </div>
+                  <button id="btn-clear-shortlist" class="btn-pill btn-outline" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                    Clear Shortlist
+                  </button>
+                </div>
+              ` : `
+                <!-- Category Filter Taxonomy (SUP-03-01) -->
+                <div class="supplier-category-pills" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;">
+                  ${displayCategories.map(c => `
+                    <button class="supplier-pill ${this.activeCategory === c ? 'active' : ''}" data-cat="${c}" style="padding: 0.45rem 0.95rem; font-size: 0.85rem; border-radius: 9999px; border: 1px solid var(--border-light); background: ${this.activeCategory === c ? '#0A2046' : '#ffffff'}; color: ${this.activeCategory === c ? '#ffffff' : '#334155'}; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                      ${c}
+                    </button>
+                  `).join('')}
+                </div>
+              `}
+
+              ${displaySuppliers.length === 0 ? `
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 3rem 1.5rem; text-align: center; color: #64748b;">
+                  <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⭐</div>
+                  <h3 style="color: #0A2046; font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    ${this.activeTab === 'shortlist' ? 'Your Shortlist is Currently Empty' : 'No suppliers found in this category'}
+                  </h3>
+                  <p style="font-size: 0.9rem; max-width: 480px; margin: 0 auto 1.5rem;">
+                    ${this.activeTab === 'shortlist' 
+                      ? 'Browse the Verified Suppliers Directory and click "⭐ Shortlist" on vendors you want to evaluate for school contracts.' 
+                      : 'Explore other educational categories or post an open RFQ tender.'}
+                  </p>
+                  <button class="btn-pill btn-primary" onclick="SuppliersView.activeTab = 'directory'; SuppliersView.activeCategory = 'All'; App.navigate('suppliers');">
+                    Browse All Suppliers &rarr;
+                  </button>
+                </div>
+              ` : `
+                <!-- Supplier Directory Grid -->
+                <div class="schools-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+                  ${displaySuppliers.map(s => {
+                    const isChecked = this.selectedForCompare.has(s.id);
+                    const isShortlisted = this.shortlistedIds.has(s.id);
+                    const isBiz = (s.account_type || s.accountType) === 'business';
+                    return `
+                      <div class="supplier-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative;">
+                        
+                        <!-- Card Header: Category + Badges + Shortlist Bookmark -->
+                        <div>
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="badge" style="background: #f1f5f9; color: #334155; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px;">
+                              ${s.category || 'General Supply'}
+                            </span>
+                            <div style="display: flex; align-items: center; gap: 0.4rem;">
+                              ${this.getVerificationBadge(s)}
+                              <button class="btn-toggle-shortlist" data-supplier-id="${s.id}" style="background: ${isShortlisted ? '#fef08a' : '#ffffff'}; border: 1px solid ${isShortlisted ? '#eab308' : '#cbd5e1'}; color: ${isShortlisted ? '#854d0e' : '#64748b'}; border-radius: 6px; padding: 0.2rem 0.45rem; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;" title="${isShortlisted ? 'Remove from shortlist' : 'Add to procurement shortlist'}">
+                                ${isShortlisted ? '⭐ Saved' : '☆ Shortlist'}
+                              </button>
+                            </div>
+                          </div>
+
+                          <!-- Company / Provider Title -->
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
+                            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0;">
+                              ${s.companyName || s.company_name || 'Educational Supplier'}
+                            </h3>
+                          </div>
+
+                          <!-- Account Type Pill -->
+                          <div style="margin-bottom: 0.75rem;">
+                            <span style="font-size: 0.75rem; font-weight: 700; color: #64748b; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.15rem 0.45rem; border-radius: 4px;">
+                              ${isBiz ? '🏢 Registered Business (RGD/TIN)' : '👤 Qualified Individual Consultant'}
+                            </span>
+                          </div>
+
+                          <!-- Location & Coverage Area -->
+                          <div style="font-size: 0.85rem; color: #64748b; margin-bottom: 0.75rem; line-height: 1.4;">
+                            <div>📍 <strong>Base:</strong> ${s.address || s.region || 'Greater Accra, Ghana'}</div>
+                            <div>🚚 <strong>Coverage:</strong> ${(Array.isArray(s.coverage) ? s.coverage : [s.service_area || 'Greater Accra', 'Nationwide']).join(', ')}</div>
+                          </div>
+
+                          <!-- Business Description -->
+                          <p style="font-size: 0.88rem; color: #475569; line-height: 1.5; margin-bottom: 1rem;">
+                            ${s.description || 'Verified Ghanaian educational wholesale vendor delivering institutional supplies to schools.'}
+                          </p>
+
+                          <!-- Catalogue Highlights -->
+                          <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 0.75rem; margin-bottom: 1.25rem;">
+                            <div style="font-size: 0.75rem; font-weight: 800; color: #0A2046; text-transform: uppercase; margin-bottom: 0.35rem; letter-spacing: 0.03em;">
+                              Catalogue Highlights:
+                            </div>
+                            <ul style="margin: 0; padding-left: 1.1rem; font-size: 0.82rem; color: #334155; line-height: 1.5;">
+                              ${(Array.isArray(s.catalogHighlights) ? s.catalogHighlights : ['Educational Textbooks & Syllabi', 'Institutional Supply', 'Classroom Resources']).map(item => `
+                                <li>${item}</li>
+                              `).join('')}
+                            </ul>
+                          </div>
+                        </div>
+
+                        <!-- Card Footer: Compare Checkbox, Inquiry & Contact Actions -->
+                        <div>
+                          <!-- Compare Checkbox (SUP-03-05) -->
+                          <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #f1f5f9; margin-bottom: 0.75rem;">
+                            <label style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 700; color: #0A2046; cursor: pointer;">
+                              <input type="checkbox" class="cb-compare-supplier" data-supplier-id="${s.id}" ${isChecked ? 'checked' : ''} style="cursor: pointer; width: 16px; height: 16px; accent-color: #0A2046;" />
+                              <span>Select to Compare</span>
+                            </label>
+                            <span style="font-size: 0.75rem; color: #94a3b8;">(Max ${maxCompare})</span>
+                          </div>
+
+                          <!-- Contact Actions -->
+                          <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <a href="https://wa.me/${(s.whatsapp || s.phone || '+233302221888').replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(s.companyName || s.company_name || 'Vendor')},%20I%20found%20your%20business%20on%20SkoolFinder%20Ghana.%20We%20need%20a%20supply%20quote." target="_blank" class="btn-card-wa" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: #22c55e; color: #ffffff; padding: 0.55rem; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700;">
+                              💬 WhatsApp
+                            </a>
+                            <a href="tel:${(s.phone || s.whatsapp || '+233302221888').replace(/[^0-9+]/g, '')}" class="btn-card-view" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; background: #f1f5f9; color: #0A2046; padding: 0.55rem; border-radius: 8px; text-decoration: none; font-size: 0.85rem; font-weight: 700; border: 1px solid #e2e8f0;">
+                              📞 Call
+                            </a>
+                          </div>
+
+                          <!-- Direct Inquiry & Invitation Button (SUP-02-04, SUP-06-03) -->
+                          <button class="btn-card-inquire" data-supplier-id="${s.id}" style="width: 100%; background: #0A2046; color: #ffffff; padding: 0.55rem; border-radius: 8px; border: none; font-size: 0.85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: background 0.2s;">
+                            <span>✉️</span> Send Direct RFQ / Inquiry
+                          </button>
+                        </div>
+
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              `}
             </div>
           ` : `
             <!-- Tab Content: RFQs (Live Bidding Board) -->
@@ -291,12 +364,21 @@ const SuppliersView = {
       this.activeTab = 'directory';
       App.navigate('suppliers');
     });
+    document.getElementById('tab-btn-shortlist')?.addEventListener('click', () => {
+      this.activeTab = 'shortlist';
+      App.navigate('suppliers');
+    });
     document.getElementById('tab-btn-rfqs')?.addEventListener('click', () => {
       this.activeTab = 'rfqs';
       App.navigate('suppliers');
     });
 
     // Top Action Buttons
+    document.getElementById('btn-top-my-shortlist')?.addEventListener('click', () => {
+      this.activeTab = this.activeTab === 'shortlist' ? 'directory' : 'shortlist';
+      App.navigate('suppliers');
+    });
+
     document.getElementById('btn-top-register-supplier')?.addEventListener('click', () => {
       if (typeof SupplierOnboardingModal !== 'undefined' && SupplierOnboardingModal.open) {
         SupplierOnboardingModal.open((supplier) => {
@@ -330,6 +412,66 @@ const SuppliersView = {
         const rfqs = await API.getRFQs();
         const rfq = rfqs.find(r => r.id === rfqId);
         if (rfq && typeof Modals !== 'undefined') Modals.openSubmitQuoteModal(rfq);
+      };
+    });
+
+    // Shortlist toggle on cards (SUP-03-08)
+    const sid = this.getGuestSessionId();
+    document.querySelectorAll('.btn-toggle-shortlist').forEach(btn => {
+      btn.onclick = async () => {
+        const supId = btn.dataset.supplierId;
+        const isCurrently = this.shortlistedIds.has(supId);
+
+        try {
+          if (isCurrently) {
+            await API.removeFromSupplierShortlist(supId, sid);
+            this.shortlistedIds.delete(supId);
+            btn.innerHTML = '☆ Shortlist';
+            btn.style.background = '#ffffff';
+            btn.style.borderColor = '#cbd5e1';
+            btn.style.color = '#64748b';
+            if (typeof State !== 'undefined' && State.showToast) {
+              State.showToast('Supplier removed from your procurement shortlist', 'info');
+            }
+          } else {
+            await API.addToSupplierShortlist(supId, sid);
+            this.shortlistedIds.add(supId);
+            btn.innerHTML = '⭐ Saved';
+            btn.style.background = '#fef08a';
+            btn.style.borderColor = '#eab308';
+            btn.style.color = '#854d0e';
+            if (typeof State !== 'undefined' && State.showToast) {
+              State.showToast('Supplier added to your school procurement shortlist! ⭐', 'success');
+            }
+          }
+          const badge = document.getElementById('shortlist-count-badge');
+          if (badge) badge.textContent = this.shortlistedIds.size;
+        } catch (err) {
+          console.warn('Shortlist toggle error:', err);
+        }
+      };
+    });
+
+    // Clear Shortlist Button
+    document.getElementById('btn-clear-shortlist')?.addEventListener('click', async () => {
+      const ids = Array.from(this.shortlistedIds);
+      for (const id of ids) {
+        await API.removeFromSupplierShortlist(id, sid);
+      }
+      this.shortlistedIds.clear();
+      App.navigate('suppliers');
+    });
+
+    // Direct Inquiry buttons on cards (SUP-02-04, SUP-06-03)
+    document.querySelectorAll('.btn-card-inquire').forEach(btn => {
+      btn.onclick = () => {
+        const supId = btn.dataset.supplierId;
+        const supplier = this.cachedSuppliers.find(s => s.id === supId) || { id: supId, company_name: 'Educational Supplier' };
+        if (typeof SupplierInquiryModal !== 'undefined' && SupplierInquiryModal.open) {
+          SupplierInquiryModal.open(supplier);
+        } else if (typeof Modals !== 'undefined' && Modals.openSupplierInquiryModal) {
+          Modals.openSupplierInquiryModal(supplier);
+        }
       };
     });
 

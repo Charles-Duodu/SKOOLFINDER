@@ -1,7 +1,33 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'skoolfinder-jwt-secret-key-ghana-2026';
+
+const optionalAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return next();
+  }
+  const token = authHeader.split(' ')[1];
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
+    return next();
+  } catch (e) {
+    try {
+      const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+      if (user) req.user = { id: user.id, email: user.email };
+    } catch (err) {}
+    return next();
+  }
+};
+
+const IN_MEMORY_SHORTLISTS = [];
+const IN_MEMORY_INQUIRIES = [];
+const IN_MEMORY_INQUIRY_MESSAGES = [];
 
 const FALLBACK_CATEGORIES = [
   { id: 'cat-books', name: 'Books, Curricula & Stationery', slug: 'books-stationery', risk_level: 'standard', icon: '📚', description: 'Textbooks (BECE/WASSCE/Cambridge), exercise books, stationery', required_evidence: ['Business Registration', 'Publisher Distributorship Agreement'] },
@@ -267,6 +293,427 @@ router.get('/me', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/suppliers/shortlist
+ * Retrieve shortlisted suppliers for authenticated user or guest session (SUP-03-08)
+ */
+router.get('/shortlist', optionalAuth, async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const sessionId = req.query.sessionId || req.headers['x-guest-session'];
+
+    if (!userId && !sessionId) {
+      return res.json({ success: true, count: 0, suppliers: [] });
+    }
+
+    let supplierIds = [];
+
+    try {
+      let query = supabaseAdmin.from('supplier_shortlists').select('supplier_id, notes, created_at');
+      if (userId) {
+        query = query.eq('user_id', userId);
+      } else {
+        query = query.eq('session_id', sessionId);
+      }
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        supplierIds = data.map(item => item.supplier_id);
+      }
+    } catch (e) {}
+
+    // In-memory fallback
+    const memItems = IN_MEMORY_SHORTLISTS.filter(item => {
+      if (userId && item.user_id === userId) return true;
+      if (sessionId && item.session_id === sessionId) return true;
+      return false;
+    });
+    memItems.forEach(item => {
+      if (!supplierIds.includes(item.supplier_id)) {
+        supplierIds.push(item.supplier_id);
+      }
+    });
+
+    if (supplierIds.length === 0) {
+      return res.json({ success: true, count: 0, suppliers: [] });
+    }
+
+    // Hydrate supplier details
+    let suppliers = [];
+    try {
+      const { data: dbSuppliers } = await supabaseAdmin.from('suppliers').select('*').in('id', supplierIds);
+      if (dbSuppliers && dbSuppliers.length > 0) {
+        suppliers = [...dbSuppliers];
+      }
+    } catch (e) {}
+
+    supplierIds.forEach(id => {
+      if (!suppliers.some(s => s.id === id)) {
+        const fb = FALLBACK_SUPPLIERS.find(s => s.id === id);
+        if (fb) suppliers.push(fb);
+      }
+    });
+
+    const formatted = suppliers.map(formatSupplier);
+    return res.json({
+      success: true,
+      count: formatted.length,
+      suppliers: formatted
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve shortlist' });
+  }
+});
+
+/**
+ * POST /api/suppliers/shortlist
+ * Add a supplier to shortlist (guest session or authenticated user) (SUP-03-08)
+ */
+router.post('/shortlist', optionalAuth, async (req, res) => {
+  try {
+    const { supplierId, sessionId, notes } = req.body;
+    if (!supplierId) {
+      return res.status(400).json({ error: 'supplierId is required' });
+    }
+
+    const userId = req.user?.id || null;
+    const session = sessionId || req.headers['x-guest-session'] || null;
+
+    if (!userId && !session) {
+      return res.status(400).json({ error: 'Either user authentication or sessionId is required' });
+    }
+
+    const record = {
+      id: `sl-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      user_id: userId,
+      session_id: session,
+      supplier_id: supplierId,
+      notes: notes || '',
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      await supabaseAdmin.from('supplier_shortlists').insert({
+        user_id: userId,
+        session_id: session,
+        supplier_id: supplierId,
+        notes: notes || ''
+      });
+    } catch (e) {}
+
+    const exists = IN_MEMORY_SHORTLISTS.some(item => 
+      (userId && item.user_id === userId && item.supplier_id === supplierId) ||
+      (session && item.session_id === session && item.supplier_id === supplierId)
+    );
+    if (!exists) {
+      IN_MEMORY_SHORTLISTS.push(record);
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Supplier added to shortlist',
+      shortlist: record
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to add to shortlist' });
+  }
+});
+
+/**
+ * DELETE /api/suppliers/shortlist/:supplierId
+ * Remove a supplier from shortlist
+ */
+router.delete('/shortlist/:supplierId', optionalAuth, async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const userId = req.user?.id || null;
+    const sessionId = req.query.sessionId || req.headers['x-guest-session'] || null;
+
+    try {
+      let query = supabaseAdmin.from('supplier_shortlists').delete().eq('supplier_id', supplierId);
+      if (userId) query = query.eq('user_id', userId);
+      else if (sessionId) query = query.eq('session_id', sessionId);
+      await query;
+    } catch (e) {}
+
+    const idx = IN_MEMORY_SHORTLISTS.findIndex(item => 
+      item.supplier_id === supplierId && 
+      ((userId && item.user_id === userId) || (sessionId && item.session_id === sessionId))
+    );
+    if (idx !== -1) {
+      IN_MEMORY_SHORTLISTS.splice(idx, 1);
+    }
+
+    return res.json({ success: true, message: 'Supplier removed from shortlist' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to remove from shortlist' });
+  }
+});
+
+/**
+ * POST /api/suppliers/shortlist/transfer
+ * Transfer guest shortlist session items to authenticated user (SUP-03-08)
+ */
+router.post('/shortlist/transfer', authenticate, async (req, res) => {
+  try {
+    const { sessionId } = req.body;
+    const userId = req.user.id;
+
+    if (!sessionId) {
+      return res.status(400).json({ error: 'sessionId is required for transfer' });
+    }
+
+    let transferredCount = 0;
+
+    try {
+      const { data: guestItems } = await supabaseAdmin
+        .from('supplier_shortlists')
+        .select('*')
+        .eq('session_id', sessionId);
+
+      if (guestItems && guestItems.length > 0) {
+        for (const item of guestItems) {
+          await supabaseAdmin
+            .from('supplier_shortlists')
+            .update({ user_id: userId, session_id: null })
+            .eq('id', item.id);
+          transferredCount++;
+        }
+      }
+    } catch (e) {}
+
+    IN_MEMORY_SHORTLISTS.forEach(item => {
+      if (item.session_id === sessionId) {
+        item.user_id = userId;
+        item.session_id = null;
+        transferredCount++;
+      }
+    });
+
+    return res.json({
+      success: true,
+      message: `Successfully transferred ${transferredCount} shortlisted supplier(s) to your school procurement account`,
+      transferredCount
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to transfer guest shortlist' });
+  }
+});
+
+/**
+ * GET /api/suppliers/me/inquiries
+ * Authenticated: Retrieve incoming or sent inquiries for the current user/supplier (SUP-06-03)
+ */
+router.get('/me/inquiries', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userEmail = req.user.email;
+    const { status } = req.query;
+
+    let list = [];
+
+    try {
+      let query = supabaseAdmin
+        .from('supplier_inquiries')
+        .select('*')
+        .or(`sender_user_id.eq.${userId},supplier_id.eq.${userId},sender_email.eq.${userEmail}`)
+        .order('created_at', { ascending: false });
+
+      if (status) {
+        query = query.eq('status', status);
+      }
+
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        list = data;
+      }
+    } catch (e) {}
+
+    const memList = IN_MEMORY_INQUIRIES.filter(inq => {
+      const isParticipant = inq.sender_user_id === userId || 
+                            inq.supplier_id === userId || 
+                            inq.sender_email === userEmail ||
+                            req.user.role === 'super_admin';
+      if (!isParticipant) return false;
+      if (status && inq.status !== status) return false;
+      return true;
+    });
+
+    memList.forEach(m => {
+      if (!list.some(item => item.id === m.id)) {
+        list.push(m);
+      }
+    });
+
+    return res.json({
+      success: true,
+      count: list.length,
+      inquiries: list
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve inquiries' });
+  }
+});
+
+/**
+ * GET /api/suppliers/inquiries/:inquiryId
+ * Authenticated: Retrieve single inquiry thread with messages and strict tenant isolation (SUP-06-03)
+ */
+router.get('/inquiries/:inquiryId', authenticate, async (req, res) => {
+  try {
+    const { inquiryId } = req.params;
+    const userId = req.user.id;
+    const userEmail = req.user.email;
+    const isSuperAdmin = req.user.role === 'super_admin';
+
+    let inquiry = null;
+    try {
+      const { data } = await supabaseAdmin
+        .from('supplier_inquiries')
+        .select('*')
+        .eq('id', inquiryId)
+        .maybeSingle();
+      if (data) inquiry = data;
+    } catch (e) {}
+
+    if (!inquiry) {
+      inquiry = IN_MEMORY_INQUIRIES.find(i => i.id === inquiryId || i.inquiry_number === inquiryId);
+    }
+
+    if (!inquiry) {
+      return res.status(404).json({ error: 'Inquiry not found' });
+    }
+
+    const hasAccess = isSuperAdmin || 
+                      inquiry.sender_user_id === userId || 
+                      inquiry.supplier_id === userId || 
+                      inquiry.sender_email === userEmail;
+
+    if (!hasAccess) {
+      return res.status(403).json({ error: 'Access forbidden: You are not authorized to view this confidential inquiry' });
+    }
+
+    let messages = [];
+    try {
+      const { data: dbMessages } = await supabaseAdmin
+        .from('supplier_inquiry_messages')
+        .select('*')
+        .eq('inquiry_id', inquiry.id)
+        .order('created_at', { ascending: true });
+      if (dbMessages && Array.isArray(dbMessages)) messages = dbMessages;
+    } catch (e) {}
+
+    const memMsgs = IN_MEMORY_INQUIRY_MESSAGES.filter(m => m.inquiry_id === inquiry.id);
+    memMsgs.forEach(m => {
+      if (!messages.some(item => item.id === m.id)) messages.push(m);
+    });
+
+    return res.json({
+      success: true,
+      inquiry,
+      messages
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve inquiry thread' });
+  }
+});
+
+/**
+ * POST /api/suppliers/inquiries/:inquiryId/reply
+ * Authenticated: Append response message to inquiry thread
+ */
+router.post('/inquiries/:inquiryId/reply', authenticate, async (req, res) => {
+  try {
+    const { inquiryId } = req.params;
+    const { message, attachments } = req.body;
+    const userId = req.user.id;
+    const userName = req.user.full_name || req.user.email || 'Participant';
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({ error: 'Reply message cannot be empty' });
+    }
+
+    let inquiry = IN_MEMORY_INQUIRIES.find(i => i.id === inquiryId);
+    if (!inquiry) {
+      try {
+        const { data } = await supabaseAdmin.from('supplier_inquiries').select('*').eq('id', inquiryId).maybeSingle();
+        if (data) inquiry = data;
+      } catch (e) {}
+    }
+
+    if (!inquiry) {
+      return res.status(404).json({ error: 'Inquiry not found' });
+    }
+
+    const isSupplier = inquiry.supplier_id === userId;
+    const role = req.user.role === 'super_admin' ? 'admin' : (isSupplier ? 'supplier' : 'school');
+
+    const msg = {
+      id: `msg-${Date.now()}`,
+      inquiry_id: inquiry.id,
+      sender_id: userId,
+      sender_role: role,
+      sender_name: userName,
+      message: message.trim(),
+      attachments: attachments || [],
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      await supabaseAdmin.from('supplier_inquiry_messages').insert(msg);
+      if (isSupplier && inquiry.status === 'sent') {
+        await supabaseAdmin.from('supplier_inquiries').update({ status: 'read', updated_at: new Date().toISOString() }).eq('id', inquiry.id);
+      }
+    } catch (e) {}
+
+    IN_MEMORY_INQUIRY_MESSAGES.push(msg);
+    if (isSupplier && inquiry.status === 'sent') {
+      inquiry.status = 'read';
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: 'Reply delivered',
+      reply: msg
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to post reply' });
+  }
+});
+
+/**
+ * PATCH /api/suppliers/inquiries/:inquiryId/status
+ * Authenticated: Update inquiry status (read, quoted, declined, closed)
+ */
+router.patch('/inquiries/:inquiryId/status', authenticate, async (req, res) => {
+  try {
+    const { inquiryId } = req.params;
+    const { status } = req.body;
+
+    const allowed = ['sent', 'read', 'quoted', 'declined', 'closed'];
+    if (!status || !allowed.includes(status)) {
+      return res.status(400).json({ error: `Invalid status. Must be one of: ${allowed.join(', ')}` });
+    }
+
+    try {
+      await supabaseAdmin.from('supplier_inquiries').update({
+        status,
+        updated_at: new Date().toISOString()
+      }).eq('id', inquiryId);
+    } catch (e) {}
+
+    const inq = IN_MEMORY_INQUIRIES.find(i => i.id === inquiryId);
+    if (inq) inq.status = status;
+
+    return res.json({
+      success: true,
+      message: `Inquiry status updated to "${status}"`,
+      status
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to update inquiry status' });
+  }
+});
+
+/**
  * GET /api/suppliers/:id
  */
 router.get('/:id', async (req, res) => {
@@ -283,6 +730,88 @@ router.get('/:id', async (req, res) => {
     return res.json(formatSupplier(supplier));
   } catch (err) {
     return res.status(500).json({ error: 'Failed to retrieve supplier' });
+  }
+});
+
+/**
+ * POST /api/suppliers/:id/inquire
+ * Submit structured private inquiry or direct procurement invitation (SUP-02-04, SUP-06-03)
+ */
+router.post('/:id/inquire', optionalAuth, async (req, res) => {
+  try {
+    const supplierId = req.params.id;
+    const body = req.body;
+
+    if (!body.subject || !body.subject.trim()) {
+      return res.status(400).json({ error: 'Inquiry subject is required' });
+    }
+    if (!body.message || !body.message.trim()) {
+      return res.status(400).json({ error: 'Inquiry message details are required' });
+    }
+
+    const senderUserId = req.user?.id || null;
+    const senderName = body.sender_name || req.user?.full_name || 'School Administrator';
+    const senderEmail = body.sender_email || req.user?.email || 'admin@school.edu.gh';
+    const senderPhone = body.sender_phone || req.user?.phone || '';
+    const isDirectInvite = !!body.direct_invitation;
+
+    const inqNumber = `INQ-${new Date().getFullYear()}-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const inquiryPayload = {
+      id: `inq-${Date.now()}`,
+      inquiry_number: inqNumber,
+      sender_user_id: senderUserId,
+      sender_name: senderName,
+      sender_email: senderEmail,
+      sender_phone: senderPhone,
+      school_id: body.school_id || null,
+      school_name: body.school_name || 'Ghana Educational Institution',
+      supplier_id: supplierId,
+      subject: body.subject.trim(),
+      message: body.message.trim(),
+      category_id: body.category_id || null,
+      target_timeline: body.target_timeline || 'Within 2 weeks',
+      estimated_volume: body.estimated_volume || '',
+      status: 'sent',
+      direct_invitation: isDirectInvite,
+      is_confidential: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    try {
+      await supabaseAdmin.from('supplier_inquiries').insert(inquiryPayload);
+    } catch (e) {}
+
+    IN_MEMORY_INQUIRIES.unshift(inquiryPayload);
+
+    const msgPayload = {
+      id: `msg-${Date.now()}`,
+      inquiry_id: inquiryPayload.id,
+      sender_id: senderUserId,
+      sender_role: 'school',
+      sender_name: senderName,
+      message: body.message.trim(),
+      attachments: body.attachments || [],
+      created_at: new Date().toISOString()
+    };
+
+    try {
+      await supabaseAdmin.from('supplier_inquiry_messages').insert(msgPayload);
+    } catch (e) {}
+
+    IN_MEMORY_INQUIRY_MESSAGES.push(msgPayload);
+
+    return res.status(201).json({
+      success: true,
+      message: isDirectInvite 
+        ? 'Direct procurement invitation dispatched to supplier (Quotas exempt - SUP-02-04)'
+        : 'Private inquiry successfully delivered to supplier',
+      inquiryNumber: inqNumber,
+      inquiry: inquiryPayload
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to submit inquiry' });
   }
 });
 

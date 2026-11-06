@@ -155,6 +155,16 @@ const State = {
       if (user && token) {
         localStorage.setItem('skoolfinder_user', JSON.stringify(user));
         localStorage.setItem('skoolfinder_token', token);
+
+        // SUP-03-08: Guest shortlist persistent transfer upon authentication
+        const guestSid = localStorage.getItem('skoolfinder_guest_shortlist_session');
+        if (guestSid && typeof API !== 'undefined' && API.transferSupplierShortlist) {
+          API.transferSupplierShortlist(guestSid).then(res => {
+            if (res && res.transferredCount > 0) {
+              this.showToast(`Transferred ${res.transferredCount} shortlisted supplier(s) to your school procurement account!`, 'success');
+            }
+          }).catch(e => console.warn('Guest shortlist transfer notice:', e));
+        }
       } else {
         localStorage.removeItem('skoolfinder_user');
         localStorage.removeItem('skoolfinder_token');

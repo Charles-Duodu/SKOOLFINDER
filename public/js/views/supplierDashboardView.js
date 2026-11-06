@@ -4,10 +4,11 @@
  */
 
 const SupplierDashboardView = {
-  activeTab: 'overview', // 'overview' | 'catalogue' | 'rfqs' | 'verification' | 'billing'
+  activeTab: 'overview', // 'overview' | 'catalogue' | 'inquiries' | 'rfqs' | 'verification' | 'billing'
   supplierData: null,
   products: [],
   services: [],
+  inquiries: [],
 
   async render() {
     let token = (typeof State !== 'undefined' && State.authToken) || 
@@ -28,6 +29,18 @@ const SupplierDashboardView = {
         }
       }
     } catch (e) {
+      console.warn('Could not fetch supplier profile:', e);
+    }
+
+    // Hydrate Inquiries (SUP-02-04, SUP-06-03)
+    try {
+      if (typeof API !== 'undefined' && API.getMySupplierInquiries) {
+        const inqRes = await API.getMySupplierInquiries();
+        this.inquiries = Array.isArray(inqRes.inquiries) ? inqRes.inquiries : [];
+      }
+    } catch (e) {
+      this.inquiries = [];
+    }
       console.warn('Could not fetch supplier profile:', e);
     }
 
@@ -98,6 +111,9 @@ const SupplierDashboardView = {
             </button>
             <button id="dash-tab-catalogue" class="nav-link ${this.activeTab === 'catalogue' ? 'active' : ''}" style="font-size: 0.95rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
               🛍️ Catalogue (Products & Services)
+            </button>
+            <button id="dash-tab-inquiries" class="nav-link ${this.activeTab === 'inquiries' ? 'active' : ''}" style="font-size: 0.95rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
+              ✉️ Direct Inquiries (${this.inquiries.length})
             </button>
             <button id="dash-tab-rfqs" class="nav-link ${this.activeTab === 'rfqs' ? 'active' : ''}" style="font-size: 0.95rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
               📢 RFQ Opportunities & Bids
@@ -244,6 +260,74 @@ const SupplierDashboardView = {
             </div>
           </div>
 
+          <!-- TAB: DIRECT INQUIRIES & INVITATIONS (SUP-02-04, SUP-06-03) -->
+          <div id="dash-content-inquiries" style="display: ${this.activeTab === 'inquiries' ? 'block' : 'none'};">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+              <div>
+                <h3 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">Direct School Inquiries & Direct Opportunities</h3>
+                <p style="font-size: 0.85rem; color: #64748b; margin: 0;">Direct procurement requests received from accredited Ghanaian pre-tertiary school administrations.</p>
+              </div>
+            </div>
+
+            ${this.inquiries.length === 0 ? `
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 3rem 1.5rem; text-align: center; color: #64748b;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📬</div>
+                <h4 style="color: #0A2046; margin: 0 0 0.5rem 0; font-size: 1.15rem;">No Direct Inquiries Yet</h4>
+                <p style="font-size: 0.85rem; max-width: 480px; margin: 0 auto;">Schools browsing the SkoolFinder directory can send direct procurement inquiries and RFQ invitations directly to your inbox. Direct responses are exempt from platform quotas (SUP-02-04).</p>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                ${this.inquiries.map(inq => {
+                  const isDirect = !!inq.direct_invitation;
+                  return `
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; box-shadow: var(--shadow-sm);">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.75rem;">
+                        <div>
+                          <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                            <span class="badge" style="background: #0A2046; color: #ffffff; font-weight: 700;">${inq.inquiry_number || 'INQ-REF'}</span>
+                            ${isDirect ? `
+                              <span class="badge" style="background: #fef08a; color: #854d0e; font-weight: 700; border: 1px solid #eab308;" title="Direct School Invitation: Exempt from quota caps (SUP-02-04)">
+                                ⭐ Direct School Invitation
+                              </span>
+                            ` : ''}
+                            <span class="badge" style="background: #f1f5f9; color: #334155; font-weight: 700;">
+                              Status: ${(inq.status || 'sent').toUpperCase()}
+                            </span>
+                          </div>
+                          <h4 style="font-size: 1.15rem; color: #0A2046; margin: 0.5rem 0 0.2rem 0; font-weight: 800;">
+                            ${inq.subject}
+                          </h4>
+                          <div style="font-size: 0.82rem; color: #64748b;">
+                            School: <strong>${inq.school_name || 'Ghana Educational Institution'}</strong> • Contact: ${inq.sender_name} (${inq.sender_phone || inq.sender_email})
+                          </div>
+                        </div>
+                        <div style="font-size: 0.78rem; color: #94a3b8;">
+                          ${new Date(inq.created_at || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </div>
+                      </div>
+
+                      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; font-size: 0.88rem; color: #334155; line-height: 1.5;">
+                        ${inq.message}
+                      </div>
+
+                      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; font-size: 0.82rem; color: #64748b;">
+                        <div>
+                          <strong>Timeline:</strong> ${inq.target_timeline || 'Standard'} &nbsp;|&nbsp; 
+                          <strong>Volume:</strong> ${inq.estimated_volume || 'Per Specification'}
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                          <button class="btn-pill btn-outline btn-reply-inquiry" data-inquiry-id="${inq.id}" style="padding: 0.4rem 0.85rem; font-size: 0.8rem;">
+                            💬 Reply to School
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `}
+          </div>
+
           <!-- TAB 3: RFQS -->
           <div id="dash-content-rfqs" style="display: ${this.activeTab === 'rfqs' ? 'block' : 'none'};">
             <h3 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin-bottom: 1rem;">Open School Procurement RFQs</h3>
@@ -369,9 +453,10 @@ const SupplierDashboardView = {
 
   attachEvents() {
     // Tab Switching
+    const tabs = ['overview', 'catalogue', 'inquiries', 'rfqs', 'verification', 'billing'];
     const switchTab = (tabName) => {
       this.activeTab = tabName;
-      ['overview', 'catalogue', 'rfqs', 'verification', 'billing'].forEach(t => {
+      tabs.forEach(t => {
         const btn = document.getElementById(`dash-tab-${t}`);
         const content = document.getElementById(`dash-content-${t}`);
         if (btn) btn.classList.toggle('active', t === tabName);
@@ -379,9 +464,29 @@ const SupplierDashboardView = {
       });
     };
 
-    ['overview', 'catalogue', 'rfqs', 'verification', 'billing'].forEach(t => {
+    tabs.forEach(t => {
       const btn = document.getElementById(`dash-tab-${t}`);
       if (btn) btn.onclick = () => switchTab(t);
+    });
+
+    // Inquiry Reply Handler (SUP-06-03)
+    document.querySelectorAll('.btn-reply-inquiry').forEach(btn => {
+      btn.onclick = async () => {
+        const inqId = btn.dataset.inquiryId;
+        const replyText = prompt('Enter your reply / quote clarification message to the school:');
+        if (!replyText || !replyText.trim()) return;
+        try {
+          const res = await API.replyToSupplierInquiry(inqId, replyText.trim());
+          if (res.success) {
+            alert('Reply message delivered to school!');
+            await App.refreshCurrentView();
+          } else {
+            alert(res.error || 'Failed to send reply');
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+        }
+      };
     });
 
     const btnViewVer = document.getElementById('btn-dash-view-verification');

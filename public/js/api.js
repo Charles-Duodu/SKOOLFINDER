@@ -1173,6 +1173,96 @@ const API = {
     return res.json();
   },
 
+  // STAGE 3: SUPPLIER SHORTLIST & ENGAGEMENT (SUP-03-08)
+  async getSupplierShortlist(sessionId = null) {
+    try {
+      const q = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
+      const res = await fetch(`${this.baseUrl}/suppliers/shortlist${q}`, {
+        headers: this.getAuthHeaders()
+      });
+      if (!res.ok) return { success: true, count: 0, suppliers: [] };
+      return res.json();
+    } catch (e) {
+      console.warn('getSupplierShortlist error:', e);
+      return { success: true, count: 0, suppliers: [] };
+    }
+  },
+
+  async addToSupplierShortlist(supplierId, sessionId = null, notes = '') {
+    const res = await fetch(`${this.baseUrl}/suppliers/shortlist`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ supplierId, sessionId, notes })
+    });
+    return res.json();
+  },
+
+  async removeFromSupplierShortlist(supplierId, sessionId = null) {
+    const q = sessionId ? `?sessionId=${encodeURIComponent(sessionId)}` : '';
+    const res = await fetch(`${this.baseUrl}/suppliers/shortlist/${supplierId}${q}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
+  async transferSupplierShortlist(sessionId) {
+    const res = await fetch(`${this.baseUrl}/suppliers/shortlist/transfer`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId })
+    });
+    return res.json();
+  },
+
+  // STAGE 3: STRUCTURED INQUIRIES & DIRECT INVITATIONS (SUP-02-04, SUP-06-03)
+  async sendSupplierInquiry(supplierId, inquiryData) {
+    const res = await fetch(`${this.baseUrl}/suppliers/${supplierId}/inquire`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(inquiryData)
+    });
+    return res.json();
+  },
+
+  async getMySupplierInquiries(status = null) {
+    try {
+      const q = status ? `?status=${encodeURIComponent(status)}` : '';
+      const res = await fetch(`${this.baseUrl}/suppliers/me/inquiries${q}`, {
+        headers: this.getAuthHeaders()
+      });
+      return res.json();
+    } catch (e) {
+      console.warn('getMySupplierInquiries error:', e);
+      return { success: true, count: 0, inquiries: [] };
+    }
+  },
+
+  async getSupplierInquiryThread(inquiryId) {
+    const res = await fetch(`${this.baseUrl}/suppliers/inquiries/${inquiryId}`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
+  async replyToSupplierInquiry(inquiryId, message, attachments = []) {
+    const res = await fetch(`${this.baseUrl}/suppliers/inquiries/${inquiryId}/reply`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, attachments })
+    });
+    return res.json();
+  },
+
+  async updateSupplierInquiryStatus(inquiryId, status) {
+    const res = await fetch(`${this.baseUrl}/suppliers/inquiries/${inquiryId}/status`, {
+      method: 'PATCH',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status })
+    });
+    return res.json();
+  },
+
   async createSupplier(data) {
     const res = await fetch(`${this.baseUrl}/suppliers`, {
       method: 'POST',

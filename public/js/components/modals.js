@@ -2250,6 +2250,13 @@ const Modals = {
     };
   },
 
+  // Structured Direct Supplier Inquiry Modal (SUP-02-04, SUP-06-03)
+  openSupplierInquiryModal(supplier, onSuccess) {
+    if (typeof SupplierInquiryModal !== 'undefined' && typeof SupplierInquiryModal.open === 'function') {
+      SupplierInquiryModal.open(supplier, onSuccess);
+    }
+  },
+
   // Register Supplier Modal (For B2B Vendors)
   openRegisterSupplierModal() {
     if (typeof SupplierOnboardingModal !== 'undefined' && typeof SupplierOnboardingModal.open === 'function') {

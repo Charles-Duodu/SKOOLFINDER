@@ -137,3 +137,4 @@ BEGIN
 END $$;
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Stage 2 Migration Applied' AS migration_status;
+
