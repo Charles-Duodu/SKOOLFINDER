@@ -41,8 +41,6 @@ const SupplierDashboardView = {
     } catch (e) {
       this.inquiries = [];
     }
-      console.warn('Could not fetch supplier profile:', e);
-    }
 
     if (!supplier) {
       supplier = {
