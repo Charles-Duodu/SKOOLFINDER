@@ -131,8 +131,8 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-signin" class="btn-pill btn-primary nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 700;">
-                <span>👤</span> Sign In
+              <button id="btn-nav-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #2563eb; box-shadow: 0 2px 8px rgba(9,30,66,0.25); display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;" title="Super Admin HQ: Sign In & Create Account">
+                <span>🛡️</span> Super Admin Login
               </button>
             `}
 
@@ -427,7 +427,7 @@ const Navbar = {
     };
 
     document.getElementById('btn-nav-signin')?.addEventListener('click', () => {
-      Modals.openLoginModal({ initialTab: 'signin' });
+      Modals.openAdminAuthModal({ initialMode: 'signin', redirectView: 'admin' });
     });
     document.getElementById('btn-nav-admin-signin')?.addEventListener('click', handleAdminSignInModal);
     document.getElementById('btn-nav-admin-signup')?.addEventListener('click', handleAdminSignInModal);
