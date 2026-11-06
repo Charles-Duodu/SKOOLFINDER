@@ -229,6 +229,43 @@ const API = {
     return res.json();
   },
 
+  async getGovernancePolicies() {
+    const res = await fetch(`${this.baseUrl}/policy/rules`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to load platform governance policies");
+    return res.json();
+  },
+
+  async verifyAuditIntegrity() {
+    const res = await fetch(`${this.baseUrl}/policy/verify-audit-chain`, {
+      headers: this.getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("Failed to verify audit ledger integrity");
+    return res.json();
+  },
+
+  async evaluatePolicy(action, resource, scope = {}, context = {}) {
+    const res = await fetch(`${this.baseUrl}/policy/evaluate`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify({ action, resource, scope, context })
+    });
+    if (!res.ok) throw new Error("Failed to evaluate policy rule");
+    return res.json();
+  },
+
+  async validateDualControl(payload) {
+    const res = await fetch(`${this.baseUrl}/policy/validate-dual-control`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(payload)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Dual control authorization failed");
+    return result;
+  },
+
   async getAdminSchools(params = {}) {
     const query = new URLSearchParams(params).toString();
     const res = await fetch(`${this.baseUrl}/admin/schools?${query}`, {
