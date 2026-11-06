@@ -4,6 +4,26 @@
 -- Blueprint Reference: v2.0 §14, §15, §16, §24, §26; DEC-004, DEC-005, DEC-010, DEC-025
 -- ============================================================================
 
+-- 0. ENSURE PARENT WARDS TABLE EXISTS (PREREQUISITE FOR WARD LINKING)
+CREATE TABLE IF NOT EXISTS public.parent_wards (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    parent_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+    first_name TEXT NOT NULL,
+    last_name TEXT,
+    date_of_birth DATE,
+    gender TEXT CHECK (gender IN ('Male', 'Female', 'Prefer not to say')),
+    grade_level TEXT NOT NULL,
+    current_school TEXT,
+    curriculum_interest TEXT[] DEFAULT '{"GES"}',
+    special_needs_notes TEXT,
+    status TEXT NOT NULL DEFAULT 'Registered' CHECK (status IN ('Registered', 'Enrolled', 'Archived')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_parent_wards_parent_id ON public.parent_wards(parent_id);
+CREATE INDEX IF NOT EXISTS idx_parent_wards_grade ON public.parent_wards(grade_level);
+
 -- 1. TUTORING BOOKINGS TABLE (8-STATE BOOKING MACHINE DEC-010 & GATE G4 SAFEGUARDING)
 CREATE TABLE IF NOT EXISTS public.tutoring_bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
