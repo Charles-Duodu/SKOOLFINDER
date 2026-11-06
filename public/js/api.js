@@ -1096,6 +1096,83 @@ const API = {
     }
   },
 
+  async getSupplierCategories() {
+    try {
+      const res = await fetch(`${this.baseUrl}/suppliers/categories`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.categories || [];
+    } catch (e) {
+      console.warn('getSupplierCategories error:', e);
+      return [];
+    }
+  },
+
+  async compareSuppliers(ids = []) {
+    if (!Array.isArray(ids) || ids.length === 0) return { suppliers: [] };
+    const query = ids.map(id => encodeURIComponent(id)).join(',');
+    const res = await fetch(`${this.baseUrl}/suppliers/compare?ids=${query}`);
+    return res.json();
+  },
+
+  async getSupplierProducts(supplierId) {
+    try {
+      const res = await fetch(`${this.baseUrl}/suppliers/${supplierId}/products`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.products || [];
+    } catch (e) {
+      console.warn('getSupplierProducts error:', e);
+      return [];
+    }
+  },
+
+  async getSupplierServices(supplierId) {
+    try {
+      const res = await fetch(`${this.baseUrl}/suppliers/${supplierId}/services`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.services || [];
+    } catch (e) {
+      console.warn('getSupplierServices error:', e);
+      return [];
+    }
+  },
+
+  async getMySupplierProfile() {
+    const res = await fetch(`${this.baseUrl}/suppliers/me`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
+  async createSupplierProduct(productData) {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/products`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(productData)
+    });
+    return res.json();
+  },
+
+  async createSupplierService(serviceData) {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/services`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(serviceData)
+    });
+    return res.json();
+  },
+
+  async submitSupplierVerification(verificationData) {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/verification`, {
+      method: 'PATCH',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(verificationData)
+    });
+    return res.json();
+  },
+
   async createSupplier(data) {
     const res = await fetch(`${this.baseUrl}/suppliers`, {
       method: 'POST',

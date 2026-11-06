@@ -174,7 +174,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -299,6 +299,13 @@ const App = {
         keywords: 'school tenders Ghana, educational supplier registration, school procurement RFQ, MoMo escrow Ghana',
         canonicalUrl: 'https://skoolfinder.vercel.app/for-suppliers',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'For Suppliers & Vendors', url: '/for-suppliers' }]
+      },
+      'supplier-dashboard': {
+        title: 'Supplier Portal & Catalogue Workspace | SkoolFinder Ghana',
+        description: 'Manage verified Ghanaian educational supply catalogues, products, services, quotes, and accreditation credentials.',
+        keywords: 'supplier portal Ghana, educational supplies catalogue, school procurement bids',
+        canonicalUrl: 'https://skoolfinder.vercel.app/supplier-dashboard',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Suppliers Marketplace', url: '/suppliers' }, { name: 'Supplier Dashboard', url: '/supplier-dashboard' }]
       }
     };
     if (viewName !== 'school-detail') {
@@ -402,6 +409,10 @@ const App = {
         mainRoot.innerHTML = content;
         if (ForSuppliersView.afterRender) ForSuppliersView.afterRender();
         else if (ForSuppliersView.attachEvents) ForSuppliersView.attachEvents();
+      } else if (viewName === 'supplier-dashboard') {
+        content = await SupplierDashboardView.render();
+        mainRoot.innerHTML = content;
+        SupplierDashboardView.attachEvents();
       }
 
       // Render Footer
@@ -493,7 +504,8 @@ const App = {
         'admin': 'admin',
         'for-schools': 'for-schools',
         'for-teachers': 'for-teachers',
-        'for-suppliers': 'for-suppliers'
+        'for-suppliers': 'for-suppliers',
+        'supplier-dashboard': 'supplier-dashboard'
       };
 
       if (rootPath && routeMap[rootPath]) {

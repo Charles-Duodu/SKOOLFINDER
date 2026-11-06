@@ -2252,6 +2252,16 @@ const Modals = {
 
   // Register Supplier Modal (For B2B Vendors)
   openRegisterSupplierModal() {
+    if (typeof SupplierOnboardingModal !== 'undefined' && typeof SupplierOnboardingModal.open === 'function') {
+      this.close();
+      SupplierOnboardingModal.open((supplier) => {
+        if (typeof State !== 'undefined' && State.showToast) {
+          State.showToast(`Supplier registration for "${supplier?.company_name || supplier?.companyName || 'Business'}" submitted for Super Admin review!`, 'success');
+        }
+        if (typeof State !== 'undefined' && State.currentView === 'suppliers') App.navigate('suppliers');
+      });
+      return;
+    }
     this.close();
     const div = document.createElement('div');
     div.id = 'modal-backdrop';
