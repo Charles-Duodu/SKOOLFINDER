@@ -34,11 +34,11 @@ const ForSuppliersView = {
               </div>
 
               <h1 style="font-family: var(--font-heading); font-size: 2.75rem; font-weight: 900; line-height: 1.2; margin: 0 0 1.25rem 0; color: #ffffff;">
-                Supply Accredited Schools Across Ghana with Guaranteed MoMo Escrow
+                Supply Accredited Schools Across Ghana with Verified B2B Procurement
               </h1>
 
               <p style="font-size: 1.15rem; line-height: 1.6; color: #cbd5e1; margin: 0 auto 2.25rem; max-width: 720px;">
-                Connect directly with Bursars and Procurement Committees at top private and international campuses. Bid on verified tenders, receive official LPOs, and eliminate payment defaults through structured milestone escrow disbursements.
+                Connect directly with Bursars and Procurement Committees at top private and international campuses. Respond to verified school RFQs, showcase your product catalogue, and agree on direct commercial payment terms with zero middleman deductions.
               </p>
 
               <!-- Primary CTAs -->
@@ -47,23 +47,23 @@ const ForSuppliersView = {
                   <span>📦</span> Join Vetted Supplier Registry
                 </button>
                 <button type="button" id="btn-hero-browse-tenders" class="btn-pill" style="font-size: 1rem; font-weight: 800; padding: 0.85rem 1.75rem; background: rgba(255,255,255,0.15); color: #ffffff; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                  <span>📋</span> Browse School Tenders
+                  <span>📋</span> Browse School RFQs
                 </button>
                 <button type="button" id="btn-hero-view-supplier-plans" class="btn-pill btn-outline" style="font-size: 0.95rem; font-weight: 700; padding: 0.85rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4); cursor: pointer;">
-                  <span>⭐</span> Gold Supplier Plan (GH₵ 95/mo)
+                  <span>⭐</span> Supplier Plans from GH₵ 79/mo
                 </button>
               </div>
 
               <!-- Trust Pillars Strip -->
               <div style="display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; font-size: 0.85rem; color: #cbd5e1;">
                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="color: #fde68a;">✓</span> Guaranteed Milestone Escrow (No Bad Debts)
+                  <span style="color: #fde68a;">✓</span> Direct School-to-Supplier Settlement
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.4rem;">
                   <span style="color: #fde68a;">✓</span> Sealed Competitor Quote Protection
                 </div>
                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                  <span style="color: #fde68a;">✓</span> Legally Enforceable Ghanaian LPOs
+                  <span style="color: #fde68a;">✓</span> Verified Institutional Buyers Only
                 </div>
               </div>
 
@@ -307,54 +307,89 @@ const ForSuppliersView = {
               <h2 style="font-size: 2.2rem; font-weight: 800; color: #0A2046; font-family: var(--font-heading); margin-bottom: 0.5rem;">
                 Supplier Membership Plans
               </h2>
-              <p style="font-size: 1rem; color: #64748b;">
-                Transparent pricing tailored for both local artisanal workshops and large commercial distributors.
+              <p style="font-size: 1rem; color: #64748b; max-width: 650px; margin: 0 auto 1.5rem;">
+                Official commercial tiers for educational suppliers and qualified service providers. Annual plans include <strong>2 months free</strong> (pay 10 months for 12 months of service).
               </p>
+              
+              <!-- Billing Interval Indicator -->
+              <div style="display: inline-flex; align-items: center; gap: 0.75rem; background: #f1f5f9; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.82rem; font-weight: 700; color: #334155; margin-bottom: 2rem;">
+                <span>📅 Annual Discount:</span>
+                <span style="color: #059669; font-weight: 800;">12 Months for the Price of 10</span>
+              </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; max-width: 820px; margin: 0 auto;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; max-width: 1140px; margin: 0 auto;">
               
-              <!-- Free Standard Vendor -->
-              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2.25rem; display: flex; flex-direction: column;">
-                <div style="font-size: 0.85rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.5rem;">Standard Vendor</div>
-                <div style="font-size: 2rem; font-weight: 900; color: #0A2046; margin-bottom: 0.5rem;">GH₵ 0 <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">/ forever</span></div>
-                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">For emerging suppliers and local workshops exploring school procurement.</p>
-                
-                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 0.75rem;">
-                  <li>✓ Bid on up to <strong>2 tenders per month</strong></li>
-                  <li>✓ Verified Vendor Directory listing</li>
-                  <li>✓ Milestone MoMo Escrow protection</li>
-                  <li>✓ Official LPO PDF generation</li>
-                  <li style="color: #94a3b8;">✕ Unlimited monthly tender bidding</li>
-                  <li style="color: #94a3b8;">✕ Priority Gold Supplier Badge</li>
-                  <li style="color: #94a3b8;">✕ Real-time WhatsApp tender alerts</li>
+              <!-- Free Plan (GH₵ 0) -->
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem;">Free Tier</div>
+                <div style="font-size: 1.75rem; font-weight: 900; color: #0A2046; margin-bottom: 0.25rem;">GH₵ 0 <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">/ mo</span></div>
+                <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 1.25rem;">GH₵ 0 / year (Basic Listing)</div>
+                <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.25rem;">For emerging suppliers and local workshops exploring school procurement.</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; font-size: 0.82rem; color: #334155; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <li>✓ <strong>5 Active Product Listings</strong></li>
+                  <li>✓ <strong>1 Team Seat</strong> (Owner)</li>
+                  <li>✓ Receive direct school enquiries</li>
+                  <li>✓ Standard Directory Profile</li>
                 </ul>
-
-                <button type="button" class="btn-pill btn-outline btn-register-free-supplier" style="margin-top: auto; width: 100%; font-weight: 700; padding: 0.75rem;">
+                <button type="button" class="btn-pill btn-outline btn-register-free-supplier" style="margin-top: auto; width: 100%; font-weight: 700; padding: 0.65rem; font-size: 0.85rem;">
                   Register Free
                 </button>
               </div>
 
-              <!-- Verified Gold Supplier -->
-              <div style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 12px; padding: 2.25rem; display: flex; flex-direction: column; position: relative; box-shadow: 0 8px 24px rgba(213, 166, 59, 0.2);">
-                <div style="position: absolute; top: -12px; right: 20px; background: #D5A63B; color: #0A2046; font-size: 0.72rem; font-weight: 800; padding: 0.25rem 0.75rem; border-radius: 9999px; text-transform: uppercase;">
-                  MOST POPULAR
-                </div>
-                <div style="font-size: 0.85rem; font-weight: 800; color: #B45309; text-transform: uppercase; margin-bottom: 0.5rem;">Verified Gold Supplier</div>
-                <div style="font-size: 2rem; font-weight: 900; color: #0A2046; margin-bottom: 0.5rem;">GH₵ 95 <span style="font-size: 0.9rem; font-weight: 600; color: #64748b;">/ month</span></div>
-                <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.5rem;">For established vendors seeking high contract volume and direct Bursar contacts.</p>
-                
-                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; font-size: 0.88rem; color: #334155; display: flex; flex-direction: column; gap: 0.75rem;">
-                  <li>✓ <strong>Everything in Free</strong></li>
-                  <li>✓ <strong>Unlimited tender bids</strong> per month</li>
-                  <li>✓ <strong>Gold Supplier Badge</strong> with top ranking</li>
-                  <li>✓ <strong>Instant WhatsApp & SMS tender alerts</strong></li>
-                  <li>✓ Direct Bursar contact inquiries</li>
-                  <li>✓ Priority tender review by schools</li>
+              <!-- Growth Plan (GH₵ 79) -->
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #2563eb; text-transform: uppercase; margin-bottom: 0.4rem;">Growth Tier</div>
+                <div style="font-size: 1.75rem; font-weight: 900; color: #0A2046; margin-bottom: 0.25rem;">GH₵ 79 <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">/ mo</span></div>
+                <div style="font-size: 0.78rem; color: #059669; font-weight: 700; margin-bottom: 1.25rem;">GH₵ 790 / year (Save GH₵ 158)</div>
+                <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.25rem;">For active vendors expanding their school catalogue and enquiry pipeline.</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; font-size: 0.82rem; color: #334155; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <li>✓ <strong>25 Active Product Listings</strong></li>
+                  <li>✓ <strong>3 Team Seats</strong></li>
+                  <li>✓ Up to 15 Open RFQ responses/mo</li>
+                  <li>✓ Verified Vendor Badge</li>
                 </ul>
+                <button type="button" class="btn-pill btn-primary btn-plan-growth" style="margin-top: auto; width: 100%; font-weight: 700; padding: 0.65rem; font-size: 0.85rem;">
+                  Select Growth (GH₵ 79/mo)
+                </button>
+              </div>
 
-                <button type="button" class="btn-pill btn-upgrade-gold-supplier" style="margin-top: auto; width: 100%; font-weight: 800; padding: 0.75rem; background: #D5A63B; color: #0A2046; border: none; cursor: pointer;">
-                  Get Gold Supplier (GH₵ 95/mo)
+              <!-- Professional Plan (GH₵ 199) -->
+              <div style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column; position: relative; box-shadow: 0 6px 20px rgba(213, 166, 59, 0.2);">
+                <div style="position: absolute; top: -11px; right: 16px; background: #D5A63B; color: #0A2046; font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.65rem; border-radius: 9999px; text-transform: uppercase;">
+                  POPULAR
+                </div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #B45309; text-transform: uppercase; margin-bottom: 0.4rem;">Professional Tier</div>
+                <div style="font-size: 1.75rem; font-weight: 900; color: #0A2046; margin-bottom: 0.25rem;">GH₵ 199 <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">/ mo</span></div>
+                <div style="font-size: 0.78rem; color: #059669; font-weight: 700; margin-bottom: 1.25rem;">GH₵ 1,990 / year (Save GH₵ 398)</div>
+                <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.25rem;">For high-volume suppliers seeking higher quoting capacity and analytics.</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; font-size: 0.82rem; color: #334155; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <li>✓ <strong>100 Active Product Listings</strong></li>
+                  <li>✓ <strong>8 Team Seats</strong></li>
+                  <li>✓ Up to 60 Open RFQ responses/mo</li>
+                  <li>✓ Verified Analytics Dashboard</li>
+                  <li>✓ Priority Procurement Review</li>
+                </ul>
+                <button type="button" class="btn-pill btn-plan-pro" style="margin-top: auto; width: 100%; font-weight: 800; padding: 0.65rem; font-size: 0.85rem; background: #D5A63B; color: #0A2046; border: none; cursor: pointer;">
+                  Select Professional (GH₵ 199/mo)
+                </button>
+              </div>
+
+              <!-- Enterprise Plan (GH₵ 399) -->
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 1.75rem; display: flex; flex-direction: column;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; margin-bottom: 0.4rem;">Enterprise Tier</div>
+                <div style="font-size: 1.75rem; font-weight: 900; color: #0A2046; margin-bottom: 0.25rem;">GH₵ 399 <span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">/ mo</span></div>
+                <div style="font-size: 0.78rem; color: #059669; font-weight: 700; margin-bottom: 1.25rem;">GH₵ 3,990 / year (Save GH₵ 798)</div>
+                <p style="font-size: 0.82rem; color: #64748b; margin-bottom: 1.25rem;">For major educational distributors, publishers, and nationwide fleets.</p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; font-size: 0.82rem; color: #334155; display: flex; flex-direction: column; gap: 0.6rem;">
+                  <li>✓ <strong>500 Active Product Listings</strong></li>
+                  <li>✓ <strong>20 Team Seats</strong></li>
+                  <li>✓ 200 Open RFQ responses/mo</li>
+                  <li>✓ Custom API & ERP Integration</li>
+                  <li>✓ Dedicated Account Manager</li>
+                </ul>
+                <button type="button" class="btn-pill btn-outline btn-plan-enterprise" style="margin-top: auto; width: 100%; font-weight: 700; padding: 0.65rem; font-size: 0.85rem;">
+                  Select Enterprise (GH₵ 399/mo)
                 </button>
               </div>
 
@@ -481,10 +516,10 @@ const ForSuppliersView = {
     };
 
     // View Plans / Upgrade
-    const handleUpgradeGold = (e) => {
+    const handleSelectPlan = (tierName, priceGhs) => (e) => {
       e.preventDefault();
       if (typeof Modals !== 'undefined' && Modals.showNotification) {
-        Modals.showNotification('Verified Gold Supplier membership is GH₵ 95/month. Please sign in or register to activate your badge.', 'info');
+        Modals.showNotification(`${tierName} Supplier Plan (GH₵ ${priceGhs}/month) selected. Please register or sign in to complete onboarding.`, 'info');
       }
       handleRegister(e);
     };
@@ -493,8 +528,10 @@ const ForSuppliersView = {
     bindClick('.btn-register-free-supplier', handleRegister);
     bindClick('btn-hero-browse-tenders', handleBrowseTenders);
     bindClick('.btn-browse-tenders', handleBrowseTenders);
-    bindClick('btn-hero-view-supplier-plans', handleUpgradeGold);
-    bindClick('.btn-upgrade-gold-supplier', handleUpgradeGold);
+    bindClick('btn-hero-view-supplier-plans', handleSelectPlan('Growth', 79));
+    bindClick('.btn-plan-growth', handleSelectPlan('Growth', 79));
+    bindClick('.btn-plan-pro', handleSelectPlan('Professional', 199));
+    bindClick('.btn-plan-enterprise', handleSelectPlan('Enterprise', 399));
   }
 };
 

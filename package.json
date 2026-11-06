@@ -9,6 +9,7 @@
     "dev": "node --watch server.js",
     "test": "node tests/e2e_release_gates.js",
     "test:gates": "node tests/e2e_release_gates.js",
+    "test:suppliers": "node tests/supplier_stage1_security.test.js",
     "check:prod": "node scripts/verify-production-env.js",
     "check:cloud": "node scripts/verify-cloud-status.js"
   },

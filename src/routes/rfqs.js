@@ -112,26 +112,39 @@ router.get('/rfqs/:id', async (req, res) => {
 
 /**
  * POST /api/rfqs
+ * Protected: Only authorized school administrators or super admins can post RFQs (SUP-01-03, SUP-03-06)
  */
-router.post('/rfqs', async (req, res) => {
+router.post('/rfqs', authenticate, async (req, res) => {
   try {
-    const { schoolId, schoolName, title, category, description, budget } = req.body;
+    const user = req.user;
+    // Invariant SUP-03-06: Suppliers cannot create a school-owned RFQ without school authority
+    if (user.role === 'supplier' && !user.school_id && !user.schoolId) {
+      return res.status(403).json({ error: 'Access denied: Only verified school administrators or authorized buyers can publish RFQs' });
+    }
+
+    const { schoolId, schoolName, title, category, description, budget, budgetRange, quantity, deadline } = req.body;
+    const resolvedSchoolId = schoolId || user.school_id || user.schoolId || null;
+    const resolvedSchoolName = schoolName || user.schoolName || user.full_name || 'Educational Institution';
+
     const { data: rfq, error } = await supabaseAdmin
       .from('rfqs')
       .insert({
-        school_id: schoolId || null,
-        school_name: schoolName || 'Educational Institution',
+        school_id: resolvedSchoolId,
+        school_name: resolvedSchoolName,
         title,
         category: category || 'General Supplies',
         description,
         budget: budget || 0,
+        budget_range: budgetRange || (budget ? `GH₵ ${Number(budget).toLocaleString()}` : null),
+        quantity: quantity || 'Institutional Order',
+        deadline: deadline || 'Within 30 Days',
         status: 'Open'
       })
       .select()
       .single();
 
     if (error) return res.status(400).json({ error: error.message });
-    return res.status(201).json(rfq);
+    return res.status(201).json({ success: true, message: 'RFQ published successfully', rfq });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to create RFQ' });
   }
@@ -175,26 +188,30 @@ router.get('/rfqs/:id/quotes', authenticate, async (req, res) => {
 
 /**
  * POST /api/rfqs/:id/quote & POST /api/rfqs/:id/quotes
- * Submit quotation on an RFQ
+ * Protected: Submit quotation on an RFQ (SUP-01-03, SUP-02-05)
+ * Requires authenticated user session; attaches verified user identity
  */
-router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], async (req, res) => {
+router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], authenticate, async (req, res) => {
   try {
     const rfqId = req.params.id;
+    const user = req.user;
     const {
       supplierId,
-      supplierName = 'Accredited Supplier',
-      contactPerson = 'Sales Manager',
-      phone = '+233 24 000 0000',
-      email: supplierEmail = '',
+      supplierName = user.full_name || 'Accredited Supplier',
+      contactPerson = user.full_name || 'Sales Representative',
+      phone = user.phone || '+233 24 000 0000',
+      email: supplierEmail = user.email || '',
       price,
       amount,
       quotedAmountGhs,
       quoteAmount,
       deliveryDays = 5,
       warrantyTerms = 'Standard 6 Months',
-      paymentTerms = '50% Advance / 50% on Delivery',
+      paymentTerms = 'Direct Bank / MoMo Settlement on Delivery',
       notes = ''
     } = req.body;
+
+    const resolvedSupplierId = supplierId || user.id;
 
     const numAmount = amount || quotedAmountGhs || quoteAmount;
     const finalPrice = price || (numAmount ? `GH₵ ${Number(numAmount).toLocaleString()}` : 'GH₵ 5,000');

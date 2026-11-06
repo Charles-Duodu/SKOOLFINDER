@@ -105,6 +105,56 @@ router.get('/', async (req, res) => {
 });
 
 /**
+ * GET /api/suppliers/me
+ * Authenticated: Retrieve current user's supplier profile and onboarding state
+ */
+router.get('/me', authenticate, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const userEmail = req.user.email;
+    let supplier = null;
+
+    // 1. Check by email (always available on suppliers table)
+    if (userEmail) {
+      const { data: byEmail } = await supabaseAdmin
+        .from('suppliers')
+        .select('*')
+        .eq('email', userEmail)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (byEmail) supplier = byEmail;
+    }
+
+    // 2. Fallback check by user_id if not found by email
+    if (!supplier && userId) {
+      try {
+        const { data: byUser, error: uErr } = await supabaseAdmin
+          .from('suppliers')
+          .select('*')
+          .eq('user_id', userId)
+          .maybeSingle();
+        if (!uErr && byUser) supplier = byUser;
+      } catch (e) {}
+    }
+
+    if (!supplier) {
+      return res.status(404).json({ 
+        error: 'No supplier profile associated with this account',
+        onboardingRequired: true
+      });
+    }
+
+    return res.json({
+      success: true,
+      supplier: formatSupplier(supplier)
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve supplier profile' });
+  }
+});
+
+/**
  * GET /api/suppliers/:id
  */
 router.get('/:id', async (req, res) => {
@@ -126,31 +176,67 @@ router.get('/:id', async (req, res) => {
 
 /**
  * POST /api/suppliers
+ * Protected: Register as a Supplier (SUP-01-03, SUP-02-01, SUP-07-03)
+ * Enforces authenticated identity, defaults status to 'pending' for Super Admin trading review
  */
-router.post('/', async (req, res) => {
+router.post('/', authenticate, async (req, res) => {
   try {
     const body = req.body;
-    const { data: supplier, error } = await supabaseAdmin
+    const userId = req.user.id;
+    const userEmail = req.user.email;
+
+    const supplierPayload = {
+      user_id: userId,
+      company_name: body.company_name || body.name || req.user.full_name || 'Educational Supplier',
+      category: body.category || 'Books & Stationery',
+      description: body.description || '',
+      region: body.region || 'Greater Accra',
+      service_area: body.service_area || 'Nationwide',
+      phone: body.phone || req.user.phone || '',
+      email: body.email || userEmail,
+      website: body.website || '',
+      account_type: body.account_type === 'individual' ? 'individual' : 'business',
+      verification_level: 'V0',
+      active_tier: 'free',
+      billing_cycle: body.billing_cycle === 'annual' ? 'annual' : 'monthly',
+      status: 'pending', // Mandatory Trading Approval Gate (SUP-02-01)
+      is_verified: false
+    };
+
+    let { data: supplier, error } = await supabaseAdmin
       .from('suppliers')
-      .insert({
-        company_name: body.company_name || body.name,
-        category: body.category || 'Books & Stationery',
-        description: body.description || '',
-        region: body.region || 'Greater Accra',
-        service_area: body.service_area || 'Nationwide',
-        phone: body.phone || '',
-        email: body.email || '',
-        website: body.website || '',
-        status: 'published',
-        is_verified: false
-      })
+      .insert(supplierPayload)
       .select()
       .single();
+
+    // Fallback if additive columns not yet loaded in schema cache
+    if (error && error.message && error.message.includes('column')) {
+      const basicPayload = {
+        company_name: supplierPayload.company_name,
+        category: supplierPayload.category,
+        description: supplierPayload.description,
+        region: supplierPayload.region,
+        service_area: supplierPayload.service_area,
+        phone: supplierPayload.phone,
+        email: supplierPayload.email,
+        website: supplierPayload.website,
+        status: 'pending',
+        is_verified: false
+      };
+      const retry = await supabaseAdmin.from('suppliers').insert(basicPayload).select().single();
+      supplier = retry.data;
+      error = retry.error;
+    }
 
     if (error) {
       return res.status(400).json({ error: error.message });
     }
-    return res.status(201).json(supplier);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Supplier registration submitted successfully. Your application is under review before public trading is enabled.',
+      supplier: formatSupplier(supplier)
+    });
   } catch (err) {
     return res.status(500).json({ error: 'Failed to create supplier' });
   }
