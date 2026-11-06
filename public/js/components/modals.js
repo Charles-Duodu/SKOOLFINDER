@@ -2257,6 +2257,93 @@ const Modals = {
     }
   },
 
+  // Private Side-by-Side RFQ Quote Comparison & Evaluation Modal (SUP-04-02)
+  async openCompareQuotesModal(rfqId) {
+    this.close();
+    let data = null;
+    try {
+      data = await API.compareRFQQuotes(rfqId);
+    } catch (e) {
+      alert('Error fetching quote comparisons: ' + e.message);
+      return;
+    }
+
+    const quotes = data?.comparisonMatrix || [];
+    const div = document.createElement('div');
+    div.id = 'modal-backdrop';
+    div.className = 'modal-backdrop';
+    div.innerHTML = `
+      <div class="modal-dialog" style="max-width: 880px;">
+        <div class="modal-header">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">School Procurement Evaluation (SUP-04-02)</div>
+            <h3 class="modal-title">Sealed Quotation Comparison Matrix</h3>
+          </div>
+          <button class="modal-close-btn" id="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          ${quotes.length === 0 ? `
+            <div style="text-align: center; padding: 2.5rem; color: var(--text-muted);">
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔒</div>
+              <p>No quotation bids have been submitted for this RFQ yet.</p>
+            </div>
+          ` : `
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                <thead>
+                  <tr style="border-bottom: 2px solid var(--primary-900); text-align: left;">
+                    <th style="padding: 0.6rem;">Supplier</th>
+                    <th style="padding: 0.6rem;">Tier</th>
+                    <th style="padding: 0.6rem;">Quoted Price</th>
+                    <th style="padding: 0.6rem;">SLA Days</th>
+                    <th style="padding: 0.6rem;">Warranty</th>
+                    <th style="padding: 0.6rem; text-align: center;">Revisions</th>
+                    <th style="padding: 0.6rem;">Status</th>
+                    <th style="padding: 0.6rem;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${quotes.map(q => `
+                    <tr style="border-bottom: 1px solid var(--border-light);">
+                      <td style="padding: 0.6rem; font-weight: 700; color: var(--primary-900);">
+                        ${q.supplierName}
+                        ${q.isDirectInvitation ? '<span class="badge" style="background: #fef08a; color: #854d0e; font-size: 0.7rem; margin-left: 0.3rem;">Direct Invite</span>' : ''}
+                      </td>
+                      <td style="padding: 0.6rem;">${q.verificationLevel}</td>
+                      <td style="padding: 0.6rem; font-weight: 800; color: var(--emerald-600);">${q.formattedPrice}</td>
+                      <td style="padding: 0.6rem;">${q.deliveryDays} Days</td>
+                      <td style="padding: 0.6rem;">${q.warrantyTerms}</td>
+                      <td style="padding: 0.6rem; text-align: center;">${q.revisionCount > 0 ? `<span class="badge" style="background: #e0f2fe; color: #0369a1;">v${q.revisionCount + 1}</span>` : 'v1'}</td>
+                      <td style="padding: 0.6rem;"><span class="badge badge-admissions">${q.decision}</span></td>
+                      <td style="padding: 0.6rem;">
+                        <button class="btn-pill btn-emerald btn-award-bid" data-quote-id="${q.id}" data-rfq-id="${rfqId}" style="padding: 0.3rem 0.65rem; font-size: 0.75rem;">
+                          Award Bid
+                        </button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `}
+        </div>
+      </div>
+    `;
+    document.body.appendChild(div);
+    document.getElementById('modal-close').onclick = () => this.close();
+    div.querySelectorAll('.btn-award-bid').forEach(btn => {
+      btn.onclick = async () => {
+        const qId = btn.dataset.quoteId;
+        const rId = btn.dataset.rfqId;
+        if (confirm('Are you sure you want to award this school procurement contract to this supplier?')) {
+          await API.evaluateRFQQuote(rId, { quoteId: qId, decision: 'awarded', evaluationNotes: 'Awarded by School Procurement Board' });
+          alert('Procurement contract awarded!');
+          this.close();
+        }
+      };
+    });
+  },
+
   // Register Supplier Modal (For B2B Vendors)
   openRegisterSupplierModal() {
     if (typeof SupplierOnboardingModal !== 'undefined' && typeof SupplierOnboardingModal.open === 'function') {

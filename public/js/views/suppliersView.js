@@ -329,6 +329,9 @@ const SuppliersView = {
                         <span class="badge" style="background: rgba(10,32,70,0.06); color: #0A2046; font-size: 0.78rem; padding: 0.35rem 0.65rem; border-radius: 6px; font-weight: 700;">
                           🔒 Sealed Bids
                         </span>
+                        <button class="btn-pill btn-outline btn-compare-rfq-bids" data-rfq-id="${r.id}" style="padding: 0.5rem 0.85rem; font-size: 0.82rem; font-weight: 700;">
+                          📊 Compare Bids
+                        </button>
                         <button class="btn-pill btn-gold btn-submit-bid" data-rfq-id="${r.id}" style="padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 700;">
                           Submit Quotation Bid &rarr;
                         </button>
@@ -412,6 +415,16 @@ const SuppliersView = {
         const rfqs = await API.getRFQs();
         const rfq = rfqs.find(r => r.id === rfqId);
         if (rfq && typeof Modals !== 'undefined') Modals.openSubmitQuoteModal(rfq);
+      };
+    });
+
+    // Compare Bids button on RFQ cards (SUP-04-02)
+    document.querySelectorAll('.btn-compare-rfq-bids').forEach(btn => {
+      btn.onclick = () => {
+        const rfqId = btn.dataset.rfqId;
+        if (typeof Modals !== 'undefined' && Modals.openCompareQuotesModal) {
+          Modals.openCompareQuotesModal(rfqId);
+        }
       };
     });
 

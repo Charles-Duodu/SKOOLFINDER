@@ -1315,6 +1315,41 @@ const API = {
     return res.json();
   },
 
+  // STAGE 4: RFQ PROCUREMENT & QUOTING (SUP-02-05, SUP-04-01, SUP-04-02)
+  async inviteSuppliersToRFQ(rfqId, supplierIds, notes = '') {
+    const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/invite`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ supplierIds, notes })
+    });
+    return res.json();
+  },
+
+  async reviseRFQQuote(rfqId, revisionData) {
+    const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/quote/revise`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(revisionData)
+    });
+    return res.json();
+  },
+
+  async compareRFQQuotes(rfqId) {
+    const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/compare-quotes`, {
+      headers: this.getAuthHeaders()
+    });
+    return res.json();
+  },
+
+  async evaluateRFQQuote(rfqId, evaluationData) {
+    const res = await fetch(`${this.baseUrl}/rfqs/${rfqId}/evaluate`, {
+      method: 'POST',
+      headers: { ...this.getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(evaluationData)
+    });
+    return res.json();
+  },
+
   async getProcurementLogs() {
     const res = await fetch(`${this.baseUrl}/admin/procurement/logs`);
     return res.json();
