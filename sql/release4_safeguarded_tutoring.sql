@@ -97,7 +97,7 @@ CREATE POLICY "Educators manage assigned tutoring bookings" ON public.tutoring_b
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.professional_profiles pp
-            WHERE (pp.id = tutoring_bookings.professional_id OR pp.user_id::text = tutoring_bookings.professional_id)
+            WHERE (pp.id::text = tutoring_bookings.professional_id::text OR pp.user_id::text = tutoring_bookings.professional_id::text)
               AND pp.user_id = auth.uid()
         )
     );
@@ -111,7 +111,7 @@ CREATE POLICY "Educators manage own availability slots" ON public.professional_a
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.professional_profiles pp
-            WHERE pp.id = professional_availability.professional_id
+            WHERE pp.id::text = professional_availability.professional_id::text
               AND pp.user_id = auth.uid()
         )
     );

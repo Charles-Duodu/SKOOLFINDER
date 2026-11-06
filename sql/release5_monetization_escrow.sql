@@ -98,7 +98,7 @@ CREATE POLICY "Payee views their escrow records" ON public.escrow_ledgers
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.professional_profiles pp
-            WHERE (pp.id = escrow_ledgers.payee_professional_id OR pp.user_id::text = escrow_ledgers.payee_professional_id)
+            WHERE (pp.id::text = escrow_ledgers.payee_professional_id::text OR pp.user_id::text = escrow_ledgers.payee_professional_id::text)
               AND pp.user_id = auth.uid()
         )
     );
@@ -122,8 +122,9 @@ CREATE POLICY "Professionals manage own payout methods" ON public.professional_p
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.professional_profiles pp
-            WHERE (pp.id = professional_payout_methods.professional_id OR pp.user_id::text = professional_payout_methods.professional_id)
+            WHERE (pp.id::text = professional_payout_methods.professional_id::text OR pp.user_id::text = professional_payout_methods.professional_id::text)
               AND pp.user_id = auth.uid()
         )
         OR auth.role() = 'service_role'
     );
+

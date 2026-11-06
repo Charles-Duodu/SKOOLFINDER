@@ -111,8 +111,8 @@ router.post('/ntc/verify-licence', async (req, res) => {
 
     const cleanNtc = ntcNumber.trim().toUpperCase();
     const isValidFormat = /^NTC\/(TL|PL)\/[0-9]{4,8}$/i.test(cleanNtc) ||
-                          /^PT\/[0-9]{5}\/[0-9]{2}$/i.test(cleanNtc) ||
-                          /^[0-9]{6,10}$/.test(cleanNtc);
+      /^PT\/[0-9]{5}\/[0-9]{2}$/i.test(cleanNtc) ||
+      /^[0-9]{6,10}$/.test(cleanNtc);
 
     if (!isValidFormat) {
       return res.status(400).json({
@@ -159,7 +159,7 @@ router.post('/ntc/webhook', async (req, res) => {
             d3_notes: `Automated NTC Webhook Sync: ${event} - ${licenceStatus}`
           })
           .eq('id', professionalId);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return res.json({
@@ -230,7 +230,7 @@ router.post('/nia/webhook', async (req, res) => {
             d1_notes: `Automated NIA Webhook Sync: ${event} - ${status}`
           })
           .eq('id', professionalId);
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return res.json({

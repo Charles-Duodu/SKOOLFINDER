@@ -20,6 +20,33 @@ router.get('/plans', async (req, res) => {
       // Fallback default plans
       return res.json([
         {
+          id: 'plan-tch-free',
+          name: 'Free Educator Tier',
+          slug: 'teacher-free',
+          portal: 'teachers',
+          price_ghs: 0.00,
+          billing_interval: 'monthly',
+          features: ['Directory Listing upon 5D Vetting', '2 Active Vacancy Applications', 'Direct Parent Consultation Inquiries']
+        },
+        {
+          id: 'plan-tch-plus',
+          name: 'Professional Plus Tier',
+          slug: 'teacher-plus',
+          portal: 'teachers',
+          price_ghs: 39.00,
+          billing_interval: 'monthly',
+          features: ['Verified Educator Gold Badge', '5 Active Vacancy Applications', 'Priority Recruiter Candidate Search', 'Instant Parent Tutoring Alerts']
+        },
+        {
+          id: 'plan-tch-biz',
+          name: 'Professional Business Tier',
+          slug: 'teacher-business',
+          portal: 'teachers',
+          price_ghs: 99.00,
+          billing_interval: 'monthly',
+          features: ['All Plus Features', 'Unlimited Vacancy Applications', 'Featured Directory Placement', 'Direct School Recruiter Messaging']
+        },
+        {
           id: 'plan-sch-verified',
           name: 'Verified Campus Partner',
           slug: 'school-verified',
@@ -27,6 +54,33 @@ router.get('/plans', async (req, res) => {
           price_ghs: 1200.00,
           billing_interval: 'annual',
           features: ['Verified Accreditation Badge', 'Direct WhatsApp Admissions Inquiries', 'Campus Tour Queuing System']
+        },
+        {
+          id: 'plan-tch-free',
+          name: 'Free Educator Tier',
+          slug: 'teacher-free',
+          portal: 'teachers',
+          price_ghs: 0.00,
+          billing_interval: 'monthly',
+          features: ['Directory Listing upon 5D Vetting', '2 Active Vacancy Applications', 'Direct Parent Consultation Inquiries']
+        },
+        {
+          id: 'plan-tch-plus',
+          name: 'Professional Plus Tier',
+          slug: 'teacher-plus',
+          portal: 'teachers',
+          price_ghs: 39.00,
+          billing_interval: 'monthly',
+          features: ['Verified Educator Gold Badge', '5 Active Vacancy Applications', 'Priority Recruiter Candidate Search', 'Instant Parent Tutoring Alerts']
+        },
+        {
+          id: 'plan-tch-biz',
+          name: 'Professional Business Tier',
+          slug: 'teacher-business',
+          portal: 'teachers',
+          price_ghs: 99.00,
+          billing_interval: 'monthly',
+          features: ['All Plus Features', 'Unlimited Vacancy Applications', 'Featured Directory Placement', 'Direct School Recruiter Messaging']
         },
         {
           id: 'plan-sch-featured',
@@ -237,7 +291,7 @@ router.post('/verify', async (req, res) => {
         .eq('reference', reference)
         .select()
         .maybeSingle();
-      
+
       orderRecord = updated;
     } catch (e) {
       console.warn('Payment order update notice:', e.message);
@@ -272,7 +326,7 @@ router.post('/verify', async (req, res) => {
             status: 'active',
             paystack_reference: reference
           });
-        
+
         console.log(`[ENTITLEMENT ACTIVATED] School verified status granted for ${targetId}`);
       } catch (err) {
         console.warn('Entitlement activation notice:', err.message);
@@ -370,7 +424,7 @@ router.post('/verify', async (req, res) => {
         recipientName: payerName,
         user: req.user
       }).catch(err => console.error('[EVENT_BUS] PaymentVerified dispatch error:', err.message));
-    } catch (e) {}
+    } catch (e) { }
 
     return res.json({
       success: true,

@@ -124,9 +124,9 @@ CREATE POLICY "Schools view applications for own vacancies" ON public.vacancy_ap
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.school_memberships sm
-            WHERE sm.school_id = vacancy_applications.school_id
+            WHERE sm.school_id::text = vacancy_applications.school_id::text
               AND sm.user_id = auth.uid()
-              AND sm.role IN ('owner', 'admin', 'principal')
+              AND sm.role IN ('owner', 'admin', 'principal', 'school_admin', 'primary_proprietor', 'recruiter')
         )
     );
 
@@ -139,9 +139,9 @@ CREATE POLICY "Schools manage own candidate unlocks" ON public.recruiter_candida
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.school_memberships sm
-            WHERE sm.school_id = recruiter_candidate_unlocks.school_id
+            WHERE sm.school_id::text = recruiter_candidate_unlocks.school_id::text
               AND sm.user_id = auth.uid()
-              AND sm.role IN ('owner', 'admin', 'principal')
+              AND sm.role IN ('owner', 'admin', 'principal', 'school_admin', 'primary_proprietor', 'recruiter')
         )
     );
 
@@ -150,9 +150,9 @@ CREATE POLICY "School staff view school job offers" ON public.job_offers
     FOR ALL USING (
         EXISTS (
             SELECT 1 FROM public.school_memberships sm
-            WHERE sm.school_id = job_offers.school_id
+            WHERE sm.school_id::text = job_offers.school_id::text
               AND sm.user_id = auth.uid()
-              AND sm.role IN ('owner', 'admin', 'principal')
+              AND sm.role IN ('owner', 'admin', 'principal', 'school_admin', 'primary_proprietor', 'recruiter')
         )
     );
 
@@ -161,8 +161,8 @@ CREATE POLICY "Candidates view their own job offers" ON public.job_offers
     FOR SELECT USING (
         EXISTS (
             SELECT 1 FROM public.vacancy_applications va
-            WHERE va.id = job_offers.application_id
-              AND va.applicant_user_id = auth.uid()
+            WHERE va.id::text = job_offers.application_id::text
+              AND va.applicant_user_id::text = auth.uid()::text
         )
     );
 
