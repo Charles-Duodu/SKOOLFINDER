@@ -136,6 +136,59 @@ router.post('/integrations/n8n/dispatch/procurement', async (req, res) => {
   }
 });
 
+/**
+ * GET /api/admin/pilot/cohort
+ * Bounded Pilot Cohort Registry (SUP-08-07)
+ */
+router.get('/pilot/cohort', async (req, res) => {
+  try {
+    const { PilotHardeningService } = require('../services/pilotHardeningService');
+    return res.json(PilotHardeningService.getPilotCohort());
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve pilot cohort' });
+  }
+});
+
+/**
+ * POST /api/admin/pilot/feedback
+ * Submit Pilot Feedback & Satisfaction Scoring
+ */
+router.post('/pilot/feedback', async (req, res) => {
+  try {
+    const { PilotHardeningService } = require('../services/pilotHardeningService');
+    const result = PilotHardeningService.submitFeedback(req.body || {});
+    return res.status(201).json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to submit feedback' });
+  }
+});
+
+/**
+ * GET /api/admin/pilot/feedback
+ * Retrieve Pilot Feedback & NPS Metrics
+ */
+router.get('/pilot/feedback', async (req, res) => {
+  try {
+    const { PilotHardeningService } = require('../services/pilotHardeningService');
+    return res.json(PilotHardeningService.getPilotFeedback());
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve pilot feedback' });
+  }
+});
+
+/**
+ * GET /api/admin/system/recovery-readiness
+ * Operational Disaster Recovery Runbooks, SLO Targets & Rollback Readiness (SUP-08-08)
+ */
+router.get('/system/recovery-readiness', async (req, res) => {
+  try {
+    const { PilotHardeningService } = require('../services/pilotHardeningService');
+    return res.json(PilotHardeningService.getRecoveryReadiness());
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve disaster recovery readiness' });
+  }
+});
+
 // ============================================================================
 // 1. EXECUTIVE TELEMETRY & 8-KPI OVERVIEW (TalentPros Cockpit)
 // ============================================================================

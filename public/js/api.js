@@ -4148,6 +4148,37 @@ const API = {
       body: JSON.stringify(workflowData)
     });
     return res.json();
+  },
+
+  // --- Suppliers Portal Stage 8: Bounded Greater Accra Pilot & Recovery (SUP-08-01 to SUP-08-08) ---
+  async getPilotCohort() {
+    const res = await fetch(`${this.baseUrl}/admin/pilot/cohort`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async submitPilotFeedback(data) {
+    const res = await fetch(`${this.baseUrl}/admin/pilot/feedback`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return res.json();
+  },
+
+  async getPilotFeedback() {
+    const res = await fetch(`${this.baseUrl}/admin/pilot/feedback`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async getRecoveryReadiness() {
+    const res = await fetch(`${this.baseUrl}/admin/system/recovery-readiness`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
   }
 };
 
