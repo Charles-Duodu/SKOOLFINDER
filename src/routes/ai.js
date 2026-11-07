@@ -441,5 +441,66 @@ router.get('/status', (req, res) => {
   });
 });
 
+const { ProcurementAiService } = require('../services/procurementAiService');
+
+/**
+ * POST /api/ai/procurement/copilot
+ * AI Procurement Copilot grounded in Public Procurement Act 663/914 & Act 1023 (SUP-07-03, SUP-07-06)
+ */
+router.post('/procurement/copilot', async (req, res) => {
+  try {
+    const { message, userRole, context } = req.body || {};
+    const result = await ProcurementAiService.queryProcurementCopilot({ message, userRole, context });
+    return res.json(result);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to process procurement AI copilot query' });
+  }
+});
+
+/**
+ * POST /api/ai/rag/query-scoped
+ * Strict Multi-Tenant RAG Isolation Guardrail (SUP-07-05)
+ */
+router.post('/rag/query-scoped', async (req, res) => {
+  try {
+    const { targetTenantId, documentType } = req.body || {};
+    const authHeader = req.headers.authorization;
+    let requestingUser = null;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      try {
+        const jwt = require('jsonwebtoken');
+        const secret = process.env.JWT_SECRET || 'skoolfinder-jwt-secret-key-ghana-2026';
+        requestingUser = jwt.verify(authHeader.split(' ')[1], secret);
+      } catch (e) {}
+    }
+
+    const check = ProcurementAiService.checkTenantRAGIsolation({
+      requestingUser,
+      targetTenantId,
+      documentType
+    });
+
+    if (!check.allowed) {
+      return res.status(403).json(check);
+    }
+
+    return res.json({
+      success: true,
+      message: 'RAG context retrieval authorized within tenant boundary',
+      ...check
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'RAG query failed' });
+  }
+});
+
+/**
+ * GET /api/ai/procurement/gateway-telemetry
+ * Operational Observability & AI Gateway Token/Cost Metrics (SUP-07-06)
+ */
+router.get('/procurement/gateway-telemetry', (req, res) => {
+  return res.json(ProcurementAiService.getObservabilityTelemetry());
+});
+
 module.exports = router;
 

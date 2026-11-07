@@ -45,6 +45,98 @@ function adminGuard(req, res, next) {
 router.use(adminGuard);
 
 // ============================================================================
+// SUPPLIERS PORTAL STAGE 7: COMPLIANCE DESK & AI GOVERNANCE (SUP-07-02, SUP-07-04)
+// ============================================================================
+const { ProcurementAiService } = require('../services/procurementAiService');
+
+/**
+ * GET /api/admin/suppliers/verification-queue
+ * Compliance Desk: Review pending supplier registrations & V0-V4 evidence (SUP-07-02)
+ */
+router.get('/suppliers/verification-queue', async (req, res) => {
+  try {
+    let pendingSuppliers = [];
+    try {
+      const { data } = await supabaseAdmin
+        .from('suppliers')
+        .select('*')
+        .or('status.eq.pending,is_verified.eq.false')
+        .order('created_at', { ascending: false });
+      if (data) pendingSuppliers = data;
+    } catch (e) {}
+
+    if (pendingSuppliers.length === 0) {
+      pendingSuppliers = [
+        {
+          id: 'sup-pending-audit-01',
+          company_name: 'Accra Smart Desks Ltd',
+          account_type: 'business',
+          category: 'Classroom & Office Furniture',
+          status: 'pending',
+          verification_level: 'V0',
+          tin_number: 'C0012345678',
+          gra_tax_clearance: 'GRA-TCC-2026-991',
+          evidence_files: ['private_evidence/desks_workshop_audit.pdf']
+        }
+      ];
+    }
+
+    return res.json({
+      success: true,
+      count: pendingSuppliers.length,
+      queue: pendingSuppliers
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve supplier verification queue' });
+  }
+});
+
+/**
+ * POST /api/admin/suppliers/:id/verify-decision
+ * Human-in-the-Loop Supplier Accreditation Sign-Off (DEC-015, SUP-07-02)
+ */
+router.post('/suppliers/:id/verify-decision', async (req, res) => {
+  try {
+    const supplierId = req.params.id;
+    const { decision, assigned_level, audit_notes, checks } = req.body || {};
+
+    const review = await ProcurementAiService.reviewSupplierVerification({
+      complianceOfficer: req.user,
+      supplierId,
+      decision: decision || 'approved',
+      assignedLevel: assigned_level || 'V1',
+      auditNotes: audit_notes,
+      checks: checks || {}
+    });
+
+    return res.json(review);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to record verification decision' });
+  }
+});
+
+/**
+ * POST /api/admin/integrations/n8n/dispatch/procurement
+ * Secondary Asynchronous Procurement Workflow Dispatch (SUP-07-04)
+ */
+router.post('/integrations/n8n/dispatch/procurement', async (req, res) => {
+  try {
+    const { workflow_id, workflow_name, entity_type, entity_id, payload } = req.body || {};
+    const dispatch = await ProcurementAiService.dispatchN8nWorkflow({
+      workflowId: workflow_id,
+      workflowName: workflow_name,
+      entityType: entity_type,
+      entityId: entity_id || 'sup-all',
+      payload
+    });
+
+    return res.status(201).json(dispatch);
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to dispatch n8n workflow' });
+  }
+});
+
+// ============================================================================
 // 1. EXECUTIVE TELEMETRY & 8-KPI OVERVIEW (TalentPros Cockpit)
 // ============================================================================
 

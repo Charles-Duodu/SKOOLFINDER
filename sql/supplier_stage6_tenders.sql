@@ -174,3 +174,4 @@ CREATE POLICY "Schools view unsealed bids" ON public.tender_sealed_bids
     );
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Stage 6 Migration Applied' AS migration_status;
+

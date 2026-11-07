@@ -852,6 +852,49 @@ router.get('/me/analytics', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/suppliers/search/semantic
+ * Rules-First Eligibility & Explainable Semantic Supplier Ranking (SUP-07-01)
+ */
+router.get('/search/semantic', async (req, res) => {
+  try {
+    const { ProcurementAiService } = require('../services/procurementAiService');
+    const { query = '', category = 'All', region = 'Greater Accra', min_tier = 'V0' } = req.query;
+
+    let suppliers = FALLBACK_SUPPLIERS;
+    try {
+      const { data } = await supabaseAdmin.from('suppliers').select('*').eq('status', 'published');
+      if (data && data.length > 0) suppliers = data;
+    } catch (e) {}
+
+    const formattedSuppliers = suppliers.map(formatSupplier);
+    const ranked = ProcurementAiService.rankSuppliers(formattedSuppliers, {
+      query,
+      category,
+      region,
+      minVerificationLevel: min_tier
+    });
+
+    return res.json({
+      success: true,
+      count: ranked.length,
+      criteria: { query, category, region, min_tier },
+      rankedSuppliers: ranked
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to execute semantic supplier ranking' });
+  }
+});
+
+/**
+ * GET /api/suppliers/telemetry/health
+ * Operational Observability & Telemetry Health Check (SUP-07-08)
+ */
+router.get('/telemetry/health', (req, res) => {
+  const { ProcurementAiService } = require('../services/procurementAiService');
+  return res.json(ProcurementAiService.getObservabilityTelemetry());
+});
+
+/**
  * GET /api/suppliers/:id
  */
 router.get('/:id', async (req, res) => {

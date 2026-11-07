@@ -4093,6 +4093,61 @@ const API = {
       throw new Error(err.error || 'Failed to confirm tender award');
     }
     return res.json();
+  },
+
+  // --- Suppliers Portal Stage 7: AI Copilot, RAG Isolation & Observability (SUP-07-01 to SUP-07-08) ---
+  async getSemanticSuppliers(query = '', category = 'All', region = 'Greater Accra', minTier = 'V0') {
+    const params = new URLSearchParams({ query, category, region, min_tier: minTier });
+    const res = await fetch(`${this.baseUrl}/suppliers/search/semantic?${params.toString()}`);
+    return res.json();
+  },
+
+  async queryProcurementCopilot(message, userRole = 'school_admin', context = {}) {
+    const res = await fetch(`${this.baseUrl}/ai/procurement/copilot`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, userRole, context })
+    });
+    return res.json();
+  },
+
+  async queryScopedRAG(targetTenantId, documentType) {
+    const res = await fetch(`${this.baseUrl}/ai/rag/query-scoped`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetTenantId, documentType })
+    });
+    return res.json();
+  },
+
+  async getProcurementGatewayTelemetry() {
+    const res = await fetch(`${this.baseUrl}/ai/procurement/gateway-telemetry`);
+    return res.json();
+  },
+
+  async getAdminSupplierVerificationQueue() {
+    const res = await fetch(`${this.baseUrl}/admin/suppliers/verification-queue`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async submitAdminSupplierVerifyDecision(supplierId, decisionData) {
+    const res = await fetch(`${this.baseUrl}/admin/suppliers/${encodeURIComponent(supplierId)}/verify-decision`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(decisionData)
+    });
+    return res.json();
+  },
+
+  async dispatchN8nProcurementWorkflow(workflowData) {
+    const res = await fetch(`${this.baseUrl}/admin/integrations/n8n/dispatch/procurement`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(workflowData)
+    });
+    return res.json();
   }
 };
 
