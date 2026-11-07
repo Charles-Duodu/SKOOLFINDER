@@ -95,11 +95,6 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             </li>
-            <li>
-              <a href="/pricing" id="nav-link-pricing" class="nav-link-direct ${State.currentView === 'pricing' ? 'active' : ''}">
-                <span>💳</span> Pricing
-              </a>
-            </li>
           </ul>
 
           <!-- Nav Action Buttons: Clean & Uncluttered -->
@@ -206,9 +201,6 @@ const Navbar = {
               </a>
               <a href="/directory" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Find Schools
-              </a>
-              <a href="/pricing" id="mob-link-pricing" class="mobile-nav-item ${State.currentView === 'pricing' ? 'active' : ''}">
-                <span>💳</span> Pricing &amp; Plans
               </a>
               ${State.comparisonList.length > 0 ? `
                 <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">

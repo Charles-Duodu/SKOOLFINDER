@@ -25,6 +25,7 @@ const DashboardView = {
     document_number: '',
     expires_at: ''
   },
+  billingInterval: 'monthly',
   isDemoMode: false,
 
   /**
@@ -55,8 +56,11 @@ const DashboardView = {
                 <button id="btn-launch-demo-os" class="btn-pill btn-emerald" style="font-size: 0.95rem; padding: 0.8rem 1.6rem; font-weight: 800;">
                   Open Interactive Demo School OS
                 </button>
+                <a href="#school-pricing-section" id="btn-landing-pricing" class="btn-pill" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
+                  <span>💳</span> View Pricing Plans
+                </a>
                 <button id="btn-landing-signin" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);" onclick="Modals.openParentAuthModal('login')">
-                  Sign In to Your Workspace
+                  Sign In to Workspace
                 </button>
               </div>
             </div>
@@ -313,8 +317,303 @@ const DashboardView = {
             </div>
           </div>
 
+          <!-- Institutional Pricing & Plans Section -->
+          ${this.renderProprietorPricing()}
+
         </div>
       </section>
+    `;
+  },
+
+  /**
+   * Institutional Pricing & Plans Section for School Owners (Approved Ghana Cedis DDL §6.1)
+   */
+  renderProprietorPricing() {
+    const isAnnual = this.billingInterval === 'annual';
+
+    return `
+      <div id="school-pricing-section" style="margin-top: 4rem; padding-top: 3.5rem; border-top: 2px solid #e2e8f0;">
+        <div style="text-align: center; max-width: 820px; margin: 0 auto 2.5rem;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1266C4; padding: 0.35rem 0.95rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem;">
+            <span>🇬🇭</span> Approved Ghana Cedis Pricing &amp; Plans
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0; line-height: 1.2;">
+            Transparent, Value-Driven Plans for Every Institution
+          </h2>
+          <p style="color: #64748b; font-size: 1.05rem; line-height: 1.6; margin: 0;">
+            No hidden fees, no commission clawbacks. Direct local settlements via MTN MoMo, Telecel Cash, AT Money, and Visa/Mastercard with instant automated VAT receipts.
+          </p>
+
+          <!-- Billing Interval Switcher -->
+          <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem;">
+            <span style="font-size: 0.95rem; font-weight: ${!isAnnual ? '800' : '600'}; color: ${!isAnnual ? '#0A2046' : '#64748b'};">
+              Monthly Billing
+            </span>
+            <button type="button" id="btn-toggle-proprietor-interval" aria-label="Toggle Annual Billing" style="width: 58px; height: 32px; background: ${isAnnual ? '#1266C4' : '#cbd5e1'}; border-radius: 999px; border: none; cursor: pointer; position: relative; transition: background 0.2s ease;">
+              <span style="position: absolute; top: 3px; left: ${isAnnual ? '29px' : '4px'}; width: 26px; height: 26px; background: #ffffff; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: left 0.2s ease;"></span>
+            </button>
+            <span style="font-size: 0.95rem; font-weight: ${isAnnual ? '800' : '600'}; color: ${isAnnual ? '#0A2046' : '#64748b'}; display: flex; align-items: center; gap: 0.4rem;">
+              Annual Billing
+              <span class="badge badge-emerald" style="font-size: 0.72rem; padding: 0.15rem 0.55rem; font-weight: 800; background: #ecfdf5; color: #059669; border-radius: 999px;">
+                Save 16.67% (2 Mos Free!)
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <!-- 4-Tier Pricing Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; align-items: stretch; margin-bottom: 3.5rem;">
+          
+          <!-- Tier 1: Free Starter -->
+          <div class="pricing-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: #64748b; text-transform: uppercase;">
+                Starter Profile
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.45rem; color: #0A2046; margin: 0.25rem 0 0.5rem 0;">
+                Free Basic
+              </h3>
+              <p style="color: #64748b; font-size: 0.85rem; line-height: 1.5; min-height: 42px;">
+                Claim your school's official listing and maintain factual profile information.
+              </p>
+              
+              <div style="margin: 1.5rem 0; padding-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 900; color: #0A2046;">
+                  GH₵ 0
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                  Forever Free for Accredited Schools
+                </div>
+              </div>
+
+              <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>1</strong> Administrator Seat
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>5</strong> Campus Gallery Images
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Basic Inbound Enquiries
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> NaSIA Licence Status Badge
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center; color: #94a3b8;">
+                  <span>✕</span> 0 Active Vacancy Posts
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center; color: #94a3b8;">
+                  <span>✕</span> 0 B2B Tender Posts
+                </li>
+              </ul>
+            </div>
+
+            <button type="button" class="btn-pill btn-outline btn-claim-starter-trigger" style="width: 100%; justify-content: center; font-weight: 800;">
+              Claim / Register School
+            </button>
+          </div>
+
+          <!-- Tier 2: Growth (Highlighted) -->
+          <div class="pricing-card" style="background: #ffffff; border: 2.5px solid #1266C4; border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 12px 30px rgba(18,102,196,0.12);">
+            <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #1266C4; color: #ffffff; font-size: 0.72rem; font-weight: 800; padding: 0.3rem 0.9rem; border-radius: 999px; text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;">
+              ⭐ Most Popular for Basic Schools
+            </div>
+
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                Admissions Accelerator
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.45rem; color: #0A2046; margin: 0.25rem 0 0.5rem 0;">
+                Growth
+              </h3>
+              <p style="color: #64748b; font-size: 0.85rem; line-height: 1.5; min-height: 42px;">
+                Full enquiry messaging CRM, tour bookings, and vacancy recruitment.
+              </p>
+              
+              <div style="margin: 1.5rem 0; padding-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 900; color: #0A2046;">
+                  GH₵ ${isAnnual ? '990' : '99'}
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                  ${isAnnual ? 'per year (Save GH₵ 198)' : 'per month + VAT'}
+                </div>
+              </div>
+
+              <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>3</strong> Staff / Admissions Seats
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>20</strong> Gallery Images &amp; Video
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>2</strong> Simultaneous Active Vacancies
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Full Parent Enquiry Messaging CRM
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Campus Tour &amp; Walkthrough Booking
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Inbound Leads CSV Export
+                </li>
+              </ul>
+            </div>
+
+            <button type="button" class="btn-pill btn-primary btn-claim-growth-trigger" style="width: 100%; justify-content: center; font-weight: 800;">
+              Get Growth Plan
+            </button>
+          </div>
+
+          <!-- Tier 3: Professional -->
+          <div class="pricing-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: #9333ea; text-transform: uppercase;">
+                Admissions Engine
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.45rem; color: #0A2046; margin: 0.25rem 0 0.5rem 0;">
+                Professional
+              </h3>
+              <p style="color: #64748b; font-size: 0.85rem; line-height: 1.5; min-height: 42px;">
+                Online admissions workflows, digital offer letters, and procurement tenders.
+              </p>
+              
+              <div style="margin: 1.5rem 0; padding-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 900; color: #0A2046;">
+                  GH₵ ${isAnnual ? '2,490' : '249'}
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                  ${isAnnual ? 'per year (Save GH₵ 498)' : 'per month + VAT'}
+                </div>
+              </div>
+
+              <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>10</strong> Staff / Admissions Seats
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>50</strong> Gallery Images &amp; Virtual Tour
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>10</strong> Active Vacancy Posts
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>3</strong> New Tender Publications / month
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Digital Admissions Form Builder
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Official Offer Letter Generator
+                </li>
+              </ul>
+            </div>
+
+            <button type="button" class="btn-pill btn-primary btn-claim-pro-trigger" style="width: 100%; justify-content: center; font-weight: 800;">
+              Get Pro Plan
+            </button>
+          </div>
+
+          <!-- Tier 4: Enterprise -->
+          <div class="pricing-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+            <div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: #b45309; text-transform: uppercase;">
+                Multi-Campus Network
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.45rem; color: #0A2046; margin: 0.25rem 0 0.5rem 0;">
+                Enterprise
+              </h3>
+              <p style="color: #64748b; font-size: 0.85rem; line-height: 1.5; min-height: 42px;">
+                Complete multi-branch oversight for school trusts and high school groups.
+              </p>
+              
+              <div style="margin: 1.5rem 0; padding-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 900; color: #0A2046;">
+                  GH₵ ${isAnnual ? '4,990' : '499'}
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; font-weight: 600;">
+                  ${isAnnual ? 'per year (Save GH₵ 998)' : 'per month + VAT'}
+                </div>
+              </div>
+
+              <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>25</strong> Staff / Campus Seats
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>100</strong> Gallery Images &amp; Media
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>30</strong> Active Vacancy Posts
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> <strong>10</strong> Tender Publications / month
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Dedicated Relationship Manager
+                </li>
+                <li style="display: flex; gap: 0.5rem; align-items: center;">
+                  <span style="color: #059669; font-weight: 800;">✓</span> Custom SIS &amp; API Webhooks
+                </li>
+              </ul>
+            </div>
+
+            <button type="button" class="btn-pill btn-outline btn-claim-ent-trigger" style="width: 100%; justify-content: center; font-weight: 800;">
+              Contact Enterprise
+            </button>
+          </div>
+
+        </div>
+
+        <!-- Add-Ons Catalogue Strip -->
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2rem;">
+          <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; margin: 0 0 0.35rem 0;">
+            Approved On-Demand Add-Ons &amp; Usage Credits
+          </h3>
+          <p style="font-size: 0.88rem; color: #64748b; margin: 0 0 1.5rem 0;">
+            Expand your capabilities whenever seasonal admissions peaks require additional capacity.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="font-size: 1.4rem; margin-bottom: 0.25rem;">📢</div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">Additional Vacancy Slot</div>
+              <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">Active for 30 consecutive days</div>
+              <div style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #1266C4; margin-top: 0.5rem;">
+                GH₵ 25
+              </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="font-size: 1.4rem; margin-bottom: 0.25rem;">📋</div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">Single Tender Post</div>
+              <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">One public RFQ procurement listing</div>
+              <div style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #1266C4; margin-top: 0.5rem;">
+                GH₵ 45
+              </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="font-size: 1.4rem; margin-bottom: 0.25rem;">📦</div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">Tender Bundle (3 Posts)</div>
+              <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">Pack of 3 competitive procurement RFQs</div>
+              <div style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #1266C4; margin-top: 0.5rem;">
+                GH₵ 120
+              </div>
+            </div>
+
+            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+              <div style="font-size: 1.4rem; margin-bottom: 0.25rem;">👥</div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">Additional Staff Seat</div>
+              <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">Extra bursar or admissions manager</div>
+              <div style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: #1266C4; margin-top: 0.5rem;">
+                GH₵ 10 / mo
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     `;
   },
 
@@ -3751,6 +4050,9 @@ const DashboardView = {
       App.navigate('schools');
     });
 
+    // Institutional Pricing Section Events
+    this.attachPricingEvents();
+
     // 2. Start Wizard Button
     document.getElementById('btn-start-wizard')?.addEventListener('click', () => {
       document.getElementById('school-onboarding-wizard-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -5504,6 +5806,53 @@ const DashboardView = {
       } catch (err) {
         State.showToast(err.message || 'Failed to reset circuit breaker', 'error');
       }
+    });
+  },
+
+  /**
+   * Interactive Handlers for Institutional Pricing & Plans Section
+   */
+  attachPricingEvents() {
+    const toggleBtn = document.getElementById('btn-toggle-proprietor-interval');
+    if (toggleBtn) {
+      toggleBtn.onclick = (e) => {
+        e.preventDefault();
+        this.billingInterval = (this.billingInterval === 'annual') ? 'monthly' : 'annual';
+        const section = document.getElementById('school-pricing-section');
+        if (section) {
+          section.outerHTML = this.renderProprietorPricing();
+          this.attachPricingEvents();
+        }
+      };
+    }
+
+    const triggerWizard = (planName) => {
+      this.wizardData.selectedPlan = planName;
+      const wizardSection = document.getElementById('school-onboarding-wizard-section');
+      if (wizardSection) {
+        wizardSection.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        App.navigate('schools');
+      }
+    };
+
+    document.querySelectorAll('.btn-claim-starter-trigger').forEach(btn => {
+      btn.onclick = () => triggerWizard('starter');
+    });
+    document.querySelectorAll('.btn-claim-growth-trigger').forEach(btn => {
+      btn.onclick = () => triggerWizard('growth');
+    });
+    document.querySelectorAll('.btn-claim-pro-trigger').forEach(btn => {
+      btn.onclick = () => triggerWizard('professional');
+    });
+    document.querySelectorAll('.btn-claim-ent-trigger').forEach(btn => {
+      btn.onclick = () => {
+        if (typeof Modals !== 'undefined' && Modals.openContactModal) {
+          Modals.openContactModal({ subject: 'Enterprise School Network Inquiry' });
+        } else {
+          triggerWizard('enterprise');
+        }
+      };
     });
   }
 };

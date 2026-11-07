@@ -127,6 +127,16 @@ const App = {
         window.history.replaceState({ view: 'directory' }, '', '/directory');
       }
     }
+    // Pricing relocated to School Owner Portal
+    if (viewName === 'pricing' || viewName === 'plans') {
+      viewName = 'schools';
+      if (updateUrl) {
+        window.history.replaceState({ view: 'schools' }, '', '/schools');
+      }
+      setTimeout(() => {
+        document.getElementById('school-pricing-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 350);
+    }
     if (viewName === 'jobs') viewName = 'teachers';
     if (viewName === 'dashboard') viewName = 'schools';
 
@@ -179,7 +189,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
+      const isPathRoute = ['teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -490,8 +500,8 @@ const App = {
         'directory': 'directory',
         'school-detail': 'school-detail',
         'compare': 'compare',
-        'pricing': 'pricing',
-        'plans': 'pricing',
+        'pricing': 'schools',
+        'plans': 'schools',
         'cssps': 'cssps',
         'past-questions': 'resources',
         'resources': 'resources',
