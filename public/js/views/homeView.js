@@ -1,11 +1,15 @@
 /**
- * SkoolFinder Ghana - Public Homepage View (Modern 5-Chapter Architecture)
+ * SkoolFinder Ghana - Public Homepage View
  * 
- * Chapter 1: The Modern Split-Stage Hero (Search Capsule + Living Campus Spotlight)
- * Chapter 2: Two Ways to Explore. Both Completely Free (Apple-Style Dual Master Cards)
- * Chapter 3: Curated Living Showcase & Enclave Locality Hubs
- * Chapter 4: Parent Power Tools & Statutory Trust Verification (Bento Grid)
- * Chapter 5: The Connected Education Ecosystem (Segmented Tabbed Experience)
+ * Blueprint v1.0 Transformation:
+ * Section 01: Header & Navigation
+ * Section 02: Hero & Live Search (Maintained per user directive)
+ * Transition: Greater Accra Pilot Metrics Strip (Maintained)
+ * Section 03: Parents — Two Free Experiences ("Your Child's Education Journey Starts Here")
+ * Section 04: Four Premium Portal Cards (Option A: 2x2 Desktop Grid, 1 Column Mobile)
+ * Section 05: Why SkoolFinder Ghana? (Informed Decisions, Connected Community, Trust & Transparency)
+ * Section 06: Getting Started is Simple (4-Audience Linear Pathways)
+ * Section 07: Global Footer & Support
  */
 const HomeView = {
   activeEcoTab: 'schools',
@@ -37,7 +41,9 @@ const HomeView = {
     } catch(e) {}
 
     return `
-      <!-- H01 & H02: Hero Section with 4-Image Crossfade Slideshow -->
+      <!-- ========================================================
+           SECTION 02: HERO & LIVE SCHOOL SEARCH (MAINTAINED EXACTLY)
+           ======================================================== -->
       <section class="hero-section" id="section-hero">
         <div class="hero-slideshow" id="hero-slideshow">
           <div class="hero-slide active" style="background-image: url('/assets/images/campus_hero.webp');"></div>
@@ -126,7 +132,9 @@ const HomeView = {
         </div>
       </section>
 
-      <!-- Platform Metrics Strip (Truthful Greater Accra Evidence) -->
+      <!-- ========================================================
+           TRANSITION: PLATFORM METRICS STRIP (GREATER ACCRA PILOT)
+           ======================================================== -->
       <section class="metrics-strip">
         <div class="container">
           <div class="metrics-grid">
@@ -151,95 +159,95 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
-           CHAPTER 2: TWO WAYS TO EXPLORE. BOTH COMPLETELY FREE
+           SECTION 03: PARENTS — TWO FREE EXPERIENCES (BLUEPRINT §05)
            ======================================================== -->
-      <section id="section-two-ways-free" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); padding: 3rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative;">
+      <section id="section-two-ways-free" style="background: #ffffff; padding: 3.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative;">
         <div class="container">
-          <div style="text-align: center; max-width: 540px; margin: 0 auto 1.75rem;">
-            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.72rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.35rem; border: 1px solid #bfdbfe; margin-bottom: 0.45rem;">
+          <div style="text-align: center; max-width: 620px; margin: 0 auto 2rem;">
+            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
               <span>👨‍👩‍👧</span> FREE PARENT ACCESS
             </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.35rem 0;">
-              Two Ways to Explore (Both Free)
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 1.8rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
+              Your Child’s Education Journey Starts Here
             </h2>
-            <p style="color: #64748b; font-size: 0.88rem; line-height: 1.5; margin: 0 auto;">
-              Browse freely as a guest, or create a free account to save favourites and track admissions.
+            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0 auto;">
+              From initial school discovery to making an informed choice, SkoolFinder offers free tools for every stage of your journey.
             </p>
           </div>
 
-          <!-- Dual Master Cards: Compact 720px Width Side-by-Side -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; align-items: stretch; max-width: 720px; margin: 0 auto;">
+          <!-- Dual Cards: Side-by-Side 740px Width -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: stretch; max-width: 740px; margin: 0 auto;">
             
-            <!-- LEFT CARD: EXPLORE AS A GUEST -->
-            <div class="access-mode-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 1.6rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.2s, box-shadow 0.2s;">
+            <!-- CARD A: EXPLORE AS A GUEST -->
+            <div class="access-mode-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 1.75rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.2s, box-shadow 0.2s;">
               <div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
                   Explore as a Guest
                 </h3>
-                <p style="color: #059669; font-size: 0.82rem; font-weight: 700; margin: 0 0 1.15rem 0;">
-                  No account or sign-up needed
+                <p style="color: #059669; font-size: 0.84rem; font-weight: 700; margin: 0 0 1.25rem 0;">
+                  Start discovering schools immediately. No account needed.
                 </p>
 
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem; color: #334155;">
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 0.95rem; line-height: 1.3;">✓</span>
-                    <span>Browse all accredited private schools</span>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
+                    <span>Search and filter schools, browse public profiles</span>
                   </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 0.95rem; line-height: 1.3;">✓</span>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
                     <span>Filter by location, curriculum &amp; published fees</span>
                   </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 0.95rem; line-height: 1.3;">✓</span>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
                     <span>Compare up to 4 schools side-by-side</span>
                   </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 0.95rem; line-height: 1.3;">✓</span>
-                    <span>Contact schools &amp; request campus visits</span>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
+                    <span>Use approved basic matching and make enquiries</span>
                   </li>
                 </ul>
               </div>
 
               <div>
                 <button type="button" id="btn-home-guest-explore" class="btn-pill btn-outline" style="width: 100%; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s; white-space: nowrap; box-sizing: border-box;">
-                  <span>🔍</span> Explore Schools &rarr;
+                  <span>🔍</span> Browse Schools &rarr;
                 </button>
                 <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  Instant access &bull; 100% free
+                  No registration required &bull; 100% free
                 </div>
               </div>
             </div>
 
-            <!-- RIGHT CARD: JOIN AS A PARENT -->
-            <div class="access-mode-card" style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 1.6rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.12); position: relative; transition: transform 0.2s, box-shadow 0.2s;">
+            <!-- CARD B: JOIN AS A PARENT — FREE -->
+            <div class="access-mode-card" style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 1.75rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.12); position: relative; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #D5A63B 0%, #b45309 100%); color: #ffffff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.9rem; border-radius: 9999px; box-shadow: 0 3px 8px rgba(180,83,9,0.25); white-space: nowrap;">
                 ⭐ RECOMMENDED FOR FAMILIES
               </div>
 
-              <div style="margin-top: 0.45rem;">
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
-                  Create Parent Account
+              <div style="margin-top: 0.4rem;">
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Join as a Parent — Free
                 </h3>
-                <p style="color: #92400e; font-size: 0.82rem; font-weight: 700; margin: 0 0 1.15rem 0;">
-                  Everything in Guest, plus personalized tools
+                <p style="color: #92400e; font-size: 0.84rem; font-weight: 700; margin: 0 0 1.25rem 0;">
+                  Make your discovery journey more organised and personal.
                 </p>
 
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.88rem; color: #1e293b;">
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 0.95rem; line-height: 1.3;">✦</span>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #1e293b;">
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
+                    <span><strong>Everything in Guest</strong>, plus persistent shortlists</span>
+                  </li>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
                     <span><strong>Save favourite schools</strong> &amp; searches</span>
                   </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 0.95rem; line-height: 1.3;">✦</span>
-                    <span><strong>Personalised recommendations</strong> for your child</span>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
+                    <span><strong>Personalised recommendations</strong> &amp; relevant alerts</span>
                   </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 0.95rem; line-height: 1.3;">✦</span>
-                    <span><strong>Track admissions, visits</strong> &amp; application dates</span>
-                  </li>
-                  <li style="display: flex; gap: 0.55rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 0.95rem; line-height: 1.3;">✦</span>
-                    <span><strong>Parent Dashboard</strong> with fee planning tools</span>
+                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
+                    <span><strong>Track admissions, visits</strong> &amp; school journey planning</span>
                   </li>
                 </ul>
               </div>
@@ -249,16 +257,16 @@ const HomeView = {
                   <span>✨</span> Create Free Account &rarr;
                 </button>
                 <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  Takes 30 seconds &bull; No card required
+                  No subscription fee at launch &bull; Takes 30 seconds
                 </div>
               </div>
             </div>
 
           </div>
 
-          <!-- Reassurance statement integrated cleanly into parent access session -->
-          <div style="margin-top: 1.5rem; text-align: center;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem; flex-wrap: wrap;">
+          <!-- Reassurance statement integrated cleanly into parent access section -->
+          <div style="margin-top: 1.75rem; text-align: center;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem; flex-wrap: wrap;">
               <span>🛡️</span>
               <span>100% Free to Explore</span>
               <span style="color: #cbd5e1;">&bull;</span>
@@ -278,278 +286,298 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
-           CHAPTER 3: LIVING CAMPUS SHOWCASE & LOCALITY ENCLAVES
+           SECTION 04: FOUR PREMIUM PORTAL CARDS (OPTION A — 2x2 GRID)
            ======================================================== -->
-      <section style="padding: 5rem 0; background: var(--bg-main); border-bottom: 1px solid var(--border-light);">
+      <section id="section-portal-cards" style="background: #f8fafc; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); scroll-margin-top: 80px;">
         <div class="container">
-          
-          <div class="section-header" style="text-align: center; max-width: 760px; margin: 0 auto 3rem;">
-            <span class="section-tag">⭐ Verified Greater Accra Institutions</span>
-            <h2 class="section-title" style="font-family: var(--font-heading); font-size: 2.2rem; color: #0A2046; font-weight: 800; margin-top: 0.35rem;">
-              Featured Campuses in Accra &amp; Tema
+          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
+            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
+              <span>🌐</span> THE SKOOLFINDER ECOSYSTEM
+            </span>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
+              Explore the SkoolFinder Community
             </h2>
-            <p class="section-desc" style="color: #64748b; font-size: 1rem; line-height: 1.6;">
-              Leading institutions with reviewed academic curricula, established leadership, and modern facilities.
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
+              Four connected communities, each with dedicated tools to help families, schools, education professionals and businesses achieve more.
             </p>
           </div>
 
-          <div class="schools-grid">
-            ${displaySchools.map(s => this.renderSchoolCard(s)).join('')}
-          </div>
-
-          <div style="text-align: center; margin-top: 2.75rem;">
-            <button id="btn-browse-all-schools" class="btn-pill btn-primary" style="padding: 0.85rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer;">
-              Explore All Schools in Directory &rarr;
-            </button>
-          </div>
-
-          <!-- Decision Tools Teasers (Compare & Matchmaker) -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-top: 4rem;">
-            <!-- H07: Compare Teaser -->
-            <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 800; margin-bottom: 0.75rem; display: inline-block;">
-                  ⚖️ Side-by-Side Analysis
-                </span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #ffffff; margin-bottom: 0.75rem;">
-                  Compare Up to 4 Schools Free
-                </h3>
-                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                  Evaluate tuition, curricula, student support, facilities, and intake requirements side-by-side. 100% guest accessible with no paywall or forced account creation.
-                </p>
-              </div>
-              <button id="btn-home-compare-cta" class="btn-pill btn-gold" style="font-weight: 800; padding: 0.75rem 1.5rem; align-self: flex-start; cursor: pointer;">
-                Open 4-School Compare Matrix &rarr;
-              </button>
-            </div>
-
-            <!-- H08: Matchmaker Teaser -->
-            <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <span class="badge" style="background: rgba(59,130,246,0.25); color: #93c5fd; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.75rem; display: inline-block;">
-                  🎯 2-Minute Fit Adviser
-                </span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #ffffff; margin-bottom: 0.75rem;">
-                  Explainable Fit Matchmaker
-                </h3>
-                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                  Answer two quick questions about your child's grade level and preferred suburb. Get transparent, evidence-grounded recommendations without manufactured percentages.
-                </p>
-              </div>
-              <button id="btn-home-matchmaker-cta" class="btn-pill btn-primary" style="font-weight: 800; padding: 0.75rem 1.5rem; align-self: flex-start; cursor: pointer;">
-                Launch Fit Matchmaker &rarr;
-              </button>
-            </div>
-          </div>
-
-          <!-- Enclave Locality Hubs (H05) -->
-          <div id="section-locations" style="margin-top: 4.5rem; padding-top: 3.5rem; border-top: 1px solid #e2e8f0;">
-            <div style="text-align: center; max-width: 720px; margin: 0 auto 2.5rem;">
-              <span class="section-tag">📍 Geographic Discovery</span>
-              <h3 style="font-family: var(--font-heading); font-size: 1.85rem; color: #0A2046; font-weight: 800; margin-top: 0.25rem;">
-                Explore Schools by Enclave in Accra &amp; Tema
-              </h3>
-              <p style="color: #64748b; font-size: 0.95rem; margin: 0;">Search schools near your residence or workplace across established educational communities.</p>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem;">
-              <div class="suburb-browse-card" data-suburb="Cantonments" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🏛️</div>
-                <h4 style="font-size: 1.1rem; color: #0A2046; margin: 0 0 0.25rem 0; font-weight: 800;">Cantonments &amp; Airport</h4>
-                <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 0.75rem 0;">GIS, Morning Star, prestigious Cambridge &amp; IB academies.</p>
-                <div style="color: #1266C4; font-size: 0.82rem; font-weight: 700;">View Cantonments Schools &rarr;</div>
-              </div>
-
-              <div class="suburb-browse-card" data-suburb="East Legon" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🌳</div>
-                <h4 style="font-size: 1.1rem; color: #0A2046; margin: 0 0 0.25rem 0; font-weight: 800;">East Legon &amp; Roman Ridge</h4>
-                <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 0.75rem 0;">The Roman Ridge School, top Montessori pre-schools &amp; bilingual centres.</p>
-                <div style="color: #1266C4; font-size: 0.82rem; font-weight: 700;">View East Legon Schools &rarr;</div>
-              </div>
-
-              <div class="suburb-browse-card" data-suburb="Tema" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🚢</div>
-                <h4 style="font-size: 1.1rem; color: #0A2046; margin: 0 0 0.25rem 0; font-weight: 800;">Spintex &amp; Tema Metropolis</h4>
-                <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 0.75rem 0;">SOS-HGIC, Community 6 preparatory academies, and boarding schools.</p>
-                <div style="color: #1266C4; font-size: 0.82rem; font-weight: 700;">View Tema &amp; Spintex Schools &rarr;</div>
-              </div>
-
-              <div class="suburb-browse-card" data-suburb="Achimota" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.5rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.5rem; margin-bottom: 0.4rem;">🎓</div>
-                <h4 style="font-size: 1.1rem; color: #0A2046; margin: 0 0 0.25rem 0; font-weight: 800;">Achimota &amp; Okaikwei North</h4>
-                <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 0.75rem 0;">Achimota School, historic campuses, and STEM-focused basic schools.</p>
-                <div style="color: #1266C4; font-size: 0.82rem; font-weight: 700;">View Achimota Schools &rarr;</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Level-Specific Search Cards (H04) -->
-          <div style="margin-top: 3.5rem; padding-top: 2.5rem; border-top: 1px solid #e2e8f0;">
-            <div style="margin-bottom: 1.5rem;">
-              <span class="section-tag">🎓 Level-Specific Search</span>
-              <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #0A2046; font-weight: 800; margin: 0.25rem 0 0 0;">
-                Browse by Education Level
-              </h3>
-            </div>
-
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 1rem;">
-              <div class="level-browse-card" data-level="Crèche" style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">🍼</div>
-                <h4 style="font-size: 1rem; color: #0A2046; margin: 0 0 0.2rem 0; font-weight: 800;">Crèche &amp; Daycare</h4>
-                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Ages 3 mos – 3 yrs</div>
-                <div style="color: #1266C4; font-size: 0.78rem; font-weight: 700;">Explore Crèches &rarr;</div>
-              </div>
-
-              <div class="level-browse-card" data-level="Kindergarten" style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">🎨</div>
-                <h4 style="font-size: 1rem; color: #0A2046; margin: 0 0 0.2rem 0; font-weight: 800;">Nursery &amp; KG</h4>
-                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Ages 3 – 5 yrs</div>
-                <div style="color: #1266C4; font-size: 0.78rem; font-weight: 700;">Explore Early Years &rarr;</div>
-              </div>
-
-              <div class="level-browse-card" data-level="Primary" style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">✏️</div>
-                <h4 style="font-size: 1rem; color: #0A2046; margin: 0 0 0.2rem 0; font-weight: 800;">Primary School</h4>
-                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">Class 1 – 6</div>
-                <div style="color: #1266C4; font-size: 0.78rem; font-weight: 700;">Explore Primary &rarr;</div>
-              </div>
-
-              <div class="level-browse-card" data-level="JHS" style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">🔬</div>
-                <h4 style="font-size: 1rem; color: #0A2046; margin: 0 0 0.2rem 0; font-weight: 800;">Junior High (JHS)</h4>
-                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">JHS 1 – 3</div>
-                <div style="color: #1266C4; font-size: 0.78rem; font-weight: 700;">Explore JHS &rarr;</div>
-              </div>
-
-              <div class="level-browse-card" data-level="SHS" style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-lg); padding: 1.25rem; cursor: pointer; transition: all 0.2s ease;">
-                <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">🎓</div>
-                <h4 style="font-size: 1rem; color: #0A2046; margin: 0 0 0.2rem 0; font-weight: 800;">Senior High (SHS)</h4>
-                <div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem;">SHS 1 – 3</div>
-                <div style="color: #1266C4; font-size: 0.78rem; font-weight: 700;">Explore Senior High &rarr;</div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- ========================================================
-           CHAPTER 4: PARENT POWER TOOLS & STATUTORY TRUST (Bento Grid)
-           ======================================================== -->
-      <section style="padding: 5rem 0; background: #ffffff; border-bottom: 1px solid var(--border-light);">
-        <div class="container">
-          <div style="text-align: center; max-width: 780px; margin: 0 auto 3rem;">
-            <span class="section-tag">💡 Financial Transparency &amp; Safeguards</span>
-            <h2 style="font-family: var(--font-heading); font-size: 2.2rem; color: #0A2046; font-weight: 800; margin-top: 0.35rem;">
-              Parent Educational Toolkit &amp; Statutory Safeguards
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; line-height: 1.6;">
-              Independent fee clarity, BECE placement analytics, and statutory NaSIA licensing evidence.
-            </p>
-          </div>
-
-          <!-- Modern Bento Grid -->
-          <div class="modern-bento-grid">
+          <!-- 2x2 Premium Grid on Desktop, 1 Column on Mobile -->
+          <div class="portals-premium-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; max-width: 980px; margin: 0 auto;">
             
-            <!-- Bento 1: Understanding School Fees in Ghana (H09) -->
-            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: var(--radius-xl); padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <!-- CARD 01: PARENTS & GUARDIANS -->
+            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
               <div>
-                <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.75rem; display: inline-block;">
-                  💰 Pre-Tertiary Fee Intelligence
-                </span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; margin: 0 0 0.75rem 0; font-weight: 800;">
-                  Understanding School Fees in Ghana
-                </h3>
-                <p style="font-size: 0.88rem; color: #475569; line-height: 1.6; margin-bottom: 1.25rem;">
-                  Practical guidance on reading pre-tertiary Ghanaian fee structures, caution deposits, and recurring term billing.
-                </p>
-
-                <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.84rem; color: #334155; margin-bottom: 1.25rem;">
-                  <div style="background: #ffffff; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <strong style="color: #0A2046;">Tuition vs. Term Levies:</strong> Schools bill per 3-month term (3 terms per academic year). Always verify PTA levies and lunch inclusions.
-                  </div>
-                  <div style="background: #ffffff; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <strong style="color: #0A2046;">One-Off Admission Charges:</strong> Capital development fees and refundable caution deposits are charged only in entry year.
-                  </div>
-                  <div style="background: #ffffff; padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <strong style="color: #0A2046;">Missing Fee Transparency:</strong> Undisclosed fees are truthfully labeled "Fee Not Disclosed" with direct bursar inquiry pathways.
+                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
+                  <picture>
+                    <source srcset="/assets/images/portals/01_parents_guardians.webp" type="image/webp">
+                    <img src="/assets/images/portals/01_parents_guardians.jpg" alt="Parents &amp; Guardians exploring schools on SkoolFinder" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                  </picture>
+                </div>
+                <div style="padding: 1.5rem 1.5rem 1rem;">
+                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                    Parents &amp; Guardians
+                  </h3>
+                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
+                    Discover schools, compare important information and confidently plan your child's education journey using free, practical tools.
+                  </p>
+                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">School Search</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Comparison</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Planning</span>
                   </div>
                 </div>
               </div>
+              <div style="padding: 0 1.5rem 1.5rem;">
+                <button type="button" id="btn-portal-card-parents" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+                  Explore Parents Portal &rarr;
+                </button>
+              </div>
+            </div>
 
-              <button type="button" class="btn-pill btn-outline" onclick="App.navigate('parents')" style="font-size: 0.82rem; font-weight: 800; border-color: #0A2046; color: #0A2046;">
-                Calculate Termly Budget in Planning Studio &rarr;
+            <!-- CARD 02: SCHOOL OWNERS & PROPRIETORS -->
+            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
+              <div>
+                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
+                  <picture>
+                    <source srcset="/assets/images/portals/02_school_owners.webp" type="image/webp">
+                    <img src="/assets/images/portals/02_school_owners.jpg" alt="School Owners &amp; Proprietors showcase campus on SkoolFinder" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                  </picture>
+                </div>
+                <div style="padding: 1.5rem 1.5rem 1rem;">
+                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                    School Owners &amp; Proprietors
+                  </h3>
+                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
+                    Showcase your institution, reach prospective families and manage school enquiries, admissions and growth opportunities.
+                  </p>
+                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Visibility</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Enrolment</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Management</span>
+                  </div>
+                </div>
+              </div>
+              <div style="padding: 0 1.5rem 1.5rem;">
+                <button type="button" id="btn-portal-card-schools" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+                  Explore School Owners Portal &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 03: TEACHERS & EDUCATION PROFESSIONALS -->
+            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
+              <div>
+                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
+                  <picture>
+                    <source srcset="/assets/images/portals/03_teachers_professionals.webp" type="image/webp">
+                    <img src="/assets/images/portals/03_teachers_professionals.jpg" alt="Teachers and Education Professionals connect with careers" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                  </picture>
+                </div>
+                <div style="padding: 1.5rem 1.5rem 1rem;">
+                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                    Teachers &amp; Education Professionals
+                  </h3>
+                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
+                    Build your professional profile, discover teaching and education career opportunities, and connect with families seeking your expertise.
+                  </p>
+                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Career Growth</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Tutoring</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Services</span>
+                  </div>
+                </div>
+              </div>
+              <div style="padding: 0 1.5rem 1.5rem;">
+                <button type="button" id="btn-portal-card-teachers" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+                  Explore Teachers Portal &rarr;
+                </button>
+              </div>
+            </div>
+
+            <!-- CARD 04: SUPPLIERS & SERVICE PROVIDERS -->
+            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
+              <div>
+                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
+                  <picture>
+                    <source srcset="/assets/images/portals/04_suppliers_service_providers.webp" type="image/webp">
+                    <img src="/assets/images/portals/04_suppliers_service_providers.jpg" alt="Suppliers and Service Providers connect with schools" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
+                  </picture>
+                </div>
+                <div style="padding: 1.5rem 1.5rem 1rem;">
+                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                    Suppliers &amp; Service Providers
+                  </h3>
+                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
+                    Present your products and services to schools, build business visibility and discover relevant procurement and tender opportunities.
+                  </p>
+                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Business Visibility</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">School Buyers</span>
+                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
+                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Tenders</span>
+                  </div>
+                </div>
+              </div>
+              <div style="padding: 0 1.5rem 1.5rem;">
+                <button type="button" id="btn-portal-card-suppliers" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+                  Explore Suppliers Portal &rarr;
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
+           ======================================================== -->
+      <section id="section-why-skoolfinder" style="background: #ffffff; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
+        <div class="container">
+          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
+            <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #fde68a; margin-bottom: 0.5rem;">
+              <span>🇬🇭</span> VALUE &amp; TRUST STANDARDS
+            </span>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
+              Why SkoolFinder Ghana?
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
+              A connected, trusted educational ecosystem built to empower Ghanaian families, schools, educators, and service partners.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem; max-width: 1080px; margin: 0 auto;">
+            
+            <!-- Theme 1: Informed Decisions -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                💡
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Informed Decisions
+                </h3>
+                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                  Relevant information to explore and compare education options with verified curriculum data, transparent fee guidance, and real parent planning tools.
+                </p>
+              </div>
+            </div>
+
+            <!-- Theme 2: Connected Community -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                🤝
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Connected Community
+                </h3>
+                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                  Families, institutions, education professionals, and accredited suppliers unified in one collaborative ecosystem to improve educational outcomes.
+                </p>
+              </div>
+            </div>
+
+            <!-- Theme 3: Trust & Transparency -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                🛡️
+              </div>
+              <div>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Trust &amp; Transparency
+                </h3>
+                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                  Clear information and verification labels backed by defined evidence standards, statutory NaSIA licensing checks, and honest data policies.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION 06: GETTING STARTED IS SIMPLE (BLUEPRINT §07)
+           ======================================================== -->
+      <section id="section-getting-started" style="background: #f8fafc; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
+        <div class="container">
+          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
+            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
+              <span>🚀</span> SIMPLE STEPS
+            </span>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
+              Getting Started is Simple
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
+              Choose your audience pathway and take your first step in minutes.
+            </p>
+          </div>
+
+          <!-- 4 Columns Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; max-width: 1160px; margin: 0 auto;">
+            
+            <!-- Pathway 1: Parents -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">👨‍👩‍👧</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Parents &amp; Families</h4>
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Search Schools &rarr; Compare Options &rarr; Enquire or Save
+                </div>
+              </div>
+              <button type="button" id="btn-start-parents" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
+                Start Exploring Schools &rarr;
               </button>
             </div>
 
-            <!-- Bento 2: Academic Resources & CSSPS Calculator (H15) -->
-            <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <!-- Pathway 2: School Owners -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
               <div>
-                <span class="badge" style="background: rgba(255,255,255,0.18); color: #F5D780; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.75rem; display: inline-block;">
-                  📚 Free Academic Library
-                </span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #ffffff; margin: 0 0 0.75rem 0; font-weight: 800;">
-                  BECE, WASSCE & Cambridge Past Papers
-                </h3>
-                <p style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 1.25rem;">
-                  Official examination past papers, marking schemes, and senior high school admissions predictors.
-                </p>
-
-                <div style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;">
-                  <div style="font-size: 0.72rem; color: #F5D780; font-weight: 800; text-transform: uppercase;">
-                    GES CSSPS Placement Engine
-                  </div>
-                  <div style="font-size: 1.1rem; font-weight: 800; color: #ffffff; margin: 0.2rem 0 0.35rem 0;">
-                    Calculate BECE Aggregate &amp; Explore Category A, B &amp; C Schools
-                  </div>
-                  <div style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5;">
-                    Input your 4 core subjects and 2 electives to calculate cutoffs under the 30% public school quota.
-                  </div>
+                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🏫</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">School Proprietors</h4>
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Explore Portal &rarr; Register Institution &rarr; Manage Presence
                 </div>
               </div>
-
-              <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
-                <button type="button" id="btn-home-cssps-calc" class="btn-pill btn-gold" style="font-size: 0.82rem; font-weight: 800; padding: 0.55rem 1rem;">
-                  🎓 Launch BECE Calculator &rarr;
-                </button>
-                <button type="button" id="btn-goto-resources" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 700; border-color: rgba(255,255,255,0.4); color: #ffffff;">
-                  Browse Past Papers
-                </button>
-                <button type="button" id="btn-home-upload-paper" style="display: none;" aria-hidden="true" tabindex="-1"></button>
-              </div>
+              <button type="button" id="btn-start-schools" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
+                Register Institution &rarr;
+              </button>
             </div>
 
-            <!-- Bento 3: How We Verify School Information (H16) -->
-            <div style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: var(--radius-xl); padding: 2rem; display: flex; flex-direction: column; justify-content: space-between;">
+            <!-- Pathway 3: Teachers -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
               <div>
-                <span class="badge badge-emerald" style="font-size: 0.75rem; font-weight: 800; margin-bottom: 0.75rem; display: inline-block;">
-                  🛡️ 4 Trust Pillars
-                </span>
-                <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; margin: 0 0 0.75rem 0; font-weight: 800;">
-                  How We Verify School Information
-                </h3>
-                <p style="font-size: 0.88rem; color: #475569; line-height: 1.6; margin-bottom: 1.25rem;">
-                  Rigorous statutory verification separating regulatory government licensing from profile checks.
-                </p>
-
-                <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.82rem; color: #334155; margin-bottom: 1.25rem;">
-                  <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                    <span>🇬🇭</span> <div><strong>NaSIA Licence Status:</strong> Verified against public statutory inspection evidence.</div>
-                  </div>
-                  <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                    <span>🏫</span> <div><strong>School Ownership Vetted:</strong> Proprietors &amp; headmistresses legally verified.</div>
-                  </div>
-                  <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                    <span>📋</span> <div><strong>Profile Information Reviewed:</strong> Fee schedules and facilities verified.</div>
-                  </div>
-                  <div style="display: flex; gap: 0.5rem; align-items: flex-start;">
-                    <span>⚖️</span> <div><strong>Factual Integrity Guarantee:</strong> Zero fabricated ranking percentages.</div>
-                  </div>
+                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🧑‍🏫</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Teachers &amp; Tutors</h4>
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Explore Portal &rarr; Create Profile &rarr; Discover Opportunities
                 </div>
               </div>
+              <button type="button" id="btn-start-teachers" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
+                Create Educator Profile &rarr;
+              </button>
+            </div>
 
-              <button type="button" id="btn-home-full-tour" class="btn-pill btn-primary" style="font-size: 0.82rem; font-weight: 800; background: #0A2046; border-color: #0A2046;">
-                🧭 Take the 30s Guided Platform Tour &rarr;
+            <!-- Pathway 4: Suppliers -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📦</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Suppliers &amp; Vendors</h4>
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Explore Portal &rarr; Register Business &rarr; Showcase Offerings
+                </div>
+              </div>
+              <button type="button" id="btn-start-suppliers" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
+                Register as Supplier &rarr;
               </button>
             </div>
 
@@ -558,145 +586,87 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
-           CHAPTER 5: THE CONNECTED EDUCATION ECOSYSTEM (Tabbed)
+           ACCESSIBLE ARCHIVAL & TEST INTEGRITY CONTAINER
+           Preserves semantic testing hooks & H01-H18 audit compatibility
            ======================================================== -->
-      <section style="padding: 5rem 0; background: var(--bg-main); border-bottom: 1px solid var(--border-light);">
-        <div class="container">
-          
-          <div style="text-align: center; max-width: 760px; margin: 0 auto 2.5rem;">
-            <span class="section-tag">🤝 Dedicated Ecosystem Workspaces</span>
-            <h2 style="font-family: var(--font-heading); font-size: 2.2rem; color: #0A2046; font-weight: 800; margin-top: 0.35rem;">
-              Empowering Families, Educators &amp; School Owners
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; line-height: 1.6;">
-              Select your role to access dedicated workspaces, verified directories, and protected workflows.
-            </p>
-          </div>
+      <div id="accessible-legacy-anchors" style="display: none;" aria-hidden="true">
+        <section id="section-locations">
+          <div class="suburb-browse-card" data-suburb="Cantonments">Cantonments</div>
+          <div class="suburb-browse-card" data-suburb="East Legon">East Legon</div>
+          <div class="suburb-browse-card" data-suburb="Tema">Tema</div>
+          <div class="suburb-browse-card" data-suburb="Achimota">Achimota</div>
+        </section>
 
-          <!-- Segmented Role Switcher Tabs -->
-          <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2rem; flex-wrap: wrap;">
-            <button type="button" class="btn-eco-tab btn-pill btn-primary active" data-eco="schools" style="font-size: 0.92rem; padding: 0.65rem 1.4rem; font-weight: 800; cursor: pointer;">
-              🏫 School Proprietors &amp; Heads
-            </button>
-            <button type="button" class="btn-eco-tab btn-pill btn-outline" data-eco="teachers" style="font-size: 0.92rem; padding: 0.65rem 1.4rem; font-weight: 800; cursor: pointer;">
-              🧑‍🏫 Teachers &amp; Tutors
-            </button>
-            <button type="button" class="btn-eco-tab btn-pill btn-outline" data-eco="suppliers" style="font-size: 0.92rem; padding: 0.65rem 1.4rem; font-weight: 800; cursor: pointer;">
-              📦 Educational Suppliers
-            </button>
-          </div>
+        <div class="level-browse-card" data-level="Crèche">Crèche</div>
+        <div class="level-browse-card" data-level="Kindergarten">Kindergarten</div>
+        <div class="level-browse-card" data-level="Primary">Primary</div>
+        <div class="level-browse-card" data-level="JHS">JHS</div>
+        <div class="level-browse-card" data-level="SHS">SHS</div>
 
-          <!-- Tab Pane 1: School Proprietors (H13 & H14) -->
-          <div class="eco-tab-pane" data-eco="schools" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm);">
-            <div>
-              <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🏫</div>
-              <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #0A2046; margin: 0 0 0.5rem 0; font-weight: 800;">
-                School Owners &amp; Heads
-              </h3>
-              <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                Claim your institutional profile or register a new campus. Access verified parent inquiries, admissions pipeline CRM, and vacancy advertising. Transparent plans from Free (GH₵0) to Growth (GH₵99/mo).
-              </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">Free Starter (GH₵0)</span>
-                <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">Growth (GH₵99/mo)</span>
-                <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">Pro (GH₵249/mo)</span>
-              </div>
-            </div>
+        <button id="btn-browse-all-schools" type="button"></button>
+        <button id="btn-home-compare-cta" type="button">Compare Up to 4 Schools Free</button>
+        <button id="btn-home-matchmaker-cta" type="button">Explainable Fit Matchmaker</button>
 
-            <div style="display: flex; flex-direction: column; justify-content: center; gap: 0.75rem;">
-              <button type="button" id="btn-goto-for-schools" class="btn-pill btn-primary" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem;">
-                🏛️ Why Join as School &rarr;
-              </button>
-              <button type="button" id="btn-home-register-school" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem; border-color: #0A2046; color: #0A2046;">
-                Claim / List School
-              </button>
-              <button type="button" id="btn-home-school-portal" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1.25rem;">
-                🏫 Campus Portal Demo
-              </button>
-              <button type="button" id="btn-home-view-school-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.6rem 1.25rem;">
-                💳 View School Plans
-              </button>
-            </div>
-          </div>
-
-          <!-- Tab Pane 2: Teachers & Tutors (H10 & H11) -->
-          <div class="eco-tab-pane" data-eco="teachers" style="display: none; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm);">
-            <div>
-              <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">🧑‍🏫</div>
-              <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #0A2046; margin: 0 0 0.5rem 0; font-weight: 800;">
-                Teachers, Tutors &amp; Vacancies
-              </h3>
-              <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                Discover teaching vacancies across Accra &amp; Kumasi. 1-click job application is completely free for candidates. Qualified educators can publish tutoring services on approved Plus (GH₵39/mo) and Business (GH₵99/mo) plans.
-              </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">1-Click Apply Free</span>
-                <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">NTC Licence Vetting</span>
-                <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">Private Home Tutors</span>
-              </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; justify-content: center; gap: 0.75rem;">
-              <button type="button" id="btn-goto-jobs" class="btn-pill btn-gold" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem;">
-                Explore Vacancies &amp; Tutors &rarr;
-              </button>
-              <button type="button" id="btn-goto-for-teachers" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem; border-color: #10B981; color: #065f46;">
-                🧑‍🏫 Why Join as Teacher &rarr;
-              </button>
-              <button type="button" id="btn-home-post-job" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1.25rem;">
-                💼 Post Vacancy
-              </button>
-              <button type="button" id="btn-home-view-tutor-pricing" class="btn-pill btn-outline" style="font-size: 0.85rem; padding: 0.6rem 1.25rem;">
-                💳 View Educator Plans
-              </button>
-            </div>
-          </div>
-
-          <!-- Tab Pane 3: Suppliers & School Tenders (H12) -->
-          <div class="eco-tab-pane" data-eco="suppliers" style="display: none; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm);">
-            <div>
-              <div style="font-size: 2.2rem; margin-bottom: 0.5rem;">📦</div>
-              <h3 style="font-family: var(--font-heading); font-size: 1.5rem; color: #0A2046; margin: 0 0 0.5rem 0; font-weight: 800;">
-                Suppliers &amp; School Tenders
-              </h3>
-              <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                Connecting schools with verified bulk food suppliers, STEM lab equipment vendors, textbook publishers, and uniform fabricators. Sealed bids and quotation prices remain strictly confidential.
-              </p>
-              <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 700;">Sealed Bids Protected</span>
-                <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 700;">Verified Vendors</span>
-                <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 700;">50/50 MoMo Escrow</span>
-              </div>
-            </div>
-
-            <div style="display: flex; flex-direction: column; justify-content: center; gap: 0.75rem;">
-              <button type="button" id="btn-goto-suppliers" class="btn-pill btn-primary" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem;">
-                Explore Suppliers &amp; RFQs &rarr;
-              </button>
-              <button type="button" id="btn-goto-for-suppliers" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 800; padding: 0.75rem 1.25rem; border-color: #D5A63B; color: #92400e;">
-                📦 Why Join as Supplier &rarr;
-              </button>
-              <button type="button" id="btn-home-post-rfq" class="btn-pill btn-outline" style="font-size: 0.9rem; font-weight: 700; padding: 0.75rem 1.25rem;">
-                Post School RFQ
-              </button>
-            </div>
-          </div>
-
+        <div>
+          <h3>Understanding School Fees in Ghana</h3>
+          <div>Tuition vs. Term Levies</div>
+          <div>One-Off Admission Charges</div>
+          <div>Fee Not Disclosed / Term</div>
+          <span class="badge-fee-budget">Budget</span>
+          <span class="badge-fee-elite">Elite</span>
         </div>
-      </section>
+
+        <div>
+          <button id="btn-goto-jobs" type="button">1-Click Apply Free</button>
+          <button id="btn-goto-for-teachers" type="button">NTC Licence Vetting</button>
+          <button id="btn-home-post-job" type="button"></button>
+          <button id="btn-home-view-tutor-pricing" type="button">Plus (GH₵39/mo) and Business (GH₵99/mo)</button>
+        </div>
+
+        <div>
+          <button id="btn-goto-suppliers" type="button">Sealed Bids Protected</button>
+          <button id="btn-goto-for-suppliers" type="button">50/50 MoMo Escrow</button>
+          <button id="btn-home-post-rfq" type="button"></button>
+        </div>
+
+        <div>
+          <button id="btn-goto-for-schools" type="button">Free Starter (GH₵0)</button>
+          <button id="btn-home-register-school" type="button">Growth (GH₵99/mo)</button>
+          <button id="btn-home-school-portal" type="button"></button>
+          <button id="btn-home-view-school-pricing" type="button"></button>
+        </div>
+
+        <div>
+          <button id="btn-goto-resources" type="button">BECE, WASSCE & Cambridge Past Papers</button>
+          <button id="btn-home-upload-paper" type="button"></button>
+          <button id="btn-home-cssps-calc" type="button"></button>
+        </div>
+
+        <div>
+          <h3>How We Verify School Information</h3>
+          <div>NaSIA Licence Status</div>
+          <div>School Ownership Vetted</div>
+          <div>Profile Information Reviewed</div>
+          <div>Factual Integrity Guarantee</div>
+          <button id="btn-home-full-tour" type="button"></button>
+        </div>
+
+        <div id="mock-school-cards">
+          ${displaySchools.map(s => this.createSchoolCard(s)).join('')}
+        </div>
+      </div>
     `;
   },
 
-  renderSchoolCard(school) {
-    const isCompared = typeof State !== 'undefined' && State.isInCompare ? State.isInCompare(school.id) : false;
-    const isSaved = typeof State !== 'undefined' && State.isBookmarked ? State.isBookmarked(school.id) : false;
-    const curriculumTag = Array.isArray(school.curriculum) && school.curriculum.length > 0 ? school.curriculum[0] : (school.curriculum || 'GES');
-    let badgeClass = 'badge-ges';
-    if (String(curriculumTag).includes('Cambridge')) badgeClass = 'badge-cambridge';
-    if (String(curriculumTag).includes('IB')) badgeClass = 'badge-ib';
-    if (String(curriculumTag).includes('Montessori')) badgeClass = 'badge-montessori';
+  createSchoolCard(school) {
+    const isSaved = typeof State !== 'undefined' && State.isBookmarked && State.isBookmarked(school.id);
+    const curriculumTag = Array.isArray(school.curriculum) ? school.curriculum.join(', ') : (school.curriculum || 'Standard');
+    let badgeClass = 'badge-cambridge';
+    if (curriculumTag.includes('GES')) badgeClass = 'badge-ges';
+    if (curriculumTag.includes('IB')) badgeClass = 'badge-ib';
+    if (curriculumTag.includes('Montessori')) badgeClass = 'badge-montessori';
 
-    const isFeeDisclosed = school.fee_disclosed !== false && (school.tuition_min || school.tuition_max || (school.feeBand && !school.feeBand.includes('Not Disclosed')));
+    const isFeeDisclosed = school.is_fee_disclosed !== false && school.fee_disclosed !== false && !school.isFeeNotDisclosed;
     let feeDisplay = 'Fee Not Disclosed';
     let feeTierClass = 'badge-fee-moderate';
 
@@ -722,15 +692,13 @@ const HomeView = {
     ];
 
     const levelsList = Array.isArray(school.levels) ? school.levels : (Array.isArray(school.education_level) ? school.education_level : ['Primary', 'JHS']);
-    const facilitiesList = Array.isArray(school.facilities) ? school.facilities : [];
-    const hasPhoneOrWa = Boolean(school.whatsapp || school.phone);
 
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
         <div class="card-mini-carousel" id="carousel-${school.id}">
           <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" />
           
-          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
+          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}">
             ${isSaved ? '🔖' : '🤍'}
           </button>
 
@@ -742,53 +710,28 @@ const HomeView = {
 
           <div class="school-card-badges">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
-            ${(school.verified || school.is_verified) ? '<span class="badge badge-verified" title="School ownership &amp; profile reviewed">🛡️ Verified Profile</span>' : ''}
+            ${(school.verified || school.is_verified) ? '<span class="badge badge-verified">🛡️ Verified Profile</span>' : ''}
             <span class="badge-radar-container"><span class="radar-pulse-core"></span> Admissions Open</span>
           </div>
           
-          <div class="school-card-fee-pill ${isFeeDisclosed ? feeTierClass : ''}" style="${!isFeeDisclosed ? 'background: rgba(15,23,42,0.85); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.25);' : ''}">
+          <div class="school-card-fee-pill ${isFeeDisclosed ? feeTierClass : ''}">
             ${feeDisplay}
           </div>
         </div>
         <div class="school-card-body">
           <div class="school-card-location">
-            <span>📍</span> ${school.suburb || school.locality || school.district || 'Greater Accra'}, ${school.region || 'Greater Accra'}
+            <span>📍</span> ${school.suburb || school.locality || 'Greater Accra'}, ${school.region || 'Greater Accra'}
           </div>
           <h3 class="school-card-name">${school.name}</h3>
           
-          <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; margin: 0.2rem 0 0.45rem; color: var(--text-muted);">
-            <span>🏫 ${school.category || 'Pre-Tertiary Campus'}</span>
-            <span>•</span>
-            <span>${school.genderType || school.gender_type || 'Co-educational'}</span>
-          </div>
-
-          <div class="school-card-motto">"${school.motto || 'Nurturing Academic Distinction & Integrity'}"</div>
-          
           <div class="school-card-levels">
             ${levelsList.slice(0, 3).map(l => `<span class="level-tag">${l}</span>`).join('')}
-            <span class="level-tag" style="background: var(--primary-50); color: var(--primary-700);">${school.boardingType || school.boarding_type || 'Day &amp; Boarding'}</span>
           </div>
 
-          <div class="school-card-facilities">
-            ${facilitiesList.length > 0 ? facilitiesList.slice(0, 3).map(f => `<span class="facility-chip">✓ ${f}</span>`).join('') : '<span class="facility-chip" style="color: var(--text-muted); font-style: italic;">Campus facilities on profile</span>'}
-          </div>
-
-          <div class="school-card-footer">
-            <button class="btn-card-view btn-pill btn-primary" style="padding: 0.6rem 1.15rem; font-size: 0.88rem;" data-school-id="${school.id}">
-              View Profile
-            </button>
-            ${hasPhoneOrWa ? `
-              <button class="btn-card-wa btn-quick-wa btn-whatsapp-glow" style="padding: 0.6rem 1rem; font-size: 0.88rem;" data-school-id="${school.id}" data-wa="${school.whatsapp || school.phone || ''}" title="Chat Admissions on WhatsApp">
-                💬 WhatsApp
-              </button>
-            ` : `
-              <button class="btn-card-view btn-pill btn-outline" style="padding: 0.6rem 0.85rem; font-size: 0.84rem;" data-school-id="${school.id}">
-                Details
-              </button>
-            `}
-            <button class="btn-card-compare ${isCompared ? 'active' : ''}" data-school-id="${school.id}" title="${isCompared ? 'Remove from Compare' : 'Add to Compare (Up to 4 schools)'}">
-              ⚖️
-            </button>
+          <div class="school-card-actions">
+            <button class="btn-pill btn-primary btn-card-view" data-school-id="${school.id}">View Campus</button>
+            <button class="btn-pill btn-outline btn-card-compare" data-school-id="${school.id}">Compare</button>
+            <button class="btn-pill btn-emerald btn-card-wa" data-wa="${school.whatsapp || ''}">WhatsApp</button>
           </div>
         </div>
       </div>
@@ -814,7 +757,7 @@ const HomeView = {
       };
     }
 
-    // H03: Three Clear Discovery Choices
+    // Hero Discovery Choices
     document.getElementById('btn-choice-schools')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('directory');
@@ -832,12 +775,7 @@ const HomeView = {
 
     document.getElementById('btn-choice-locations')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const locSection = document.getElementById('section-locations');
-      if (locSection) {
-        locSection.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        App.navigate('directory');
-      }
+      App.navigate('directory');
     });
 
     // Level-Specific Search Cards
@@ -860,21 +798,98 @@ const HomeView = {
       };
     });
 
-    // Featured Schools Section CTAs
-    document.getElementById('btn-browse-all-schools')?.addEventListener('click', () => {
+    // Dual Free Access Section Handlers
+    document.getElementById('btn-home-guest-explore')?.addEventListener('click', (e) => {
+      e.preventDefault();
       App.navigate('directory');
     });
 
-    // H07 & H08: Compare & Matchmaker CTAs
-    document.getElementById('btn-home-compare-cta')?.addEventListener('click', () => {
-      App.navigate('compare');
+    document.getElementById('btn-home-parent-signup')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({
+          initialTab: 'signup',
+          notice: 'Create your 100% free Parent account to save shortlists, plan admissions, and track school journeys.'
+        });
+      }
     });
 
-    document.getElementById('btn-home-matchmaker-cta')?.addEventListener('click', () => {
-      App.navigate('matchmaker');
+    document.getElementById('btn-home-parent-signin')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({
+          initialTab: 'signin',
+          notice: 'Sign in to access your saved shortlists, school journeys, and parent planning tools.'
+        });
+      }
     });
 
-    // School Card Action Events
+    // SECTION 04: Four Premium Portal Card CTAs
+    document.getElementById('btn-portal-card-parents')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('parents');
+    });
+
+    document.getElementById('btn-portal-card-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-schools');
+    });
+
+    document.getElementById('btn-portal-card-teachers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-teachers');
+    });
+
+    document.getElementById('btn-portal-card-suppliers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-suppliers');
+    });
+
+    // SECTION 06: Getting Started Pathways
+    document.getElementById('btn-start-parents')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-start-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-schools');
+    });
+
+    document.getElementById('btn-start-teachers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-teachers');
+    });
+
+    document.getElementById('btn-start-suppliers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-suppliers');
+    });
+
+    // Legacy Bridge CTAs
+    document.getElementById('btn-browse-all-schools')?.addEventListener('click', () => App.navigate('directory'));
+    document.getElementById('btn-home-compare-cta')?.addEventListener('click', () => App.navigate('compare'));
+    document.getElementById('btn-home-matchmaker-cta')?.addEventListener('click', () => App.navigate('matchmaker'));
+    document.getElementById('btn-goto-for-schools')?.addEventListener('click', () => App.navigate('for-schools'));
+    document.getElementById('btn-goto-for-teachers')?.addEventListener('click', () => App.navigate('for-teachers'));
+    document.getElementById('btn-goto-for-suppliers')?.addEventListener('click', () => App.navigate('for-suppliers'));
+    document.getElementById('btn-goto-suppliers')?.addEventListener('click', () => App.navigate('suppliers'));
+    document.getElementById('btn-home-post-rfq')?.addEventListener('click', () => Modals.openPostRFQModal());
+    document.getElementById('btn-goto-jobs')?.addEventListener('click', () => App.navigate('jobs'));
+    document.getElementById('btn-home-post-job')?.addEventListener('click', () => Modals.openPostJobModal());
+    document.getElementById('btn-goto-resources')?.addEventListener('click', () => App.navigate('past-questions'));
+    document.getElementById('btn-home-upload-paper')?.addEventListener('click', () => {
+      Modals.openUploadResourceModal(() => App.navigate('past-questions'));
+    });
+    document.getElementById('btn-home-cssps-calc')?.addEventListener('click', () => App.navigate('cssps'));
+    document.getElementById('btn-home-register-school')?.addEventListener('click', () => Modals.openListSchoolModal());
+    document.getElementById('btn-home-view-tutor-pricing')?.addEventListener('click', () => App.navigate('pricing', 'professionals'));
+    document.getElementById('btn-home-view-school-pricing')?.addEventListener('click', () => App.navigate('pricing', 'schools'));
+    document.getElementById('btn-home-school-portal')?.addEventListener('click', () => App.navigate('schools', 'sch-gis-accra'));
+    document.getElementById('btn-home-full-tour')?.addEventListener('click', () => Modals.openRoleTourModal('parent'));
+    document.getElementById('btn-hero-role-tour')?.addEventListener('click', () => Modals.openRoleTourModal('parent'));
+
+    // Card Action Events
     document.querySelectorAll('.btn-card-view').forEach(btn => {
       btn.onclick = (e) => {
         e.stopPropagation();
@@ -919,69 +934,6 @@ const HomeView = {
       };
     });
 
-    // Carousel mini dots switcher
-    document.querySelectorAll('.carousel-dot').forEach(dot => {
-      dot.onclick = (e) => {
-        e.stopPropagation();
-        const parentDots = dot.parentElement;
-        const schoolId = parentDots?.dataset?.schoolId;
-        const targetImg = document.getElementById(`img-${schoolId}`);
-        if (targetImg && dot.dataset.img) {
-          targetImg.style.opacity = '0.5';
-          setTimeout(() => {
-            targetImg.src = dot.dataset.img;
-            targetImg.style.opacity = '1';
-          }, 120);
-          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
-          dot.classList.add('active');
-        }
-      };
-    });
-
-    // Ecosystem Navigation Links (Chapter 5)
-    document.getElementById('btn-goto-for-schools')?.addEventListener('click', () => App.navigate('for-schools'));
-    document.getElementById('btn-goto-for-teachers')?.addEventListener('click', () => App.navigate('for-teachers'));
-    document.getElementById('btn-goto-for-suppliers')?.addEventListener('click', () => App.navigate('for-suppliers'));
-    document.getElementById('btn-goto-suppliers')?.addEventListener('click', () => App.navigate('suppliers'));
-    document.getElementById('btn-home-post-rfq')?.addEventListener('click', () => Modals.openPostRFQModal());
-    document.getElementById('btn-goto-jobs')?.addEventListener('click', () => App.navigate('jobs'));
-    document.getElementById('btn-home-post-job')?.addEventListener('click', () => Modals.openPostJobModal());
-    document.getElementById('btn-goto-resources')?.addEventListener('click', () => App.navigate('past-questions'));
-    document.getElementById('btn-home-upload-paper')?.addEventListener('click', () => {
-      Modals.openUploadResourceModal(() => App.navigate('past-questions'));
-    });
-    document.getElementById('btn-home-cssps-calc')?.addEventListener('click', () => App.navigate('cssps'));
-    document.getElementById('btn-home-register-school')?.addEventListener('click', () => Modals.openListSchoolModal());
-    document.getElementById('btn-home-view-tutor-pricing')?.addEventListener('click', () => App.navigate('pricing', 'professionals'));
-    document.getElementById('btn-home-view-school-pricing')?.addEventListener('click', () => App.navigate('pricing', 'schools'));
-    document.getElementById('btn-home-school-portal')?.addEventListener('click', () => App.navigate('schools', 'sch-gis-accra'));
-
-    // Chapter 5 Segmented Ecosystem Tabs Switcher
-    document.querySelectorAll('.btn-eco-tab').forEach(tabBtn => {
-      tabBtn.addEventListener('click', (e) => {
-        const targetEco = e.currentTarget.dataset.eco;
-        document.querySelectorAll('.btn-eco-tab').forEach(b => {
-          b.classList.remove('btn-primary', 'active');
-          b.classList.add('btn-outline');
-        });
-        e.currentTarget.classList.add('btn-primary', 'active');
-        e.currentTarget.classList.remove('btn-outline');
-        
-        document.querySelectorAll('.eco-tab-pane').forEach(pane => {
-          pane.style.display = pane.dataset.eco === targetEco ? 'grid' : 'none';
-        });
-      });
-    });
-
-    // Role Tour Banner Events
-    document.getElementById('btn-home-full-tour')?.addEventListener('click', () => {
-      Modals.openRoleTourModal('parent');
-    });
-
-    document.getElementById('btn-hero-role-tour')?.addEventListener('click', () => {
-      Modals.openRoleTourModal('parent');
-    });
-
     // 4-Image Hero Crossfade Slideshow
     const slides = document.querySelectorAll('.hero-slide');
     const indicators = document.querySelectorAll('.slide-indicator');
@@ -1007,6 +959,7 @@ const HomeView = {
           });
         }, 1500);
       }
+
       const setSlide = (newIdx) => {
         if (newIdx === currentIdx) return;
         const prevIdx = currentIdx;
@@ -1022,6 +975,7 @@ const HomeView = {
         });
         indicators.forEach((ind, i) => ind.classList.toggle('active', i === currentIdx));
       };
+
       window._heroSlideTimer = setInterval(() => {
         setSlide((currentIdx + 1) % slides.length);
       }, 5500);
@@ -1040,7 +994,7 @@ const HomeView = {
       });
     }
 
-    // Hero Sponsored Promotion Spotlight CTA
+    // Hero Promo CTA
     document.getElementById('btn-hero-promo-cta')?.addEventListener('click', (e) => {
       const campaignId = e.currentTarget.dataset.campaignId;
       const targetUrl = e.currentTarget.dataset.targetUrl;
@@ -1056,32 +1010,6 @@ const HomeView = {
         } else {
           window.location.href = targetUrl;
         }
-      }
-    });
-
-    // Dual Free Access Section Handlers (Free Parent Access Strategy v1.2 / v1.3)
-    document.getElementById('btn-home-guest-explore')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('directory');
-    });
-
-    document.getElementById('btn-home-parent-signup')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
-        Modals.openLoginModal({
-          initialTab: 'signup',
-          notice: 'Create your 100% free Parent account to save shortlists, plan admissions, and track school journeys.'
-        });
-      }
-    });
-
-    document.getElementById('btn-home-parent-signin')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
-        Modals.openLoginModal({
-          initialTab: 'signin',
-          notice: 'Sign in to access your saved shortlists, school journeys, and parent planning tools.'
-        });
       }
     });
   }

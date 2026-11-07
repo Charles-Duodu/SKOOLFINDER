@@ -96,6 +96,46 @@ const Navbar = {
                 <span>🏫</span> Find Schools
               </a>
             </li>
+            <li class="nav-item-dropdown" style="position: relative;">
+              <button type="button" id="nav-link-portals" class="nav-link-direct" style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #0A2046; font-size: 0.92rem;">
+                <span>🌐</span> Explore Portals <span style="font-size: 0.65rem;">▼</span>
+              </button>
+              <div id="nav-portals-menu" class="nav-portals-dropdown" style="display: none; position: absolute; top: calc(100% + 8px); left: 0; background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 30px rgba(10,32,70,0.12); padding: 0.5rem; min-width: 270px; z-index: 1000;">
+                <a href="/parents" class="dropdown-item-portal" data-portal="parents" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.8rem; border-radius: 8px; text-decoration: none; color: #0A2046; font-size: 0.85rem; font-weight: 700; transition: background 0.15s;">
+                  <span style="font-size: 1.2rem;">👨‍👩‍👧</span>
+                  <div>
+                    <div>Parents &amp; Guardians</div>
+                    <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Free discovery &amp; planning</div>
+                  </div>
+                </a>
+                <a href="/for-schools" class="dropdown-item-portal" data-portal="for-schools" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.8rem; border-radius: 8px; text-decoration: none; color: #0A2046; font-size: 0.85rem; font-weight: 700; transition: background 0.15s;">
+                  <span style="font-size: 1.2rem;">🏫</span>
+                  <div>
+                    <div>School Owners &amp; Proprietors</div>
+                    <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Admissions &amp; growth</div>
+                  </div>
+                </a>
+                <a href="/for-teachers" class="dropdown-item-portal" data-portal="for-teachers" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.8rem; border-radius: 8px; text-decoration: none; color: #0A2046; font-size: 0.85rem; font-weight: 700; transition: background 0.15s;">
+                  <span style="font-size: 1.2rem;">🧑‍🏫</span>
+                  <div>
+                    <div>Teachers &amp; Professionals</div>
+                    <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Careers &amp; tutoring</div>
+                  </div>
+                </a>
+                <a href="/for-suppliers" class="dropdown-item-portal" data-portal="for-suppliers" style="display: flex; align-items: center; gap: 0.65rem; padding: 0.6rem 0.8rem; border-radius: 8px; text-decoration: none; color: #0A2046; font-size: 0.85rem; font-weight: 700; transition: background 0.15s;">
+                  <span style="font-size: 1.2rem;">📦</span>
+                  <div>
+                    <div>Suppliers &amp; Providers</div>
+                    <div style="font-size: 0.72rem; color: #64748b; font-weight: 500;">Procurement &amp; tenders</div>
+                  </div>
+                </a>
+              </div>
+            </li>
+            <li>
+              <a href="/#section-why-skoolfinder" id="nav-link-why" class="nav-link-direct">
+                <span>💡</span> Why SkoolFinder
+              </a>
+            </li>
           </ul>
 
           <!-- Nav Action Buttons: Clean & Uncluttered -->
@@ -125,8 +165,11 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #2563eb; box-shadow: 0 2px 8px rgba(9,30,66,0.25); display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;" title="Super Admin HQ: Sign In & Create Account">
-                <span>🛡️</span> Super Admin Login
+              <button id="btn-nav-join" class="btn-pill btn-gold nav-action-desktop" style="font-size: 0.82rem; padding: 0.42rem 0.95rem; font-weight: 800; cursor: pointer; border-radius: 9999px; box-shadow: 0 2px 8px rgba(213,166,59,0.3);" title="Join Free as Parent, School, Teacher, or Supplier">
+                <span>✨</span> Join Free
+              </button>
+              <button id="btn-nav-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #2563eb; box-shadow: 0 2px 8px rgba(9,30,66,0.25); display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;" title="Super Admin HQ & User Sign In">
+                <span>🛡️</span> Sign In
               </button>
             `}
 
@@ -139,7 +182,8 @@ const Navbar = {
           </div>
         </div>
 
-        <!-- WHO ARE YOU: SUB-HEADER STRIP (Context-Aware Single Portal Isolation) -->
+        <!-- WHO ARE YOU: SUB-HEADER STRIP (Context-Aware Single Portal Isolation, Hidden on Clean Homepage) -->
+        ${State.currentView !== 'home' ? `
         <div class="who-are-you-bar">
           <div class="container who-are-you-inner">
             <span class="who-label">
@@ -197,6 +241,7 @@ const Navbar = {
             </div>
           </div>
         </div>
+        ` : ''}
 
         <!-- Mobile Drawer Dropdown -->
         <div id="mobile-nav-drawer" class="mobile-nav-drawer ${this.isMobileMenuOpen ? 'open' : ''}">
@@ -300,6 +345,61 @@ const Navbar = {
       e.preventDefault();
       this.isMobileMenuOpen = false;
       App.navigate('home');
+    });
+
+    // Explore Portals Dropdown Events
+    const portalsToggle = document.getElementById('nav-link-portals');
+    const portalsMenu = document.getElementById('nav-portals-menu');
+    if (portalsToggle && portalsMenu) {
+      portalsToggle.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isOpen = portalsMenu.style.display === 'block';
+        portalsMenu.style.display = isOpen ? 'none' : 'block';
+      };
+
+      document.addEventListener('click', (e) => {
+        if (!portalsToggle.contains(e.target) && !portalsMenu.contains(e.target)) {
+          portalsMenu.style.display = 'none';
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') portalsMenu.style.display = 'none';
+      });
+
+      portalsMenu.querySelectorAll('.dropdown-item-portal').forEach(link => {
+        link.onclick = (e) => {
+          e.preventDefault();
+          portalsMenu.style.display = 'none';
+          const portal = link.dataset.portal;
+          if (portal === 'parents') App.navigate('parents');
+          else if (portal === 'for-schools') App.navigate('for-schools');
+          else if (portal === 'for-teachers') App.navigate('for-teachers');
+          else if (portal === 'for-suppliers') App.navigate('for-suppliers');
+        };
+      });
+    }
+
+    // Why SkoolFinder link
+    document.getElementById('nav-link-why')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (State.currentView !== 'home') {
+        App.navigate('home');
+        setTimeout(() => {
+          document.getElementById('section-why-skoolfinder')?.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+      } else {
+        document.getElementById('section-why-skoolfinder')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+
+    // Join SkoolFinder CTA
+    document.getElementById('btn-nav-join')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({ initialTab: 'signup' });
+      }
     });
 
     // Desktop Nav Links
