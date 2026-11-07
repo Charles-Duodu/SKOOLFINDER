@@ -902,41 +902,42 @@ button {
 }
 
 /* ========================================================
-   Platform Metrics Bar
+   Platform Metrics Bar (Compact Sleek Strip)
    ======================================================== */
 .metrics-strip {
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-light);
-  padding: 1.5rem 0;
+  padding: 0.85rem 0;
   box-shadow: var(--shadow-sm);
 }
 
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 2rem;
+  gap: 1.25rem;
   text-align: center;
 }
 
 .metric-item {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.1rem;
 }
 
 .metric-number {
   font-family: var(--font-heading);
-  font-size: 2.1rem;
+  font-size: 1.5rem;
+  line-height: 1.15;
   font-weight: 800;
   color: var(--primary-900);
 }
 
 .metric-label {
-  font-size: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 /* ========================================================
