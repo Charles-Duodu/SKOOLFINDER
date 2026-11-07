@@ -3997,6 +3997,102 @@ const API = {
   async getSupplierAnalytics() {
     const res = await fetch(`${this.baseUrl}/suppliers/me/analytics`, { headers: this.getHeaders() });
     return res.json();
+  },
+
+  // --- Suppliers Portal Stage 6: Managed Tenders & Sealed Bid Vault (SUP-06-01 through SUP-06-08) ---
+  async getInstitutionalTenders(query = {}) {
+    const params = new URLSearchParams(query);
+    const res = await fetch(`${this.baseUrl}/tenders?${params.toString()}`);
+    return res.json();
+  },
+
+  async getTenderDetails(id) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(id)}`);
+    return res.json();
+  },
+
+  async submitSealedBid(tenderId, bidData) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/bids`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(bidData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to submit sealed bid');
+    }
+    return res.json();
+  },
+
+  async getTenderBids(tenderId) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/bids`, {
+      headers: this.getHeaders()
+    });
+    return res.json();
+  },
+
+  async unsealTenderBids(tenderId) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/unseal`, {
+      method: 'POST',
+      headers: this.getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to unseal bids');
+    }
+    return res.json();
+  },
+
+  async submitTenderClarification(tenderId, questionText) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/clarifications`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question_text: questionText })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to submit clarification');
+    }
+    return res.json();
+  },
+
+  async publishTenderAddendum(tenderId, addendumData) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/addenda`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(addendumData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to publish addendum');
+    }
+    return res.json();
+  },
+
+  async evaluateTenderBid(tenderId, evalData) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/evaluate`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(evalData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to record bid evaluation');
+    }
+    return res.json();
+  },
+
+  async confirmTenderAward(tenderId, awardData) {
+    const res = await fetch(`${this.baseUrl}/tenders/${encodeURIComponent(tenderId)}/award`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(awardData)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to confirm tender award');
+    }
+    return res.json();
   }
 };
 

@@ -700,10 +700,6 @@ const SupplierDashboardView = {
   }
 };
 
-if (typeof window !== 'undefined') {
-  window.SupplierDashboardView = SupplierDashboardView;
-}
-
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = SupplierDashboardView;
 }

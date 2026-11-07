@@ -138,6 +138,9 @@ const SuppliersView = {
             <button id="tab-btn-rfqs" class="nav-link ${this.activeTab === 'rfqs' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
               📢 Live School RFQs (${rfqs.length})
             </button>
+            <button id="tab-btn-tenders" class="nav-link ${this.activeTab === 'tenders' ? 'active' : ''}" style="font-size: 1.05rem; padding: 0.75rem 0.5rem; font-weight: 700; white-space: nowrap;">
+              🏛️ Institutional Tenders & Frameworks (2)
+            </button>
           </div>
 
           <!-- Tab Content: Suppliers Directory / Shortlist -->
@@ -276,6 +279,114 @@ const SuppliersView = {
                 </div>
               `}
             </div>
+          ` : this.activeTab === 'tenders' ? `
+            <!-- Tab Content: Institutional Tenders & Framework Agreements (SUP-06-01, SUP-06-02, SUP-06-06) -->
+            <div>
+              <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                  <strong style="color: #166534; font-size: 1rem;">Institutional Managed Tenders &amp; Framework Contracts (SUP-06-01)</strong>
+                  <div style="font-size: 0.85rem; color: #475569; margin-top: 0.25rem;">
+                    High-value school procurement contracts (> GH₵ 100,000) with cryptographic sealed bid vaults, technical weighting, and human-approved committee evaluation.
+                  </div>
+                </div>
+                <div style="font-size: 0.82rem; font-weight: 700; color: #1e40af; background: #dbeafe; padding: 0.4rem 0.85rem; border-radius: 9999px;">
+                  🔒 Sealed Bid Vault Governed (SUP-06-02)
+                </div>
+              </div>
+
+              <!-- Vault Invariant Notice -->
+              <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 4px solid #0A2046; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.75rem; font-size: 0.85rem; color: #334155; line-height: 1.6;">
+                <strong>🛡️ Sealed Bid Vault Invariant (SUP-06-02):</strong> All tender proposals are locked upon submission. Price quotes and technical documents remain encrypted and strictly inaccessible to competing bidders and school evaluators until the published submission deadline passes. Statutory Non-Collusion Attestations (SUP-06-07) are required for every submission.
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Tender 1 -->
+                <div class="tender-card" style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                      <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+                        <span class="badge" style="background: #0A2046; color: #ffffff; font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px;">TND-2026-88102</span>
+                        <span class="badge" style="background: #dbeafe; color: #1e40af; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">HIGH-VALUE TENDER</span>
+                      </div>
+                      <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; font-weight: 800; margin: 0 0 0.35rem 0;">
+                        Supply &amp; Installation of Campus-Wide STEM Robotics &amp; AI Laboratories
+                      </h3>
+                      <div style="font-size: 0.88rem; font-weight: 700; color: #b45309;">
+                        🏫 Ghana International School (Greater Accra)
+                      </div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Estimated Budget</div>
+                      <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046;">GH₵ 350,000</div>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.82rem;">
+                    <div><strong>Evaluation Weights:</strong> Technical 60% / Commercial 40%</div>
+                    <div><strong>Tender Security Bond:</strong> GH₵ 7,000 (2%)</div>
+                    <div><strong>Submission Deadline:</strong> in 10 days</div>
+                    <div><strong>Bid Opening:</strong> Post-Deadline Unsealing</div>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div style="font-size: 0.82rem; color: #64748b;">
+                      📄 Spec Document: <a href="#" style="color: #2563eb; font-weight: 700; text-decoration: underline;">GIS-STEM-SPEC-2026.pdf</a>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button class="btn-pill btn-outline btn-tender-clarification" data-tender-id="tnd-sample-01" style="font-size: 0.82rem; padding: 0.5rem 0.85rem;">
+                        💬 Clarification Inquiry
+                      </button>
+                      <button class="btn-pill btn-primary btn-submit-sealed-bid" data-tender-id="tnd-sample-01" style="font-size: 0.85rem; padding: 0.5rem 1.2rem; font-weight: 800;">
+                        🔒 Submit Sealed Bid &rarr;
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tender 2: Multi-Year Framework -->
+                <div class="tender-card" style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                      <div style="display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
+                        <span class="badge" style="background: #0A2046; color: #ffffff; font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px;">TND-2026-44019</span>
+                        <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 800; padding: 0.25rem 0.6rem; border-radius: 6px;">3-YEAR FRAMEWORK AGREEMENT</span>
+                      </div>
+                      <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; font-weight: 800; margin: 0 0 0.35rem 0;">
+                        3-Year Multi-Campus Educational Stationery &amp; Examination Materials Framework (SUP-06-06)
+                      </h3>
+                      <div style="font-size: 0.88rem; font-weight: 700; color: #b45309;">
+                        🏫 SOS-Hermann Gmeiner International College (Tema)
+                      </div>
+                    </div>
+                    <div style="text-align: right;">
+                      <div style="font-size: 0.78rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Ceiling Value</div>
+                      <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046;">GH₵ 600,000</div>
+                    </div>
+                  </div>
+
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.82rem;">
+                    <div><strong>Agreement Term:</strong> 36 Months Call-Off</div>
+                    <div><strong>Evaluation Weights:</strong> Technical 50% / Commercial 50%</div>
+                    <div><strong>Submission Deadline:</strong> in 14 days</div>
+                    <div><strong>Drawdowns:</strong> Periodic Purchase Orders</div>
+                  </div>
+
+                  <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                    <div style="font-size: 0.82rem; color: #64748b;">
+                      📄 Spec Document: <a href="#" style="color: #2563eb; font-weight: 700; text-decoration: underline;">SOS-STATIONERY-FWC-2026.pdf</a>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                      <button class="btn-pill btn-outline btn-tender-clarification" data-tender-id="tnd-sample-02" style="font-size: 0.82rem; padding: 0.5rem 0.85rem;">
+                        💬 Clarification Inquiry
+                      </button>
+                      <button class="btn-pill btn-primary btn-submit-sealed-bid" data-tender-id="tnd-sample-02" style="font-size: 0.85rem; padding: 0.5rem 1.2rem; font-weight: 800;">
+                        🔒 Submit Sealed Bid &rarr;
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           ` : `
             <!-- Tab Content: RFQs (Live Bidding Board) -->
             <div>
@@ -374,6 +485,74 @@ const SuppliersView = {
     document.getElementById('tab-btn-rfqs')?.addEventListener('click', () => {
       this.activeTab = 'rfqs';
       App.navigate('suppliers');
+    });
+    document.getElementById('tab-btn-tenders')?.addEventListener('click', () => {
+      this.activeTab = 'tenders';
+      App.navigate('suppliers');
+    });
+
+    // Sealed Bid Submission Handler (SUP-06-02, SUP-06-07)
+    document.querySelectorAll('.btn-submit-sealed-bid').forEach(btn => {
+      btn.onclick = async () => {
+        const tenderId = btn.dataset.tenderId;
+        const bidAmountStr = prompt('Enter your Sealed Commercial Bid Amount (GH₵):');
+        if (!bidAmountStr) return;
+        const bidAmount = parseFloat(bidAmountStr.replace(/[^0-9.]/g, ''));
+        if (isNaN(bidAmount) || bidAmount <= 0) {
+          alert('Please enter a valid numeric bid amount');
+          return;
+        }
+
+        const nonCollusionConfirmed = confirm(
+          'STATUTORY NON-COLLUSION ATTESTATION (SUP-06-07):\n\n' +
+          'I certify under penalty of procurement disqualification that this bid is made without prior understanding, agreement, or connection with any other bidder, and that all pricing has been independently determined without consultation, communication, or cartel agreement.\n\n' +
+          'Do you accept this statutory attestation?'
+        );
+
+        if (!nonCollusionConfirmed) {
+          alert('Submission canceled. Statutory non-collusion declaration is required to submit a tender bid (SUP-06-07).');
+          return;
+        }
+
+        try {
+          btn.disabled = true;
+          btn.innerText = 'Encrypting & Vaulting Bid...';
+          const res = await API.submitSealedBid(tenderId, {
+            bid_amount_ghs: bidAmount,
+            delivery_schedule_days: 30,
+            warranty_months: 12,
+            non_collusion_attestation: true
+          });
+          if (res.success) {
+            alert(`🔒 Success! Your bid (${res.bid?.bid_number}) has been cryptographically vaulted. It remains sealed and tamper-evident until the deadline passes.`);
+            App.navigate('suppliers');
+          } else {
+            alert(res.error || 'Failed to submit sealed bid');
+          }
+        } catch (e) {
+          alert('Submission Error: ' + e.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerText = '🔒 Submit Sealed Bid →';
+        }
+      };
+    });
+
+    // Tender Clarification Handler (SUP-06-03)
+    document.querySelectorAll('.btn-tender-clarification').forEach(btn => {
+      btn.onclick = async () => {
+        const tenderId = btn.dataset.tenderId;
+        const qText = prompt('Enter your anonymous clarification inquiry for the school procurement desk:');
+        if (!qText || !qText.trim()) return;
+        try {
+          const res = await API.submitTenderClarification(tenderId, qText.trim());
+          if (res.success) {
+            alert('Your clarification inquiry has been submitted anonymously. Official responses will be published as public Addenda to all participating bidders.');
+          }
+        } catch (e) {
+          alert('Error: ' + e.message);
+        }
+      };
     });
 
     // Top Action Buttons
@@ -664,6 +843,10 @@ const SuppliersView = {
     document.getElementById('btn-close-compare-modal-footer')?.addEventListener('click', close);
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.SuppliersView = SuppliersView;
+}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = SuppliersView;

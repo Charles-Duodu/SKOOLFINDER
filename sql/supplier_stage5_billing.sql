@@ -174,3 +174,4 @@ CREATE POLICY "Suppliers view own analytics" ON public.supplier_analytics_events
     );
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Stage 5 Migration Applied' AS migration_status;
+

@@ -11,6 +11,7 @@ const schoolsRoutes = require('./src/routes/schools');
 const teachersRoutes = require('./src/routes/teachers');
 const suppliersRoutes = require('./src/routes/suppliers');
 const rfqsRoutes = require('./src/routes/rfqs');
+const tendersRoutes = require('./src/routes/tenders');
 const parentsRoutes = require('./src/routes/parents');
 const adminRoutes = require('./src/routes/admin');
 const paymentsRoutes = require('./src/routes/payments');
@@ -104,6 +105,7 @@ app.use('/api/admin/cases', casesRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/admin', aiRoutes);
 app.use('/api', rfqsRoutes);
+app.use('/api/tenders', tendersRoutes);
 
 // Helpful reviews upvote and reply
 app.post('/api/reviews/:id/helpful', (req, res) => {
