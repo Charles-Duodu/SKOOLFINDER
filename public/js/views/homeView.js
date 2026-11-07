@@ -37,11 +37,8 @@ const HomeView = {
     } catch(e) {}
 
     return `
-      <!-- ========================================================
-           CHAPTER 1: THE MODERN SPLIT-STAGE HERO (H01 & H02)
-           ======================================================== -->
+      <!-- H01 & H02: Hero Section with 4-Image Crossfade Slideshow -->
       <section class="hero-section" id="section-hero">
-        <!-- 4-Image Crossfade Slideshow Background -->
         <div class="hero-slideshow" id="hero-slideshow">
           <div class="hero-slide active" style="background-image: url('/assets/images/campus_hero.webp');"></div>
           <div class="hero-slide" data-bg="/assets/images/science_lab.webp"></div>
@@ -54,176 +51,102 @@ const HomeView = {
         <div class="hero-ambient-glow-2"></div>
 
         <div class="container hero-content">
-          <div class="split-hero-grid">
-            
-            <!-- Left Column: Search & Value Proposition -->
-            <div>
-              <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
-                <div class="hero-pill" style="margin: 0; background: rgba(10, 32, 70, 0.75); border: 1px solid rgba(255, 255, 255, 0.25);">
-                  <span>🇬🇭</span> Greater Accra &amp; Tema Pre-Tertiary Directory
-                </div>
-                <button id="btn-hero-role-tour" class="hero-tour-pill" style="cursor: pointer;" title="Take a 30-second guided tour for Parents, Schools, Suppliers &amp; Teachers">
-                  <span>🧭</span> 30s Guided Tour &rarr;
-                </button>
-              </div>
-
-              <h1 class="hero-title" style="font-family: var(--font-heading); font-size: 2.85rem; font-weight: 850; line-height: 1.15; margin: 0 0 1rem 0; color: #ffffff;">
-                Find the <span style="background: linear-gradient(135deg, #F5D780 0%, #D5A63B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Right School</span> for Your Child in Greater Accra
-              </h1>
-
-              <p class="hero-subtitle" style="font-size: 1.05rem; line-height: 1.6; color: rgba(255, 255, 255, 0.92); margin: 0 0 1.75rem 0; max-width: 580px;">
-                Explore accredited private schools, basic schools, and senior high schools. Compare curricula, verified fee schedules, and connect with admissions offices with 100% free parent access.
-              </p>
-
-              <!-- Floating Search Capsule Card -->
-              <div class="floating-search-capsule">
-                <form id="hero-search-form" class="search-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) auto; gap: 0.75rem; align-items: end;">
-                  
-                  <div class="search-field">
-                    <label class="search-label" for="hero-search-suburb" style="font-size: 0.72rem; font-weight: 800; color: #0A2046; text-transform: uppercase;">
-                      📍 Locality / Suburb
-                    </label>
-                    <div class="search-input-wrap">
-                      <input type="text" id="hero-search-suburb" class="search-input" placeholder="e.g. Cantonments, East Legon, Tema" style="width: 100%; padding: 0.6rem 0.75rem; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0A2046; font-weight: 600;" />
-                    </div>
-                  </div>
-                  
-                  <div class="search-field">
-                    <label for="hero-search-level" class="search-label" style="font-size: 0.72rem; font-weight: 800; color: #0A2046; text-transform: uppercase;">
-                      🎓 School Level
-                    </label>
-                    <select id="hero-search-level" class="search-select" aria-label="Filter by School Level" style="width: 100%; padding: 0.6rem 0.75rem; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0A2046; font-weight: 600;">
-                      <option value="All">All Levels (Crèche to SHS)</option>
-                      <option value="Crèche">Crèche &amp; Daycare</option>
-                      <option value="Kindergarten">Nursery &amp; Kindergarten</option>
-                      <option value="Primary">Primary School (Class 1-6)</option>
-                      <option value="JHS">Junior High School (JHS)</option>
-                      <option value="SHS">Senior High School (SHS)</option>
-                    </select>
-                  </div>
-
-                  <div class="search-field">
-                    <label for="hero-search-curriculum" class="search-label" style="font-size: 0.72rem; font-weight: 800; color: #0A2046; text-transform: uppercase;">
-                      📚 Curriculum
-                    </label>
-                    <select id="hero-search-curriculum" class="search-select" aria-label="Filter by Curriculum" style="width: 100%; padding: 0.6rem 0.75rem; font-size: 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0A2046; font-weight: 600;">
-                      <option value="All">All Curricula</option>
-                      <option value="Cambridge">Cambridge (CIE / IGCSE)</option>
-                      <option value="GES">GES Standards-based</option>
-                      <option value="Montessori">Montessori</option>
-                      <option value="IB">International Baccalaureate (IB)</option>
-                    </select>
-                  </div>
-
-                  <button type="submit" id="btn-hero-search-submit" class="search-btn-hero" style="background: #D5A63B !important; color: #0A2046 !important; font-weight: 850; padding: 0.7rem 1.4rem; border-radius: 8px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-size: 0.92rem; height: 42px;">
-                    <span>🔍</span> Find Schools
-                  </button>
-                </form>
-
-                <!-- H03: Three Clear Discovery Pathways -->
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid #e2e8f0; flex-wrap: wrap; gap: 0.5rem;">
-                  <span style="font-size: 0.78rem; color: #64748b; font-weight: 700;">
-                    Instant Discovery:
-                  </span>
-                  <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                    <button id="btn-choice-schools" type="button" class="btn-pill" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; background: #f1f5f9; color: #0A2046; border: 1px solid #cbd5e1; font-weight: 700; cursor: pointer;">
-                      <span>🏫</span> Browse 40+ Schools
-                    </button>
-                    <button id="btn-hero-matchmaker" type="button" class="btn-pill btn-gold" style="font-size: 0.78rem; padding: 0.35rem 0.85rem; font-weight: 800; cursor: pointer;">
-                      <span>🎯</span> 2-Min Fit Matchmaker
-                    </button>
-                    <button id="btn-choice-matchmaker" type="button" style="display: none;" aria-hidden="true" tabindex="-1"></button>
-                    <button id="btn-choice-locations" type="button" class="btn-pill" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; background: #f1f5f9; color: #0A2046; border: 1px solid #cbd5e1; font-weight: 700; cursor: pointer;">
-                      <span>📍</span> Accra &amp; Tema Hubs
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              ${heroPromo ? `
-                <div id="hero-sponsored-spotlight" style="margin-top: 1rem; background: rgba(10, 32, 70, 0.85); backdrop-filter: blur(12px); border: 1.5px solid #fbbf24; border-radius: 12px; padding: 0.65rem 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
-                  <div style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="background: #fbbf24; color: #000; font-size: 0.62rem; font-weight: 800; padding: 0.15rem 0.5rem; border-radius: 100px; text-transform: uppercase;">
-                      Featured Spotlight
-                    </span>
-                    <span style="color: #fff; font-size: 0.85rem; font-weight: 700;">
-                      ${heroPromo.headline || heroPromo.school_name}
-                    </span>
-                  </div>
-                  <button class="btn-pill btn-gold" id="btn-hero-promo-cta" data-campaign-id="${heroPromo.id}" data-target-url="${heroPromo.target_url || `/school/${heroPromo.school_id}`}" style="font-size: 0.74rem; padding: 0.3rem 0.8rem; font-weight: 800; cursor: pointer;">
-                    ${heroPromo.cta_label || 'View Admissions'} &rarr;
-                  </button>
-                </div>
-              ` : ''}
+          <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
+            <div class="hero-pill" style="margin: 0;">
+              <span>🇬🇭</span> Greater Accra &amp; Tema Pre-Tertiary Directory
             </div>
-
-            <!-- Right Column: Living Verified Campus Spotlight Card -->
-            <div style="display: flex; justify-content: center;">
-              <div class="spotlight-card" style="max-width: 420px; width: 100%;">
-                <div style="position: relative; height: 210px; overflow: hidden;">
-                  <img src="/assets/images/campus_hero.webp" alt="Ghana International School" style="width: 100%; height: 100%; object-fit: cover;" />
-                  <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,32,70,0.2) 0%, rgba(10,32,70,0.9) 100%);"></div>
-                  
-                  <div style="position: absolute; top: 12px; left: 12px; display: flex; gap: 0.4rem; flex-wrap: wrap;">
-                    <span class="badge" style="background: #059669; color: #ffffff; font-weight: 800; font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.3);">
-                      ✓ NaSIA Gold Certified
-                    </span>
-                  </div>
-
-                  <div style="position: absolute; top: 12px; right: 12px;">
-                    <span class="badge" style="background: rgba(255,255,255,0.95); color: #0A2046; font-weight: 800; font-size: 0.72rem; padding: 0.25rem 0.65rem; border-radius: 999px;">
-                      🟢 Admissions Open
-                    </span>
-                  </div>
-
-                  <div style="position: absolute; bottom: 12px; left: 16px; right: 16px;">
-                    <div style="font-size: 0.75rem; font-weight: 800; color: #F5D780; text-transform: uppercase; letter-spacing: 0.05em;">
-                      Featured Accredited Campus
-                    </div>
-                    <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #ffffff; margin: 0.15rem 0 0 0;">
-                      Ghana International School (GIS)
-                    </h3>
-                  </div>
-                </div>
-
-                <div style="padding: 1.25rem 1.5rem;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem; font-size: 0.82rem; color: #cbd5e1;">
-                    <span>📍 Cantonments, Accra</span>
-                    <span style="background: #059669; color: #ffffff; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.75rem;">
-                      GH₵ 4,500 / Term
-                    </span>
-                  </div>
-
-                  <div style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem; line-height: 1.45;">
-                    Cambridge International Curriculum &bull; Pre-School to A-Levels &bull; Co-educational Day Campus
-                  </div>
-
-                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.25rem;">
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #ffffff; font-size: 0.72rem;">🏊 25m Pool</span>
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #ffffff; font-size: 0.72rem;">🤖 Robotics Wing</span>
-                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #ffffff; font-size: 0.72rem;">🩺 Verified Sickbay</span>
-                  </div>
-
-                  <div style="display: flex; gap: 0.6rem;">
-                    <button type="button" class="btn-pill btn-gold" onclick="App.navigate('school-detail', 'sch-gis-accra')" style="flex: 1; justify-content: center; font-size: 0.82rem; font-weight: 800; padding: 0.55rem;">
-                      Inspect Campus Profile &rarr;
-                    </button>
-                    <button type="button" class="btn-pill btn-outline btn-card-compare" data-school-id="sch-gis-accra" style="border-color: rgba(255,255,255,0.4); color: #ffffff; font-size: 0.82rem; font-weight: 700; padding: 0.55rem 0.9rem;" title="Compare School">
-                      ⚖️ Compare
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            <button id="btn-hero-role-tour" class="hero-tour-pill" title="Take a 30-second guided tour for Parents, Schools, Suppliers &amp; Teachers">
+              <span>🧭</span> New to SkoolFinder? Take a 30s Guided Tour &rarr;
+            </button>
           </div>
-        </div>
 
-        <div class="hero-slide-indicators" id="hero-slide-indicators">
-          <span class="slide-indicator active" data-index="0" title="Campus Quadrangle"></span>
-          <span class="slide-indicator" data-index="1" title="Science Labs"></span>
-          <span class="slide-indicator" data-index="2" title="Classrooms"></span>
-          <span class="slide-indicator" data-index="3" title="Sports Complex"></span>
+          <h1 class="hero-title">
+            Find the <span>Right School</span> for Your Child in Greater Accra
+          </h1>
+          <p class="hero-subtitle">
+            Explore accredited pre-schools, basic schools, and senior high schools across Accra and Tema. Compare curricula, verified fee schedules, and connect with admissions offices without forced registration.
+          </p>
+
+          <!-- Search Widget -->
+          <div class="search-widget-card">
+            <form id="hero-search-form" class="search-grid">
+              <div class="search-field">
+                <label class="search-label" for="hero-search-suburb">📍 Suburb / Locality</label>
+                <div class="search-input-wrap">
+                  <input type="text" id="hero-search-suburb" class="search-input" placeholder="e.g. Cantonments, East Legon, Spintex, Tema" />
+                </div>
+              </div>
+              
+              <div class="search-field">
+                <label for="hero-search-level" class="search-label">🎓 School Level</label>
+                <select id="hero-search-level" class="search-select" aria-label="Filter by School Level">
+                  <option value="All">All Levels (Crèche to SHS)</option>
+                  <option value="Crèche">Crèche &amp; Daycare</option>
+                  <option value="Kindergarten">Nursery &amp; Kindergarten</option>
+                  <option value="Primary">Primary School (Class 1-6)</option>
+                  <option value="JHS">Junior High School (JHS)</option>
+                  <option value="SHS">Senior High School (SHS)</option>
+                </select>
+              </div>
+
+              <div class="search-field">
+                <label for="hero-search-curriculum" class="search-label">📖 Curriculum</label>
+                <select id="hero-search-curriculum" class="search-select" aria-label="Filter by Curriculum">
+                  <option value="All">All Curricula</option>
+                  <option value="GES (NaCCA)">GES National Curriculum</option>
+                  <option value="Cambridge (CIE)">Cambridge International (IGCSE/A-Level)</option>
+                  <option value="International Baccalaureate (IB)">International Baccalaureate (IB)</option>
+                  <option value="Montessori">Montessori</option>
+                  <option value="American (AP/SAT)">American Curriculum</option>
+                </select>
+              </div>
+
+              <button type="submit" id="btn-hero-search-submit" class="search-btn search-btn-hero">
+                <span>🔍 Search Schools</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Hero Slide Indicators -->
+          <div class="hero-slide-indicators" aria-label="Hero background slides">
+            <button class="slide-indicator active" data-index="0" aria-label="Slide 1"></button>
+            <button class="slide-indicator" data-index="1" aria-label="Slide 2"></button>
+            <button class="slide-indicator" data-index="2" aria-label="Slide 3"></button>
+            <button class="slide-indicator" data-index="3" aria-label="Slide 4"></button>
+          </div>
+
+          <!-- Hero Sponsored Promotion Spotlight (Pilot Insertion Point) -->
+          ${heroPromo ? `
+            <div class="hero-promo-spotlight" id="hero-promo-spotlight" style="margin-top: 1.5rem; background: rgba(10, 32, 70, 0.85); border: 1.5px solid rgba(213, 166, 59, 0.5); border-radius: 12px; padding: 0.75rem 1.25rem; display: inline-flex; align-items: center; gap: 1rem; backdrop-filter: blur(8px);">
+              <span class="badge-featured-gold" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: #D5A63B; color: #0A2046; font-weight: 800;">FEATURED SPONSOR</span>
+              <span style="color: #ffffff; font-size: 0.9rem; font-weight: 600;">${heroPromo.title}</span>
+              <button id="btn-hero-promo-cta" data-campaign-id="${heroPromo.id}" data-target-url="${heroPromo.target_url || '/directory'}" style="background: transparent; border: 1px solid #D5A63B; color: #D5A63B; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
+                ${heroPromo.cta_text || 'Learn More &rarr;'}
+              </button>
+            </div>
+          ` : ''}
+
+          <!-- H03: Three Clear Discovery Pathways Without Paywalls -->
+          <div class="hero-choice-cards" style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto;">
+            <div class="hero-choice-card" id="btn-choice-schools" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🏫</div>
+              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">Explore School Directory</h3>
+              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Browse verified profiles, fee schedules, and facilities across Greater Accra.</p>
+            </div>
+
+            <div class="hero-choice-card" id="btn-hero-matchmaker" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🎯</div>
+              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">School Matchmaker</h3>
+              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Answer 4 quick questions to find schools matching your budget and curriculum.</p>
+            </div>
+            <button id="btn-choice-matchmaker" type="button" style="display: none;" aria-hidden="true" tabindex="-1"></button>
+
+            <div class="hero-choice-card" id="btn-choice-locations" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
+              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">📍</div>
+              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">Browse by Enclave</h3>
+              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Explore schools in Cantonments, East Legon, Spintex, Tema, and Achimota.</p>
+            </div>
+          </div>
         </div>
       </section>
 
