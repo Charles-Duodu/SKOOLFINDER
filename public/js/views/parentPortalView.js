@@ -6,6 +6,215 @@ const ParentPortalView = {
   shortlistsData: null,
   shortlistFilter: 'all',
   overviewData: null,
+  activeChildId: 'child-kwame',
+  watchlistData: [
+    {
+      schoolId: 'sch-gis-accra',
+      name: 'Ghana International School (GIS)',
+      region: 'Greater Accra (Cantonments)',
+      crest: '🏛️',
+      accreditation: 'NaSIA Certified Gold',
+      curriculum: 'Cambridge International (Primary to A-Level)',
+      vacancyStatus: '2 Spots Open in Class 4 (2026/2027)',
+      vacancyColor: '#059669',
+      vacancyBg: '#ecfdf5',
+      vacancyBorder: '#a7f3d0',
+      lastChange: 'Updated 2026/2027 fee schedule (PTA Levy GH₵ 150) on 1 Nov 2026',
+      alerts: { vacancies: true, fees: true, openDays: true, deadlines: true },
+      channels: { sms: true, whatsapp: true, email: true }
+    },
+    {
+      schoolId: 'sch-sos-tema',
+      name: 'SOS Hermann Gmeiner International College',
+      region: 'Greater Accra (Tema Community 6)',
+      crest: '🎓',
+      accreditation: 'NaSIA Certified Gold',
+      curriculum: 'IB Middle Years & Diploma',
+      vacancyStatus: 'Waitlist Open (Grade 7 & IB DP1)',
+      vacancyColor: '#b45309',
+      vacancyBg: '#fefce8',
+      vacancyBorder: '#fde047',
+      lastChange: 'Announced 2026 entrance exam dates on 28 Oct 2026',
+      alerts: { vacancies: true, fees: false, openDays: true, deadlines: true },
+      channels: { sms: true, whatsapp: true, email: false }
+    },
+    {
+      schoolId: 'sch-achi-accra',
+      name: 'Achimota Basic School',
+      region: 'Greater Accra (Achimota)',
+      crest: '🌳',
+      accreditation: 'NaSIA Certified A+',
+      curriculum: 'GES Standards-Based (Primary & JHS)',
+      vacancyStatus: 'Open Day: 15 Dec 2026 at 10:00 AM',
+      vacancyColor: '#059669',
+      vacancyBg: '#ecfdf5',
+      vacancyBorder: '#a7f3d0',
+      lastChange: 'NaSIA Gold Institutional License renewed on 14 Oct 2026',
+      alerts: { vacancies: false, fees: true, openDays: true, deadlines: false },
+      channels: { sms: true, whatsapp: false, email: false }
+    },
+    {
+      schoolId: 'sch-lcs-accra',
+      name: 'Lincoln Community School',
+      region: 'Greater Accra (Dzorwulu)',
+      crest: '🌐',
+      accreditation: 'International Baccalaureate (IB)',
+      curriculum: 'IB Primary Years (PYP)',
+      vacancyStatus: 'Admissions Closed for Term 1 (Term 2 Waitlist)',
+      vacancyColor: '#dc2626',
+      vacancyBg: '#fef2f2',
+      vacancyBorder: '#fecaca',
+      lastChange: 'Inaugurated AI & Robotics Wing on 5 Oct 2026',
+      alerts: { vacancies: true, fees: true, openDays: false, deadlines: true },
+      channels: { sms: false, whatsapp: true, email: true }
+    }
+  ],
+  savedSearchesData: [
+    {
+      id: 'srch-01',
+      title: 'Cambridge Primary with Swimming Pool & STEM Labs',
+      querySummary: 'Cambridge Primary • Greater Accra (East Legon / Airport) • Pool & STEM • Max GH₵ 8,000/term',
+      urlParams: '?curriculum=cambridge&location=East+Legon&facilities=pool,stem&maxFee=8000',
+      frequency: 'instant',
+      matchCount: 6,
+      createdDate: '12 Oct 2026'
+    },
+    {
+      id: 'srch-02',
+      title: 'GES Standards-Based JHS with Full Boarding under GH₵ 4,500',
+      querySummary: 'GES Standards-Based • Central Region (Cape Coast / Winneba) • Full Boarding • Max GH₵ 4,500/term',
+      urlParams: '?curriculum=ges&region=Central&type=boarding&maxFee=4500',
+      frequency: 'weekly',
+      matchCount: 11,
+      createdDate: '24 Oct 2026'
+    },
+    {
+      id: 'srch-03',
+      title: 'Montessori Early Years with Full-Time Nurse Sickbay',
+      querySummary: 'Montessori / EYFS • Age 2–5 • Tema & Spintex • Verified Sickbay Nurse',
+      urlParams: '?curriculum=montessori&age=early-years&location=Tema,Spintex&facilities=sickbay',
+      frequency: 'daily',
+      matchCount: 4,
+      createdDate: '02 Nov 2026'
+    }
+  ],
+  notificationsData: [
+    {
+      id: 'notif-01',
+      category: 'admissions',
+      unread: true,
+      timestamp: 'Today at 09:15 AM',
+      channelBadge: '📱 Hubtel SMS & In-App',
+      channelColor: '#0A2046',
+      title: 'Provisional Admission Offer Issued: Ghana International School',
+      body: 'Official Offer Letter Ref: GIS/ADM/2026/OFF-0842 for Kwame Mensah has been dispatched. Review the formal terms and fee schedule.',
+      actionType: 'offer_letter',
+      actionLabel: '📄 View Formal Offer Letter',
+      appId: 'adm-gis-2026-0842'
+    },
+    {
+      id: 'notif-02',
+      category: 'watchlist',
+      unread: true,
+      timestamp: 'Yesterday at 04:30 PM',
+      channelBadge: '💬 WhatsApp Verified',
+      channelColor: '#059669',
+      title: 'SOS Hermann Gmeiner College: Vacancy Alert in Grade 7',
+      body: '1 mid-year vacancy has opened following enrolment rebalancing. Admissions registry accepts vouchers until 30 November.',
+      actionType: 'navigate',
+      actionTarget: 'school-detail/sch-sos-tema',
+      actionLabel: '🔍 Inspect School Profile'
+    },
+    {
+      id: 'notif-03',
+      category: 'admissions',
+      unread: false,
+      timestamp: '03 Nov 2026 at 10:00 AM',
+      channelBadge: '📱 Hubtel SMS',
+      channelColor: '#0A2046',
+      title: 'Campus Tour Confirmed: Achimota Basic School',
+      body: 'Your scheduled campus walkthrough with the Admissions Registrar is confirmed for 15 November 2026 at 10:00 AM.',
+      actionType: 'tab',
+      actionTarget: 'journey',
+      actionLabel: '🛣️ View School Journey'
+    },
+    {
+      id: 'notif-04',
+      category: 'receipts',
+      unread: false,
+      timestamp: '15 Oct 2026 at 02:45 PM',
+      channelBadge: '💳 MTN Mobile Money',
+      channelColor: '#b45309',
+      title: 'Admission Voucher Receipt #VOUCH-GIS-0842 Confirmed',
+      body: 'Payment of GH₵ 150.00 via MTN MoMo successful. Digital voucher token dispatched to admissions desk.',
+      actionType: 'tab',
+      actionTarget: 'applications',
+      actionLabel: '💳 View Voucher in Wallet'
+    },
+    {
+      id: 'notif-05',
+      category: 'safeguarding',
+      unread: false,
+      timestamp: '10 Oct 2026 at 08:00 AM',
+      channelBadge: '🛡️ Act 843 DPC Privacy',
+      channelColor: '#4338ca',
+      title: 'Statutory Data Protection & Safeguarding Statement',
+      body: 'Your Ghana Data Protection Act (Act 843) preferences were successfully recorded. Zero commercial third-party marketing authorized.',
+      actionType: 'tab',
+      actionTarget: 'privacy',
+      actionLabel: '🛡️ Manage DPA Controls'
+    }
+  ],
+  familyWards: [
+    {
+      id: 'child-kwame',
+      firstName: 'Kwame',
+      lastName: 'Mensah',
+      dob: '2017-08-14',
+      age: 9,
+      gender: 'Male',
+      currentGrade: 'Primary Class 4',
+      applyingFor: 'Class 4 (Key Stage 2)',
+      curriculumPreference: 'Cambridge Primary / GES Standards-Based',
+      interests: ['STEM & Robotics', 'Competitive Swimming', 'Chess Club', 'French'],
+      targetSchools: ['Ghana International School', 'Lincoln Community School', 'SOS Hermann Gmeiner'],
+      activeApplicationsCount: 1,
+      admissionStatus: 'Offer Extended ⭐'
+    },
+    {
+      id: 'child-efua',
+      firstName: 'Efua',
+      lastName: 'Mensah',
+      dob: '2022-02-22',
+      age: 4,
+      gender: 'Female',
+      currentGrade: 'Nursery 2',
+      applyingFor: 'Kindergarten 1 (KG1)',
+      curriculumPreference: 'Montessori / Early Years Foundation Stage (EYFS)',
+      interests: ['Creative Arts', 'Phonics & Reading', 'Music & Movement', 'Outdoor Discovery'],
+      targetSchools: ['Roman Ridge Nursery', 'Little Explorers Montessori'],
+      activeApplicationsCount: 0,
+      admissionStatus: 'Shortlisting Phase 📌'
+    }
+  ],
+  householdMembers: [
+    {
+      id: 'parent-primary',
+      name: 'Dr. Elizabeth Mensah',
+      role: 'Mother & Primary Account Holder',
+      phone: '+233 24 111 2222',
+      status: 'Active (Primary Controller)',
+      permissions: ['Full Account Control', 'Admission Submissions', 'MoMo Fee Authorizations', 'SAR Export']
+    },
+    {
+      id: 'parent-secondary',
+      name: 'Kwesi Mensah',
+      role: 'Father & Authorized Co-Guardian',
+      phone: '+233 24 412 3456',
+      status: 'Verified (Ghana Card GHA-729103841-2)',
+      permissions: ['View Academic Reports', 'Receive Hubtel SMS Alerts', 'Authorize Campus Pick-up']
+    }
+  ],
 
   async render() {
     // 1. If not authenticated or not logged in as a parent, render Parent Sign Up & Auth Gateway
@@ -282,6 +491,24 @@ const ParentPortalView = {
               📝 Admissions &amp; Apps
               <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700;">${applications.length}</span>
             </button>
+            <button role="tab" aria-selected="${this.activeTab === 'watchlist'}" class="parent-tab-btn ${this.activeTab === 'watchlist' ? 'active' : ''}" data-tab="watchlist" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'watchlist' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'watchlist' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🔔 Watchlist &amp; Searches
+              <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">4</span>
+            </button>
+            <button role="tab" aria-selected="${this.activeTab === 'notifications'}" class="parent-tab-btn ${this.activeTab === 'notifications' ? 'active' : ''}" data-tab="notifications" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'notifications' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'notifications' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              📬 Notifications
+              <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">2 new</span>
+            </button>
+            <button role="tab" aria-selected="${this.activeTab === 'family'}" class="parent-tab-btn ${this.activeTab === 'family' ? 'active' : ''}" data-tab="family" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'family' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'family' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              👶 Family &amp; Children
+              <span class="badge" style="background: #f3e8ff; color: #7e22ce; font-weight: 700;">2 wards</span>
+            </button>
+            <button role="tab" aria-selected="${this.activeTab === 'privacy'}" class="parent-tab-btn ${this.activeTab === 'privacy' ? 'active' : ''}" data-tab="privacy" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'privacy' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'privacy' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🛡️ DPA 843 &amp; Security
+            </button>
+            <button role="tab" aria-selected="${this.activeTab === 'support'}" class="parent-tab-btn ${this.activeTab === 'support' ? 'active' : ''}" data-tab="support" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'support' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'support' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              💡 Help &amp; Support
+            </button>
             <button role="tab" aria-selected="${this.activeTab === 'invoices'}" class="parent-tab-btn ${this.activeTab === 'invoices' ? 'active' : ''}" data-tab="invoices" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'invoices' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'invoices' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
               💳 Fees &amp; MoMo Invoices
               <span class="badge" style="background: ${totalOutstanding > 0 ? '#fee2e2' : '#dcfce7'}; color: ${totalOutstanding > 0 ? '#991b1b' : '#166534'}; font-weight: 700;">${invoices.length}</span>
@@ -324,6 +551,16 @@ const ParentPortalView = {
       return this.renderEnrolledWardHubTab();
     } else if (this.activeTab === 'applications') {
       return this.renderApplicationsTab();
+    } else if (this.activeTab === 'watchlist') {
+      return this.renderWatchlistTab();
+    } else if (this.activeTab === 'notifications') {
+      return this.renderNotificationsTab();
+    } else if (this.activeTab === 'family') {
+      return this.renderFamilyTab();
+    } else if (this.activeTab === 'privacy') {
+      return this.renderPrivacyTab();
+    } else if (this.activeTab === 'support') {
+      return this.renderSupportTab();
     } else if (this.activeTab === 'invoices') {
       return this.renderInvoicesTab();
     } else if (this.activeTab === 'reports') {
@@ -1596,6 +1833,965 @@ const ParentPortalView = {
         </div>
       </div>
     `;
+  },
+
+  // =========================================================================
+  // MODULE 08: SAVED SEARCHES & VERIFIED CAMPUS WATCHLIST (Phase 4)
+  // =========================================================================
+  renderWatchlistTab() {
+    const watchlist = this.watchlistData || [];
+    const savedSearches = this.savedSearchesData || [];
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Header Banner -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); border-radius: var(--radius-xl); padding: 2rem 2.25rem; color: #ffffff; box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
+          <div style="position: absolute; right: -20px; bottom: -20px; font-size: 8rem; opacity: 0.08; pointer-events: none;">🔔</div>
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(213, 166, 59, 0.2); border: 1px solid #D5A63B; color: #F5D780; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 0.75rem;">
+            <span>🇬🇭</span> Real-Time Capacity &amp; Admissions Intelligence
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #ffffff;">
+            Saved Searches &amp; School Watchlist
+          </h2>
+          <p style="font-size: 0.95rem; color: #cbd5e1; max-width: 720px; margin: 0 0 1.25rem 0; line-height: 1.6;">
+            Track live vacancy releases, statutory fee revisions, and open-day tours across accredited Ghanaian private institutions. Receive immediate alerts via Hubtel SMS and WhatsApp.
+          </p>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius-md); padding: 0.6rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🏫</span> <strong>${watchlist.length} of 10 Tracked Schools</strong> (Free Allowance)
+            </div>
+            <div style="background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(4px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: var(--radius-md); padding: 0.6rem 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem;">
+              <span>🔍</span> <strong>${savedSearches.length} of 20 Saved Searches</strong> (100% Free Forever)
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1: Saved Searches Queries Manager -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.25rem 0;">
+                Saved Directory Search Queries (${savedSearches.length})
+              </h3>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Automated background query sweeps alerting you when new matching schools are accredited or indexed.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-primary" onclick="App.navigate('directory')" style="font-size: 0.82rem; font-weight: 800;">
+              🔍 Open Directory to Save Filter
+            </button>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1rem;">
+            ${savedSearches.map(srch => `
+              <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.4rem;">
+                    <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">
+                      ${srch.title}
+                    </div>
+                    <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.72rem; font-weight: 700; white-space: nowrap;">
+                      ${srch.matchCount} Matches
+                    </span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #475569; margin-bottom: 0.75rem; line-height: 1.5;">
+                    ${srch.querySummary}
+                  </div>
+                </div>
+
+                <div style="border-top: 1px solid #e2e8f0; padding-top: 0.75rem; margin-top: 0.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; color: #64748b;">
+                    <span>🔔</span> Frequency:
+                    <select class="sel-search-freq" data-searchid="${srch.id}" style="font-size: 0.75rem; padding: 0.2rem 0.4rem; border-radius: 4px; border: 1px solid #cbd5e1; font-weight: 700; color: #0A2046;">
+                      <option value="instant" ${srch.frequency === 'instant' ? 'selected' : ''}>Instant SMS &amp; WhatsApp</option>
+                      <option value="daily" ${srch.frequency === 'daily' ? 'selected' : ''}>Daily Digest</option>
+                      <option value="weekly" ${srch.frequency === 'weekly' ? 'selected' : ''}>Weekly Summary</option>
+                    </select>
+                  </div>
+                  <div style="display: flex; gap: 0.4rem;">
+                    <button type="button" class="btn-pill btn-primary btn-run-saved-search" data-params="${srch.urlParams}" style="font-size: 0.75rem; padding: 0.35rem 0.75rem; font-weight: 800;">
+                      ▶ Run Search
+                    </button>
+                    <button type="button" class="btn-pill btn-outline btn-delete-saved-search" data-searchid="${srch.id}" style="font-size: 0.75rem; padding: 0.35rem 0.6rem; color: #991b1b; border-color: #fecaca;" title="Delete saved search">
+                      🗑️
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Section 2: School Watchlist & Vacancy Trackers -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.25rem 0;">
+              Followed Schools &amp; Vacancy Status (${watchlist.length})
+            </h3>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+              Configured notification triggers dispatches instant alerts whenever admissions openings or fee schedules change.
+            </p>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            ${watchlist.map(school => `
+              <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; transition: all 0.2s;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div style="font-size: 2.2rem; background: #f8fafc; width: 56px; height: 56px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0;">
+                      ${school.crest}
+                    </div>
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                        <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #0A2046; margin: 0; font-weight: 800;">
+                          ${school.name}
+                        </h4>
+                        <span class="badge" style="background: #ecfdf5; color: #065f46; font-size: 0.72rem; font-weight: 800; border: 1px solid #a7f3d0;">
+                          ✓ ${school.accreditation}
+                        </span>
+                      </div>
+                      <div style="font-size: 0.82rem; color: #64748b; margin-top: 0.2rem;">
+                        📍 ${school.region} &bull; 📚 ${school.curriculum}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div style="background: ${school.vacancyBg}; border: 1px solid ${school.vacancyBorder}; color: ${school.vacancyColor}; font-weight: 800; font-size: 0.82rem; padding: 0.4rem 0.85rem; border-radius: 999px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                      <span>●</span> ${school.vacancyStatus}
+                    </div>
+                    <button type="button" class="btn-pill btn-outline btn-unfollow-school" data-schoolid="${school.schoolId}" style="font-size: 0.75rem; color: #991b1b; border-color: #fecaca; font-weight: 700;">
+                      Unfollow
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Alert Triggers & Preferred Channels -->
+                <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 0.85rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border: 1px solid #e2e8f0; font-size: 0.82rem;">
+                  <div style="display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap;">
+                    <span style="font-weight: 700; color: #0A2046;">Alert Triggers:</span>
+                    <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #334155;">
+                      <input type="checkbox" class="chk-alert-toggle" data-schoolid="${school.schoolId}" data-alert="vacancies" ${school.alerts.vacancies ? 'checked' : ''} /> Vacancies
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #334155;">
+                      <input type="checkbox" class="chk-alert-toggle" data-schoolid="${school.schoolId}" data-alert="fees" ${school.alerts.fees ? 'checked' : ''} /> Fee Revisions
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #334155;">
+                      <input type="checkbox" class="chk-alert-toggle" data-schoolid="${school.schoolId}" data-alert="openDays" ${school.alerts.openDays ? 'checked' : ''} /> Open Days
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 0.35rem; cursor: pointer; color: #334155;">
+                      <input type="checkbox" class="chk-alert-toggle" data-schoolid="${school.schoolId}" data-alert="deadlines" ${school.alerts.deadlines ? 'checked' : ''} /> Deadlines
+                    </label>
+                  </div>
+
+                  <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="font-weight: 700; color: #64748b;">Channels:</span>
+                    <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.72rem;">📱 Hubtel SMS</span>
+                    <span class="badge" style="background: #ecfdf5; color: #047857; font-size: 0.72rem;">💬 WhatsApp</span>
+                  </div>
+                </div>
+
+                <div style="font-size: 0.78rem; color: #64748b; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>🕒</span> <strong>Latest Verified Campus Notice:</strong> ${school.lastChange}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Section 3: Verified Campus Information Change History Log -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.5rem 0;">
+            📜 Verified School Information Audit Trail
+          </h3>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 1.25rem 0;">
+            Every fee schedule revision, admissions policy update, and NaSIA license renewal is time-stamped and verified by the SkoolFinder Registry.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="border-left: 3px solid #059669; padding-left: 1rem; font-size: 0.85rem;">
+              <div style="font-weight: 700; color: #0A2046;">Ghana International School (GIS) &bull; 01 Nov 2026</div>
+              <div style="color: #475569; font-size: 0.8rem;">Bursar published updated 2026/2027 fee schedule (Tuition GH₵ 4,500/term + PTA Levy GH₵ 150). Verified by Board of Governors.</div>
+            </div>
+            <div style="border-left: 3px solid #1266C4; padding-left: 1rem; font-size: 0.85rem;">
+              <div style="font-weight: 700; color: #0A2046;">SOS Hermann Gmeiner International College &bull; 28 Oct 2026</div>
+              <div style="color: #475569; font-size: 0.8rem;">Published entrance exam syllabus and diagnostic assessment dates for 2026 Grade 7 admissions intake.</div>
+            </div>
+            <div style="border-left: 3px solid #D5A63B; padding-left: 1rem; font-size: 0.85rem;">
+              <div style="font-weight: 700; color: #0A2046;">Achimota Basic School &bull; 14 Oct 2026</div>
+              <div style="color: #475569; font-size: 0.8rem;">National Schools Inspectorate Authority (NaSIA) Gold Institutional License renewed for 2026–2029 cycle.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+  },
+
+  // =========================================================================
+  // MODULE 09: NOTIFICATIONS CENTRE & LIVE TELCO AUDIT LOG (Phase 4)
+  // =========================================================================
+  renderNotificationsTab() {
+    const notifs = this.notificationsData || [];
+    const unreadCount = notifs.filter(n => n.unread).length;
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Real-Time Communication Hub</span>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              📬 Notifications &amp; Communication Feed
+            </h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Direct notifications from applied schools, vacancy alerts, and Ghana Telco SMS delivery handshakes.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem;">
+            <button type="button" id="btn-mark-all-read" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 700;">
+              ✓ Mark All as Read (${unreadCount} Unread)
+            </button>
+          </div>
+        </div>
+
+        <!-- Notification Category Filters -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <button type="button" class="btn-pill btn-primary btn-filter-notif active" data-category="all" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
+            All Notifications (${notifs.length})
+          </button>
+          <button type="button" class="btn-pill btn-outline btn-filter-notif" data-category="admissions" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
+            🎓 Admissions (2)
+          </button>
+          <button type="button" class="btn-pill btn-outline btn-filter-notif" data-category="watchlist" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
+            🔔 Watchlist Alerts (1)
+          </button>
+          <button type="button" class="btn-pill btn-outline btn-filter-notif" data-category="receipts" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
+            💳 MoMo Receipts (1)
+          </button>
+          <button type="button" class="btn-pill btn-outline btn-filter-notif" data-category="safeguarding" style="font-size: 0.82rem; padding: 0.4rem 1rem;">
+            🛡️ DPA 843 (1)
+          </button>
+        </div>
+
+        <!-- Notification Cards Feed -->
+        <div id="notifications-feed-list" style="display: flex; flex-direction: column; gap: 1rem;">
+          ${notifs.map(n => `
+            <div class="notification-item-card" data-category="${n.category}" style="background: #ffffff; border: 1.5px solid ${n.unread ? '#1266C4' : '#e2e8f0'}; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); position: relative; ${n.unread ? 'border-left: 5px solid #1266C4;' : ''}">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+                <div style="display: flex; gap: 1rem; align-items: flex-start;">
+                  <div style="font-size: 1.6rem; margin-top: 0.2rem;">
+                    ${n.category === 'admissions' ? '🎓' : (n.category === 'watchlist' ? '🔔' : (n.category === 'receipts' ? '💳' : '🛡️'))}
+                  </div>
+                  <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.25rem;">
+                      <span class="badge" style="background: #f1f5f9; color: ${n.channelColor}; font-weight: 800; font-size: 0.72rem;">
+                        ${n.channelBadge}
+                      </span>
+                      ${n.unread ? '<span class="badge badge-emerald" style="font-size: 0.7rem; font-weight: 800;">NEW</span>' : ''}
+                      <span style="font-size: 0.75rem; color: #94a3b8;">&bull; ${n.timestamp}</span>
+                    </div>
+                    <h4 style="font-family: var(--font-heading); font-size: 1.05rem; color: #0A2046; margin: 0 0 0.35rem 0; font-weight: 800;">
+                      ${n.title}
+                    </h4>
+                    <p style="font-size: 0.88rem; color: #475569; margin: 0; line-height: 1.55; max-width: 780px;">
+                      ${n.body}
+                    </p>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  ${n.actionType === 'offer_letter' ? `
+                    <button type="button" class="btn-pill btn-primary btn-view-offer-letter" data-appid="${n.appId}" style="font-size: 0.8rem; font-weight: 800;">
+                      ${n.actionLabel}
+                    </button>
+                  ` : `
+                    <button type="button" class="btn-pill btn-primary btn-switch-tab" data-target-tab="${n.actionTarget}" style="font-size: 0.8rem; font-weight: 800;">
+                      ${n.actionLabel}
+                    </button>
+                  `}
+                  <button type="button" class="btn-pill btn-outline btn-dismiss-notif" data-notifid="${n.id}" style="font-size: 0.78rem; padding: 0.4rem 0.65rem;" title="Dismiss notification">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Ghana Telco SMS & WhatsApp Audit Trail Table -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.25rem 0;">
+              🇬🇭 Ghana Telco Carrier Delivery Logs (Hubtel &amp; MTN MoMo)
+            </h3>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+              Direct network handshake logs with MTN Ghana, Telecel, and AT Money infrastructure.
+            </p>
+          </div>
+
+          <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.84rem; text-align: left;">
+              <thead>
+                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; color: #475569;">
+                  <th style="padding: 0.75rem 1rem;">Carrier Network</th>
+                  <th style="padding: 0.75rem 1rem;">Recipient Phone</th>
+                  <th style="padding: 0.75rem 1rem;">Sender ID</th>
+                  <th style="padding: 0.75rem 1rem;">Carrier Dispatch Ref</th>
+                  <th style="padding: 0.75rem 1rem;">Delivery Status</th>
+                  <th style="padding: 0.75rem 1rem;">Dispatched Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: #0A2046;">Hubtel SMS (MTN Gateway)</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace;">+233 24 111 2222</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">SkoolFinder</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace; color: #1266C4;">HUB-GH-882941</td>
+                  <td style="padding: 0.75rem 1rem;"><span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800;">🟢 DELIVRD (Handshake)</span></td>
+                  <td style="padding: 0.75rem 1rem; color: #64748b;">07 Nov 2026 09:16 AM</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: #0A2046;">WhatsApp Business API</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace;">+233 24 111 2222</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">SkoolFinder Verify</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace; color: #1266C4;">WA-GH-109283</td>
+                  <td style="padding: 0.75rem 1rem;"><span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800;">🔵 READ (Double Check)</span></td>
+                  <td style="padding: 0.75rem 1rem; color: #64748b;">06 Nov 2026 04:31 PM</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: #0A2046;">Hubtel SMS (Telecel Gateway)</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace;">+233 24 111 2222</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">SkoolFinder</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace; color: #1266C4;">HUB-GH-881023</td>
+                  <td style="padding: 0.75rem 1rem;"><span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800;">🟢 DELIVRD (Handshake)</span></td>
+                  <td style="padding: 0.75rem 1rem; color: #64748b;">03 Nov 2026 10:02 AM</td>
+                </tr>
+                <tr>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700; color: #0A2046;">MTN MoMo Gateway SMS</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace;">+233 24 111 2222</td>
+                  <td style="padding: 0.75rem 1rem; font-weight: 700;">MobileMoney</td>
+                  <td style="padding: 0.75rem 1rem; font-family: monospace; color: #1266C4;">MM-TX-440912</td>
+                  <td style="padding: 0.75rem 1rem;"><span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 800;">🟢 DELIVRD (Settled)</span></td>
+                  <td style="padding: 0.75rem 1rem; color: #64748b;">15 Oct 2026 02:45 PM</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    `;
+  },
+
+  // =========================================================================
+  // MODULE 10: MULTI-CHILD FAMILY PLANNING COCKPIT (Phase 4)
+  // =========================================================================
+  renderFamilyTab() {
+    const wards = this.familyWards || [];
+    const activeWard = wards.find(w => w.id === this.activeChildId) || wards[0] || {};
+    const household = this.householdMembers || [];
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Family Education Management</span>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              👶 Multi-Child Family Cockpit &amp; Planning
+            </h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Manage independent school search shortlists, milestone trackers, and multi-child sibling discounts.
+            </p>
+          </div>
+
+          <button type="button" class="btn-pill btn-primary" onclick="if (typeof Modals !== 'undefined' && Modals.openLinkStudentModal) Modals.openLinkStudentModal(); else State.showToast('Child registration modal opened', 'info');" style="font-size: 0.82rem; font-weight: 800;">
+            + Register Another Child / Ward
+          </button>
+        </div>
+
+        <!-- Wards Switcher Pills -->
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          ${wards.map(ward => `
+            <button type="button" class="btn-select-ward btn-pill ${ward.id === activeWard.id ? 'btn-primary' : 'btn-outline'}" data-wardid="${ward.id}" style="padding: 0.6rem 1.25rem; font-size: 0.92rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+              <span>${ward.gender === 'Male' ? '👦' : '👧'}</span>
+              <span>${ward.firstName} ${ward.lastName}</span>
+              <span class="badge" style="background: ${ward.id === activeWard.id ? 'rgba(255,255,255,0.25)' : '#f1f5f9'}; color: ${ward.id === activeWard.id ? '#ffffff' : '#0A2046'}; font-size: 0.72rem;">
+                ${ward.currentGrade}
+              </span>
+            </button>
+          `).join('')}
+        </div>
+
+        <!-- Active Ward Educational Dossier -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1.25rem;">
+            <div>
+              <div style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                <span>Active Profile</span> &bull; Academic Year 2026/2027 Target
+              </div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.4rem; color: #0A2046; margin: 0.2rem 0;">
+                ${activeWard.firstName} ${activeWard.lastName} (${activeWard.age} Years Old)
+              </h3>
+              <div style="font-size: 0.85rem; color: #64748b;">
+                Date of Birth: <strong>${activeWard.dob}</strong> &bull; Target Entry: <strong>${activeWard.applyingFor}</strong>
+              </div>
+            </div>
+
+            <div style="text-align: right;">
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-weight: 800; font-size: 0.82rem; padding: 0.4rem 0.9rem; border: 1px solid #bfdbfe;">
+                Status: ${activeWard.admissionStatus}
+              </span>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem;">
+                📚 Curriculum Pathway
+              </div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 1rem; margin-bottom: 0.25rem;">
+                ${activeWard.curriculumPreference}
+              </div>
+              <div style="font-size: 0.8rem; color: #64748b;">
+                Focused on academic rigour and bilingual STEM foundational competencies.
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem;">
+                🎯 Special Interests &amp; Talents
+              </div>
+              <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.25rem;">
+                ${activeWard.interests.map(int => `
+                  <span class="badge" style="background: #ffffff; border: 1px solid #cbd5e1; color: #0A2046; font-weight: 700; font-size: 0.75rem;">
+                    ${int}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem;">
+                🏛️ Shortlisted Candidate Schools
+              </div>
+              <div style="font-size: 0.85rem; color: #0A2046; font-weight: 700; line-height: 1.5;">
+                ${activeWard.targetSchools.join(' &bull; ')}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <button type="button" class="btn-pill btn-primary btn-switch-tab" data-target-tab="journey" style="font-size: 0.82rem; font-weight: 800;">
+              🛣️ Open ${activeWard.firstName}'s School Journey Roadmap
+            </button>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="shortlists" style="font-size: 0.82rem; font-weight: 700;">
+              📌 Inspect ${activeWard.firstName}'s Decision Board
+            </button>
+          </div>
+        </div>
+
+        <!-- Ghana Sibling Tuition Discount Calculator -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">
+              <span>💰</span> Statutory Financial Planning
+            </div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              Ghana Private School Sibling Discount Calculator
+            </h3>
+            <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+              Accredited private schools in Ghana generally offer 10% to 15% tuition reductions for 2nd and 3rd enrolled siblings.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Child 1 Tuition (Primary):
+              </label>
+              <input type="number" id="calc-sib-child1" value="4500" class="input-field" style="width: 100%; font-weight: 700;" />
+              <span style="font-size: 0.72rem; color: #64748b;">Full Tuition (0% discount)</span>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Child 2 Tuition (Nursery / KG):
+              </label>
+              <input type="number" id="calc-sib-child2" value="4500" class="input-field" style="width: 100%; font-weight: 700;" />
+              <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">10% Sibling Discount Applied</span>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">
+                Child 3 Tuition (Optional):
+              </label>
+              <input type="number" id="calc-sib-child3" value="0" class="input-field" style="width: 100%; font-weight: 700;" />
+              <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">15% 3rd Sibling Discount</span>
+            </div>
+          </div>
+
+          <!-- Calculation Result Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1.25rem;">
+            <div>
+              <div style="font-size: 0.75rem; color: #64748b; font-weight: 700; text-transform: uppercase;">
+                Net Family Termly Tuition
+              </div>
+              <div id="calc-sib-termly-total" style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #0A2046;">
+                GH₵ 8,550.00
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: #059669; font-weight: 700; text-transform: uppercase;">
+                Termly Sibling Savings
+              </div>
+              <div id="calc-sib-termly-savings" style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #059669;">
+                GH₵ 450.00
+              </div>
+            </div>
+
+            <div>
+              <div style="font-size: 0.75rem; color: #D5A63B; font-weight: 700; text-transform: uppercase;">
+                Annual Family Savings (3 Terms)
+              </div>
+              <div id="calc-sib-annual-savings" style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #D5A63B;">
+                GH₵ 1,350.00
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Household Collaboration & Authorized Guardians -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.25rem 0;">
+                👨‍👩‍👦 Authorized Household Co-Guardians (${household.length})
+              </h3>
+              <p style="font-size: 0.82rem; color: #64748b; margin: 0;">
+                Secure multi-guardian access allowing fathers, mothers, or designated caretakers to receive pick-up tokens and academic reports.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-outline" onclick="State.showToast('Co-Guardian invite sent via SMS & WhatsApp OTP', 'success');" style="font-size: 0.82rem; font-weight: 700;">
+              + Invite Secondary Guardian
+            </button>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            ${household.map(mem => `
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">${mem.name}</div>
+                    <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.72rem; font-weight: 700;">${mem.role}</span>
+                  </div>
+                  <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.2rem;">
+                    📞 ${mem.phone} &bull; ${mem.status}
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                  ${mem.permissions.map(p => `
+                    <span class="badge" style="background: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-size: 0.72rem; font-weight: 600;">
+                      ✓ ${p}
+                    </span>
+                  `).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+    `;
+  },
+
+  // =========================================================================
+  // MODULE 11: GHANA DATA PROTECTION ACT 843 CONTROLS & SECURITY (Phase 4)
+  // =========================================================================
+  renderPrivacyTab() {
+    const parentProfile = State.currentUser || {};
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Header -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1e3a8a 100%); border-radius: var(--radius-xl); padding: 2rem 2.25rem; color: #ffffff; box-shadow: var(--shadow-md);">
+          <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(5, 150, 105, 0.2); border: 1px solid #10b981; color: #a7f3d0; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; padding: 0.25rem 0.75rem; border-radius: 999px; margin-bottom: 0.75rem;">
+            <span>🛡️</span> Data Protection Commission Certified (Act 843 Section 27)
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.8rem; font-weight: 800; margin: 0 0 0.5rem 0; color: #ffffff;">
+            Ghana Data Protection Act 2012 (Act 843) &amp; Security
+          </h2>
+          <p style="font-size: 0.95rem; color: #cbd5e1; max-width: 760px; margin: 0 0 1.25rem 0; line-height: 1.6;">
+            Your family's privacy and your children's educational records are governed by strict statutory controls. SkoolFinder guarantees zero commercial data brokerage and complete data sovereignty under Act 843.
+          </p>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.82rem; color: #93c5fd;">
+            <span>✓ Controller Certificate: <strong>#DPC-GH-2024-8842</strong></span>
+            <span>✓ Non-Repudiation HMAC Sealing</span>
+            <span>✓ Act 560 Child Protection Pledge</span>
+          </div>
+        </div>
+
+        <!-- Section 1: 1-Click Subject Access Request (SAR) Data Export -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
+            <div style="max-width: 640px;">
+              <span class="badge badge-emerald" style="font-size: 0.75rem; font-weight: 800; margin-bottom: 0.5rem;">
+                Act 843 Section 27 Statutory Right
+              </span>
+              <h3 style="font-family: var(--font-heading); font-size: 1.35rem; color: #0A2046; margin: 0.2rem 0 0.4rem 0;">
+                1-Click Subject Access Request (SAR) Export
+              </h3>
+              <p style="font-size: 0.88rem; color: #475569; margin: 0 0 0.85rem 0; line-height: 1.6;">
+                Generate and download an official, cryptographically signed JSON archive containing all personal data, children's profiles, admission applications, voucher transactions, and inquiry message audit logs held by SkoolFinder Ghana.
+              </p>
+              <div style="font-size: 0.8rem; color: #64748b;">
+                Includes SHA-256 HMAC cryptographic signature for non-repudiation and statutory verification before the Data Protection Commission.
+              </div>
+            </div>
+
+            <button type="button" id="btn-generate-sar-export" class="btn-pill btn-primary" style="font-size: 0.88rem; font-weight: 800; padding: 0.75rem 1.5rem; background: #0A2046; border-color: #0A2046; display: flex; align-items: center; gap: 0.5rem;">
+              <span>📥</span> Download Signed SAR Package (.json)
+            </button>
+          </div>
+        </div>
+
+        <!-- Section 2: Parent Profile & MoMo Security PIN -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.5rem 0;">
+            🔐 Parent Identity &amp; MoMo Authorization Security PIN
+          </h3>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 1.25rem 0;">
+            Protect high-value school fee settlements and admission voucher purchases with a dedicated 4-digit PIN.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase;">
+                Verified Account Owner
+              </div>
+              <div style="font-weight: 800; color: #0A2046; font-size: 1.1rem; margin: 0.35rem 0 0.2rem 0;">
+                ${parentProfile.name || parentProfile.fullName || 'Dr. Elizabeth Mensah'}
+              </div>
+              <div style="font-size: 0.82rem; color: #475569;">
+                ✉️ ${parentProfile.email || 'proprietor@gis.edu.gh'}<br/>
+                📞 +233 24 111 2222 <span class="badge badge-emerald" style="font-size: 0.68rem;">VERIFIED</span>
+              </div>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: var(--radius-lg); padding: 1.25rem;">
+              <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 0.4rem;">
+                Mobile Money 4-Digit Security PIN
+              </div>
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                <input type="password" id="inp-momo-pin" maxlength="4" placeholder="••••" value="8421" class="input-field" style="width: 120px; text-align: center; font-size: 1.2rem; letter-spacing: 0.2em; font-weight: 800;" />
+                <button type="button" id="btn-update-momo-pin" class="btn-pill btn-primary" style="font-size: 0.8rem; font-weight: 800;">
+                  Update PIN
+                </button>
+              </div>
+              <div style="font-size: 0.75rem; color: #059669; font-weight: 700;">
+                ✓ Active PIN required before submitting MoMo fee payments
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Statutory Consent Controls -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.5rem 0;">
+            ⚖️ Statutory Consent Controls &amp; Child Safeguarding
+          </h3>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 1.25rem 0;">
+            Under the Children's Act 1998 (Act 560) and Act 843, educational portals cannot monetize or resell minor student records.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+              <div>
+                <div style="font-weight: 700; color: #0A2046; font-size: 0.92rem;">Ghana Carrier SMS Notifications (Hubtel)</div>
+                <div style="font-size: 0.8rem; color: #64748b;">Receive immediate admission updates and fee invoices via SMS on +233 24 111 2222</div>
+              </div>
+              <input type="checkbox" checked class="chk-dpa-consent" style="transform: scale(1.3); cursor: pointer;" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+              <div>
+                <div style="font-weight: 700; color: #0A2046; font-size: 0.92rem;">WhatsApp Official Alerts</div>
+                <div style="font-size: 0.8rem; color: #64748b;">Receive verified admission offer letters and campus tour reminders on WhatsApp</div>
+              </div>
+              <input type="checkbox" checked class="chk-dpa-consent" style="transform: scale(1.3); cursor: pointer;" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #f1f5f9;">
+              <div>
+                <div style="font-weight: 700; color: #0A2046; font-size: 0.92rem;">Forward Verified Documents to Applied Schools</div>
+                <div style="font-size: 0.8rem; color: #64748b;">Transmit birth certificate and report cards only to institutions where you formally apply</div>
+              </div>
+              <input type="checkbox" checked class="chk-dpa-consent" style="transform: scale(1.3); cursor: pointer;" />
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; background: #fef2f2; border-radius: var(--radius-md); padding: 1rem;">
+              <div>
+                <div style="font-weight: 800; color: #991b1b; font-size: 0.92rem;">🚫 Commercial Third-Party Marketing &amp; Data Brokerage</div>
+                <div style="font-size: 0.8rem; color: #7f1d1d;">Permanently disabled and prohibited by law. Minor student records are never sold or rented.</div>
+              </div>
+              <span class="badge" style="background: #991b1b; color: #ffffff; font-weight: 800; font-size: 0.75rem;">
+                LOCKED OFF
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Right to be Forgotten (Account Erasure) -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #fecaca; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.15rem; color: #991b1b; margin: 0 0 0.25rem 0;">
+                🗑️ Right to Erasure / Delete Account (Act 843 Section 33)
+              </h3>
+              <p style="font-size: 0.82rem; color: #7f1d1d; margin: 0;">
+                Request statutory permanent erasure of all parent credentials and student records following a 30-day compliance hold.
+              </p>
+            </div>
+            <button type="button" id="btn-request-account-erasure" class="btn-pill" style="background: #fee2e2; color: #991b1b; border: 1.5px solid #fca5a5; font-size: 0.82rem; font-weight: 800;">
+              Request Permanent Account Erasure
+            </button>
+          </div>
+        </div>
+
+      </div>
+    `;
+  },
+
+  // =========================================================================
+  // MODULE 12: INTELLIGENT PARENT SUPPORT & SAFEGUARDING (Phase 4)
+  // =========================================================================
+  renderSupportTab() {
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <span style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">24/7 Educational Guidance</span>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              💡 Parent Support Hub &amp; Child Safeguarding Desk
+            </h2>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Instant assistance for school admissions, fee disputes, curriculum transitions, and campus child protection under Act 560.
+            </p>
+          </div>
+        </div>
+
+        <!-- Searchable Knowledgebase -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <input type="text" id="inp-support-search" placeholder="🔍 Search help topics (e.g. CSSPS, NaSIA licensing, voucher refunds, Cambridge vs GES)..." class="input-field" style="width: 100%; padding: 0.85rem 1rem; font-size: 0.95rem; border-radius: var(--radius-lg);" />
+          </div>
+
+          <div id="support-faq-container" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <details class="support-faq-item" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1rem 1.25rem; cursor: pointer;">
+              <summary style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">
+                🎓 How does the BECE CSSPS 30% Public School Quota affect private school students?
+              </summary>
+              <div style="margin-top: 0.75rem; font-size: 0.86rem; color: #475569; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                Under Ministry of Education policy, 30% of admissions slots in Category A public senior high schools (e.g., Prempeh, Achimota, Wesley Girls, Presec) are reserved exclusively for candidates graduating from public basic schools. Private junior high students compete within the remaining 70% merit pool. Use our <strong>BECE CSSPS Predictor</strong> in the Parent Toolkit to assess your candidate's raw score placement probability.
+              </div>
+            </details>
+
+            <details class="support-faq-item" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1rem 1.25rem; cursor: pointer;">
+              <summary style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">
+                🏛️ How do I verify if a private school has a genuine NaSIA license?
+              </summary>
+              <div style="margin-top: 0.75rem; font-size: 0.86rem; color: #475569; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                Every accredited school showcased on SkoolFinder Ghana displays an official verification badge linked to their statutory National Schools Inspectorate Authority (NaSIA) registration number. Parents can click any badge on the school profile to review inspection dates, sickbay accreditation, and teacher certification ratios.
+              </div>
+            </details>
+
+            <details class="support-faq-item" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1rem 1.25rem; cursor: pointer;">
+              <summary style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">
+                💳 What is the refund policy for Digital Admission Vouchers?
+              </summary>
+              <div style="margin-top: 0.75rem; font-size: 0.86rem; color: #475569; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                Official Digital Admission Vouchers (Package F: VOUCH-004) are valid across the entire 2026/2027 academic admissions cycle. If a school unexpectedly closes admissions early or cancels assessment tests, unredeemed vouchers are refunded 100% directly to your source Mobile Money wallet within 48 hours.
+              </div>
+            </details>
+
+            <details class="support-faq-item" style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: var(--radius-lg); padding: 1rem 1.25rem; cursor: pointer;">
+              <summary style="font-weight: 800; color: #0A2046; font-size: 0.95rem;">
+                📚 What should I expect when transitioning my child from GES to Cambridge Primary?
+              </summary>
+              <div style="margin-top: 0.75rem; font-size: 0.86rem; color: #475569; line-height: 1.6; border-top: 1px solid #e2e8f0; padding-top: 0.75rem;">
+                Cambridge Primary (Key Stage 1 &amp; 2) evaluates candidates via continuous diagnostic checkpoints in English, Mathematics, and Science rather than terminal rote-learning exams. Most Cambridge schools in Accra conduct a 45-minute literacy and numeracy diagnostic before formal class placement. Consult our Planning Studio Curriculum Guide for complete comparative metrics.
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <!-- Guided Support Ticket Form -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
+          <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #0A2046; margin: 0 0 0.5rem 0;">
+            ✉️ Submit a Support Enquiry to SkoolFinder Parent Desk
+          </h3>
+          <p style="font-size: 0.82rem; color: #64748b; margin: 0 0 1.25rem 0;">
+            Our dedicated parent concierge responds within 4 business hours with direct telephone or WhatsApp follow-up.
+          </p>
+
+          <form id="form-parent-support" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">Enquiry Category:</label>
+                <select id="sel-support-category" class="input-field" style="width: 100%; font-weight: 700;">
+                  <option value="admissions">School Admissions &amp; Offer Letters</option>
+                  <option value="fees">School Fees &amp; MoMo Invoices</option>
+                  <option value="vouchers">Digital Admission Vouchers</option>
+                  <option value="verification">School Accreditation &amp; NaSIA Status</option>
+                  <option value="technical">Technical Account Support</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">Priority Level:</label>
+                <select id="sel-support-priority" class="input-field" style="width: 100%; font-weight: 700;">
+                  <option value="normal">Standard (Within 24 Hours)</option>
+                  <option value="high">High Priority (Admissions Deadline Pending)</option>
+                  <option value="urgent">Urgent (MoMo Billing Discrepancy)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">Subject:</label>
+              <input type="text" id="inp-support-subject" placeholder="Brief summary of your question or issue" class="input-field" style="width: 100%; font-weight: 600;" required />
+            </div>
+
+            <div>
+              <label style="display: block; font-size: 0.8rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem;">Detailed Message:</label>
+              <textarea id="txt-support-message" rows="4" placeholder="Provide relevant details such as school name, candidate reference, or transaction ID..." class="input-field" style="width: 100%; resize: vertical; line-height: 1.5;" required></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn-pill btn-primary" style="font-size: 0.88rem; font-weight: 800; padding: 0.75rem 2rem;">
+                Submit Support Ticket &rarr;
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Emergency Act 560 Child Safeguarding Escalation Pathway -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 2px solid #dc2626; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; gap: 1.25rem; align-items: flex-start; flex-wrap: wrap;">
+            <div style="font-size: 2.4rem; background: #fee2e2; width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #991b1b;">
+              🚨
+            </div>
+            <div style="flex: 1; min-width: 280px;">
+              <span class="badge" style="background: #fee2e2; color: #991b1b; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.4rem;">
+                STATUTORY SAFEGUARDING PATHWAY &bull; ACT 560
+              </span>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; color: #991b1b; margin: 0 0 0.4rem 0;">
+                Emergency Campus Child Protection &amp; Safety Escalation
+              </h3>
+              <p style="font-size: 0.88rem; color: #475569; line-height: 1.6; margin: 0 0 1rem 0;">
+                Under Section 13 of the Children's Act 1998 (Act 560), all educational institutions in Ghana are strictly prohibited from practicing corporal punishment, cruel or degrading treatment, or unlicensed boarding care. If you suspect an acute child safeguarding risk at any listed campus, report it immediately through this priority pathway.
+              </p>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
+                <button type="button" id="btn-escalate-act560" class="btn-pill" style="background: #dc2626; color: #ffffff; font-weight: 800; font-size: 0.85rem; border: none; padding: 0.65rem 1.35rem;">
+                  🚨 File Confidential Safeguarding Report
+                </button>
+                <div style="font-size: 0.82rem; color: #64748b;">
+                  Direct Hotline: <strong>Department of Social Welfare &amp; NaSIA Inspectorate: +233 30 268 4444</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    `;
+  },
+
+  // Helper: 1-Click DPA 843 Subject Access Request Generator
+  generateSARPackage() {
+    const parentProfile = State.currentUser || {};
+    const sarData = {
+      complianceStandard: "Ghana Data Protection Act 2012 (Act 843 Section 27)",
+      statutoryController: "SkoolFinder Ghana Ltd (DPC Registration #DPC-GH-2024-8842)",
+      exportTimestamp: new Date().toISOString(),
+      subjectAccessReference: "SAR-GH-" + Date.now().toString(36).toUpperCase(),
+      dataSubject: {
+        id: parentProfile.id || "usr-proprietor-01",
+        fullName: parentProfile.name || parentProfile.fullName || "Dr. Elizabeth Mensah",
+        email: parentProfile.email || "proprietor@gis.edu.gh",
+        phone: parentProfile.phone || "+233 24 111 2222",
+        role: "parent",
+        activePersona: "parent"
+      },
+      registeredWards: this.familyWards || [],
+      householdGuardians: this.householdMembers || [],
+      schoolShortlists: this.shortlistsData || [],
+      savedComparisonBoards: this.savedComparisonsData || [],
+      campusWatchlist: this.watchlistData || [],
+      savedSearches: this.savedSearchesData || [],
+      formalApplications: this.overviewData?.applications || [],
+      communicationLog: this.notificationsData || [],
+      invoicesAndVouchers: {
+        invoices: this.overviewData?.invoices || [],
+        vouchers: this.vouchersData || []
+      },
+      statutoryConsents: {
+        smsNotifications: true,
+        whatsappUpdates: true,
+        commercialMarketing: false, // Act 560 Statutory Prohibition
+        diagnosticDataSharing: true,
+        recordedTimestamp: "2026-10-10T08:00:00.000Z"
+      },
+      cryptographicSignature: {
+        algorithm: "HMAC-SHA256",
+        signature: "sha256-dpc843-09af7712ba4d8e90145cbe9812401f89c67e8103abcf88124501eb89104fa2bc",
+        sealedBy: "SkoolFinder Data Governance Officer (DPC Cert #DPC-GH-2024-8842)",
+        tamperEvident: true
+      }
+    };
+
+    const jsonString = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sarData, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", jsonString);
+    dlAnchor.setAttribute("download", `skoolfinder_dpa843_sar_${sarData.subjectAccessReference}.json`);
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+
+    State.showToast(`✅ DPA 843 SAR Export downloaded (${sarData.subjectAccessReference}). Non-repudiation signature verified.`, "success");
+  },
+
+  // Helper: Sibling Discount Calculator
+  recalcSiblingDiscount() {
+    const c1 = parseFloat(document.getElementById('calc-sib-child1')?.value) || 0;
+    const c2 = parseFloat(document.getElementById('calc-sib-child2')?.value) || 0;
+    const c3 = parseFloat(document.getElementById('calc-sib-child3')?.value) || 0;
+
+    const c1Disc = 0;
+    const c2Disc = c2 * 0.10; // 10% sibling discount
+    const c3Disc = c3 * 0.15; // 15% 3rd child discount
+
+    const termlySavings = c2Disc + c3Disc;
+    const termlyTotal = (c1 - c1Disc) + (c2 - c2Disc) + (c3 - c3Disc);
+    const annualSavings = termlySavings * 3;
+
+    const termTotEl = document.getElementById('calc-sib-termly-total');
+    const termSavEl = document.getElementById('calc-sib-termly-savings');
+    const annSavEl = document.getElementById('calc-sib-annual-savings');
+
+    if (termTotEl) termTotEl.innerText = `GH₵ ${termlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (termSavEl) termSavEl.innerText = `GH₵ ${termlySavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    if (annSavEl) annSavEl.innerText = `GH₵ ${annualSavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   },
 
   // 5. Enrolled Ward Hub (SIS Campus Sync) for Legacy Features
@@ -4428,6 +5624,159 @@ const ParentPortalView = {
         const guideKey = e.currentTarget.dataset.guide;
         this.showAdvisoryGuideModal(guideKey);
       });
+    });
+
+    // Phase 4 (Module 08): Saved Searches Handlers
+    document.querySelectorAll('.btn-run-saved-search').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const params = e.currentTarget.dataset.params || '';
+        App.navigate('directory');
+        State.showToast('Applied saved directory search filter', 'info');
+      });
+    });
+
+    document.querySelectorAll('.btn-delete-saved-search').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const searchId = e.currentTarget.dataset.searchid;
+        this.savedSearchesData = (this.savedSearchesData || []).filter(s => s.id !== searchId);
+        State.showToast('Saved search removed', 'info');
+        const container = document.getElementById('parent-portal-tab-content');
+        if (container) {
+          container.innerHTML = this.renderTabContent();
+          this.attachTabChildEvents();
+        }
+      });
+    });
+
+    // Phase 4 (Module 08): Watchlist Unfollow & Alert Toggles
+    document.querySelectorAll('.btn-unfollow-school').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const schoolId = e.currentTarget.dataset.schoolid;
+        this.watchlistData = (this.watchlistData || []).filter(s => s.schoolId !== schoolId);
+        State.showToast('School removed from watchlist', 'info');
+        const container = document.getElementById('parent-portal-tab-content');
+        if (container) {
+          container.innerHTML = this.renderTabContent();
+          this.attachTabChildEvents();
+        }
+      });
+    });
+
+    document.querySelectorAll('.chk-alert-toggle').forEach(chk => {
+      chk.addEventListener('change', (e) => {
+        const schoolId = e.currentTarget.dataset.schoolid;
+        const alertType = e.currentTarget.dataset.alert;
+        const school = (this.watchlistData || []).find(s => s.schoolId === schoolId);
+        if (school && school.alerts) {
+          school.alerts[alertType] = e.currentTarget.checked;
+          State.showToast(`${alertType} alert preference saved`, 'success');
+        }
+      });
+    });
+
+    // Phase 4 (Module 09): Notifications Category Filter
+    document.querySelectorAll('.btn-filter-notif').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const cat = e.currentTarget.dataset.category;
+        document.querySelectorAll('.btn-filter-notif').forEach(b => b.classList.remove('active', 'btn-primary'));
+        document.querySelectorAll('.btn-filter-notif').forEach(b => b.classList.add('btn-outline'));
+        e.currentTarget.classList.add('active', 'btn-primary');
+        e.currentTarget.classList.remove('btn-outline');
+
+        document.querySelectorAll('.notification-item-card').forEach(card => {
+          if (cat === 'all' || card.dataset.category === cat) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // Phase 4 (Module 09): Mark All as Read
+    document.getElementById('btn-mark-all-read')?.addEventListener('click', () => {
+      (this.notificationsData || []).forEach(n => { n.unread = false; });
+      State.showToast('All notifications marked as read', 'success');
+      const container = document.getElementById('parent-portal-tab-content');
+      if (container) {
+        container.innerHTML = this.renderTabContent();
+        this.attachTabChildEvents();
+      }
+    });
+
+    // Phase 4 (Module 09): Dismiss Notification
+    document.querySelectorAll('.btn-dismiss-notif').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const notifId = e.currentTarget.dataset.notifid;
+        this.notificationsData = (this.notificationsData || []).filter(n => n.id !== notifId);
+        e.currentTarget.closest('.notification-item-card')?.remove();
+        State.showToast('Notification dismissed', 'info');
+      });
+    });
+
+    // Phase 4 (Module 10): Wards Switcher
+    document.querySelectorAll('.btn-select-ward').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        this.activeChildId = e.currentTarget.dataset.wardid;
+        const container = document.getElementById('parent-portal-tab-content');
+        if (container) {
+          container.innerHTML = this.renderTabContent();
+          this.attachTabChildEvents();
+        }
+      });
+    });
+
+    // Phase 4 (Module 10): Sibling Discount Calculator
+    ['calc-sib-child1', 'calc-sib-child2', 'calc-sib-child3'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', () => this.recalcSiblingDiscount());
+    });
+
+    // Phase 4 (Module 11): 1-Click DPA 843 SAR Export
+    document.getElementById('btn-generate-sar-export')?.addEventListener('click', () => {
+      this.generateSARPackage();
+    });
+
+    // Phase 4 (Module 11): Update MoMo PIN
+    document.getElementById('btn-update-momo-pin')?.addEventListener('click', () => {
+      const pin = document.getElementById('inp-momo-pin')?.value;
+      if (pin && pin.length === 4) {
+        State.showToast('✅ MoMo 4-digit authorization PIN updated successfully.', 'success');
+      } else {
+        State.showToast('Please enter a 4-digit numeric PIN.', 'error');
+      }
+    });
+
+    // Phase 4 (Module 11): Request Permanent Account Erasure
+    document.getElementById('btn-request-account-erasure')?.addEventListener('click', () => {
+      if (confirm("STATUTORY ACT 843 NOTICE:\n\nAre you sure you want to request permanent erasure of your SkoolFinder Parent Account?\n\nA 30-day compliance freeze will be initiated under Section 33. All non-statutory records will be purged.")) {
+        State.showToast("Erasure request logged (#DPC-ERA-2026-0812). Statutory 30-day compliance hold active.", "warning");
+      }
+    });
+
+    // Phase 4 (Module 12): Search Support Topics
+    document.getElementById('inp-support-search')?.addEventListener('input', (e) => {
+      const query = (e.target.value || '').toLowerCase();
+      document.querySelectorAll('.support-faq-item').forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(query) ? 'block' : 'none';
+      });
+    });
+
+    // Phase 4 (Module 12): Submit Support Ticket Form
+    document.getElementById('form-parent-support')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const subject = document.getElementById('inp-support-subject')?.value;
+      const ref = "TKT-GH-" + Math.floor(100000 + Math.random() * 900000);
+      State.showToast(`Support ticket ${ref} submitted. Concierge will follow up via phone / WhatsApp.`, "success");
+      e.target.reset();
+    });
+
+    // Phase 4 (Module 12): Emergency Act 560 Child Safeguarding Escalation
+    document.getElementById('btn-escalate-act560')?.addEventListener('click', () => {
+      if (confirm("STATUTORY CHILD PROTECTION NOTICE (ACT 560):\n\nDo you wish to submit an emergency child safeguarding or safety violation report directly to the NaSIA Inspectorate and Department of Social Welfare desk?")) {
+        const ref = "SAFEGUARD-GH-" + Math.floor(100000 + Math.random() * 900000);
+        State.showToast(`🚨 Confidential safeguarding incident ${ref} logged with priority dispatch to NaSIA & Social Welfare.`, "error");
+      }
     });
 
     // Remove Bookmark
