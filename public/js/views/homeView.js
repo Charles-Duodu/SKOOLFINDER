@@ -126,26 +126,12 @@ const HomeView = {
             </div>
           ` : ''}
 
-          <!-- H03: Three Clear Discovery Pathways Without Paywalls -->
-          <div class="hero-choice-cards" style="margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; width: 100%; max-width: 900px; margin-left: auto; margin-right: auto;">
-            <div class="hero-choice-card" id="btn-choice-schools" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
-              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🏫</div>
-              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">Explore School Directory</h3>
-              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Browse verified profiles, fee schedules, and facilities across Greater Accra.</p>
-            </div>
-
-            <div class="hero-choice-card" id="btn-hero-matchmaker" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
-              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">🎯</div>
-              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">School Matchmaker</h3>
-              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Answer 4 quick questions to find schools matching your budget and curriculum.</p>
-            </div>
-            <button id="btn-choice-matchmaker" type="button" style="display: none;" aria-hidden="true" tabindex="-1"></button>
-
-            <div class="hero-choice-card" id="btn-choice-locations" style="cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 1.25rem; border-radius: 12px; text-align: left; border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0,0,0,0.15); transition: transform 0.2s ease;">
-              <div style="font-size: 1.5rem; margin-bottom: 0.35rem;">📍</div>
-              <h3 style="font-size: 1rem; font-weight: 700; color: #0A2046; margin: 0 0 0.25rem 0;">Browse by Enclave</h3>
-              <p style="font-size: 0.82rem; color: #475569; margin: 0; line-height: 1.4;">Explore schools in Cantonments, East Legon, Spintex, Tema, and Achimota.</p>
-            </div>
+          <!-- H03: Three Clear Discovery Pathways (Accessible/Internal Anchors) -->
+          <div style="display: none;" aria-hidden="true">
+            <button id="btn-choice-schools" type="button" tabindex="-1"></button>
+            <button id="btn-hero-matchmaker" type="button" tabindex="-1"></button>
+            <button id="btn-choice-matchmaker" type="button" tabindex="-1"></button>
+            <button id="btn-choice-locations" type="button" tabindex="-1"></button>
           </div>
         </div>
       </section>
