@@ -8,6 +8,7 @@ const Navbar = {
 
   getActivePortal() {
     const view = State.currentView;
+    if (view === 'parents' || view === 'parent-portal') return 'parent';
     if (view === 'schools' || view === 'dashboard') return 'school';
     if (view === 'teachers' || view === 'jobs') return 'teacher';
     if (view === 'suppliers' || view === 'supplier-dashboard') return 'supplier';
@@ -113,7 +114,7 @@ const Navbar = {
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.45rem;">
                 ${State.currentUser.role !== 'super_admin' ? `
                   <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.activePersona === 'school_admin' ? 'btn-gold' : (State.currentUser.activePersona === 'teacher' ? 'btn-emerald' : 'btn-primary')}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your active workspace">
-                    <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : '🏫 School OS'))}</span>
+                    <span>${State.currentUser.activePersona === 'parent' ? '👨‍👩‍👧 Parent Space' : (State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : '👨‍👩‍👧 Parent Space')))}</span>
                   </button>
                 ` : ''}
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.8rem; padding: 0.38rem 0.75rem; text-transform: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;" title="Logged in as ${State.currentUser.email || ''}">
@@ -146,6 +147,11 @@ const Navbar = {
             </span>
             <div class="who-roles-list">
               ${showOnlyActive ? `
+                ${activePortal === 'parent' ? `
+                  <a href="/parents" id="who-nav-parent" class="who-role-pill active">
+                    <span>👨‍👩‍👧</span> Parent Space
+                  </a>
+                ` : ''}
                 ${activePortal === 'school' ? `
                   <a href="/schools" id="who-nav-school" class="who-role-pill active">
                     <span>🏫</span> School Owner / Proprietor
@@ -170,6 +176,9 @@ const Navbar = {
                   <span>⇄</span> Switch Role
                 </button>
               ` : `
+                <a href="/parents" id="who-nav-parent" class="who-role-pill ${activePortal === 'parent' ? 'active' : ''}">
+                  <span>👨‍👩‍👧</span> Parent
+                </a>
                 <a href="/teachers" id="who-nav-teacher" class="who-role-pill ${activePortal === 'teacher' ? 'active' : ''}">
                   <span>🧑‍🏫</span> Teacher
                 </a>
@@ -218,6 +227,11 @@ const Navbar = {
                 ` : ''}
               </div>
               ${showOnlyActive ? `
+                ${activePortal === 'parent' ? `
+                  <a href="/parents" id="mob-who-parent" class="mobile-nav-item active">
+                    <span>👨‍👩‍👧</span> Parent Space
+                  </a>
+                ` : ''}
                 ${activePortal === 'school' ? `
                   <a href="/schools" id="mob-who-school" class="mobile-nav-item active">
                     <span>🏫</span> School Owner / Proprietor
@@ -239,6 +253,9 @@ const Navbar = {
                   </a>
                 ` : ''}
               ` : `
+                <a href="/parents" id="mob-who-parent" class="mobile-nav-item ${activePortal === 'parent' ? 'active' : ''}">
+                  <span>👨‍👩‍👧</span> Parent
+                </a>
                 <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item ${activePortal === 'teacher' ? 'active' : ''}">
                   <span>🧑‍🏫</span> Teacher
                 </a>
@@ -337,6 +354,16 @@ const Navbar = {
     });
 
 
+    // Role 1: Parent
+    const handleParentNav = (e) => {
+      e.preventDefault();
+      this.isSwitchingRole = false;
+      closeMobDrawer();
+      App.navigate('parents');
+    };
+    document.getElementById('who-nav-parent')?.addEventListener('click', handleParentNav);
+    document.getElementById('mob-who-parent')?.addEventListener('click', handleParentNav);
+
     // Role 2: Teacher
     const handleTeacherNav = (e) => {
       e.preventDefault();
@@ -423,6 +450,8 @@ const Navbar = {
         App.navigate('teachers');
       } else if (activePersona === 'supplier') {
         App.navigate('suppliers');
+      } else if (activePersona === 'parent') {
+        App.navigate('parents');
       } else if (activePersona === 'super_admin') {
         App.navigate('admin');
       } else {

@@ -46,6 +46,7 @@ const Footer = {
                 Institutional Portals
               </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
+                <li><a href="/parents" class="footer-portal-link" data-portal="parents" style="color: #fde68a; font-weight: 700;">👨‍👩‍👧 Free Parents Portal (100% Free)</a></li>
                 <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers & B2B Procurement</a></li>
                 <li><a href="/for-suppliers" class="footer-persona-link" data-view="for-suppliers" style="color: #fde68a;">✦ Why Join: For Suppliers</a></li>
                 <li><a href="/schools" class="footer-portal-link" data-portal="schools">🏫 School Management OS</a></li>

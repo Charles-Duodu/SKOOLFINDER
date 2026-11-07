@@ -120,12 +120,9 @@ const App = {
   },
 
   async navigate(viewName, param = null, updateUrl = true) {
-    // Normalization & Aliases (Parents portal decommissioned -> redirect to Directory)
-    if (viewName === 'parents' || viewName === 'parent-portal') {
-      viewName = 'directory';
-      if (updateUrl) {
-        window.history.replaceState({ view: 'directory' }, '', '/directory');
-      }
+    // Normalization & Aliases (Parent Portal Route Normalization)
+    if (viewName === 'parent-portal') {
+      viewName = 'parents';
     }
 
     if (viewName === 'jobs') viewName = 'teachers';
@@ -273,6 +270,13 @@ const App = {
         canonicalUrl: 'https://skoolfinder.vercel.app/resources',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Resource Centre', url: '/resources' }]
       },
+      'parents': {
+        title: 'Parent Admissions Cockpit & School Journey Tracker | SkoolFinder Ghana',
+        description: 'Track school applications, campus tour bookings, 5-state decision board shortlists, and fee planning in one 100% free parent dashboard.',
+        keywords: 'parents portal Ghana, school admissions tracker, school shortlist Accra, child education planning',
+        canonicalUrl: 'https://skoolfinder.vercel.app/parents',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parent Space', url: '/parents' }]
+      },
       'pricing': {
         title: 'Platform Pricing & Plans | SkoolFinder Ghana',
         description: 'Transparent subscription pricing for Ghanaian schools, verified teachers, and private tutors. Approved Ghana Cedis plans with zero hidden fees.',
@@ -368,6 +372,10 @@ const App = {
         content = await MatchmakerView.render();
         mainRoot.innerHTML = content;
         MatchmakerView.attachEvents();
+      } else if (viewName === 'parents') {
+        content = await ParentPortalView.render();
+        mainRoot.innerHTML = content;
+        ParentPortalView.attachEvents();
       } else if (viewName === 'teachers') {
         content = await TeachersView.render();
         mainRoot.innerHTML = content;
@@ -496,8 +504,8 @@ const App = {
         'cssps': 'cssps',
         'past-questions': 'resources',
         'resources': 'resources',
-        'parents': 'directory',
-        'parent-portal': 'directory',
+        'parents': 'parents',
+        'parent-portal': 'parents',
         'teachers': 'teachers',
         'jobs': 'teachers',
         'suppliers': 'suppliers',

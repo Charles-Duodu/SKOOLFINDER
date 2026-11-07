@@ -9,8 +9,8 @@ const MobileNav = {
 
     const isHome = current === 'home';
     const isDiscover = current === 'directory';
-    const isExplore = current === 'explore' || current === 'matchmaker';
     const isCompare = current === 'compare';
+    const isParents = current === 'parents' || current === 'parent-portal';
     const isSuppliers = current === 'suppliers' || current === 'supplier-dashboard';
 
     return `
@@ -37,18 +37,7 @@ const MobileNav = {
           <span class="mobile-dock-label">Discover</span>
         </button>
 
-        <!-- 3. Explore Tab (Curated Hubs) -->
-        <button id="mob-nav-explore" class="mobile-dock-btn ${isExplore ? 'active' : ''}" aria-label="Explore Hubs" aria-selected="${isExplore}">
-          <div class="mobile-dock-icon-wrap">
-            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
-            </svg>
-          </div>
-          <span class="mobile-dock-label">Explore</span>
-        </button>
-
-        <!-- 4. Compare Tab (with Dynamic Badge) -->
+        <!-- 3. Compare Tab (with Dynamic Badge) -->
         <button id="mob-nav-compare" class="mobile-dock-btn ${isCompare ? 'active' : ''}" aria-label="Compare Schools" aria-selected="${isCompare}">
           <div class="mobile-dock-icon-wrap">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -61,6 +50,19 @@ const MobileNav = {
             ${compCount > 0 ? `<span id="mob-dock-compare-badge" class="mobile-dock-badge">${compCount}</span>` : ''}
           </div>
           <span class="mobile-dock-label">Compare</span>
+        </button>
+
+        <!-- 4. Parents Tab (Family Cockpit) -->
+        <button id="mob-nav-parents" class="mobile-dock-btn ${isParents ? 'active' : ''}" aria-label="Parents & Family Cockpit" aria-selected="${isParents}">
+          <div class="mobile-dock-icon-wrap">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+          </div>
+          <span class="mobile-dock-label">Parents</span>
         </button>
 
         <!-- 5. Suppliers Tab (B2B Procurement) -->
@@ -81,8 +83,8 @@ const MobileNav = {
   attachEvents() {
     const btnHome = document.getElementById('mob-nav-home');
     const btnDiscover = document.getElementById('mob-nav-discover');
-    const btnExplore = document.getElementById('mob-nav-explore');
     const btnCompare = document.getElementById('mob-nav-compare');
+    const btnParents = document.getElementById('mob-nav-parents');
     const btnSuppliers = document.getElementById('mob-nav-suppliers');
 
     if (btnHome) {
@@ -99,17 +101,17 @@ const MobileNav = {
       };
     }
 
-    if (btnExplore) {
-      btnExplore.onclick = (e) => {
-        e.preventDefault();
-        if (typeof App !== 'undefined') App.navigate('matchmaker');
-      };
-    }
-
     if (btnCompare) {
       btnCompare.onclick = (e) => {
         e.preventDefault();
         if (typeof App !== 'undefined') App.navigate('compare');
+      };
+    }
+
+    if (btnParents) {
+      btnParents.onclick = (e) => {
+        e.preventDefault();
+        if (typeof App !== 'undefined') App.navigate('parents');
       };
     }
 

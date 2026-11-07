@@ -181,6 +181,181 @@ const HomeView = {
         </div>
       </section>
 
+      <!-- Section: Two Ways to Explore. Both Completely Free. (Free Parent Access Strategy v1.2 / v1.3) -->
+      <section id="section-two-ways-free" style="background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%); padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative;">
+        <div class="container">
+          <!-- Section Eyebrow, Heading & Subtitle -->
+          <div style="text-align: center; max-width: 820px; margin: 0 auto 3rem;">
+            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.35rem 0.95rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.45rem; border: 1px solid #bfdbfe; margin-bottom: 0.85rem;">
+              <span>👨‍👩‍👧</span> FOR EVERY PARENT &amp; GUARDIAN
+            </span>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2.35rem; font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.85rem 0;">
+              Two Ways to Explore. Both Completely Free.
+            </h2>
+            <p style="color: #64748b; font-size: 1.05rem; line-height: 1.65; margin: 0 auto;">
+              Find the right school for your child, your way. Explore schools freely as a guest, or create a free Parent account to save favourites, receive personalised school recommendations and plan your child's educational journey.
+            </p>
+          </div>
+
+          <!-- Dual Cards Grid: Side-by-Side on Desktop, Stacked on Mobile -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; align-items: stretch; max-width: 1040px; margin: 0 auto;">
+            
+            <!-- LEFT CARD: EXPLORE AS A GUEST (ACCESS MODE A) -->
+            <div class="access-mode-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 20px; padding: 2.25rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.2s, box-shadow 0.2s;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                  <span style="font-size: 0.8rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; background: #f1f5f9; padding: 0.25rem 0.75rem; border-radius: 9999px;">
+                    ACCESS MODE A
+                  </span>
+                  <span style="font-family: var(--font-heading, sans-serif); font-size: 1.4rem; font-weight: 900; color: #0A2046;">
+                    GH₵ 0
+                  </span>
+                </div>
+
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.55rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Explore as a Guest
+                </h3>
+                <p style="color: #059669; font-size: 0.88rem; font-weight: 700; margin: 0 0 1.25rem 0;">
+                  No account. No sign-up. No payment.
+                </p>
+
+                <div style="font-size: 0.84rem; color: #64748b; margin-bottom: 1.5rem; line-height: 1.5;">
+                  Immediate access to core public school discovery. Inspect profiles and compare options without sharing personal details.
+                </div>
+
+                <!-- Benefits List -->
+                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.92rem; color: #334155;">
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Browse and discover private schools across Greater Accra &amp; Kumasi.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Search by location, school level, fees, and curriculum.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Explore school profiles, facilities, and published fees.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Compare up to four schools side-by-side.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Use the basic 2-Minute School Matchmaker.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.3;">✓</span>
+                    <span>Contact schools and request campus visits.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <button type="button" id="btn-home-guest-explore" class="btn-pill btn-outline" style="width: 100%; justify-content: center; padding: 0.85rem 1.25rem; font-size: 1rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+                  <span>🔍</span> Explore Schools &rarr;
+                </button>
+                <div style="text-align: center; font-size: 0.78rem; color: #64748b; margin-top: 0.65rem;">
+                  Immediate access &bull; No cookies or data collected
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT CARD: JOIN AS A PARENT (ACCESS MODE B) -->
+            <div class="access-mode-card" style="background: #ffffff; border: 2.5px solid #D5A63B; border-radius: 20px; padding: 2.25rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 12px 35px rgba(213,166,59,0.14); position: relative; transition: transform 0.2s, box-shadow 0.2s;">
+              <!-- Gold Pill Header -->
+              <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #D5A63B 0%, #b45309 100%); color: #ffffff; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.3rem 1.1rem; border-radius: 9999px; box-shadow: 0 4px 10px rgba(180,83,9,0.25); white-space: nowrap;">
+                ⭐ RECOMMENDED FOR PARENTS &amp; FAMILIES
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; margin-top: 0.25rem;">
+                  <span style="font-size: 0.8rem; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em; background: #fef3c7; padding: 0.25rem 0.75rem; border-radius: 9999px;">
+                    ACCESS MODE B
+                  </span>
+                  <span style="font-family: var(--font-heading, sans-serif); font-size: 1.4rem; font-weight: 900; color: #0A2046;">
+                    GH₵ 0 <span style="font-size: 0.75rem; color: #059669; font-weight: 700;">(FREE FOREVER)</span>
+                  </span>
+                </div>
+
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.55rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Create Your Free Parent Account
+                </h3>
+                <p style="color: #92400e; font-size: 0.88rem; font-weight: 700; margin: 0 0 1.25rem 0;">
+                  Everything guests enjoy, plus more personalised tools. Still completely free.
+                </p>
+
+                <div style="font-size: 0.84rem; color: #64748b; margin-bottom: 1.5rem; line-height: 1.5;">
+                  Set up your private family cockpit to preserve comparisons, track admission milestones, and organize decisions for every child.
+                </div>
+
+                <!-- Benefits List -->
+                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.92rem; color: #1e293b;">
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Save favourite schools</strong> and searches with 1-click guest transfer.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Receive personalised school recommendations</strong> tailored to your child.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Follow schools &amp; Watchlist:</strong> Get alerts on fee updates and admissions dates.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Save and revisit school comparisons</strong> anytime from any device.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Access private Parent Dashboard:</strong> 5-State Decision Board with notes.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Track enquiries, visits &amp; admissions</strong> with Next Best Action guidance.</span>
+                  </li>
+                  <li style="display: flex; gap: 0.65rem; align-items: flex-start;">
+                    <span style="color: #D5A63B; font-weight: 900; font-size: 1.05rem; line-height: 1.3;">✦</span>
+                    <span><strong>Parent Planning Studio:</strong> Estimate school costs and prepare visit checklists.</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <button type="button" id="btn-home-parent-signup" class="btn-pill btn-gold" style="width: 100%; justify-content: center; padding: 0.85rem 1.25rem; font-size: 1.02rem; font-weight: 800; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 14px rgba(213,166,59,0.35); transition: all 0.2s;">
+                  <span>✨</span> Create Free Parent Account &rarr;
+                </button>
+                <div style="text-align: center; font-size: 0.78rem; color: #64748b; margin-top: 0.65rem;">
+                  Takes 30 seconds &bull; Zero credit card or payment required
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Reassurance Footer Strip -->
+          <div style="margin-top: 3.5rem; text-align: center; padding-top: 2rem; border-top: 1px solid var(--border-light, #e2e8f0);">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.95rem; font-weight: 700; color: #0A2046; margin-bottom: 0.75rem; flex-wrap: wrap;">
+              <span>🛡️</span>
+              <span>100% Free to Explore</span>
+              <span style="color: #cbd5e1;">&bull;</span>
+              <span>No Subscription Fees</span>
+              <span style="color: #cbd5e1;">&bull;</span>
+              <span>No Payment Card Required</span>
+            </div>
+            <div style="font-size: 0.88rem; color: #64748b;">
+              Already have an account? 
+              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.88rem; padding: 0.2rem 0.4rem;">
+                Sign in to continue your school journey &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       <!-- H16: How We Verify School Information & Trust Strip -->
       <section style="background: #ffffff; padding: 3.5rem 0; border-bottom: 1px solid var(--border-light);">
         <div class="container">
@@ -995,6 +1170,32 @@ const HomeView = {
         } else {
           window.location.href = targetUrl;
         }
+      }
+    });
+
+    // Dual Free Access Section Handlers (Free Parent Access Strategy v1.2 / v1.3)
+    document.getElementById('btn-home-guest-explore')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-home-parent-signup')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({
+          initialTab: 'signup',
+          notice: 'Create your 100% free Parent account to save shortlists, plan admissions, and track school journeys.'
+        });
+      }
+    });
+
+    document.getElementById('btn-home-parent-signin')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
+        Modals.openLoginModal({
+          initialTab: 'signin',
+          notice: 'Sign in to access your saved shortlists, school journeys, and parent planning tools.'
+        });
       }
     });
   }
