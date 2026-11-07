@@ -170,18 +170,9 @@ const HomeView = {
           <!-- Dual Master Cards: Compact 720px Width Side-by-Side -->
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; align-items: stretch; max-width: 720px; margin: 0 auto;">
             
-            <!-- LEFT CARD: EXPLORE AS A GUEST (ACCESS MODE A) -->
+            <!-- LEFT CARD: EXPLORE AS A GUEST -->
             <div class="access-mode-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 1.6rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.2s, box-shadow 0.2s;">
               <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                  <span style="font-size: 0.74rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.05em; background: #f1f5f9; padding: 0.2rem 0.6rem; border-radius: 9999px;">
-                    ACCESS MODE A
-                  </span>
-                  <span style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 900; color: #0A2046;">
-                    GH₵ 0
-                  </span>
-                </div>
-
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
                   Explore as a Guest
                 </h3>
@@ -219,22 +210,13 @@ const HomeView = {
               </div>
             </div>
 
-            <!-- RIGHT CARD: JOIN AS A PARENT (ACCESS MODE B) -->
+            <!-- RIGHT CARD: JOIN AS A PARENT -->
             <div class="access-mode-card" style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 1.6rem 1.4rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.12); position: relative; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #D5A63B 0%, #b45309 100%); color: #ffffff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.9rem; border-radius: 9999px; box-shadow: 0 3px 8px rgba(180,83,9,0.25); white-space: nowrap;">
                 ⭐ RECOMMENDED FOR FAMILIES
               </div>
 
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; margin-top: 0.15rem;">
-                  <span style="font-size: 0.74rem; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: 0.05em; background: #fef3c7; padding: 0.2rem 0.6rem; border-radius: 9999px;">
-                    ACCESS MODE B
-                  </span>
-                  <span style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 900; color: #0A2046;">
-                    GH₵ 0 <span style="font-size: 0.72rem; color: #059669; font-weight: 700;">(FREE)</span>
-                  </span>
-                </div>
-
+              <div style="margin-top: 0.45rem;">
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
                   Create Parent Account
                 </h3>
