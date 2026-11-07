@@ -59,7 +59,7 @@ const DashboardView = {
                 <a href="#school-pricing-section" id="btn-landing-pricing" class="btn-pill" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.3); text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; font-weight: 700;">
                   <span>💳</span> View Pricing Plans
                 </a>
-                <button id="btn-landing-signin" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);" onclick="Modals.openParentAuthModal('login')">
+                <button id="btn-landing-signin" class="btn-pill btn-outline" style="font-size: 0.95rem; padding: 0.8rem 1.5rem; color: #ffffff; border-color: rgba(255,255,255,0.4);" onclick="Modals.openLoginModal({ initialTab: 'login_school', notice: 'Sign in to your School Owner & Administrator workspace.' })">
                   Sign In to Workspace
                 </button>
               </div>

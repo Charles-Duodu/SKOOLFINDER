@@ -3,11 +3,11 @@
  * Master Guide v1.0 Sections 9, 10, 11 & Combined Roadmap v1.1
  */
 const PricingView = {
-  activePersona: 'schools', // 'schools' | 'professionals' | 'suppliers' | 'parents'
+  activePersona: 'schools', // 'schools' | 'professionals' | 'suppliers'
   billingInterval: 'monthly', // 'monthly' | 'annual'
 
   async render(initialPersona = 'schools') {
-    if (['schools', 'professionals', 'suppliers', 'parents'].includes(initialPersona)) {
+    if (['schools', 'professionals', 'suppliers'].includes(initialPersona)) {
       this.activePersona = initialPersona;
     }
 
@@ -40,9 +40,6 @@ const PricingView = {
             </button>
             <button role="tab" id="tab-pricing-suppliers" class="btn-pill ${this.activePersona === 'suppliers' ? 'btn-primary' : 'btn-outline'}" aria-selected="${this.activePersona === 'suppliers'}" style="font-size: 0.92rem; padding: 0.6rem 1.35rem; font-weight: 700;">
               <span>📦</span> Educational Suppliers
-            </button>
-            <button role="tab" id="tab-pricing-parents" class="btn-pill ${this.activePersona === 'parents' ? 'btn-primary' : 'btn-outline'}" aria-selected="${this.activePersona === 'parents'}" style="font-size: 0.92rem; padding: 0.6rem 1.35rem; font-weight: 700;">
-              <span>👨‍👩‍👧</span> Parents &amp; Families
             </button>
           </div>
 
@@ -132,7 +129,7 @@ const PricingView = {
     if (this.activePersona === 'schools') return this.renderSchoolsPricing();
     if (this.activePersona === 'professionals') return this.renderProfessionalsPricing();
     if (this.activePersona === 'suppliers') return this.renderSuppliersPricing();
-    return this.renderParentsCharter();
+    return this.renderSchoolsPricing();
   },
 
   // 1. SCHOOLS & PROPRIETORS PRICING
@@ -662,61 +659,6 @@ const PricingView = {
     `;
   },
 
-  // 4. PARENTS & FAMILIES CHARTER
-  renderParentsCharter() {
-    return `
-      <div style="background: #ffffff; border: 1.5px solid var(--border-light); border-radius: var(--radius-xl); padding: 3rem 2.5rem; text-align: center; max-width: 820px; margin: 0 auto;">
-        <span class="badge badge-emerald" style="font-size: 0.85rem; padding: 0.35rem 1rem; font-weight: 800; border-radius: 999px; margin-bottom: 1.25rem; display: inline-block;">
-          👨‍👩‍👧 100% Free Family Discovery &amp; Admissions
-        </span>
-        <h2 style="font-family: var(--font-heading); font-size: 2rem; color: var(--theme-b-navy, #0A2046); margin: 0.5rem 0 1rem 0;">
-          Our Commitment to Ghanaian Families
-        </h2>
-        <p style="color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 650px; margin: 0 auto 2.5rem;">
-          SkoolFinder Ghana does not charge parents or guardians for school discovery, fee research, or admissions tracking. Our core discovery tools are unconditionally open to every Ghanaian citizen and diaspora family.
-        </p>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; text-align: left; margin-bottom: 2.5rem;">
-          <div style="background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
-            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🔍</div>
-            <div style="font-weight: 800; color: var(--theme-b-navy, #0A2046); font-size: 0.95rem;">Unrestricted Search &amp; Profiles</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
-              Full access to published school profiles, NaSIA accreditation status, and verified fee disclosures with zero paywall.
-            </div>
-          </div>
-
-          <div style="background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
-            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">⚖️</div>
-            <div style="font-weight: 800; color: var(--theme-b-navy, #0A2046); font-size: 0.95rem;">4-School Comparison Matrix</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
-              Compare up to 4 schools side-by-side across curricula, fees, class sizes, and boarding options completely free.
-            </div>
-          </div>
-
-          <div style="background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
-            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">🎯</div>
-            <div style="font-weight: 800; color: var(--theme-b-navy, #0A2046); font-size: 0.95rem;">2-Minute Fit Matchmaker</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
-              Transparent recommendation engine with verifiable evidence bullets and zero artificial percentage scores.
-            </div>
-          </div>
-
-          <div style="background: #f8fafc; padding: 1.25rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);">
-            <div style="font-size: 1.5rem; margin-bottom: 0.25rem;">📋</div>
-            <div style="font-weight: 800; color: var(--theme-b-navy, #0A2046); font-size: 0.95rem;">Admissions &amp; Shortlists</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.25rem;">
-              Create your free account to track online admission applications and manage 5-state school shortlists.
-            </div>
-          </div>
-        </div>
-
-        <button id="btn-pricing-parent-cta" class="btn-pill btn-gold" style="font-size: 1rem; padding: 0.8rem 2rem; font-weight: 800;">
-          Start Finding Schools &rarr;
-        </button>
-      </div>
-    `;
-  },
-
   attachEvents(currentPersona = 'schools') {
     // Persona Switcher Tabs
     const setPersona = (persona) => {
@@ -727,7 +669,6 @@ const PricingView = {
     document.getElementById('tab-pricing-schools')?.addEventListener('click', () => setPersona('schools'));
     document.getElementById('tab-pricing-professionals')?.addEventListener('click', () => setPersona('professionals'));
     document.getElementById('tab-pricing-suppliers')?.addEventListener('click', () => setPersona('suppliers'));
-    document.getElementById('tab-pricing-parents')?.addEventListener('click', () => setPersona('parents'));
 
     // Billing Interval Toggle
     document.getElementById('btn-toggle-interval')?.addEventListener('click', () => {
@@ -789,13 +730,9 @@ const PricingView = {
     document.getElementById('btn-pricing-plus-teacher')?.addEventListener('click', () => triggerTutorUpgrade('plus'));
     document.getElementById('btn-pricing-biz-teacher')?.addEventListener('click', () => triggerTutorUpgrade('business'));
 
-    // Suppliers & Parents CTAs
+    // Suppliers CTA
     document.getElementById('btn-pricing-supplier-cta')?.addEventListener('click', () => {
       App.navigate('suppliers');
-    });
-
-    document.getElementById('btn-pricing-parent-cta')?.addEventListener('click', () => {
-      App.navigate('directory');
     });
   }
 };

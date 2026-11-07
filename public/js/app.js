@@ -127,16 +127,7 @@ const App = {
         window.history.replaceState({ view: 'directory' }, '', '/directory');
       }
     }
-    // Pricing relocated to School Owner Portal
-    if (viewName === 'pricing' || viewName === 'plans') {
-      viewName = 'schools';
-      if (updateUrl) {
-        window.history.replaceState({ view: 'schools' }, '', '/schools');
-      }
-      setTimeout(() => {
-        document.getElementById('school-pricing-section')?.scrollIntoView({ behavior: 'smooth' });
-      }, 350);
-    }
+
     if (viewName === 'jobs') viewName = 'teachers';
     if (viewName === 'dashboard') viewName = 'schools';
 
@@ -500,8 +491,8 @@ const App = {
         'directory': 'directory',
         'school-detail': 'school-detail',
         'compare': 'compare',
-        'pricing': 'schools',
-        'plans': 'schools',
+        'pricing': 'pricing',
+        'plans': 'pricing',
         'cssps': 'cssps',
         'past-questions': 'resources',
         'resources': 'resources',
