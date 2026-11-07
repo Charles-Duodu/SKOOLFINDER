@@ -415,32 +415,132 @@ const SupplierDashboardView = {
               Manage your commercial subscription, seat licenses, and open-market quoting capacity.
             </p>
 
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; max-width: 700px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem;">
+            <!-- Quota & Grace Period Status Banner -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: var(--shadow-sm);">
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                  <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Current Subscription</div>
-                  <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046;">Free Vendor Plan</div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Current Subscription Plan</div>
+                  <div style="font-size: 1.5rem; font-weight: 800; color: #0A2046; display: flex; align-items: center; gap: 0.5rem;">
+                    ${(supplier.current_plan_tier || supplier.activeTier || 'free').toUpperCase()} PLAN
+                    <span style="font-size: 0.75rem; background: #dcfce7; color: #15803d; padding: 0.2rem 0.6rem; border-radius: 9999px; font-weight: 700;">ACTIVE</span>
+                  </div>
                 </div>
-                <div style="font-size: 1.25rem; font-weight: 800; color: #0A2046;">GH₵ 0 / mo</div>
-              </div>
-
-              <div style="margin-bottom: 1.5rem;">
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.4rem;">
-                  <span>Active Listings Quota:</span>
-                  <strong>${this.products.length} / 5</strong>
-                </div>
-                <div style="height: 8px; background: #e2e8f0; border-radius: 9999px; overflow: hidden;">
-                  <div style="width: ${Math.min(100, (this.products.length / 5) * 100)}%; height: 100%; background: #0A2046;"></div>
+                <div style="text-align: right;">
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Payment Terms</div>
+                  <div style="font-size: 1.1rem; font-weight: 800; color: #0A2046;">Paystack Mobile Money & Card</div>
+                  <div style="font-size: 0.75rem; color: #059669; font-weight: 600;">🛡️ 7-Day Payment Grace Period Approved</div>
                 </div>
               </div>
 
-              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: #475569;">
-                💡 <strong>Protected Direct Invitations (SUP-04-03):</strong> When an accredited school directly invites your organization to quote on their procurement request, your response is <strong>never blocked</strong> by open-market quotas.
+              <!-- Quota Progress Indicators (SUP-05-02, SUP-05-03) -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 1.25rem;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.4rem;">
+                    <span>Catalogue Listings Quota (SUP-05-02):</span>
+                    <strong>${this.products.length + this.services.length} / 5 Used</strong>
+                  </div>
+                  <div style="height: 8px; background: #e2e8f0; border-radius: 9999px; overflow: hidden;">
+                    <div style="width: ${Math.min(100, ((this.products.length + this.services.length) / 5) * 100)}%; height: 100%; background: #0A2046;"></div>
+                  </div>
+                </div>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.4rem;">
+                    <span>Open-Market RFQ Quotes (SUP-05-03):</span>
+                    <strong>0 / 2 Used This Month</strong>
+                  </div>
+                  <div style="height: 8px; background: #e2e8f0; border-radius: 9999px; overflow: hidden;">
+                    <div style="width: 0%; height: 100%; background: #2563eb;"></div>
+                  </div>
+                </div>
               </div>
 
-              <button type="button" id="btn-dash-upgrade-plan" class="btn-pill btn-emerald" style="width: 100%; padding: 0.75rem; font-weight: 800;">
-                Upgrade to Growth Plan (GH₵ 79/mo) &rarr;
-              </button>
+              <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; font-size: 0.85rem; color: #475569;">
+                💡 <strong>Protected Direct Invitations (SUP-04-03):</strong> When an accredited school directly invites your organization to quote on their procurement request, your response is <strong>100% exempt</strong> from open-market quotas.
+              </div>
+            </div>
+
+            <!-- 4-Tier Commercial Plans Grid (Master Blueprint v2.0 Locked Pricing) -->
+            <h4 style="font-size: 1.2rem; font-weight: 800; color: #0A2046; margin-bottom: 1.25rem;">
+              Choose Your Institutional Plan (Paystack Platform Fees)
+            </h4>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+              <!-- Free Tier -->
+              <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Standard Vendor</div>
+                  <h5 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">Free Tier</h5>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.5rem 0;">GH₵ 0 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ mo</span></div>
+                  <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; line-height: 1.6; margin: 1rem 0;">
+                    <li>Public Directory Listing upon Verification</li>
+                    <li>Up to <strong>5 Catalogue Items</strong></li>
+                    <li><strong>2 Open-Market RFQ Quotes</strong> / mo</li>
+                    <li>Unlimited Direct School Inquiries</li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-pill btn-outline" style="width: 100%; padding: 0.6rem; font-size: 0.85rem;" disabled>Current Free Tier</button>
+              </div>
+
+              <!-- Growth Tier (GH₵ 79) -->
+              <div style="background: #ffffff; border: 2px solid #10b981; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
+                <div style="position: absolute; top: -10px; right: 15px; background: #10b981; color: #ffffff; font-size: 0.7rem; font-weight: 800; padding: 0.2rem 0.6rem; border-radius: 9999px; text-transform: uppercase;">Popular</div>
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #10b981; text-transform: uppercase;">Expanding Supplier</div>
+                  <h5 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">Growth Tier</h5>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.5rem 0;">GH₵ 79 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ mo</span></div>
+                  <div style="font-size: 0.75rem; color: #059669; font-weight: 700; margin-bottom: 0.5rem;">Annual: GH₵ 790 (2 Months Free)</div>
+                  <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; line-height: 1.6; margin: 1rem 0;">
+                    <li>Verified Supplier V1 Badge</li>
+                    <li>Up to <strong>25 Catalogue Items</strong></li>
+                    <li><strong>10 Open-Market RFQ Quotes</strong> / mo</li>
+                    <li>Category Sponsorship Eligibility</li>
+                    <li>7-Day Payment Grace Period</li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-pill btn-emerald btn-plan-upgrade" data-tier="growth" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; font-weight: 800;">
+                  Upgrade to Growth &rarr;
+                </button>
+              </div>
+
+              <!-- Professional Tier (GH₵ 199) -->
+              <div style="background: #ffffff; border: 2px solid #2563eb; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #2563eb; text-transform: uppercase;">Established Partner</div>
+                  <h5 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">Professional</h5>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.5rem 0;">GH₵ 199 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ mo</span></div>
+                  <div style="font-size: 0.75rem; color: #2563eb; font-weight: 700; margin-bottom: 0.5rem;">Annual: GH₵ 1,990 (2 Months Free)</div>
+                  <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; line-height: 1.6; margin: 1rem 0;">
+                    <li>Verified Supplier V2/V3 Badge</li>
+                    <li>Up to <strong>100 Catalogue Items</strong></li>
+                    <li><strong>35 Open-Market RFQ Quotes</strong> / mo</li>
+                    <li>Priority Tender Visibility</li>
+                    <li>Commercial Analytics Funnel</li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-pill btn-primary btn-plan-upgrade" data-tier="professional" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; font-weight: 800;">
+                  Upgrade to Pro &rarr;
+                </button>
+              </div>
+
+              <!-- Enterprise Tier (GH₵ 399) -->
+              <div style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="font-size: 0.8rem; font-weight: 700; color: #b45309; text-transform: uppercase;">Institutional Leader</div>
+                  <h5 style="font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0;">Enterprise</h5>
+                  <div style="font-size: 1.6rem; font-weight: 800; color: #0A2046; margin: 0.5rem 0;">GH₵ 399 <span style="font-size: 0.85rem; color: #64748b; font-weight: 500;">/ mo</span></div>
+                  <div style="font-size: 0.75rem; color: #b45309; font-weight: 700; margin-bottom: 0.5rem;">Annual: GH₵ 3,990 (2 Months Free)</div>
+                  <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; line-height: 1.6; margin: 1rem 0;">
+                    <li>V4 Enterprise Safeguards Badge</li>
+                    <li><strong>Unlimited Catalogue Items</strong></li>
+                    <li><strong>Unlimited Open-Market Quotes</strong></li>
+                    <li>Dedicated Key Account Officer</li>
+                    <li>School ERP Integration API</li>
+                  </ul>
+                </div>
+                <button type="button" class="btn-pill btn-gold btn-plan-upgrade" data-tier="enterprise" style="width: 100%; padding: 0.6rem; font-size: 0.85rem; font-weight: 800;">
+                  Upgrade to Enterprise &rarr;
+                </button>
+              </div>
             </div>
           </div>
 
@@ -465,6 +565,33 @@ const SupplierDashboardView = {
     tabs.forEach(t => {
       const btn = document.getElementById(`dash-tab-${t}`);
       if (btn) btn.onclick = () => switchTab(t);
+    });
+
+    // Commercial Plan Upgrade Buttons (SUP-05-01, SUP-05-04)
+    document.querySelectorAll('.btn-plan-upgrade').forEach(btn => {
+      btn.onclick = async () => {
+        const tier = btn.dataset.tier;
+        btn.disabled = true;
+        btn.innerText = 'Initializing Checkout...';
+        try {
+          const checkout = await API.initializeSupplierCheckout(tier, 'monthly');
+          if (checkout && checkout.reference) {
+            if (confirm(`Initialize Paystack checkout for ${tier.toUpperCase()} Tier (GH₵ ${checkout.amount_ghs})?\n\nReference: ${checkout.reference}\nGrace Period: 7 Days`)) {
+              const verifyRes = await API.verifySupplierPayment(checkout.reference, tier, 'monthly');
+              if (verifyRes.success) {
+                alert(`🎉 Congratulations! Your ${tier.toUpperCase()} subscription is now active with 7-day payment grace protection.`);
+                await App.refreshCurrentView();
+                return;
+              }
+            }
+          }
+        } catch (err) {
+          alert('Checkout Notice: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.innerText = `Upgrade to ${tier.charAt(0).toUpperCase() + tier.slice(1)} →`;
+        }
+      };
     });
 
     // Inquiry Reply Handler (SUP-06-03)
@@ -572,6 +699,10 @@ const SupplierDashboardView = {
     }
   }
 };
+
+if (typeof window !== 'undefined') {
+  window.SupplierDashboardView = SupplierDashboardView;
+}
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = SupplierDashboardView;

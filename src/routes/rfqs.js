@@ -4,6 +4,7 @@ const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
 const EmailService = require('../services/emailService');
 const MarketplaceService = require('../services/marketplaceService');
+const { SupplierBillingService } = require('../services/supplierBillingService');
 
 // In-Memory resilience stores for Stage 4 RFQ Procurement
 const IN_MEMORY_TARGETED_INVITATIONS = [];
@@ -262,6 +263,24 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], authenticate, async (req, r
     const finalPrice = price || (numAmount ? `GH₵ ${Number(numAmount).toLocaleString()}` : 'GH₵ 5,000');
     const quoteRef = `QUOTE-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
+    // Check Quota with Direct Invitation Exemption (SUP-04-03, SUP-05-03)
+    const isDirectInvite = Boolean(
+      req.body.is_direct_invitation || 
+      req.body.isDirectInvitation || 
+      IN_MEMORY_TARGETED_INVITATIONS.some(inv => inv.rfq_id === rfqId && (inv.supplier_id === resolvedSupplierId || inv.supplier_id === user.id))
+    );
+
+    const quotaCheck = await SupplierBillingService.checkRfqQuota(resolvedSupplierId, isDirectInvite);
+    if (!quotaCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        error: quotaCheck.error,
+        code: 'RFQ_QUOTA_EXCEEDED',
+        limit: quotaCheck.limit,
+        used: quotaCheck.used
+      });
+    }
+
     // Resolve RFQ details to get school name and RFQ title
     let schoolName = 'Client Institution';
     let rfqTitle = 'Institutional Procurement Request';
@@ -293,10 +312,11 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], authenticate, async (req, r
       // Not a marketplace tender or handled by standard flow
     }
 
-    // Check if supplier was directly invited (SUP-04-03: Quotas exempt)
-    const isDirectInvite = IN_MEMORY_TARGETED_INVITATIONS.some(inv => 
+    // Check if supplier was directly invited in memory or in payload (SUP-04-03: Quotas exempt)
+    const isTargeted = IN_MEMORY_TARGETED_INVITATIONS.some(inv => 
       inv.rfq_id === rfqId && (inv.supplier_id === resolvedSupplierId || inv.supplier_id === supplierId)
     );
+    const finalDirectInvite = isDirectInvite || isTargeted;
 
     const { data: quote, error } = await supabaseAdmin
       .from('rfq_quotes')
@@ -306,7 +326,7 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], authenticate, async (req, r
         supplier_name: supplierName,
         amount: parseFloat(String(finalPrice).replace(/[^0-9.]/g, '')) || 0,
         notes: `[Contact: ${contactPerson} | ${phone} | ${supplierEmail}] ${notes}`.trim(),
-        is_direct_invitation: isDirectInvite,
+        is_direct_invitation: finalDirectInvite,
         delivery_days: deliveryDays,
         warranty_terms: warrantyTerms,
         payment_terms: paymentTerms,
@@ -326,11 +346,20 @@ router.post(['/rfqs/:id/quote', '/rfqs/:id/quotes'], authenticate, async (req, r
       warranty_terms: warrantyTerms,
       payment_terms: paymentTerms,
       revision_count: 0,
-      is_direct_invitation: isDirectInvite,
+      is_direct_invitation: finalDirectInvite,
       status: 'Submitted',
       created_at: new Date().toISOString()
     };
     IN_MEMORY_QUOTES.push(quoteObj);
+
+    // Record quote against quota & analytics (SUP-04-03, SUP-05-03, SUP-05-08)
+    await SupplierBillingService.recordQuoteSubmission(resolvedSupplierId, finalDirectInvite);
+    SupplierBillingService.recordAnalyticsEvent({
+      supplierId: resolvedSupplierId,
+      eventType: 'quote_submitted',
+      actorType: 'school',
+      entityId: quoteRef
+    });
 
     // 1. Dispatch confirmation email to Supplier
     if (supplierEmail && supplierEmail.includes('@')) {

@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { supabaseAdmin } = require('../config/supabase');
 const { authenticate } = require('../middleware/auth');
+const { SupplierBillingService, SUPPLIER_PLANS } = require('../services/supplierBillingService');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'skoolfinder-jwt-secret-key-ghana-2026';
 
@@ -714,6 +715,143 @@ router.patch('/inquiries/:inquiryId/status', authenticate, async (req, res) => {
 });
 
 /**
+ * GET /api/suppliers/plans
+ * Public: List locked subscription plans for suppliers (SUP-05-01)
+ */
+router.get('/plans', async (req, res) => {
+  try {
+    const plans = SupplierBillingService.getPlans();
+    return res.json({ success: true, count: plans.length, plans });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve supplier plans' });
+  }
+});
+
+/**
+ * GET /api/suppliers/me/billing
+ * Authenticated: Retrieve current subscription, invoice history and grace status (SUP-05-01, SUP-05-06)
+ */
+router.get('/me/billing', authenticate, async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const sub = await SupplierBillingService.getSubscription(supplierId);
+    const quotas = await SupplierBillingService.getQuotas(supplierId);
+
+    // Retrieve invoices
+    let invoices = [];
+    try {
+      const { data } = await supabaseAdmin
+        .from('supplier_invoices')
+        .select('*')
+        .eq('supplier_id', supplierId)
+        .order('paid_at', { ascending: false });
+      if (data) invoices = data;
+    } catch (e) {}
+
+    return res.json({
+      success: true,
+      subscription: sub,
+      quotas,
+      invoices
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve billing information' });
+  }
+});
+
+/**
+ * POST /api/suppliers/billing/checkout
+ * Authenticated: Initialize Paystack platform fee checkout (SUP-05-01, SUP-05-04)
+ */
+router.post('/billing/checkout', authenticate, async (req, res) => {
+  try {
+    const supplierId = req.user.id;
+    const email = req.user.email || req.body.email;
+    const planTier = req.body.plan_tier || req.body.planTier || 'growth';
+    const billingInterval = req.body.billing_interval || req.body.billingInterval || 'monthly';
+
+    const checkout = await SupplierBillingService.initializeCheckout({
+      supplierId,
+      email,
+      planTier,
+      billingInterval
+    });
+
+    return res.status(200).json(checkout);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Failed to initialize subscription checkout' });
+  }
+});
+
+/**
+ * POST /api/suppliers/billing/verify
+ * Authenticated: Verify Paystack transaction and activate subscription with idempotency (SUP-05-04, SUP-05-05, SUP-05-06)
+ */
+router.post('/billing/verify', authenticate, async (req, res) => {
+  try {
+    const { reference, plan_tier, planTier, billing_interval, billingInterval } = req.body;
+    if (!reference) {
+      return res.status(400).json({ error: 'Payment reference is required' });
+    }
+
+    const verification = await SupplierBillingService.verifyPayment({
+      reference,
+      supplierId: req.user.id,
+      planTier: plan_tier || planTier,
+      billingInterval: billing_interval || billingInterval
+    });
+
+    return res.status(200).json(verification);
+  } catch (err) {
+    return res.status(400).json({ error: err.message || 'Payment verification failed' });
+  }
+});
+
+/**
+ * POST /api/suppliers/billing/simulate-grace-period
+ * Authenticated / Testing: Simulate 7-day payment grace period transition (SUP-05-06, SUP-05-07)
+ */
+router.post('/billing/simulate-grace-period', authenticate, async (req, res) => {
+  try {
+    const { status = 'grace_period' } = req.body;
+    const sub = SupplierBillingService.simulateGracePeriod(req.user.id, status);
+    return res.json({
+      success: true,
+      message: `Subscription transitioned to ${status}`,
+      subscription: sub
+    });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to simulate grace period transition' });
+  }
+});
+
+/**
+ * GET /api/suppliers/me/quotas
+ * Authenticated: Retrieve current catalogue and RFQ quoting quotas (SUP-05-02, SUP-05-03, SUP-04-03)
+ */
+router.get('/me/quotas', authenticate, async (req, res) => {
+  try {
+    const quotas = await SupplierBillingService.getQuotas(req.user.id);
+    return res.json({ success: true, quotas });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve quotas' });
+  }
+});
+
+/**
+ * GET /api/suppliers/me/analytics
+ * Authenticated: Retrieve commercial analytics and funnel metrics (SUP-05-08)
+ */
+router.get('/me/analytics', authenticate, async (req, res) => {
+  try {
+    const analytics = await SupplierBillingService.getAnalytics(req.user.id);
+    return res.json({ success: true, analytics });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to retrieve analytics' });
+  }
+});
+
+/**
  * GET /api/suppliers/:id
  */
 router.get('/:id', async (req, res) => {
@@ -959,6 +1097,21 @@ router.post('/me/products', authenticate, async (req, res) => {
       return res.status(400).json({ error: 'Product name is required' });
     }
 
+    // Check Catalogue Quota (SUP-05-02)
+    const currentProductsCount = IN_MEMORY_PRODUCTS.filter(p => p.supplier_id === req.user.id).length;
+    const currentServicesCount = IN_MEMORY_SERVICES.filter(s => s.supplier_id === req.user.id).length;
+    const totalCurrentItems = currentProductsCount + currentServicesCount;
+    const quotaCheck = await SupplierBillingService.checkCatalogueQuota(req.user.id, totalCurrentItems);
+    if (!quotaCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        error: quotaCheck.error,
+        code: 'CATALOGUE_QUOTA_EXCEEDED',
+        limit: quotaCheck.limit,
+        used: quotaCheck.used
+      });
+    }
+
     const pricingMode = ['fixed', 'indicative', 'quote_only'].includes(body.pricing_mode) 
       ? body.pricing_mode 
       : 'quote_only';
@@ -1008,6 +1161,21 @@ router.post('/me/services', authenticate, async (req, res) => {
     const body = req.body;
     if (!body.name || !body.name.trim()) {
       return res.status(400).json({ error: 'Service name is required' });
+    }
+
+    // Check Catalogue Quota (SUP-05-02)
+    const currentProductsCount = IN_MEMORY_PRODUCTS.filter(p => p.supplier_id === req.user.id).length;
+    const currentServicesCount = IN_MEMORY_SERVICES.filter(s => s.supplier_id === req.user.id).length;
+    const totalCurrentItems = currentProductsCount + currentServicesCount;
+    const quotaCheck = await SupplierBillingService.checkCatalogueQuota(req.user.id, totalCurrentItems);
+    if (!quotaCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        error: quotaCheck.error,
+        code: 'CATALOGUE_QUOTA_EXCEEDED',
+        limit: quotaCheck.limit,
+        used: quotaCheck.used
+      });
     }
 
     const pricingMode = ['fixed', 'indicative', 'quote_only'].includes(body.pricing_mode) 

@@ -12,6 +12,12 @@ const EscrowService = require('../services/escrowService');
 router.get('/plans', async (req, res) => {
   try {
     const { portal } = req.query;
+
+    if (portal === 'suppliers') {
+      const { SupplierBillingService } = require('../services/supplierBillingService');
+      return res.json(SupplierBillingService.getPlans());
+    }
+
     let query = supabaseAdmin.from('plans').select('*').eq('is_active', true);
     if (portal) query = query.eq('portal', portal);
 

@@ -3950,6 +3950,53 @@ const API = {
       throw new Error(err.error || "Failed to fetch voucher details");
     }
     return res.json();
+  },
+
+  // --- Suppliers Portal Stage 5: Billing, Quotas & Analytics (SUP-05-01 through SUP-05-08) ---
+  async getSupplierPlans() {
+    const res = await fetch(`${this.baseUrl}/suppliers/plans`);
+    return res.json();
+  },
+
+  async getSupplierBilling() {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/billing`, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async initializeSupplierCheckout(planTier, billingInterval = 'monthly') {
+    const res = await fetch(`${this.baseUrl}/suppliers/billing/checkout`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan_tier: planTier, billing_interval: billingInterval })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to initialize subscription checkout');
+    }
+    return res.json();
+  },
+
+  async verifySupplierPayment(reference, planTier, billingInterval) {
+    const res = await fetch(`${this.baseUrl}/suppliers/billing/verify`, {
+      method: 'POST',
+      headers: { ...this.getHeaders(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reference, plan_tier: planTier, billing_interval: billingInterval })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Failed to verify payment reference');
+    }
+    return res.json();
+  },
+
+  async getSupplierQuotas() {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/quotas`, { headers: this.getHeaders() });
+    return res.json();
+  },
+
+  async getSupplierAnalytics() {
+    const res = await fetch(`${this.baseUrl}/suppliers/me/analytics`, { headers: this.getHeaders() });
+    return res.json();
   }
 };
 
