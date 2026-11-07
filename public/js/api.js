@@ -1881,6 +1881,37 @@ const API = {
     return result;
   },
 
+  // Blueprint v4.2 Phase 2: Saved Comparisons Manager
+  async getParentSavedComparisons() {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons`, {
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to load saved comparisons");
+    return result;
+  },
+
+  async saveParentComparison(data = {}) {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons`, {
+      method: 'POST',
+      headers: this.getAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to save comparison");
+    return result;
+  },
+
+  async deleteParentSavedComparison(id) {
+    const res = await fetch(`${this.baseUrl}/parents/saved-comparisons/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: this.getAuthHeaders()
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "Failed to delete saved comparison");
+    return result;
+  },
+
   // Blueprint v4.2 Phase 5: Direct School Admissions Messaging & Visit Replies
   async replyInquiry(id, replyData = {}) {
     const res = await fetch(`${this.baseUrl}/inquiries/${encodeURIComponent(id)}/reply`, {

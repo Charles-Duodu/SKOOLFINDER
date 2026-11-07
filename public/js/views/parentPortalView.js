@@ -16,13 +16,17 @@ const ParentPortalView = {
     const user = State.currentUser;
     // Fetch parent overview and 5-state shortlists from API
     try {
-      const [overview, shortlistsRes] = await Promise.all([
+      const [overview, shortlistsRes, compsRes] = await Promise.all([
         API.getParentOverview().catch(err => {
           console.warn("Could not fetch remote parent overview:", err.message);
           return null;
         }),
         API.getParentShortlists ? API.getParentShortlists().catch(err => {
           console.warn("Could not fetch parent shortlists:", err.message);
+          return null;
+        }) : Promise.resolve(null),
+        API.getParentSavedComparisons ? API.getParentSavedComparisons().catch(err => {
+          console.warn("Could not fetch parent saved comparisons:", err.message);
           return null;
         }) : Promise.resolve(null)
       ]);
@@ -36,6 +40,7 @@ const ParentPortalView = {
         reportCards: []
       };
       this.shortlistsData = shortlistsRes?.shortlists || [];
+      this.savedComparisonsData = compsRes?.comparisons || [];
       try {
         const vRes = await API.getParentVouchers({ phone: user?.phone, email: user?.email });
         this.vouchersData = vRes?.vouchers || [];
@@ -160,7 +165,43 @@ const ParentPortalView = {
               </div>
             </div>
 
-            <!-- Metric 2: School Fees & MoMo Bills -->
+            <!-- Metric 2: Shortlisted Schools -->
+            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+              <div style="font-size: 2.2rem; background: #eff6ff; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+                📌
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                  Shortlisted Schools
+                </div>
+                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
+                  ${(this.shortlistsData || savedSchools || []).length}
+                </div>
+                <div style="font-size: 0.75rem; color: #1266C4; font-weight: 600;">
+                  5-Stage Decision Board
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric 3: Saved Comparisons -->
+            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+              <div style="font-size: 2.2rem; background: #fefce8; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+                ⚖️
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                  Saved Comparisons
+                </div>
+                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
+                  ${(this.savedComparisonsData || []).length}
+                </div>
+                <div style="font-size: 0.75rem; color: #b45309; font-weight: 600;">
+                  20 Max Boards (100% Free)
+                </div>
+              </div>
+            </div>
+
+            <!-- Metric 4: School Fees & MoMo Bills -->
             <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
               <div style="font-size: 2.2rem; background: #ecfdf5; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
                 💳
@@ -177,42 +218,6 @@ const ParentPortalView = {
                 </div>
               </div>
             </div>
-
-            <!-- Metric 3: Academic Report Cards -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: #eff6ff; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                📊
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Terminal Report Cards
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
-                  ${reportCards.length}
-                </div>
-                <div style="font-size: 0.75rem; color: #2563eb; font-weight: 600;">
-                  Certified NaSIA / GES Sheets
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric 4: Bookmarked Campuses -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: #fdf2f8; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                🔖
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Shortlisted Schools
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
-                  ${savedSchools.length}
-                </div>
-                <div style="font-size: 0.75rem; color: var(--rose-600); font-weight: 600;">
-                  Saved for quick comparison
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Blueprint v4.2 Decision Engine Navigation Tabs -->
@@ -223,6 +228,10 @@ const ParentPortalView = {
             <button role="tab" aria-selected="${this.activeTab === 'shortlists'}" class="parent-tab-btn ${this.activeTab === 'shortlists' ? 'active' : ''}" data-tab="shortlists" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'shortlists' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'shortlists' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
               📌 5-State Decision Board
               <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">${(this.shortlistsData || savedSchools || []).length}</span>
+            </button>
+            <button role="tab" aria-selected="${this.activeTab === 'comparisons'}" class="parent-tab-btn ${this.activeTab === 'comparisons' ? 'active' : ''}" data-tab="comparisons" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'comparisons' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'comparisons' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              ⚖️ Saved Comparisons
+              <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">${(this.savedComparisonsData || []).length}</span>
             </button>
             <button role="tab" aria-selected="${this.activeTab === 'journey'}" class="parent-tab-btn ${this.activeTab === 'journey' ? 'active' : ''}" data-tab="journey" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'journey' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'journey' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
               🛣️ My School Journey
@@ -264,6 +273,8 @@ const ParentPortalView = {
       return this.renderOverviewTab();
     } else if (this.activeTab === 'shortlists') {
       return this.renderShortlistsTab();
+    } else if (this.activeTab === 'comparisons') {
+      return this.renderComparisonsTab();
     } else if (this.activeTab === 'journey') {
       return this.renderJourneyTab();
     } else if (this.activeTab === 'planning') {
@@ -476,6 +487,41 @@ const ParentPortalView = {
           </div>
         </div>
 
+        <!-- Smart School Discovery Integration (Module 02) -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.2rem 0;">
+                🔍 Smart School Discovery Presets
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+                Curated 1-click filters tailored for Ghanaian parents &amp; guardians.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-outline" onclick="App.navigate('directory')" style="font-size: 0.84rem; font-weight: 700;">
+              Browse All Schools &rarr;
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            <button type="button" class="btn-parent-quick-filter" data-filter="cambridge" style="background: #f0fdf4; border: 1.5px solid #86efac; color: #166534; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+              <span>📚</span> Cambridge International (IGCSE)
+            </button>
+            <button type="button" class="btn-parent-quick-filter" data-filter="ges" style="background: #eff6ff; border: 1.5px solid #93c5fd; color: #1e40af; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+              <span>🇬🇭</span> GES Standards-Based Curriculum
+            </button>
+            <button type="button" class="btn-parent-quick-filter" data-filter="accra" style="background: #fefce8; border: 1.5px solid #fde047; color: #854d0e; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+              <span>📍</span> Greater Accra &amp; Tema Campuses
+            </button>
+            <button type="button" class="btn-parent-quick-filter" data-filter="boarding" style="background: #faf5ff; border: 1.5px solid #d8b4fe; color: #6b21a8; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+              <span>🛏️</span> Full Boarding Facilities
+            </button>
+            <button type="button" class="btn-parent-quick-filter" data-filter="montessori" style="background: #fff1f2; border: 1.5px solid #fecdd3; color: #9f1239; font-weight: 700; font-size: 0.85rem; padding: 0.5rem 1rem; border-radius: 999px; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all 0.2s;">
+              <span>👶</span> Nursery &amp; Montessori Pre-Schools
+            </button>
+          </div>
+        </div>
+
         <!-- Quick Decision Tools Grid -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
           <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
@@ -648,6 +694,110 @@ const ParentPortalView = {
                   </button>
                   <button type="button" class="btn-remove-shortlist" data-school-id="${s.schoolId}" style="background: none; border: none; font-size: 0.78rem; font-weight: 700; color: #dc2626; cursor: pointer;">
                     Remove
+                  </button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `}
+      </div>
+    `;
+  },
+
+  // 4. Saved Comparisons Manager Tab (Module 04)
+  renderComparisonsTab() {
+    const comparisons = this.savedComparisonsData || [];
+    const preferredSchools = (this.shortlistsData || []).filter(s => s.stage === 'preferred');
+
+    return `
+      <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+        <!-- Header & Quota Information -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem 1.75rem; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <h2 style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0;">
+                ⚖️ Saved School Comparisons &amp; Matrices
+              </h2>
+              <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 800; border: 1px solid #fde68a;">
+                ⭐ 20 Max Boards (100% Free Forever)
+              </span>
+            </div>
+            <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
+              Revisit multi-school side-by-side matrices, compare fee structures, and evaluate academic curricula.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+            ${preferredSchools.length >= 2 ? `
+              <button type="button" id="btn-compare-all-preferred" class="btn-pill btn-gold" style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem;">
+                <span>⭐</span> Compare Top Preferred (${preferredSchools.length})
+              </button>
+            ` : ''}
+            <button type="button" class="btn-pill btn-primary" onclick="App.navigate('compare')" style="font-size: 0.85rem; font-weight: 700;">
+              <span>➕</span> New 4-Way Comparison
+            </button>
+          </div>
+        </div>
+
+        <!-- Comparisons List / Cards -->
+        ${comparisons.length === 0 ? `
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px dashed #cbd5e1; padding: 3.5rem 1.5rem; text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 0.75rem;">⚖️</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+              No Saved Comparisons Yet
+            </h3>
+            <p style="font-size: 0.88rem; color: #64748b; margin: 0 auto 1.5rem auto; max-width: 480px; line-height: 1.5;">
+              When browsing the school directory or reviewing your decision board, add schools to the 4-way comparison tool and click <strong>"Save Comparison to Account"</strong> to keep them here for family discussion.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 0.75rem; flex-wrap: wrap;">
+              <button type="button" class="btn-pill btn-primary" onclick="App.navigate('compare')" style="font-size: 0.9rem; font-weight: 700;">
+                Launch 4-Way Compare Matrix &rarr;
+              </button>
+              <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="shortlists" style="font-size: 0.9rem; font-weight: 700;">
+                Select from Shortlists &rarr;
+              </button>
+            </div>
+          </div>
+        ` : `
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.25rem;">
+            ${comparisons.map((comp, idx) => `
+              <div class="card comparison-board-card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
+                    <div>
+                      <span class="badge" style="background: #eff6ff; color: #1e40af; font-size: 0.72rem; font-weight: 800; text-transform: uppercase;">
+                        Board #${idx + 1} &bull; ${(comp.schoolIds || []).length} Schools
+                      </span>
+                      <h4 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.35rem 0 0 0;">
+                        ${comp.title || 'Multi-School Comparison Board'}
+                      </h4>
+                    </div>
+                    <button type="button" class="btn-delete-saved-comparison" data-comp-id="${comp.id}" style="background: none; border: none; font-size: 1.1rem; color: #94a3b8; cursor: pointer; padding: 0.2rem;" title="Delete this saved comparison">
+                      🗑️
+                    </button>
+                  </div>
+
+                  <p style="font-size: 0.8rem; color: #64748b; margin: 0 0 1rem 0;">
+                    Saved on ${comp.created_at ? new Date(comp.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent session'}
+                  </p>
+
+                  <!-- School Badges / Pills in this set -->
+                  <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
+                    ${(comp.schoolIds || []).map(id => {
+                      const found = (this.shortlistsData || []).find(s => s.schoolId === id || s.slug === id);
+                      const name = found ? found.schoolName : id.replace(/^sch-/, '').replace(/-/g, ' ').toUpperCase();
+                      return `
+                        <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.84rem;">
+                          <span style="font-weight: 700; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">🏫 ${name}</span>
+                          <span style="font-size: 0.75rem; color: #1266C4; font-weight: 600;">Inspect</span>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 0.6rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+                  <button type="button" class="btn-pill btn-primary btn-launch-saved-comparison" data-school-ids="${(comp.schoolIds || []).join(',')}" style="flex: 1; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+                    Launch 4-Way Matrix &rarr;
                   </button>
                 </div>
               </div>
@@ -3231,6 +3381,81 @@ const ParentPortalView = {
         const item = (this.shortlistsData || []).find(s => s.schoolId === schoolId);
         const schoolObj = item ? { id: item.schoolId, name: item.schoolName, region: item.region, curriculum: item.curriculum } : { id: schoolId };
         State.toggleCompare(schoolObj);
+      });
+    });
+
+    // Phase 2: Smart Discovery Presets Filter
+    document.querySelectorAll('.btn-parent-quick-filter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const filterType = e.currentTarget.dataset.filter;
+        if (filterType === 'cambridge') {
+          App.navigate('directory', { curriculum: 'Cambridge' });
+        } else if (filterType === 'ges') {
+          App.navigate('directory', { curriculum: 'GES' });
+        } else if (filterType === 'accra') {
+          App.navigate('directory', { region: 'Greater Accra' });
+        } else if (filterType === 'boarding') {
+          App.navigate('directory', { boarding: 'true' });
+        } else if (filterType === 'montessori') {
+          App.navigate('directory', { level: 'Nursery' });
+        } else {
+          App.navigate('directory');
+        }
+      });
+    });
+
+    // Phase 2: Saved Comparisons Handlers
+    document.querySelectorAll('.btn-launch-saved-comparison').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const rawIds = e.currentTarget.dataset.schoolIds || '';
+        const ids = rawIds.split(',').map(s => s.trim()).filter(Boolean);
+        if (ids.length > 0) {
+          State.comparisonList = ids.map(id => {
+            const found = (this.shortlistsData || []).find(s => s.schoolId === id);
+            return found ? { id: found.schoolId, name: found.schoolName, region: found.region, curriculum: found.curriculum } : { id };
+          });
+          try {
+            localStorage.setItem('skoolfinder_comparison', JSON.stringify(State.comparisonList));
+          } catch (e) {}
+        }
+        App.navigate('compare');
+      });
+    });
+
+    document.getElementById('btn-compare-all-preferred')?.addEventListener('click', () => {
+      const preferred = (this.shortlistsData || []).filter(s => s.stage === 'preferred').slice(0, 4);
+      if (preferred.length > 0) {
+        State.comparisonList = preferred.map(s => ({
+          id: s.schoolId,
+          name: s.schoolName,
+          region: s.region,
+          curriculum: s.curriculum
+        }));
+        try {
+          localStorage.setItem('skoolfinder_comparison', JSON.stringify(State.comparisonList));
+        } catch (e) {}
+        App.navigate('compare');
+      }
+    });
+
+    document.querySelectorAll('.btn-delete-saved-comparison').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const compId = e.currentTarget.dataset.compId;
+        if (!confirm("Are you sure you want to delete this saved comparison board?")) return;
+        try {
+          if (API.deleteParentSavedComparison) {
+            await API.deleteParentSavedComparison(compId);
+          }
+          this.savedComparisonsData = (this.savedComparisonsData || []).filter(c => c.id !== compId);
+          State.showToast("Saved comparison deleted", "info");
+          const container = document.getElementById('parent-portal-tab-content');
+          if (container) {
+            container.innerHTML = this.renderTabContent();
+            this.attachTabChildEvents();
+          }
+        } catch (err) {
+          State.showToast(err.message || "Failed to delete saved comparison", "error");
+        }
       });
     });
 
