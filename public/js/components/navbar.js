@@ -131,11 +131,6 @@ const Navbar = {
                 </a>
               </div>
             </li>
-            <li>
-              <a href="/#section-why-skoolfinder" id="nav-link-why" class="nav-link-direct">
-                <span>💡</span> Why SkoolFinder
-              </a>
-            </li>
           </ul>
 
           <!-- Nav Action Buttons: Clean & Uncluttered -->
@@ -381,18 +376,7 @@ const Navbar = {
       });
     }
 
-    // Why SkoolFinder link
-    document.getElementById('nav-link-why')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (State.currentView !== 'home') {
-        App.navigate('home');
-        setTimeout(() => {
-          document.getElementById('section-why-skoolfinder')?.scrollIntoView({ behavior: 'smooth' });
-        }, 300);
-      } else {
-        document.getElementById('section-why-skoolfinder')?.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
+
 
     // Join SkoolFinder CTA
     document.getElementById('btn-nav-join')?.addEventListener('click', (e) => {
