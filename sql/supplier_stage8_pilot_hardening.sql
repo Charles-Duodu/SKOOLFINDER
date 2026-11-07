@@ -88,3 +88,4 @@ CREATE POLICY "Super Admins view runbooks" ON public.sla_incident_runbooks
     );
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Stage 8 Migration Applied' AS migration_status;
+

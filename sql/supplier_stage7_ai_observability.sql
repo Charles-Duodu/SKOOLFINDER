@@ -85,3 +85,4 @@ CREATE POLICY "Admin view n8n logs" ON public.n8n_procurement_dispatches
     );
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Stage 7 Migration Applied' AS migration_status;
+
