@@ -9,9 +9,8 @@ const Navbar = {
   getActivePortal() {
     const view = State.currentView;
     if (view === 'schools' || view === 'dashboard') return 'school';
-    if (view === 'parents' || view === 'parent-portal') return 'parent';
     if (view === 'teachers' || view === 'jobs') return 'teacher';
-    if (view === 'suppliers') return 'supplier';
+    if (view === 'suppliers' || view === 'supplier-dashboard') return 'supplier';
     if (view === 'admin') return 'admin';
     return null;
   },
@@ -119,7 +118,7 @@ const Navbar = {
               <div class="nav-action-desktop" style="display: flex; align-items: center; gap: 0.45rem;">
                 ${State.currentUser.role !== 'super_admin' ? `
                   <button id="btn-nav-my-portal" class="btn-pill ${State.currentUser.activePersona === 'school_admin' ? 'btn-gold' : (State.currentUser.activePersona === 'teacher' ? 'btn-emerald' : 'btn-primary')}" style="font-size: 0.8rem; padding: 0.38rem 0.85rem; font-weight: 700;" title="Open your active workspace">
-                    <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : '👨‍👩‍👧 Parent Portal'))}</span>
+                    <span>${State.currentUser.activePersona === 'school_admin' ? '🏫 School OS' : (State.currentUser.activePersona === 'teacher' ? '🧑‍🏫 Tutor Desk' : (State.currentUser.activePersona === 'supplier' ? '📦 Vendor Hub' : '🏫 School OS'))}</span>
                   </button>
                 ` : ''}
                 <span class="badge ${State.currentUser.role === 'school_admin' ? 'badge-gold' : (State.currentUser.role === 'teacher' ? 'badge-cambridge' : 'badge-emerald')}" style="font-size: 0.8rem; padding: 0.38rem 0.75rem; text-transform: none; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;" title="Logged in as ${State.currentUser.email || ''}">
@@ -157,11 +156,6 @@ const Navbar = {
                     <span>🏫</span> School Owner / Proprietor
                   </a>
                 ` : ''}
-                ${activePortal === 'parent' ? `
-                  <a href="/parents" id="who-nav-parent" class="who-role-pill active">
-                    <span>👨‍👩‍👧</span> Parent
-                  </a>
-                ` : ''}
                 ${activePortal === 'teacher' ? `
                   <a href="/teachers" id="who-nav-teacher" class="who-role-pill active">
                     <span>🧑‍🏫</span> Teacher
@@ -181,9 +175,6 @@ const Navbar = {
                   <span>⇄</span> Switch Role
                 </button>
               ` : `
-                <a href="/parents" id="who-nav-parent" class="who-role-pill ${activePortal === 'parent' ? 'active' : ''}">
-                  <span>👨‍👩‍👧</span> Parent
-                </a>
                 <a href="/teachers" id="who-nav-teacher" class="who-role-pill ${activePortal === 'teacher' ? 'active' : ''}">
                   <span>🧑‍🏫</span> Teacher
                 </a>
@@ -240,11 +231,6 @@ const Navbar = {
                     <span>🏫</span> School Owner / Proprietor
                   </a>
                 ` : ''}
-                ${activePortal === 'parent' ? `
-                  <a href="/parents" id="mob-who-parent" class="mobile-nav-item active">
-                    <span>👨‍👩‍👧</span> Parent
-                  </a>
-                ` : ''}
                 ${activePortal === 'teacher' ? `
                   <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item active">
                     <span>🧑‍🏫</span> Teacher
@@ -261,9 +247,6 @@ const Navbar = {
                   </a>
                 ` : ''}
               ` : `
-                <a href="/parents" id="mob-who-parent" class="mobile-nav-item ${activePortal === 'parent' ? 'active' : ''}">
-                  <span>👨‍👩‍👧</span> Parent
-                </a>
                 <a href="/teachers" id="mob-who-teacher" class="mobile-nav-item ${activePortal === 'teacher' ? 'active' : ''}">
                   <span>🧑‍🏫</span> Teacher
                 </a>
@@ -361,17 +344,6 @@ const Navbar = {
       this.attachEvents();
     });
 
-    // Role 1: Parent
-    const handleParentNav = (e) => {
-      e.preventDefault();
-      this.isSwitchingRole = false;
-      closeMobDrawer();
-      App.navigate('parents');
-    };
-    document.getElementById('who-nav-parent')?.addEventListener('click', handleParentNav);
-    document.getElementById('mob-who-parent')?.addEventListener('click', handleParentNav);
-    document.getElementById('nav-link-parents')?.addEventListener('click', handleParentNav);
-    document.getElementById('mob-link-parents')?.addEventListener('click', handleParentNav);
 
     // Role 2: Teacher
     const handleTeacherNav = (e) => {
@@ -462,21 +434,13 @@ const Navbar = {
       } else if (activePersona === 'super_admin') {
         App.navigate('admin');
       } else {
-        App.navigate('parents');
+        App.navigate('directory');
       }
     });
 
     document.getElementById('btn-nav-logout')?.addEventListener('click', (e) => {
       e.preventDefault();
       State.logout();
-    });
-
-    
-    document.getElementById('mob-btn-parent-signup')?.addEventListener('click', () => {
-      this.isMobileMenuOpen = false;
-      const drawer = document.getElementById('mobile-nav-drawer');
-      if (drawer) drawer.classList.remove('open');
-      Modals.openParentAuthModal({ initialTab: 'signup' });
     });
 
     document.getElementById('mob-btn-logout')?.addEventListener('click', (e) => {

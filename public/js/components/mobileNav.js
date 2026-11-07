@@ -11,7 +11,7 @@ const MobileNav = {
     const isDiscover = current === 'directory';
     const isExplore = current === 'explore' || current === 'matchmaker';
     const isCompare = current === 'compare';
-    const isMySpace = current === 'parents' || current === 'parent-portal';
+    const isSuppliers = current === 'suppliers' || current === 'supplier-dashboard';
 
     return `
       <nav class="mobile-nav-dock" aria-label="Mobile Navigation Dock" role="navigation">
@@ -63,15 +63,16 @@ const MobileNav = {
           <span class="mobile-dock-label">Compare</span>
         </button>
 
-        <!-- 5. My Space Tab (Parent Command Centre) -->
-        <button id="mob-nav-myspace" class="mobile-dock-btn ${isMySpace ? 'active' : ''}" aria-label="My Space Parent Portal" aria-selected="${isMySpace}">
+        <!-- 5. Suppliers Tab (B2B Procurement) -->
+        <button id="mob-nav-suppliers" class="mobile-dock-btn ${isSuppliers ? 'active' : ''}" aria-label="Suppliers & Services" aria-selected="${isSuppliers}">
           <div class="mobile-dock-icon-wrap">
             <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
           </div>
-          <span class="mobile-dock-label">My Space</span>
+          <span class="mobile-dock-label">Suppliers</span>
         </button>
       </nav>
     `;
@@ -82,7 +83,7 @@ const MobileNav = {
     const btnDiscover = document.getElementById('mob-nav-discover');
     const btnExplore = document.getElementById('mob-nav-explore');
     const btnCompare = document.getElementById('mob-nav-compare');
-    const btnMySpace = document.getElementById('mob-nav-myspace');
+    const btnSuppliers = document.getElementById('mob-nav-suppliers');
 
     if (btnHome) {
       btnHome.onclick = (e) => {
@@ -112,23 +113,10 @@ const MobileNav = {
       };
     }
 
-    if (btnMySpace) {
-      btnMySpace.onclick = (e) => {
+    if (btnSuppliers) {
+      btnSuppliers.onclick = (e) => {
         e.preventDefault();
-        if (typeof State !== 'undefined' && State.isAuthenticated()) {
-          const persona = State.currentUser?.activePersona || State.currentUser?.role;
-          if (persona === 'school_owner' || persona === 'school_admin' || persona === 'primary_proprietor') {
-            App.navigate('schools', State.currentUser?.schoolId || 'ghana-international-school');
-          } else if (persona === 'teacher' || persona === 'professional') {
-            App.navigate('teachers');
-          } else if (persona === 'super_admin') {
-            App.navigate('admin');
-          } else {
-            App.navigate('parents');
-          }
-        } else {
-          if (typeof App !== 'undefined') App.navigate('parents');
-        }
+        if (typeof App !== 'undefined') App.navigate('suppliers');
       };
     }
   },

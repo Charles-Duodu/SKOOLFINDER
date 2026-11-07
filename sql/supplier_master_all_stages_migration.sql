@@ -323,3 +323,4 @@ ALTER TABLE public.tender_sealed_bids ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pilot_cohorts ENABLE ROW LEVEL SECURITY;
 
 SELECT 'SkoolFinder Ghana Suppliers Portal Master Consolidated Migration Applied Successfully' AS master_status;
+

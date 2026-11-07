@@ -26,10 +26,10 @@ const Footer = {
               </div>
             </div>
 
-            <!-- Parent Quick Links -->
+            <!-- School Discovery Quick Links -->
             <div>
               <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
-                For Parents
+                School Directory
               </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
                 <li><a href="#" class="footer-link-schools">Search Accra Schools</a></li>
@@ -40,18 +40,18 @@ const Footer = {
               </ul>
             </div>
 
-            <!-- The 5 Dedicated Portals -->
+            <!-- Dedicated Institutional Portals -->
             <div>
               <h3 style="font-family: var(--font-heading); font-size: 1.1rem; color: #ffffff; margin-bottom: 1.25rem;">
-                The 5 Portals
+                Institutional Portals
               </h3>
               <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.9rem; color: rgba(255,255,255,0.75);">
-                <li><a href="/parents" class="footer-portal-link" data-portal="parents">👨‍👩‍👧 Parents Family Hub</a></li>
-                <li><a href="/teachers" class="footer-portal-link" data-portal="teachers">🧑‍🏫 Teachers & Tutors Portal</a></li>
-                <li><a href="/for-teachers" class="footer-persona-link" data-view="for-teachers" style="color: #a7f3d0;">✦ Why Join: For Teachers</a></li>
-                <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers B2B Portal</a></li>
+                <li><a href="/suppliers" class="footer-portal-link" data-portal="suppliers">📦 Suppliers & B2B Procurement</a></li>
                 <li><a href="/for-suppliers" class="footer-persona-link" data-view="for-suppliers" style="color: #fde68a;">✦ Why Join: For Suppliers</a></li>
                 <li><a href="/schools" class="footer-portal-link" data-portal="schools">🏫 School Management OS</a></li>
+                <li><a href="/for-schools" class="footer-persona-link" data-view="for-schools" style="color: #6ee7b7;">✦ Why Join: For Schools</a></li>
+                <li><a href="/teachers" class="footer-portal-link" data-portal="teachers">🧑‍🏫 Teachers & Professionals</a></li>
+                <li><a href="/for-teachers" class="footer-persona-link" data-view="for-teachers" style="color: #a7f3d0;">✦ Why Join: For Teachers</a></li>
                 <li><a href="#" class="footer-link-verification">🛡️ How We Verify Information</a></li>
               </ul>
             </div>

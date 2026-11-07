@@ -120,8 +120,13 @@ const App = {
   },
 
   async navigate(viewName, param = null, updateUrl = true) {
-    // Normalization & Aliases for the 5 Portals
-    if (viewName === 'parent-portal') viewName = 'parents';
+    // Normalization & Aliases (Parents portal decommissioned -> redirect to Directory)
+    if (viewName === 'parents' || viewName === 'parent-portal') {
+      viewName = 'directory';
+      if (updateUrl) {
+        window.history.replaceState({ view: 'directory' }, '', '/directory');
+      }
+    }
     if (viewName === 'jobs') viewName = 'teachers';
     if (viewName === 'dashboard') viewName = 'schools';
 
@@ -174,7 +179,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
+      const isPathRoute = ['teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'pricing', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -362,10 +367,6 @@ const App = {
         content = await MatchmakerView.render();
         mainRoot.innerHTML = content;
         MatchmakerView.attachEvents();
-      } else if (viewName === 'parents') {
-        content = await ParentPortalView.render();
-        mainRoot.innerHTML = content;
-        ParentPortalView.attachEvents();
       } else if (viewName === 'teachers') {
         content = await TeachersView.render();
         mainRoot.innerHTML = content;
@@ -494,8 +495,8 @@ const App = {
         'cssps': 'cssps',
         'past-questions': 'resources',
         'resources': 'resources',
-        'parents': 'parents',
-        'parent-portal': 'parents',
+        'parents': 'directory',
+        'parent-portal': 'directory',
         'teachers': 'teachers',
         'jobs': 'teachers',
         'suppliers': 'suppliers',
