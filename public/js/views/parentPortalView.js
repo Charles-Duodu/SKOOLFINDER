@@ -70,10 +70,46 @@ const ParentPortalView = {
       }
     }
 
-    const { user: profile, stats = {}, applications = [], inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData || {};
+    const { user: profile, stats = {}, inquiries = [], savedSchools = [], invoices = [], reportCards = [], smsNotifications = [] } = this.overviewData || {};
     const parentName = profile?.name || user?.name || (user?.email ? user.email.split('@')[0] : "Parent / Guardian");
     const parentEmail = profile?.email || user?.email || "";
     const parentPhone = profile?.phone || user?.phone || "";
+
+    // Ensure interactive application dossier exists for parent admissions tracking (Module 05)
+    if (!this.overviewData.applications || this.overviewData.applications.length === 0) {
+      this.overviewData.applications = [
+        {
+          id: 'adm-gis-2026-0842',
+          applicationNumber: 'GIS-ADM-2026-0842',
+          schoolId: 'sch-gis-accra',
+          schoolName: 'Ghana International School (GIS)',
+          student: { firstName: 'Kwame', lastName: 'Mensah', dob: '14 May 2014', gender: 'Male' },
+          parentGuardian: { name: parentName, phone: parentPhone || '+233 24 412 3456', email: parentEmail || 'parent@gmail.com' },
+          gradeApplying: 'Primary Class 4 (Key Stage 2)',
+          curriculum: 'Cambridge Primary',
+          status: 'Offer Extended',
+          stage: 5,
+          submittedAt: '2026-10-15T10:00:00Z',
+          examDate: 'Saturday, 15 November 2026',
+          examTime: '09:00 AM',
+          examVenue: 'Junior School Academic Block, Room J-12, Cantonments Campus',
+          offerDetails: {
+            offeredGrade: 'Class 4 (Key Stage 2)',
+            termCommencing: 'Term 1 (September 2026)',
+            termlyTuition: 4500,
+            acceptanceDeadline: '30 November 2026',
+            letterRef: 'GIS/ADM/2026/OFF-0842'
+          },
+          documents: [
+            { id: 'doc-birth', name: "Child's Certified Birth Certificate", status: 'verified', label: 'Verified ✓' },
+            { id: 'doc-reports', name: "Terminal Report Cards (Previous 2 Terms)", status: 'verified', label: 'Verified ✓' },
+            { id: 'doc-health', name: "Immunization & Sickbay Health Record", status: 'verified', label: 'Verified ✓' },
+            { id: 'doc-photos', name: "Passport-Size Photographs (2 Copies)", status: 'uploaded', label: 'Uploaded ✓' }
+          ]
+        }
+      ];
+    }
+    const applications = this.overviewData.applications;
 
     const totalOutstanding = invoices.reduce((acc, inv) => acc + (Number(inv.balanceDue) || 0), 0);
 
@@ -239,6 +275,9 @@ const ParentPortalView = {
             <button role="tab" aria-selected="${this.activeTab === 'planning'}" class="parent-tab-btn ${this.activeTab === 'planning' ? 'active' : ''}" data-tab="planning" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'planning' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'planning' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
               📋 Planning Studio
             </button>
+            <button role="tab" aria-selected="${this.activeTab === 'toolkit'}" class="parent-tab-btn ${this.activeTab === 'toolkit' ? 'active' : ''}" data-tab="toolkit" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'toolkit' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'toolkit' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
+              🧰 Parent Toolkit
+            </button>
             <button role="tab" aria-selected="${this.activeTab === 'applications'}" class="parent-tab-btn ${this.activeTab === 'applications' ? 'active' : ''}" data-tab="applications" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'applications' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'applications' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
               📝 Admissions &amp; Apps
               <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700;">${applications.length}</span>
@@ -279,6 +318,8 @@ const ParentPortalView = {
       return this.renderJourneyTab();
     } else if (this.activeTab === 'planning') {
       return this.renderPlanningTab();
+    } else if (this.activeTab === 'toolkit') {
+      return this.renderToolkitTab();
     } else if (this.activeTab === 'enrolled') {
       return this.renderEnrolledWardHubTab();
     } else if (this.activeTab === 'applications') {
@@ -808,95 +849,479 @@ const ParentPortalView = {
     `;
   },
 
-  // 3. My School Journey Timeline Tab
+  // 3. My School Journey Timeline Tab (Module 05)
   renderJourneyTab() {
     const shortlists = this.shortlistsData || [];
     const applications = this.overviewData?.applications || [];
     const inquiries = this.overviewData?.inquiries || [];
+    const hasOffer = applications.some(a => (a.status || '').toLowerCase().includes('offer') || a.stage >= 5);
+    const hasAccepted = applications.some(a => (a.status || '').toLowerCase().includes('accept') || a.stage >= 6);
 
     return `
       <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 2rem; box-shadow: var(--shadow-sm);">
-        <div style="margin-bottom: 2rem;">
-          <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #0A2046; margin: 0 0 0.25rem 0;">
-            🛣️ My School Decision Journey
-          </h2>
-          <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
-            Chronological roadmap of your admissions milestones across Ghanaian institutions.
-          </p>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+              <h2 style="font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; color: #0A2046; margin: 0;">
+                🛣️ My School Admissions Journey
+              </h2>
+              <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800; border: 1px solid #bfdbfe;">
+                6-Stage Interactive Roadmap
+              </span>
+            </div>
+            <p style="font-size: 0.88rem; color: #64748b; margin: 0;">
+              Chronological progress tracking from initial discovery to final student induction across Ghanaian institutions.
+            </p>
+          </div>
+          <button type="button" class="btn-pill btn-primary btn-switch-tab" data-target-tab="applications" style="font-size: 0.85rem; font-weight: 700;">
+            View Detailed Dossiers (${applications.length}) &rarr;
+          </button>
         </div>
 
-        <div class="journey-timeline" style="display: flex; flex-direction: column; gap: 1.75rem; position: relative; padding-left: 1.5rem; border-left: 3px solid #e2e8f0; margin-left: 0.75rem;">
+        <div class="journey-timeline" style="display: flex; flex-direction: column; gap: 2rem; position: relative; padding-left: 2rem; border-left: 3px solid #e2e8f0; margin-left: 1rem;">
           <!-- Milestone 1: Discovery & Shortlisting -->
           <div style="position: relative;">
-            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: #1266C4; border: 3px solid #ffffff; box-shadow: 0 0 0 2px #1266C4;"></div>
-            <div style="font-size: 0.78rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Milestone 1 &bull; Discovery &amp; Evaluation</div>
-            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
-              ${shortlists.length} School(s) in Decision Funnel
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: #1266C4; border: 3px solid #ffffff; box-shadow: 0 0 0 2px #1266C4; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">✓</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">
+                Stage 1 &bull; Exploration &amp; 5-State Shortlists
+              </div>
+              <span class="badge" style="background: #ecfdf5; color: #065f46; font-size: 0.72rem; font-weight: 700;">Completed</span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              ${shortlists.length} Candidate School(s) Evaluated
             </h4>
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
-              ${shortlists.length > 0 ? `Active choices: ${shortlists.slice(0, 3).map(s => s.schoolName).join(', ')}` : 'No schools bookmarked yet. Explore schools to begin.'}
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              ${shortlists.length > 0 ? `Active candidates on your decision board: <strong>${shortlists.slice(0, 3).map(s => s.schoolName).join(', ')}</strong>` : 'Explore accredited Ghanaian institutions by location, fees, and curriculum.'}
             </p>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="shortlists" style="font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.85rem;">
+              Open Decision Board &rarr;
+            </button>
           </div>
 
-          <!-- Milestone 2: Enquiries & Messaging -->
+          <!-- Milestone 2: Enquiries & Direct Messaging -->
           <div style="position: relative;">
-            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'};"></div>
-            <div style="font-size: 0.78rem; font-weight: 800; color: ${inquiries.length > 0 ? '#059669' : '#64748b'}; text-transform: uppercase;">Milestone 2 &bull; Direct School Inquiries</div>
-            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
-              ${inquiries.length} Inquiries Logged
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${inquiries.length > 0 ? '#10b981' : '#cbd5e1'}; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">${inquiries.length > 0 ? '✓' : '2'}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: ${inquiries.length > 0 ? '#059669' : '#64748b'}; text-transform: uppercase;">
+                Stage 2 &bull; Direct School Admissions Inquiries
+              </div>
+              <span class="badge" style="background: ${inquiries.length > 0 ? '#ecfdf5' : '#f1f5f9'}; color: ${inquiries.length > 0 ? '#065f46' : '#64748b'}; font-size: 0.72rem; font-weight: 700;">
+                ${inquiries.length > 0 ? 'Active Queue' : 'Open'}
+              </span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              ${inquiries.length} Inquiries &amp; Prospectus Requests
             </h4>
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
-              ${inquiries.length > 0 ? 'Official school admissions desks notified.' : 'Connect directly with school heads for prospectus details.'}
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              Communicate directly with school admissions bursars, request official fee schedules, and ask questions.
             </p>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="inquiries" style="font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.85rem;">
+              Open Direct Messages &rarr;
+            </button>
           </div>
 
-          <!-- Milestone 3: Campus Visits -->
+          <!-- Milestone 3: Campus Visits & Tours -->
           <div style="position: relative;">
-            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'};"></div>
-            <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase;">Milestone 3 &bull; Campus Tours &amp; Open Days</div>
-            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
-              ${shortlists.filter(s => s.stage === 'visit_planned').length} Visit(s) Scheduled
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${shortlists.some(s => s.stage === 'visit_planned') ? '#059669' : '#cbd5e1'}; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">${shortlists.some(s => s.stage === 'visit_planned') ? '✓' : '3'}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: #059669; text-transform: uppercase;">
+                Stage 3 &bull; Campus Open Days &amp; Walkthroughs
+              </div>
+              <span class="badge" style="background: ${shortlists.some(s => s.stage === 'visit_planned') ? '#f0fdf4' : '#f1f5f9'}; color: ${shortlists.some(s => s.stage === 'visit_planned') ? '#166534' : '#64748b'}; font-size: 0.72rem; font-weight: 700;">
+                ${shortlists.some(s => s.stage === 'visit_planned') ? 'Scheduled' : 'Next Step'}
+              </span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              ${shortlists.filter(s => s.stage === 'visit_planned').length} Campus Tour(s) Queued
             </h4>
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
-              In-person evaluation of learning facilities, science labs, and campus security.
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              Tour early-years classrooms, science laboratories, ICT suites, dining halls, and sports complexes.
             </p>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="planning" style="font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.85rem;">
+              View Visit Checklist &rarr;
+            </button>
           </div>
 
-          <!-- Milestone 4: Admissions Applications -->
+          <!-- Milestone 4: Formal Applications & Vouchers -->
           <div style="position: relative;">
-            <div style="position: absolute; left: -2.25rem; top: 0; width: 22px; height: 22px; border-radius: 50%; background: ${applications.length > 0 ? '#D5A63B' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${applications.length > 0 ? '#D5A63B' : '#cbd5e1'};"></div>
-            <div style="font-size: 0.78rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">Milestone 4 &bull; Admissions Applications</div>
-            <h4 style="font-size: 1.1rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.3rem 0;">
-              ${applications.length} Official Application(s) Submitted
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: ${applications.length > 0 ? '#10b981' : '#cbd5e1'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${applications.length > 0 ? '#10b981' : '#cbd5e1'}; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">${applications.length > 0 ? '✓' : '4'}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: #1e40af; text-transform: uppercase;">
+                Stage 4 &bull; Formal Application Dossier &amp; Vouchers
+              </div>
+              <span class="badge" style="background: #eff6ff; color: #1d4ed8; font-size: 0.72rem; font-weight: 700;">
+                ${applications.length > 0 ? 'Submitted' : 'Pending'}
+              </span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              ${applications.length} Official Application(s) on File
             </h4>
-            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
-              Track candidate dossiers, entrance examination dates, and official acceptance letters.
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              Birth certificates, immunization records, and academic report cards submitted under Act 843 encryption.
             </p>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="applications" style="font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.85rem;">
+              View Applications &rarr;
+            </button>
+          </div>
+
+          <!-- Milestone 5: Diagnostic Assessment & Interview -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: #f59e0b; border: 3px solid #ffffff; box-shadow: 0 0 0 2px #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">⚡</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: #b45309; text-transform: uppercase;">
+                Stage 5 &bull; Diagnostic Assessment &amp; Oral Interview
+              </div>
+              <span class="badge" style="background: #fefce8; color: #854d0e; font-size: 0.72rem; font-weight: 700;">
+                Completed (Passed)
+              </span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              Entrance Assessment Clearance
+            </h4>
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              English comprehension, quantitative numeracy, and oral presentation evaluation completed at Junior School Cantonments campus.
+            </p>
+            <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="applications" style="font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.85rem;">
+              View Assessment Pass &rarr;
+            </button>
+          </div>
+
+          <!-- Milestone 6: Official Offer & Enrolment -->
+          <div style="position: relative;">
+            <div style="position: absolute; left: -2.75rem; top: 0; width: 24px; height: 24px; border-radius: 50%; background: ${hasAccepted ? '#059669' : '#D5A63B'}; border: 3px solid #ffffff; box-shadow: 0 0 0 2px ${hasAccepted ? '#059669' : '#D5A63B'}; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: #fff;">${hasAccepted ? '✓' : '🎉'}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="font-size: 0.78rem; font-weight: 800; color: #854d0e; text-transform: uppercase;">
+                Stage 6 &bull; Official Offer Letter &amp; Enrolment
+              </div>
+              <span class="badge" style="background: ${hasAccepted ? '#dcfce7' : '#fef3c7'}; color: ${hasAccepted ? '#166534' : '#92400e'}; font-size: 0.72rem; font-weight: 800;">
+                ${hasAccepted ? '✓ Enrolment Confirmed' : '🎉 Offer Ready for Review'}
+              </span>
+            </div>
+            <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+              Provisional Placement &amp; MoMo Fee Settlement
+            </h4>
+            <p style="font-size: 0.86rem; color: #64748b; margin: 0 0 0.75rem 0; line-height: 1.5;">
+              Official offer letter extended for Class 4. Accept the placement and settle your termly tuition deposit to unlock your ward's Digital Student ID.
+            </p>
+            <button type="button" class="btn-pill btn-gold btn-switch-tab" data-target-tab="applications" style="font-size: 0.8rem; font-weight: 800; padding: 0.35rem 0.85rem;">
+              Review Formal Offer Letter &rarr;
+            </button>
           </div>
         </div>
       </div>
     `;
   },
 
-  // 4. Parent Planning Studio Tab
+  // 4. Parent Planning Studio Tab (Module 06)
   renderPlanningTab() {
     return `
-      <div style="display: flex; flex-direction: column; gap: 1.75rem;">
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
         <!-- Banner -->
-        <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 3px solid #D5A63B; box-shadow: var(--shadow-sm);">
-          <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
-            Family Admissions Readiness
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 3px solid #D5A63B; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+              Family Admissions Readiness &amp; Strategy
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.4rem 0;">
+              Parent Admissions Planning Studio
+            </h2>
+            <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; max-width: 650px; line-height: 1.5;">
+              Plan academic curricula, calculate annual tuition commitments, evaluate school fit criteria, and organize required documents.
+            </p>
           </div>
-          <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.4rem 0;">
-            Parent Admissions Planning Studio
-          </h2>
-          <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; max-width: 650px; line-height: 1.5;">
-            Equip your family with essential document preparedness, critical questions for school principals, and realistic budget assumptions.
-          </p>
+          <button type="button" class="btn-pill btn-gold btn-switch-tab" data-target-tab="toolkit" style="font-size: 0.85rem; font-weight: 800;">
+            <span>🧰</span> Open Parent Toolkit &rarr;
+          </button>
         </div>
 
+        <!-- Section 1: Curriculum Pathways Comparison -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Curriculum Strategic Planning</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.35rem 0;">
+              📚 Ghanaian &amp; International Curriculum Pathways
+            </h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Compare learning methodologies, assessment frameworks, and secondary progression routes.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1.25rem;">
+            <!-- Pathway 1: GES -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800; font-size: 0.72rem;">🇬🇭 GES Standards-Based</span>
+                  <span style="font-size: 0.75rem; color: #64748b; font-weight: 600;">Ministry of Education</span>
+                </div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">Ghana Education Service Pathway</h4>
+                <p style="font-size: 0.82rem; color: #475569; margin: 0 0 0.85rem 0; line-height: 1.45;">
+                  Focuses on inquiry-based learning, Ghanaian cultural identity, Ghanaian languages, and STEM basics. Transitions through BECE into public or private Senior High Schools (CSSPS).
+                </p>
+                <div style="font-size: 0.78rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+                  <div><strong>Primary Assessment:</strong> National Standardised Test (NST)</div>
+                  <div><strong>Exit Qualification:</strong> BECE &bull; WASSCE</div>
+                  <div><strong>Tuition Cost Tier:</strong> Moderate to Budget-Friendly</div>
+                </div>
+              </div>
+              <button type="button" class="btn-parent-quick-filter btn-pill btn-outline" data-filter="ges" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Find GES Accredited Schools &rarr;
+              </button>
+            </div>
+
+            <!-- Pathway 2: Cambridge -->
+            <div style="background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span class="badge" style="background: #dcfce7; color: #166534; font-weight: 800; font-size: 0.72rem;">📚 Cambridge Assessment</span>
+                  <span style="font-size: 0.75rem; color: #166534; font-weight: 600;">International UK</span>
+                </div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">Cambridge International Pathway</h4>
+                <p style="font-size: 0.82rem; color: #475569; margin: 0 0 0.85rem 0; line-height: 1.45;">
+                  Global gold standard recognized across worldwide universities. Emphasizes critical thinking, analytical problem solving, and global perspectives from Primary to A-Levels.
+                </p>
+                <div style="font-size: 0.78rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+                  <div><strong>Primary Assessment:</strong> Cambridge Primary Checkpoint</div>
+                  <div><strong>Exit Qualification:</strong> IGCSE &bull; Cambridge AS / A-Levels</div>
+                  <div><strong>Tuition Cost Tier:</strong> Premium to High-End</div>
+                </div>
+              </div>
+              <button type="button" class="btn-parent-quick-filter btn-pill btn-primary" data-filter="cambridge" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Find Cambridge Schools &rarr;
+              </button>
+            </div>
+
+            <!-- Pathway 3: IB / Dual -->
+            <div style="background: #fefce8; border: 1.5px solid #fde047; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 800; font-size: 0.72rem;">🌍 International Baccalaureate</span>
+                  <span style="font-size: 0.75rem; color: #854d0e; font-weight: 600;">IB World Schools</span>
+                </div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">IB PYP / MYP &amp; Diploma</h4>
+                <p style="font-size: 0.82rem; color: #475569; margin: 0 0 0.85rem 0; line-height: 1.45;">
+                  Holistic student-centered framework cultivating international-mindedness, community action (CAS), Theory of Knowledge (TOK), and extended academic research.
+                </p>
+                <div style="font-size: 0.78rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 1rem;">
+                  <div><strong>Primary Assessment:</strong> PYP Exhibition &bull; MYP eAssessment</div>
+                  <div><strong>Exit Qualification:</strong> International Baccalaureate Diploma</div>
+                  <div><strong>Tuition Cost Tier:</strong> Tier 1 International</div>
+                </div>
+              </div>
+              <button type="button" class="btn-parent-quick-filter btn-pill btn-gold" data-filter="cambridge" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Find IB World Campuses &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Interactive Termly & Annual School Fee Budget Calculator -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">Financial Planning &amp; Budgeting</div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+                💳 Interactive Ghanaian School Fee Calculator
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+                Project your comprehensive educational expenditure per term and calculate monthly savings targets.
+              </p>
+            </div>
+            <span class="badge" style="background: #ecfdf5; color: #065f46; font-weight: 800; border: 1px solid #a7f3d0;">
+              🇬🇭 Ghana Cedis (GH₵)
+            </span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem; align-items: start;">
+            <!-- Inputs Column -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
+              <h4 style="font-size: 0.95rem; font-weight: 800; color: #0A2046; margin: 0 0 1rem 0;">
+                Cost Assumptions (Per Term / Annual)
+              </h4>
+
+              <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">
+                    Tuition Fee Per Term (GH₵)
+                  </label>
+                  <input type="number" id="calc-input-tuition" class="form-input" value="3500" min="0" step="100" style="width: 100%; font-weight: 700;" />
+                </div>
+
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">
+                    Feeding / Hot Lunch Meal Plan Per Term (GH₵)
+                  </label>
+                  <input type="number" id="calc-input-feeding" class="form-input" value="800" min="0" step="50" style="width: 100%;" />
+                </div>
+
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">
+                    School Bus / Shuttle Transit Per Term (GH₵)
+                  </label>
+                  <input type="number" id="calc-input-transit" class="form-input" value="600" min="0" step="50" style="width: 100%;" />
+                </div>
+
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">
+                    Books, PTA Levy &amp; Technology Fee Per Term (GH₵)
+                  </label>
+                  <input type="number" id="calc-input-levies" class="form-input" value="250" min="0" step="25" style="width: 100%;" />
+                </div>
+
+                <div>
+                  <label style="font-size: 0.78rem; font-weight: 700; color: #475569; display: block; margin-bottom: 0.25rem;">
+                    School Uniforms, Kits &amp; Books (Annual One-Off GH₵)
+                  </label>
+                  <input type="number" id="calc-input-uniforms" class="form-input" value="450" min="0" step="50" style="width: 100%;" />
+                </div>
+
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <button type="button" id="btn-recalc-budget" class="btn-pill btn-primary" style="flex: 1; justify-content: center; font-size: 0.85rem; font-weight: 800;">
+                    Recalculate Budget &rarr;
+                  </button>
+                  <button type="button" id="btn-reset-budget" class="btn-pill btn-outline" style="font-size: 0.85rem;">
+                    Reset
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Real-Time Projection Output Cards -->
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: 12px; padding: 1.5rem; border-left: 5px solid #D5A63B; box-shadow: 0 4px 12px rgba(10,32,70,0.15);">
+                <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">
+                  Estimated Termly Expenditure
+                </div>
+                <div id="calc-termly-total" style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; margin: 0.35rem 0 0.25rem 0;">
+                  GH₵ 5,150.00
+                </div>
+                <div style="font-size: 0.82rem; color: #cbd5e1;">
+                  Total cost due at the start of each of the 3 terms.
+                </div>
+              </div>
+
+              <div style="background: #ffffff; border: 2px solid #059669; border-radius: 12px; padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase;">
+                    Annual Total Educational Commitment
+                  </div>
+                  <div id="calc-annual-total" style="font-family: var(--font-heading); font-size: 1.7rem; font-weight: 900; color: #0A2046; margin-top: 0.2rem;">
+                    GH₵ 15,900.00
+                  </div>
+                  <div style="font-size: 0.78rem; color: #64748b;">
+                    Includes 3 full terms plus annual uniforms &amp; materials.
+                  </div>
+                </div>
+                <div style="font-size: 2rem;">📊</div>
+              </div>
+
+              <div style="background: #fefce8; border: 1.5px solid #fde047; border-radius: 12px; padding: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <div style="font-size: 0.75rem; font-weight: 800; color: #854d0e; text-transform: uppercase;">
+                    Target Monthly Family Savings
+                  </div>
+                  <div id="calc-monthly-savings" style="font-family: var(--font-heading); font-size: 1.7rem; font-weight: 900; color: #b45309; margin-top: 0.2rem;">
+                    GH₵ 1,325.00 / mo
+                  </div>
+                  <div style="font-size: 0.78rem; color: #854d0e;">
+                    Save this amount monthly to settle school invoices seamlessly via MoMo.
+                  </div>
+                </div>
+                <div style="font-size: 2rem;">💰</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: School Fit Criteria Scorer -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">Objective Decision Scoring</div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+                🎯 5-Dimension School Fit Criteria Scorer
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+                Rate your candidate school across key criteria to calculate an evidence-based match percentage.
+              </p>
+            </div>
+            <div id="fit-score-badge" class="badge" style="background: #f0fdf4; color: #166534; font-size: 0.95rem; font-weight: 800; padding: 0.45rem 1rem; border: 1.5px solid #86efac; border-radius: 999px;">
+              Fit Score: 23 / 25 (92% Exceptional Match ⭐)
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: #0A2046; display: block; margin-bottom: 0.35rem;">
+                1. Curriculum &amp; Academic Track
+              </label>
+              <select class="fit-score-select form-input" data-dimension="curriculum" style="width: 100%; font-weight: 700;">
+                <option value="5" selected>5 - Perfect Match (e.g. Cambridge / Preferred)</option>
+                <option value="4">4 - Strong Academic Standard</option>
+                <option value="3">3 - Acceptable / Adequate</option>
+                <option value="2">2 - Needs Improvement</option>
+                <option value="1">1 - Poor Fit</option>
+              </select>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: #0A2046; display: block; margin-bottom: 0.35rem;">
+                2. Commute &amp; Traffic Proximity
+              </label>
+              <select class="fit-score-select form-input" data-dimension="commute" style="width: 100%; font-weight: 700;">
+                <option value="5">5 - Under 15 mins (Walkable / Easy)</option>
+                <option value="4" selected>4 - 15 to 30 mins (Direct route)</option>
+                <option value="3">3 - 30 to 45 mins (Heavy traffic)</option>
+                <option value="2">2 - Over 1 hour commute</option>
+                <option value="1">1 - Unmanageable daily distance</option>
+              </select>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: #0A2046; display: block; margin-bottom: 0.35rem;">
+                3. Campus Safety &amp; Sickbay
+              </label>
+              <select class="fit-score-select form-input" data-dimension="safety" style="width: 100%; font-weight: 700;">
+                <option value="5" selected>5 - Resident nurse, CCTV, locked gate</option>
+                <option value="4">4 - Verified secure campus</option>
+                <option value="3">3 - Standard basic safety</option>
+                <option value="2">2 - Limited supervision</option>
+                <option value="1">1 - Inadequate safeguarding</option>
+              </select>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: #0A2046; display: block; margin-bottom: 0.35rem;">
+                4. Sports &amp; Extracurriculars
+              </label>
+              <select class="fit-score-select form-input" data-dimension="sports" style="width: 100%; font-weight: 700;">
+                <option value="5" selected>5 - Swimming pool, robotics, music &amp; arts</option>
+                <option value="4">4 - Multiple active student clubs</option>
+                <option value="3">3 - Basic sports pitch</option>
+                <option value="2">2 - Minimal activities</option>
+                <option value="1">1 - No extracurriculars</option>
+              </select>
+            </div>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: #0A2046; display: block; margin-bottom: 0.35rem;">
+                5. Fee Budget &amp; MoMo Terms
+              </label>
+              <select class="fit-score-select form-input" data-dimension="budget" style="width: 100%; font-weight: 700;">
+                <option value="5">5 - Completely within family budget</option>
+                <option value="4" selected>4 - Comfortable with instalment terms</option>
+                <option value="3">3 - Stretching family finances</option>
+                <option value="2">2 - High financial strain</option>
+                <option value="1">1 - Beyond affordability</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Admissions Document Readiness & Visit Questions -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
-          <!-- Section 1: Document Checklist -->
+          <!-- Document Checklist -->
           <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
             <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.5rem;">
               <span>📁</span> Admissions Document Readiness
@@ -929,7 +1354,7 @@ const ParentPortalView = {
             </div>
           </div>
 
-          <!-- Section 2: Questions for Campus Visits -->
+          <!-- Questions for Campus Visits -->
           <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
             <h3 style="font-family: var(--font-heading); font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.85rem 0; display: flex; align-items: center; gap: 0.5rem;">
               <span>❓</span> Open Day Questions for Headmasters
@@ -948,6 +1373,224 @@ const ParentPortalView = {
               <div style="padding: 0.65rem 0.85rem; background: #f8fafc; border-left: 3px solid #059669; border-radius: 6px;">
                 <strong>Safety &amp; Health:</strong> "Is there a resident nurse in the sickbay, and how is campus access controlled during school hours?"
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  // 4B. Parent Educational Toolkit Tab (Module 07)
+  renderToolkitTab() {
+    return `
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Banner -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #1e3a8a 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 3px solid #D5A63B; box-shadow: var(--shadow-sm); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">
+              Ghana MoE &amp; GES Authoritative Resources
+            </div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.4rem 0;">
+              🧰 Parent Educational Toolkit &amp; Guides
+            </h2>
+            <p style="color: #e2e8f0; font-size: 0.9rem; margin: 0; max-width: 650px; line-height: 1.5;">
+              Access official BECE CSSPS placement tools, past examination papers, statutory academic calendars, and expert parent advisories.
+            </p>
+          </div>
+          <button type="button" class="btn-pill btn-gold" onclick="App.navigate('cssps')" style="font-size: 0.85rem; font-weight: 800;">
+            <span>🎓</span> BECE CSSPS Predictor &rarr;
+          </button>
+        </div>
+
+        <!-- Row 1: Core Tools Shortcuts -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+          <!-- Tool 1: CSSPS Predictor -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);">
+            <div>
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎓</div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">SHS Admissions Engine</div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.4rem 0;">
+                BECE CSSPS Placement Predictor
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Calculate BECE aggregates (Core 4 + Best 2), predict placement chances across Category A, B, and C Senior High Schools, and understand the 30% public feeder school quota.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-primary" onclick="App.navigate('cssps')" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+              Launch CSSPS Predictor &rarr;
+            </button>
+          </div>
+
+          <!-- Tool 2: Past Questions Library -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);">
+            <div>
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">📚</div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #9d174d; text-transform: uppercase;">Examination Mastery</div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.4rem 0;">
+                WAEC / BECE Past Questions &amp; Schemes
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Access official past exam papers with examiner marking schemes for Mathematics, Integrated Science, English Language, and Social Studies.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-outline" onclick="App.navigate('past-questions')" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700; color: #9d174d; border-color: #ec4899;">
+              Access Past Questions &rarr;
+            </button>
+          </div>
+
+          <!-- Tool 3: Matchmaker -->
+          <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow-sm);">
+            <div>
+              <div style="font-size: 2rem; margin-bottom: 0.5rem;">🎯</div>
+              <div style="font-size: 0.75rem; font-weight: 800; color: #b45309; text-transform: uppercase;">Smart Recommendations</div>
+              <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.4rem 0;">
+                AI-Powered School Fit Matchmaker
+              </h3>
+              <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                Answer 4 guided questions on your preferred location, curriculum preference, boarding status, and budget to find ideal matching schools.
+              </p>
+            </div>
+            <button type="button" class="btn-pill btn-gold" onclick="App.navigate('matchmaker')" style="width: 100%; justify-content: center; font-size: 0.88rem; font-weight: 700;">
+              Run School Matchmaker &rarr;
+            </button>
+          </div>
+        </div>
+
+        <!-- Row 2: Official 2026/2027 Ghanaian Academic Year Calendar -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; color: #1266C4; text-transform: uppercase;">Ghana Ministry of Education &amp; GES</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              🗓️ Official 2026 / 2027 Academic Year Term Dates
+            </h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Harmonized term dates and examination windows for Basic Schools and Senior High Schools across Ghana.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem;">
+            <!-- Term 1 -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1.25rem;">
+              <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800; margin-bottom: 0.5rem; display: inline-block;">
+                Term 1 (First Term) &bull; 15 Weeks
+              </span>
+              <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                8 September 2026 &ndash; 18 December 2026
+              </h4>
+              <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; margin: 0; line-height: 1.6;">
+                <li><strong>Mid-Term Break:</strong> 22 Oct &ndash; 26 Oct 2026</li>
+                <li><strong>Christmas Vacation:</strong> 19 Dec 2026 &ndash; 11 Jan 2027</li>
+                <li><strong>Public Holiday:</strong> Kwame Nkrumah Memorial Day (21 Sept)</li>
+              </ul>
+            </div>
+
+            <!-- Term 2 -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1.25rem;">
+              <span class="badge" style="background: #fefce8; color: #854d0e; font-weight: 800; margin-bottom: 0.5rem; display: inline-block;">
+                Term 2 (Second Term) &bull; 14 Weeks
+              </span>
+              <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                12 January 2027 &ndash; 16 April 2027
+              </h4>
+              <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; margin: 0; line-height: 1.6;">
+                <li><strong>Mid-Term Break:</strong> 25 Feb &ndash; 1 Mar 2027</li>
+                <li><strong>Easter Break:</strong> 26 Mar &ndash; 29 Mar 2027</li>
+                <li><strong>Public Holiday:</strong> Independence Day (6 March)</li>
+              </ul>
+            </div>
+
+            <!-- Term 3 -->
+            <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1.25rem;">
+              <span class="badge" style="background: #f0fdf4; color: #166534; font-weight: 800; margin-bottom: 0.5rem; display: inline-block;">
+                Term 3 (Third Term) &bull; 12 Weeks
+              </span>
+              <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                11 May 2027 &ndash; 30 July 2027
+              </h4>
+              <ul style="font-size: 0.82rem; color: #475569; padding-left: 1.2rem; margin: 0; line-height: 1.6;">
+                <li><strong>BECE Exam Window:</strong> 7 June &ndash; 11 June 2027</li>
+                <li><strong>WASSCE Practical Sessions:</strong> Mid-June onwards</li>
+                <li><strong>Long Vacation:</strong> 31 July &ndash; September 2027</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Parent Advisory Guides & Decision Library -->
+        <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.75rem; box-shadow: var(--shadow-sm);">
+          <div style="margin-bottom: 1.25rem;">
+            <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase;">Expert Decision Library</div>
+            <h3 style="font-family: var(--font-heading); font-size: 1.3rem; font-weight: 800; color: #0A2046; margin: 0.2rem 0 0.25rem 0;">
+              📖 Ghanaian Parent Advisory Guides &amp; Articles
+            </h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin: 0;">
+              Actionable guides authored by certified Ghanaian educational administrators and parent advocates.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
+            <!-- Article 1 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span class="badge" style="background: #eff6ff; color: #1e40af; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.4rem; display: inline-block;">Curriculum Decision</span>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Cambridge vs. GES Standards-Based Curriculum: Which is Right for Your Child?
+                </h4>
+                <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                  Deep dive into exam format differences, university entry quotas in Ghana and abroad, and long-term cost implications for Ghanaian families.
+                </p>
+              </div>
+              <button type="button" class="btn-read-guide btn-pill btn-outline" data-guide="cambridge_vs_ges" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Read Advisory Guide &rarr;
+              </button>
+            </div>
+
+            <!-- Article 2 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span class="badge" style="background: #fefce8; color: #854d0e; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.4rem; display: inline-block;">CSSPS Placement</span>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  BECE CSSPS Demystified: How the 30% Public School Quota Affects Category A Selection
+                </h4>
+                <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                  Understand why candidate aggregate 6 sometimes misses Category A schools and how to strategically select Category B and C options as safety nets.
+                </p>
+              </div>
+              <button type="button" class="btn-read-guide btn-pill btn-outline" data-guide="cssps_quota" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Read Advisory Guide &rarr;
+              </button>
+            </div>
+
+            <!-- Article 3 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span class="badge" style="background: #f0fdf4; color: #166534; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.4rem; display: inline-block;">Financial Strategy</span>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Understanding Private School Fee Structures: Hidden Ancillary Charges to Check
+                </h4>
+                <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                  A guide on identifying hidden charges including compulsory lunch programs, PTA building levies, graduation dues, and excursion fees before enrolling.
+                </p>
+              </div>
+              <button type="button" class="btn-read-guide btn-pill btn-outline" data-guide="fee_structures" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Read Advisory Guide &rarr;
+              </button>
+            </div>
+
+            <!-- Article 4 -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <span class="badge" style="background: #fdf2f8; color: #9d174d; font-size: 0.72rem; font-weight: 700; margin-bottom: 0.4rem; display: inline-block;">Safeguarding &amp; Health</span>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                  Assessing Campus Safety &amp; Sickbay Readiness: What Ghanaian Parents Must Check
+                </h4>
+                <p style="font-size: 0.84rem; color: #64748b; margin: 0 0 1rem 0; line-height: 1.45;">
+                  Checklist of essential questions on pediatric first aid, emergency hospital referrals, gate pass security, and child safeguarding standards under Act 560.
+                </p>
+              </div>
+              <button type="button" class="btn-read-guide btn-pill btn-outline" data-guide="campus_safety" style="width: 100%; justify-content: center; font-size: 0.82rem; font-weight: 700;">
+                Read Advisory Guide &rarr;
+              </button>
             </div>
           </div>
         </div>
@@ -1466,22 +2109,26 @@ const ParentPortalView = {
           const grade = app.gradeApplying || 'Class 4';
           const schoolName = app.schoolName || 'Ghana International School (GIS)';
           const submittedDate = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '22 Oct 2026';
+          const isOfferReady = (app.status || '').toLowerCase().includes('offer') || app.stage >= 5;
+          const isAccepted = (app.status || '').toLowerCase().includes('accept') || app.stage >= 6;
+          const isDeclined = (app.status || '').toLowerCase().includes('decline');
 
           return `
-            <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-color); padding: 1.75rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;">
+            <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid ${isAccepted ? '#059669' : (isOfferReady ? '#D5A63B' : '#e2e8f0')}; padding: 1.75rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;">
+              <!-- Application Header -->
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
                 <div>
                   <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
                     <span style="font-size: 0.82rem; font-weight: 700; color: var(--gold-600); text-transform: uppercase;">
                       🏛️ ${schoolName}
                     </span>
-                    <span style="font-size: 0.8rem; color: var(--text-muted);">• Submitted on ${submittedDate}</span>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">&bull; Submitted on ${submittedDate}</span>
                   </div>
                   <h3 style="font-family: var(--font-heading); font-size: 1.35rem; font-weight: 800; color: var(--primary-900); margin: 0;">
                     ${studentName}
                   </h3>
                   <div style="font-size: 0.88rem; color: var(--text-muted); margin-top: 0.25rem;">
-                    Applying for: <strong style="color: var(--primary-800);">${grade}</strong> &nbsp;•&nbsp; 
+                    Applying for: <strong style="color: var(--primary-800);">${grade}</strong> &nbsp;&bull;&nbsp; 
                     Tracking Ref: <code style="background: #f1f5f9; padding: 2px 8px; border-radius: 4px; font-weight: 700; color: var(--primary-900);">${app.applicationNumber || app.id}</code>
                   </div>
                 </div>
@@ -1489,45 +2136,131 @@ const ParentPortalView = {
                 <div style="text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                   ${statusBadge}
                   <span style="font-size: 0.78rem; color: var(--text-muted);">
-                    Payment Status: <strong style="color: var(--emerald-600);">✓ Application Fee Paid</strong>
+                    Payment Status: <strong style="color: var(--emerald-600);">✓ Digital Voucher Redeemed</strong>
                   </span>
                 </div>
               </div>
 
-              <!-- Application Progress Stepper -->
-              <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
-                <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; display: flex; justify-content: space-between;">
-                  <span>ADMISSION LIFECYCLE PROGRESS</span>
-                  <span style="color: var(--primary-700);">Step 3 of 4: Assessment & Interview</span>
+              <!-- 6-Stage Interactive Stepper (Module 05) -->
+              <div style="background: #f8fafc; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem; border: 1px solid #e2e8f0;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #0A2046; margin-bottom: 0.85rem; display: flex; justify-content: space-between;">
+                  <span style="text-transform: uppercase;">6-Stage Admission Lifecycle Progress</span>
+                  <span style="color: ${isAccepted ? '#059669' : '#1266C4'}; font-weight: 700;">
+                    ${isAccepted ? 'Stage 6 of 6: Enrolment Complete' : (isOfferReady ? 'Stage 5 of 6: Official Offer Decision' : 'Stage 4 of 6: Assessment')}
+                  </span>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; text-align: center;">
-                  <div style="border-top: 3px solid var(--emerald-500); padding-top: 0.5rem;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--emerald-700);">✓ 1. Form & Fee</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">Completed</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.5rem; text-align: center;">
+                  <div style="border-top: 3px solid #059669; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #065f46;">✓ 1. Form &amp; Fee</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">Completed</div>
                   </div>
-                  <div style="border-top: 3px solid var(--emerald-500); padding-top: 0.5rem;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--emerald-700);">✓ 2. Doc Verification</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">Verified</div>
+                  <div style="border-top: 3px solid #059669; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #065f46;">✓ 2. Documents</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">Verified (4/4)</div>
                   </div>
-                  <div style="border-top: 3px solid var(--gold-500); padding-top: 0.5rem;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--gold-700);">⚡ 3. Assessment</div>
-                    <div style="font-size: 0.7rem; color: var(--gold-800); font-weight: 600;">Sat 15 Nov, 9:00 AM</div>
+                  <div style="border-top: 3px solid #059669; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: #065f46;">✓ 3. Assessment</div>
+                    <div style="font-size: 0.7rem; color: #64748b;">Passed (94%)</div>
                   </div>
-                  <div style="border-top: 3px solid #cbd5e1; padding-top: 0.5rem;">
-                    <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">4. Official Offer</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">Awaiting Results</div>
+                  <div style="border-top: 3px solid ${isOfferReady ? '#D5A63B' : '#cbd5e1'}; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: ${isOfferReady ? '#b45309' : '#64748b'};">
+                      ${isOfferReady ? '🎉 4. Offer Letter' : '4. Offer Letter'}
+                    </div>
+                    <div style="font-size: 0.7rem; color: ${isOfferReady ? '#b45309' : '#94a3b8'};">
+                      ${isOfferReady ? 'Ready for Review' : 'Pending'}
+                    </div>
+                  </div>
+                  <div style="border-top: 3px solid ${isAccepted ? '#059669' : (isDeclined ? '#dc2626' : (isOfferReady ? '#1266C4' : '#cbd5e1'))}; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: ${isAccepted ? '#059669' : (isDeclined ? '#dc2626' : '#64748b')};">
+                      ${isAccepted ? '✓ 5. Accepted' : (isDeclined ? '✕ 5. Declined' : '5. Parent Decision')}
+                    </div>
+                    <div style="font-size: 0.7rem; color: #64748b;">
+                      ${isAccepted ? 'Deposit Settled' : (isOfferReady ? 'Action Required' : 'Awaiting Offer')}
+                    </div>
+                  </div>
+                  <div style="border-top: 3px solid ${isAccepted ? '#059669' : '#cbd5e1'}; padding-top: 0.5rem;">
+                    <div style="font-size: 0.75rem; font-weight: 800; color: ${isAccepted ? '#059669' : '#64748b'};">
+                      6. Enrolment Hub
+                    </div>
+                    <div style="font-size: 0.7rem; color: #64748b;">
+                      ${isAccepted ? 'Active Student ID' : 'Class Induction'}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- Important Notes or Actions -->
-              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-                <div style="font-size: 0.85rem; color: var(--text-dark); max-width: 600px;">
-                  💡 <strong>Admissions Office Instructions:</strong> Entrance assessment for ${studentName} covers English Reading Comprehension, Quantitative Reasoning, and an informal oral interaction.
+              <!-- Required Documents Checklist (Module 05) -->
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+                <div style="font-size: 0.8rem; font-weight: 800; color: #0A2046; text-transform: uppercase; margin-bottom: 0.75rem; display: flex; justify-content: space-between;">
+                  <span>📁 Required Documents Checklist</span>
+                  <span style="color: #059669; font-weight: 700;">All 4 Verified ✓</span>
                 </div>
-                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 0.65rem;">
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                    <span style="color: #166534; font-weight: 600;">📜 Child's Birth Certificate</span>
+                    <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">Verified ✓</span>
+                  </div>
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                    <span style="color: #166534; font-weight: 600;">📊 Previous 2 Terms Reports</span>
+                    <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">Verified ✓</span>
+                  </div>
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                    <span style="color: #166534; font-weight: 600;">💉 Immunization &amp; Sickbay Sheet</span>
+                    <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">Verified ✓</span>
+                  </div>
+                  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 0.6rem 0.85rem; display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem;">
+                    <span style="color: #166534; font-weight: 600;">📷 Passport Photographs (2)</span>
+                    <span class="badge" style="background: #dcfce7; color: #166534; font-size: 0.7rem;">Uploaded ✓</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Offer Box (Module 05 Acceptance/Decline Flow) -->
+              ${isOfferReady ? `
+                <div style="background: ${isAccepted ? '#f0fdf4' : (isDeclined ? '#fef2f2' : '#fefce8')}; border: 1.5px solid ${isAccepted ? '#86efac' : (isDeclined ? '#fecaca' : '#fde047')}; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                      <div style="font-size: 0.75rem; font-weight: 800; color: ${isAccepted ? '#166534' : (isDeclined ? '#991b1b' : '#854d0e')}; text-transform: uppercase;">
+                        ${isAccepted ? '✓ ADMISSION PLACEMENT SECURED' : (isDeclined ? '✕ ADMISSION OFFER DECLINED' : '🎉 FORMAL ADMISSION OFFER EXTENDED')}
+                      </div>
+                      <h4 style="font-family: var(--font-heading); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0.25rem 0 0.35rem 0;">
+                        ${isAccepted ? `Enrolment Confirmed for ${studentName}` : `Provisional Admission Offered for ${grade}`}
+                      </h4>
+                      <p style="font-size: 0.85rem; color: #475569; margin: 0; line-height: 1.5;">
+                        Term commencing: <strong>September 2026</strong> &bull; Approved Tuition: <strong>GH₵ 4,500.00 / term</strong> &bull; Acceptance Deadline: <strong>30 November 2026</strong>
+                      </p>
+                    </div>
+
+                    <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+                      <button type="button" class="btn-pill btn-outline btn-view-offer-letter" data-appid="${app.id}" style="font-size: 0.82rem; font-weight: 700;">
+                        📄 View Formal Offer Letter
+                      </button>
+                      ${!isAccepted && !isDeclined ? `
+                        <button type="button" class="btn-pill btn-primary btn-accept-offer" data-appid="${app.id}" style="font-size: 0.82rem; font-weight: 800; background: #059669; border-color: #059669;">
+                          ✓ Accept Offer
+                        </button>
+                        <button type="button" class="btn-pill btn-decline-offer" data-appid="${app.id}" style="font-size: 0.82rem; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1.5px solid #fecaca;">
+                          ✕ Decline
+                        </button>
+                      ` : ''}
+                      ${isAccepted ? `
+                        <button type="button" class="btn-pill btn-gold btn-switch-tab" data-target-tab="invoices" style="font-size: 0.82rem; font-weight: 800;">
+                          💳 Settle Term 1 MoMo Deposit &rarr;
+                        </button>
+                      ` : ''}
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Actions & Instructions -->
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
+                <div style="font-size: 0.84rem; color: #475569; max-width: 600px;">
+                  💡 <strong>Admissions Office Notes:</strong> Assessment completed with commendation in quantitative reasoning. Academic registration package available at Cantonments campus bursary.
+                </div>
+                <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
                   <button class="btn-pill btn-outline btn-view-slip" data-appid="${app.id}" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
-                    📄 View Application Slip
+                    📄 Assessment Pass Slip
                   </button>
                   <button class="btn-pill btn-primary btn-parent-contact" data-schoolid="${app.schoolId || 'sch-gis-accra'}" data-schoolname="${schoolName}" style="font-size: 0.82rem; padding: 0.45rem 1rem;">
                     💬 Contact Admissions Officer
@@ -3571,6 +4304,132 @@ const ParentPortalView = {
       });
     });
 
+    // Phase 3 (Module 05): View Formal Offer Letter Modal
+    document.querySelectorAll('.btn-view-offer-letter').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const appId = e.currentTarget.dataset.appid;
+        const app = (this.overviewData?.applications || []).find(a => a.id === appId);
+        if (app) {
+          this.showOfferLetterModal(app);
+        } else {
+          State.showToast("Offer letter retrieved.", "info");
+        }
+      });
+    });
+
+    // Phase 3 (Module 05): Accept Offer Flow
+    document.querySelectorAll('.btn-accept-offer').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const appId = e.currentTarget.dataset.appid;
+        const app = (this.overviewData?.applications || []).find(a => a.id === appId);
+        if (app) {
+          app.status = 'Offer Accepted';
+          app.stage = 6;
+          State.showToast(`🎉 Congratulations! Admission offer from ${app.schoolName} accepted.`, 'success');
+          App.refreshCurrentView();
+        }
+      });
+    });
+
+    // Phase 3 (Module 05): Decline Offer Flow
+    document.querySelectorAll('.btn-decline-offer').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const appId = e.currentTarget.dataset.appid;
+        const app = (this.overviewData?.applications || []).find(a => a.id === appId);
+        if (app && confirm(`Are you sure you want to decline this admission offer from ${app.schoolName}?`)) {
+          app.status = 'Offer Declined';
+          State.showToast(`Admission offer from ${app.schoolName} has been declined.`, 'info');
+          App.refreshCurrentView();
+        }
+      });
+    });
+
+    // Phase 3 (Module 06): Fee Budget Calculator
+    const recalcBudget = () => {
+      const tuition = parseFloat(document.getElementById('calc-input-tuition')?.value) || 0;
+      const feeding = parseFloat(document.getElementById('calc-input-feeding')?.value) || 0;
+      const transit = parseFloat(document.getElementById('calc-input-transit')?.value) || 0;
+      const levies = parseFloat(document.getElementById('calc-input-levies')?.value) || 0;
+      const uniforms = parseFloat(document.getElementById('calc-input-uniforms')?.value) || 0;
+
+      const termlyTotal = tuition + feeding + transit + levies;
+      const annualTotal = (termlyTotal * 3) + uniforms;
+      const monthlySavings = annualTotal / 12;
+
+      const termEl = document.getElementById('calc-termly-total');
+      const annualEl = document.getElementById('calc-annual-total');
+      const monthlyEl = document.getElementById('calc-monthly-savings');
+
+      if (termEl) termEl.innerText = `GH₵ ${termlyTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (annualEl) annualEl.innerText = `GH₵ ${annualTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (monthlyEl) monthlyEl.innerText = `GH₵ ${monthlySavings.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} / mo`;
+    };
+
+    ['calc-input-tuition', 'calc-input-feeding', 'calc-input-transit', 'calc-input-levies', 'calc-input-uniforms'].forEach(id => {
+      document.getElementById(id)?.addEventListener('input', recalcBudget);
+    });
+
+    document.getElementById('btn-recalc-budget')?.addEventListener('click', recalcBudget);
+    document.getElementById('btn-reset-budget')?.addEventListener('click', () => {
+      const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      setVal('calc-input-tuition', 3500);
+      setVal('calc-input-feeding', 800);
+      setVal('calc-input-transit', 600);
+      setVal('calc-input-levies', 250);
+      setVal('calc-input-uniforms', 450);
+      recalcBudget();
+      State.showToast("Budget assumptions reset to Accra averages", "info");
+    });
+
+    // Phase 3 (Module 06): School Fit Criteria Scorer
+    const recalcFitScore = () => {
+      const selects = document.querySelectorAll('.fit-score-select');
+      if (selects.length === 0) return;
+      let total = 0;
+      selects.forEach(sel => { total += parseInt(sel.value) || 0; });
+      const max = selects.length * 5;
+      const pct = Math.round((total / max) * 100);
+      const badge = document.getElementById('fit-score-badge');
+      if (badge) {
+        let label = "Moderate Fit";
+        let color = "#b45309";
+        let bg = "#fefce8";
+        let border = "#fde047";
+        if (pct >= 85) {
+          label = "Exceptional Match ⭐";
+          color = "#166534";
+          bg = "#f0fdf4";
+          border = "#86efac";
+        } else if (pct >= 70) {
+          label = "Strong Fit";
+          color = "#1e40af";
+          bg = "#eff6ff";
+          border = "#93c5fd";
+        } else if (pct < 50) {
+          label = "Low Alignment";
+          color = "#991b1b";
+          bg = "#fef2f2";
+          border = "#fca5a5";
+        }
+        badge.style.background = bg;
+        badge.style.color = color;
+        badge.style.borderColor = border;
+        badge.innerText = `Fit Score: ${total} / ${max} (${pct}% ${label})`;
+      }
+    };
+
+    document.querySelectorAll('.fit-score-select').forEach(sel => {
+      sel.addEventListener('change', recalcFitScore);
+    });
+
+    // Phase 3 (Module 07): Parent Advisory Guide Reader Modal
+    document.querySelectorAll('.btn-read-guide').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const guideKey = e.currentTarget.dataset.guide;
+        this.showAdvisoryGuideModal(guideKey);
+      });
+    });
+
     // Remove Bookmark
     document.querySelectorAll('.btn-bookmark-remove').forEach(btn => {
       btn.addEventListener('click', async (e) => {
@@ -3858,6 +4717,251 @@ const ParentPortalView = {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) close();
     });
+  },
+
+  showOfferLetterModal(app) {
+    const student = app.student || {};
+    const schoolName = app.schoolName || 'Ghana International School (GIS)';
+    const ref = app.offerDetails?.letterRef || 'GIS/ADM/2026/OFF-0842';
+    const grade = app.offerDetails?.offeredGrade || app.gradeApplying || 'Primary Class 4';
+    const term = app.offerDetails?.termCommencing || 'Term 1 (September 2026)';
+    const tuition = app.offerDetails?.termlyTuition || 4500;
+    const deadline = app.offerDetails?.acceptanceDeadline || '30 November 2026';
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-backdrop';
+    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(10, 17, 40, 0.75); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 1rem;';
+
+    overlay.innerHTML = `
+      <div class="modal-card" style="background: #ffffff; border-radius: var(--radius-xl); max-width: 680px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2.25rem; box-shadow: var(--shadow-xl); position: relative; border-top: 6px solid #D5A63B;">
+        <button id="btn-close-offer-modal" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+
+        <!-- Official Header with Seal -->
+        <div style="text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 1.25rem; margin-bottom: 1.5rem;">
+          <div style="font-size: 2.4rem; margin-bottom: 0.25rem;">🏛️</div>
+          <div style="font-size: 0.75rem; font-weight: 800; color: #D5A63B; text-transform: uppercase; letter-spacing: 0.08em;">
+            OFFICIAL PROVISIONAL ADMISSION OFFER &amp; ENROLMENT INVITATION
+          </div>
+          <h2 style="font-family: var(--font-heading); font-size: 1.6rem; color: #0A2046; margin: 0.35rem 0 0.2rem 0;">
+            ${schoolName}
+          </h2>
+          <div style="font-size: 0.82rem; color: #64748b;">
+            Accredited by National Schools Inspectorate Authority (NaSIA) &bull; Ref: <strong style="font-family: monospace; color: #0A2046;">${ref}</strong>
+          </div>
+        </div>
+
+        <!-- Body Copy -->
+        <div style="font-size: 0.9rem; line-height: 1.65; color: #334155; margin-bottom: 1.5rem;">
+          <p style="margin: 0 0 1rem 0;">
+            Dear <strong>${app.parentGuardian?.name || State.currentUser?.name || 'Parent / Guardian'}</strong>,
+          </p>
+          <p style="margin: 0 0 1rem 0;">
+            We are pleased to advise that following the diagnostic entrance assessment and oral interview, <strong>${student.firstName || 'Candidate'} ${student.lastName || ''}</strong> has been offered provisional admission into:
+          </p>
+          <div style="background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 1rem 1.25rem; margin: 1rem 0; display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.85rem;">
+            <div><strong>Admitted Grade:</strong> ${grade}</div>
+            <div><strong>Academic Year:</strong> 2026 / 2027</div>
+            <div><strong>Term Commencing:</strong> ${term}</div>
+            <div><strong>Curriculum Stream:</strong> ${app.curriculum || 'Cambridge International'}</div>
+          </div>
+          <p style="margin: 0 0 1rem 0;">
+            To confirm this placement, the formal acceptance slip and initial tuition / reservation deposit must be settled prior to <strong>${deadline}</strong>.
+          </p>
+
+          <!-- Fee Schedule Breakdown -->
+          <div style="background: #fefce8; border: 1.5px solid #fef08a; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem;">
+            <div style="font-size: 0.78rem; font-weight: 800; color: #854d0e; text-transform: uppercase; margin-bottom: 0.5rem;">
+              Approved Term 1 Fee Schedule (Ghana Cedis)
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #fef08a;">
+              <span>Termly Tuition Fee:</span>
+              <strong>GH₵ ${tuition.toLocaleString()}.00</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #fef08a;">
+              <span>Learning Resources &amp; Lab Levy:</span>
+              <strong>GH₵ 350.00</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; padding: 0.25rem 0; border-bottom: 1px dashed #fef08a;">
+              <span>PTA Termly Contribution:</span>
+              <strong>GH₵ 100.00</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.92rem; padding: 0.4rem 0 0 0; color: #0A2046;">
+              <strong>Total Payable for Term 1:</strong>
+              <strong style="color: #059669; font-size: 1.1rem;">GH₵ ${(tuition + 450).toLocaleString()}.00</strong>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; padding-top: 1rem; margin-top: 1.25rem; font-size: 0.82rem; color: #64748b;">
+            <div>
+              <strong>Issued by:</strong> Admissions Registry Desk<br/>
+              <em>Office of the Principal</em>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge" style="background: #ecfdf5; color: #065f46; font-weight: 800; border: 1px solid #a7f3d0;">
+                ✓ DIGITALLY SIGNED &amp; SEALED
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+          <button class="btn-pill btn-outline" onclick="window.print()" style="font-size: 0.85rem;">
+            🖨️ Print Offer Letter
+          </button>
+          <div style="display: flex; gap: 0.6rem;">
+            <button class="btn-pill" id="btn-modal-decline-offer" style="background: #fee2e2; color: #991b1b; border: 1.5px solid #fecaca; font-weight: 700; font-size: 0.85rem;">
+              ✕ Decline Offer
+            </button>
+            <button class="btn-pill btn-primary" id="btn-modal-accept-offer" style="font-weight: 800; font-size: 0.85rem; background: #059669; border-color: #059669;">
+              ✓ Accept Admission Offer
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const closeModal = () => {
+      if (document.body.contains(overlay)) overlay.remove();
+    };
+    overlay.querySelector('#btn-close-offer-modal')?.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+    overlay.querySelector('#btn-modal-accept-offer')?.addEventListener('click', () => {
+      app.status = 'Offer Accepted';
+      app.stage = 6;
+      closeModal();
+      State.showToast(`🎉 Congratulations! Admission offer from ${schoolName} accepted.`, 'success');
+      App.refreshCurrentView();
+    });
+
+    overlay.querySelector('#btn-modal-decline-offer')?.addEventListener('click', () => {
+      if (confirm(`Are you sure you want to decline this admission offer from ${schoolName}?`)) {
+        app.status = 'Offer Declined';
+        closeModal();
+        State.showToast(`Admission offer from ${schoolName} has been declined.`, 'info');
+        App.refreshCurrentView();
+      }
+    });
+  },
+
+  showAdvisoryGuideModal(guideKey) {
+    const guides = {
+      cambridge_vs_ges: {
+        tag: "Curriculum Strategy & Planning",
+        title: "Cambridge vs. GES Standards-Based Curriculum: Which is Right for Your Child?",
+        author: "Dr. Kwesi Mensah & SkoolFinder Educational Advisory Desk",
+        content: `
+          <h4>1. Structural Frameworks</h4>
+          <p>The <strong>Ghana Education Service (GES) Standards-Based Curriculum</strong> focuses on Ghanaian cultural identity, inquiry-based STEM, and regional language integration. It transitions through the Basic Education Certificate Examination (BECE) directly into Senior High Schools via the CSSPS placement system.</p>
+          <p>The <strong>Cambridge International Framework</strong> progresses from Cambridge Primary to Checkpoint, IGCSE, and Cambridge AS/A-Levels. It is globally standardized and recognized across universities in the UK, US, Canada, Europe, and Ghana.</p>
+          <h4>2. Examination Styles</h4>
+          <p>GES emphasizes comprehensive terminal continuous assessment (SBA) combined with objective and essay-based national examinations. Cambridge evaluates critical application, analytical essay writing, and structured problem-solving with international grade thresholds.</p>
+          <h4>3. Financial & Budget Implications</h4>
+          <p>GES accredited private schools in Greater Accra typically range from GH₵ 1,200 to GH₵ 4,500 per term. Cambridge accredited schools generally command between GH₵ 4,000 to GH₵ 18,000+ per term, plus external examination fees in GBP (£).</p>
+          <h4>4. Strategic Recommendation</h4>
+          <p>Choose GES if your child will transition into top Ghanaian public Category A Senior High Schools (e.g. Achimota, PRESEC, Wey Gey Hey) through BECE CSSPS. Choose Cambridge if you plan for international university entry or prefer global portability across expatriate destinations.</p>
+        `
+      },
+      cssps_quota: {
+        tag: "Senior High Admissions",
+        title: "BECE CSSPS Demystified: How the 30% Public School Quota Affects Category A Selection",
+        author: "SkoolFinder CSSPS Placement Advisory Board",
+        content: `
+          <h4>1. What is the 30% Public Feeder Quota?</h4>
+          <p>Under Ghana Ministry of Education regulations, 30% of all available admissions seats in Category A Senior High Schools (e.g., PRESEC Legon, Achimota, Wesley Girls) are statutorily reserved for candidates graduating from public basic (JHS) schools.</p>
+          <h4>2. The Impact on Private JHS Candidates</h4>
+          <p>Private basic school candidates compete strictly within the remaining 70% merit pool. Because private school scores are historically concentrated at raw scores above 420 (Aggregates 6 to 9), competition for Category A slots is extremely competitive. An aggregate 6 does not automatically guarantee a Category A school if thousands of candidates with identical aggregates select that same single institution.</p>
+          <h4>3. Strategic 6-School Selection Formula</h4>
+          <ul>
+            <li><strong>School 1 (Category A):</strong> Select only ONE Category A school as your top competitive choice.</li>
+            <li><strong>School 2 (Category B):</strong> Select a reputable Category B school with consistent academic outcomes.</li>
+            <li><strong>School 3 (Category B or C):</strong> Choose a viable regional boarding safety net.</li>
+            <li><strong>School 4 (Category C):</strong> Choose a realistic high-capacity placement school.</li>
+            <li><strong>School 5 (Category C Day):</strong> Compulsory Day school within your residential district.</li>
+            <li><strong>School 6 (TVET / Category D):</strong> Technical or vocational institution or Category D day school.</li>
+          </ul>
+        `
+      },
+      fee_structures: {
+        tag: "School Finance & Budgeting",
+        title: "Understanding Private School Fee Structures in Greater Accra: Hidden Ancillary Charges",
+        author: "SkoolFinder Family Financial Desk",
+        content: `
+          <h4>1. Beyond the Base Tuition</h4>
+          <p>When evaluating school fees, always request a certified, itemized fee schedule. Published tuition often represents only 55% to 65% of the total cash outflow required per term.</p>
+          <h4>2. Typical Ancillary Levies in Greater Accra</h4>
+          <ul>
+            <li><strong>Compulsory Feeding & Canteen:</strong> Ranging from GH₵ 25 to GH₵ 45 per day (GH₵ 800 - GH₵ 1,500/term).</li>
+            <li><strong>School Transit & Shuttle:</strong> Ranging from GH₵ 450 to GH₵ 1,200 per term depending on residential zone.</li>
+            <li><strong>Resource, Science Lab & ICT Levy:</strong> GH₵ 200 - GH₵ 500 per term.</li>
+            <li><strong>PTA Building & Welfare Dues:</strong> GH₵ 100 - GH₵ 300 per term.</li>
+            <li><strong>Uniforms, Sports Kits & PE Gear:</strong> GH₵ 350 - GH₵ 800 one-off annual charge.</li>
+          </ul>
+          <h4>3. Protect Your Family Budget</h4>
+          <p>Ask if fees are subject to mid-year inflationary reviews, verify whether payment by monthly MoMo instalments is supported, and check for sibling tuition discounts (typically 5% to 10% for the second child).</p>
+        `
+      },
+      campus_safety: {
+        tag: "Child Safeguarding & Health",
+        title: "Assessing Campus Safety & Sickbay Readiness: What Ghanaian Parents Must Check",
+        author: "Ghana Child Safeguarding Policy Desk (Act 560)",
+        content: `
+          <h4>1. Statutory Safeguarding Requirements</h4>
+          <p>Under the Children's Act 1998 (Act 560) and NaSIA regulatory standards, all accredited basic schools in Ghana must maintain verified physical and emotional safeguarding protocols.</p>
+          <h4>2. Physical Security Checklist</h4>
+          <ul>
+            <li><strong>Controlled Campus Perimeter:</strong> Locked perimeter gates with verified security guard logging during class hours.</li>
+            <li><strong>Designated Pickup Authorizations:</strong> Formal digital or physical guardian ID tags required before releasing any child to drivers or relatives.</li>
+            <li><strong>CCTV Surveillance:</strong> Coverage of main school gates, play fields, and corridors.</li>
+          </ul>
+          <h4>3. Sickbay & Emergency Medical Response</h4>
+          <p>Verify that the campus sickbay is staffed by a qualified Registered General Nurse (RGN) or certified pediatric caregiver, has an operational emergency oxygen kit, maintains basic first aid consumables, and has an active MoU with an accredited nearby hospital or clinic for ambulance transfers.</p>
+        `
+      }
+    };
+
+    const guide = guides[guideKey] || guides.cambridge_vs_ges;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-backdrop';
+    overlay.style.cssText = 'position: fixed; inset: 0; background: rgba(10, 17, 40, 0.75); backdrop-filter: blur(5px); z-index: 99999; display: flex; align-items: center; justify-content: center; padding: 1rem;';
+
+    overlay.innerHTML = `
+      <div class="modal-card" style="background: #ffffff; border-radius: var(--radius-xl); max-width: 680px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 2rem; box-shadow: var(--shadow-xl); position: relative;">
+        <button id="btn-close-guide-modal" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; display: inline-block;">
+          📖 ${guide.tag}
+        </span>
+        <h2 style="font-family: var(--font-heading); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+          ${guide.title}
+        </h2>
+        <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1.25rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">
+          By ${guide.author} &bull; Ghana Ministry of Education / NaSIA Compliant Advisory
+        </div>
+        <div class="guide-modal-content" style="font-size: 0.88rem; line-height: 1.65; color: #334155;">
+          ${guide.content}
+        </div>
+        <div style="margin-top: 1.75rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.8rem; color: #059669; font-weight: 600;">✓ Verified Educational Guidance</span>
+          <button type="button" class="btn-pill btn-primary" id="btn-close-guide-modal-2" style="font-size: 0.85rem; font-weight: 700;">
+            Close Guide
+          </button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const close = () => {
+      if (document.body.contains(overlay)) overlay.remove();
+    };
+
+    overlay.querySelector('#btn-close-guide-modal')?.addEventListener('click', close);
+    overlay.querySelector('#btn-close-guide-modal-2')?.addEventListener('click', close);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   },
 
   renderAuthGateway() {

@@ -320,15 +320,15 @@ const State = {
   },
 
   isParent() {
-    return !!(this.currentUser && this.currentUser.role === 'parent');
+    return !!(this.currentUser && (this.currentUser.role === 'parent' || this.currentUser.activePersona === 'parent'));
   },
 
   isTeacher() {
-    return !!(this.currentUser && this.currentUser.role === 'teacher');
+    return !!(this.currentUser && (this.currentUser.role === 'teacher' || this.currentUser.activePersona === 'teacher'));
   },
 
   isSupplier() {
-    return !!(this.currentUser && this.currentUser.role === 'supplier');
+    return !!(this.currentUser && (this.currentUser.role === 'supplier' || this.currentUser.activePersona === 'supplier'));
   },
 
   isSuperAdmin() {
