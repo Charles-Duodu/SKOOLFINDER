@@ -565,7 +565,7 @@ button {
   position: relative;
   background: #1e293b;
   color: var(--text-white);
-  padding: 5.5rem 0 6.5rem;
+  padding: 3.25rem 0 3.25rem;
   overflow: hidden;
 }
 
@@ -656,11 +656,12 @@ button {
   text-shadow: 0 1px 14px rgba(0, 0, 0, 0.90), 0 2px 26px rgba(0, 0, 0, 0.70);
 }
 
-/* Slide Transition Indicators */
+/* Slide Transition Indicators (Relocated to bottom-left) */
 .hero-slide-indicators {
   position: absolute;
   bottom: 1.25rem;
-  right: 2rem;
+  left: 2rem;
+  right: auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;

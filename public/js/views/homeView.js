@@ -107,32 +107,22 @@ const HomeView = {
             </form>
           </div>
 
-          <!-- Hero Slide Indicators -->
-          <div class="hero-slide-indicators" aria-label="Hero background slides">
-            <button class="slide-indicator active" data-index="0" aria-label="Slide 1"></button>
-            <button class="slide-indicator" data-index="1" aria-label="Slide 2"></button>
-            <button class="slide-indicator" data-index="2" aria-label="Slide 3"></button>
-            <button class="slide-indicator" data-index="3" aria-label="Slide 4"></button>
-          </div>
-
-          <!-- Hero Sponsored Promotion Spotlight (Pilot Insertion Point) -->
-          ${heroPromo ? `
-            <div class="hero-promo-spotlight" id="hero-promo-spotlight" style="margin-top: 1.5rem; background: rgba(10, 32, 70, 0.85); border: 1.5px solid rgba(213, 166, 59, 0.5); border-radius: 12px; padding: 0.75rem 1.25rem; display: inline-flex; align-items: center; gap: 1rem; backdrop-filter: blur(8px);">
-              <span class="badge-featured-gold" style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: #D5A63B; color: #0A2046; font-weight: 800;">FEATURED SPONSOR</span>
-              <span style="color: #ffffff; font-size: 0.9rem; font-weight: 600;">${heroPromo.title}</span>
-              <button id="btn-hero-promo-cta" data-campaign-id="${heroPromo.id}" data-target-url="${heroPromo.target_url || '/directory'}" style="background: transparent; border: 1px solid #D5A63B; color: #D5A63B; padding: 0.3rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer;">
-                ${heroPromo.cta_text || 'Learn More &rarr;'}
-              </button>
-            </div>
-          ` : ''}
-
-          <!-- H03: Three Clear Discovery Pathways (Accessible/Internal Anchors) -->
+          <!-- Accessible/Internal Anchors -->
           <div style="display: none;" aria-hidden="true">
             <button id="btn-choice-schools" type="button" tabindex="-1"></button>
             <button id="btn-hero-matchmaker" type="button" tabindex="-1"></button>
             <button id="btn-choice-matchmaker" type="button" tabindex="-1"></button>
             <button id="btn-choice-locations" type="button" tabindex="-1"></button>
+            <button id="btn-hero-promo-cta" type="button" tabindex="-1"></button>
           </div>
+        </div>
+
+        <!-- Hero Slide Indicators (Placed on hero background at bottom-left, clear of search card) -->
+        <div class="hero-slide-indicators" id="hero-slide-indicators" aria-label="Hero background slides">
+          <button class="slide-indicator active" data-index="0" aria-label="Slide 1"></button>
+          <button class="slide-indicator" data-index="1" aria-label="Slide 2"></button>
+          <button class="slide-indicator" data-index="2" aria-label="Slide 3"></button>
+          <button class="slide-indicator" data-index="3" aria-label="Slide 4"></button>
         </div>
       </section>
 
@@ -284,9 +274,9 @@ const HomeView = {
 
           </div>
 
-          <!-- Reassurance Footer Strip -->
-          <div style="margin-top: 2.25rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--border-light, #e2e8f0);">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 700; color: #0A2046; margin-bottom: 0.5rem; flex-wrap: wrap;">
+          <!-- Reassurance statement integrated cleanly into parent access session -->
+          <div style="margin-top: 1.5rem; text-align: center;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.88rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem; flex-wrap: wrap;">
               <span>🛡️</span>
               <span>100% Free to Explore</span>
               <span style="color: #cbd5e1;">&bull;</span>
