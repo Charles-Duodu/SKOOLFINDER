@@ -210,10 +210,10 @@ const HomeView = {
 
               <div>
                 <button type="button" id="btn-home-guest-explore" class="btn-pill btn-outline" style="width: 100%; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s; white-space: nowrap; box-sizing: border-box;">
-                  <span>🔍</span> Browse Schools &rarr;
+                  <span>🔍</span> Explore Schools &rarr;
                 </button>
                 <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  No registration required &bull; 100% free
+                  Instant access &bull; 100% free
                 </div>
               </div>
             </div>
@@ -254,10 +254,10 @@ const HomeView = {
 
               <div>
                 <button type="button" id="btn-home-parent-signup" class="btn-pill btn-gold" style="width: 100%; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 800; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 12px rgba(213,166,59,0.3); transition: all 0.2s; white-space: nowrap; box-sizing: border-box; border: 2px solid transparent;">
-                  <span>✨</span> Create Free Account &rarr;
+                  <span>✨</span> Create Free Parent Account &rarr;
                 </button>
                 <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  No subscription fee at launch &bull; Takes 30 seconds
+                  Takes 30 seconds &bull; No card required &bull; 100% free
                 </div>
               </div>
             </div>
