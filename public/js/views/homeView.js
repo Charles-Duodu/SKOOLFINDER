@@ -189,59 +189,84 @@ const HomeView = {
           <div class="parent-journey-cards-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; align-items: stretch; margin-bottom: 2rem;">
             
             <!-- CARD 1: EXPLORE AS A GUEST -->
-            <div class="parent-pathway-card parent-pathway-guest" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(10,32,70,0.04);">
-              <div>
-                <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
-                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
-                    🧭
-                  </div>
-                  <span style="font-size: 0.76rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.06em;">
-                    START EXPLORING
-                  </span>
+            <div class="parent-pathway-card parent-pathway-guest" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 20px; padding: 2.25rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(10,32,70,0.04);">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.45rem; color: #0284c7; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.85rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+                  <span>EXPLORE FREELY</span>
                 </div>
 
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.4rem, 2.5vw, 1.65rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.5rem 0;">
                   Explore as a Guest
                 </h3>
-                <p style="color: #475569; font-size: 0.92rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
-                  Find and compare schools instantly. No sign-up needed.
+                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                  Discover schools and private tutors without creating an account.
                 </p>
 
-                <div style="font-size: 0.84rem; font-weight: 700; color: #64748b; margin-bottom: 1.5rem; letter-spacing: 0.02em;">
-                  Search &bull; Compare &bull; Enquire
-                </div>
+                <div style="height: 1px; background: #e2e8f0; margin-bottom: 1.25rem;"></div>
+
+                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.85rem;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Find schools and private tutors</span>
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Compare your preferred schools</span>
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Browse profiles and send enquiries</span>
+                  </li>
+                </ul>
               </div>
 
               <div>
                 <button type="button" id="btn-home-guest-explore" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #ffffff; background: #0A2046; border: 1.5px solid #1e3a6a; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 14px rgba(10,32,70,0.2); box-sizing: border-box;">
-                  <span>Discover Schools</span>
+                  <span>Start Exploring</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.82rem; color: #64748b; font-weight: 500;">
+                  No registration required
+                </div>
               </div>
             </div>
 
             <!-- CARD 2: YOUR FREE PARENT ACCOUNT -->
-            <div class="parent-pathway-card parent-pathway-account" style="background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EE 100%); border: 1.5px solid #E5C378; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.14);">
-              <div>
-                <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
-                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
-                    🔖
-                  </div>
-                  <span style="font-size: 0.76rem; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: 0.06em;">
-                    PERSONALISED JOURNEY
-                  </span>
+            <div class="parent-pathway-card parent-pathway-account" style="background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EE 100%); border: 1.5px solid #E5C378; border-radius: 20px; padding: 2.25rem 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.14);">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 0.45rem; color: #b45309; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.85rem;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+                  <span>YOUR PERSONALISED JOURNEY</span>
                 </div>
 
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.4rem, 2.5vw, 1.65rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.5rem 0;">
                   Your Free Parent Account
                 </h3>
-                <p style="color: #475569; font-size: 0.92rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
-                  Save favourites, organise shortlists and plan ahead.
+                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                  Enjoy everything guests can access, plus tools to plan and stay organised.
                 </p>
 
-                <div style="font-size: 0.84rem; font-weight: 700; color: #92400e; margin-bottom: 1.5rem; letter-spacing: 0.02em;">
-                  Save &bull; Plan &bull; Track
-                </div>
+                <div style="height: 1px; background: #fde68a; margin-bottom: 1.25rem;"></div>
+
+                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.85rem;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>Save favourite schools and tutors</span>
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>Get personalised recommendations</span>
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>Track enquiries and school visits</span>
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    <span>Receive alerts and reminders</span>
+                  </li>
+                </ul>
               </div>
 
               <div>
@@ -249,6 +274,9 @@ const HomeView = {
                   <span>Create Free Account</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.82rem; color: #64748b; font-weight: 500;">
+                  100% free &bull; No subscription required
+                </div>
               </div>
             </div>
 
