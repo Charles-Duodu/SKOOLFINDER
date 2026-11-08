@@ -67,8 +67,15 @@ const HomeView = {
             Find the <span>Right School</span> for Your Child in Greater Accra
           </h1>
           <p class="hero-subtitle">
-            Explore accredited pre-schools, basic schools, and senior high schools across Accra and Tema. Compare curricula, verified fee schedules, and connect with admissions offices without forced registration.
+            Discover and compare private schools across Accra and Tema. Explore fees, curricula, facilities, and admissions, all in one place.
           </p>
+
+          <div class="hero-free-badge">
+            <span class="hero-free-badge-check">✅</span>
+            <strong>100% Free School Discovery</strong>
+            <span class="hero-free-badge-divider">|</span>
+            <strong>No Registration Required</strong>
+          </div>
 
           <!-- Search Widget -->
           <div class="search-widget-card">
