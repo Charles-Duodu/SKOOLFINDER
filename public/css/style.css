@@ -2006,6 +2006,401 @@ button {
   }
 }
 
+/* ========================================================
+   Suppliers & Service Providers Spotlight Card
+   ======================================================== */
+.suppliers-spotlight-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 12px 36px -8px rgba(10, 32, 70, 0.08);
+  overflow: hidden;
+  padding: 2.25rem 2.25rem 2rem;
+}
+
+.suppliers-eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  padding: 0.35rem 0.95rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.suppliers-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.suppliers-title-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+
+.suppliers-accent-bar {
+  width: 4px;
+  background: #f59e0b;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.suppliers-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  color: #0a1b39;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+.suppliers-desc {
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 480px;
+}
+
+.suppliers-hero-image-wrap {
+  width: 100%;
+  height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(10, 32, 70, 0.08);
+}
+
+.suppliers-hero-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+
+/* Latest School Tenders Navy Banner */
+.suppliers-tenders-banner {
+  background: linear-gradient(135deg, #0A2046 0%, #123068 100%);
+  border-radius: 12px;
+  padding: 0.95rem 1.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 14px rgba(10, 32, 70, 0.12);
+}
+
+.suppliers-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.suppliers-banner-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+.suppliers-banner-divider {
+  width: 1.5px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.suppliers-banner-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.suppliers-banner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #f59e0b;
+  color: #0a1b39;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+/* 3-Column Tenders Grid */
+.suppliers-tenders-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.suppliers-tender-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.35rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.suppliers-tender-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px -4px rgba(10, 32, 70, 0.08);
+  border-color: #cbd5e1;
+}
+
+.suppliers-card-ict {
+  background: linear-gradient(180deg, #ffffff 65%, #f0f7ff 100%);
+  border-color: #dbeafe;
+}
+
+.suppliers-card-maintenance {
+  background: linear-gradient(180deg, #ffffff 65%, #fffbeb 100%);
+  border-color: #fef3c7;
+}
+
+.suppliers-card-cleaning {
+  background: linear-gradient(180deg, #ffffff 65%, #f0fdf4 100%);
+  border-color: #dcfce7;
+}
+
+.suppliers-tender-icon-box {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.suppliers-icon-ict {
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 1.25rem;
+}
+
+.suppliers-icon-maintenance {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 1.25rem;
+}
+
+.suppliers-icon-cleaning {
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 1.25rem;
+}
+
+.suppliers-tender-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0a1b39;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.suppliers-tender-school {
+  color: #475569;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0 0 0.85rem 0;
+}
+
+.suppliers-tender-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  font-size: 0.8rem;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.suppliers-tender-location {
+  white-space: nowrap;
+}
+
+.suppliers-meta-divider {
+  color: #cbd5e1;
+}
+
+.suppliers-pill-goods {
+  background: #dbeafe;
+  color: #1e40af;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.suppliers-pill-works {
+  background: #fef3c7;
+  color: #b45309;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.suppliers-pill-service {
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.suppliers-tender-deadline {
+  font-size: 0.82rem;
+  color: #334155;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.suppliers-tender-deadline strong {
+  color: #0a1b39;
+}
+
+.btn-tender-details-link {
+  color: #1d4ed8;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.btn-tender-details-link:hover {
+  text-decoration: underline;
+}
+
+/* Bottom Action CTAs */
+.suppliers-ctas-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.btn-suppliers-all-tenders {
+  background: #0A2046;
+  color: #ffffff;
+  border: 2px solid #f59e0b;
+  padding: 0.85rem 1.85rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(10, 32, 70, 0.25);
+  text-decoration: none;
+}
+
+.btn-suppliers-all-tenders:hover {
+  background: #123068;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(10, 32, 70, 0.35);
+}
+
+.btn-suppliers-join-provider {
+  background: #ffffff;
+  color: #0A2046;
+  border: 1.5px solid #0A2046;
+  padding: 0.85rem 1.85rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-suppliers-join-provider:hover {
+  background: #f8fafc;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 32, 70, 0.08);
+}
+
+@media (max-width: 900px) {
+  .suppliers-tenders-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .suppliers-spotlight-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: 16px;
+  }
+  .suppliers-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .suppliers-hero-image-wrap {
+    height: 190px;
+  }
+  .suppliers-tenders-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .suppliers-ctas-wrap {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-suppliers-all-tenders,
+  .btn-suppliers-join-provider {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 
 
 

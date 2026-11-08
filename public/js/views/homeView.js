@@ -723,6 +723,115 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           SPOTLIGHT SECTION: SUPPLIERS & SERVICE PROVIDERS
+           ======================================================== -->
+      <section id="section-suppliers-providers-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+        <div style="max-width: 980px; margin: 0 auto;">
+          <div class="suppliers-spotlight-card">
+
+            <!-- Eyebrow Badge -->
+            <div class="suppliers-eyebrow-badge">
+              <span>🤝</span> SUPPLIERS &amp; SERVICE PROVIDERS
+            </div>
+
+            <!-- Hero Row: Header Text Left + Photo Right -->
+            <div class="suppliers-hero-grid">
+              <div class="suppliers-hero-text">
+                <div class="suppliers-title-wrap">
+                  <div class="suppliers-accent-bar" aria-hidden="true"></div>
+                  <h2 class="suppliers-title">Supply, Serve and Partner with Schools</h2>
+                </div>
+                <p class="suppliers-desc">
+                  Discover school tenders, procurement needs and business opportunities from schools across Greater Accra.
+                </p>
+              </div>
+
+              <div class="suppliers-hero-image-wrap">
+                <picture>
+                  <source srcset="/assets/images/portals/suppliers_mockup_clean.webp" type="image/webp">
+                  <img src="/assets/images/portals/suppliers_mockup_clean.jpg" alt="Educational suppliers and service providers partnering with Ghanaian schools" loading="lazy">
+                </picture>
+              </div>
+            </div>
+
+            <!-- Middle Banner: Latest School Tenders -->
+            <div class="suppliers-tenders-banner">
+              <div class="suppliers-banner-left">
+                <div class="suppliers-banner-icon" aria-hidden="true">📋</div>
+                <div class="suppliers-banner-divider" aria-hidden="true"></div>
+                <h3 class="suppliers-banner-title">Latest School Tenders</h3>
+              </div>
+              <div class="suppliers-banner-badge">📍 Greater Accra</div>
+            </div>
+
+            <!-- 3-Column Tenders Grid -->
+            <div class="suppliers-tenders-grid">
+
+              <!-- Tender Card 1: ICT Equipment -->
+              <div class="suppliers-tender-card suppliers-card-ict">
+                <div class="suppliers-tender-top">
+                  <div class="suppliers-tender-icon-box suppliers-icon-ict" aria-hidden="true">💻</div>
+                  <h4 class="suppliers-tender-title">Supply of ICT Equipment</h4>
+                  <p class="suppliers-tender-school">Accra Commonwealth School</p>
+                  <div class="suppliers-tender-meta-row">
+                    <span class="suppliers-tender-location">📍 Accra</span>
+                    <span class="suppliers-meta-divider" aria-hidden="true">|</span>
+                    <span class="suppliers-pill-goods">📦 Goods Supply</span>
+                  </div>
+                  <p class="suppliers-tender-deadline">📅 Submission Deadline: <strong>28 Nov 2026</strong></p>
+                </div>
+                <button type="button" id="btn-tender-details-1" class="btn-tender-details-link">View Details &rarr;</button>
+              </div>
+
+              <!-- Tender Card 2: Facility Maintenance -->
+              <div class="suppliers-tender-card suppliers-card-maintenance">
+                <div class="suppliers-tender-top">
+                  <div class="suppliers-tender-icon-box suppliers-icon-maintenance" aria-hidden="true">🔧</div>
+                  <h4 class="suppliers-tender-title">Maintenance of School Facilities</h4>
+                  <p class="suppliers-tender-school">Tema Methodist Basic School</p>
+                  <div class="suppliers-tender-meta-row">
+                    <span class="suppliers-tender-location">📍 Tema</span>
+                    <span class="suppliers-meta-divider" aria-hidden="true">|</span>
+                    <span class="suppliers-pill-works">🔨 Works &amp; Services</span>
+                  </div>
+                  <p class="suppliers-tender-deadline">📅 Submission Deadline: <strong>02 Dec 2026</strong></p>
+                </div>
+                <button type="button" id="btn-tender-details-2" class="btn-tender-details-link">View Details &rarr;</button>
+              </div>
+
+              <!-- Tender Card 3: Cleaning Services -->
+              <div class="suppliers-tender-card suppliers-card-cleaning">
+                <div class="suppliers-tender-top">
+                  <div class="suppliers-tender-icon-box suppliers-icon-cleaning" aria-hidden="true">🧹</div>
+                  <h4 class="suppliers-tender-title">Provision of Cleaning Services</h4>
+                  <p class="suppliers-tender-school">East Legon International School</p>
+                  <div class="suppliers-tender-meta-row">
+                    <span class="suppliers-tender-location">📍 East Legon</span>
+                    <span class="suppliers-meta-divider" aria-hidden="true">|</span>
+                    <span class="suppliers-pill-service">📑 Service Contract</span>
+                  </div>
+                  <p class="suppliers-tender-deadline">📅 Submission Deadline: <strong>05 Dec 2026</strong></p>
+                </div>
+                <button type="button" id="btn-tender-details-3" class="btn-tender-details-link">View Details &rarr;</button>
+              </div>
+
+            </div>
+
+            <!-- Bottom Action CTAs -->
+            <div class="suppliers-ctas-wrap">
+              <button type="button" id="btn-suppliers-view-all-tenders" class="btn-suppliers-all-tenders">
+                <span>🔨</span> View All School Tenders &rarr;
+              </button>
+              <button type="button" id="btn-suppliers-join-provider" class="btn-suppliers-join-provider">
+                <span>👥</span> Join as a Supplier / Service Provider
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
            ======================================================== -->
       <section id="section-why-skoolfinder" style="background: #ffffff; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
@@ -1170,6 +1279,24 @@ const HomeView = {
       document.getElementById(id)?.addEventListener('click', (e) => {
         e.preventDefault();
         App.navigate('teachers');
+      });
+    });
+
+    // SECTION: Suppliers & Service Providers Spotlight CTAs
+    document.getElementById('btn-suppliers-view-all-tenders')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('suppliers');
+    });
+
+    document.getElementById('btn-suppliers-join-provider')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-suppliers');
+    });
+
+    ['btn-tender-details-1', 'btn-tender-details-2', 'btn-tender-details-3'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', (e) => {
+        e.preventDefault();
+        App.navigate('suppliers');
       });
     });
 
