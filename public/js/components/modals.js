@@ -5820,28 +5820,28 @@ const Modals = {
             <form id="form-modal-parent-register">
               <div class="form-group" style="margin-bottom: 0.75rem;">
                 <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Parent / Guardian Full Name *</label>
-                <input type="text" id="mreg-parent-name" class="form-input" placeholder="e.g. Vivian Arthur" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                <input type="text" id="mreg-parent-name" class="form-input" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Mobile Phone (Ghana or Intl) *</label>
-                  <input type="tel" id="mreg-parent-phone" class="form-input" placeholder="e.g. 024 412 3456 or +44..." required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <input type="tel" id="mreg-parent-phone" class="form-input" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Email Address *</label>
-                  <input type="email" id="mreg-parent-email" class="form-input" placeholder="e.g. vivian@gmail.com" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <input type="email" id="mreg-parent-email" class="form-input" required style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Create Password *</label>
-                  <input type="password" id="mreg-parent-password" class="form-input" placeholder="Min 6 characters" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <input type="password" id="mreg-parent-password" class="form-input" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                   <label class="form-label" style="font-size: 0.82rem; font-weight: 700; color: #334155;">Confirm Password *</label>
-                  <input type="password" id="mreg-parent-password-confirm" class="form-input" placeholder="Re-enter password" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
+                  <input type="password" id="mreg-parent-password-confirm" class="form-input" required minlength="6" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;" />
                 </div>
               </div>
               <div id="mreg-password-match-hint" style="font-size: 0.76rem; margin-top: -0.4rem; margin-bottom: 0.75rem; display: none;"></div>
@@ -5854,7 +5854,7 @@ const Modals = {
                 </div>
                 <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
                   <div class="form-group" style="margin-bottom: 0;">
-                    <input type="text" id="mreg-child-name" class="form-input" placeholder="Child's first name (optional)" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;" />
+                    <input type="text" id="mreg-child-name" class="form-input" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;" />
                   </div>
                   <div class="form-group" style="margin-bottom: 0;">
                     <select id="mreg-child-level" class="form-select" style="width: 100%; padding: 0.55rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem;">

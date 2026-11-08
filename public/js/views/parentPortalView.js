@@ -6376,14 +6376,14 @@ const ParentPortalView = {
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Parent / Guardian Full Name <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="text" id="parent-reg-name" required placeholder="e.g. Mrs. Elizabeth Quaye" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="text" id="parent-reg-name" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Ghana Mobile Number <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="tel" id="parent-reg-phone" required placeholder="e.g. 024 412 3456" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="tel" id="parent-reg-phone" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                     <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts & MoMo fee invoices.</div>
                   </div>
 
@@ -6391,21 +6391,21 @@ const ParentPortalView = {
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Email Address <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="email" id="parent-reg-email" required placeholder="e.g. elizabeth.quaye@gmail.com" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="email" id="parent-reg-email" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Create Password <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="password" id="parent-reg-password" required minlength="6" placeholder="Minimum 6 characters" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="password" id="parent-reg-password" required minlength="6" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Child / Ward Full Name <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="text" id="parent-reg-child-name" required placeholder="e.g. David Quaye" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="text" id="parent-reg-child-name" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
@@ -6486,13 +6486,13 @@ const ParentPortalView = {
                   <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                     Parent Email Address
                   </label>
-                  <input type="email" id="parent-login-email" required placeholder="e.g. parent@gmail.com" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  <input type="email" id="parent-login-email" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                 </div>
                 <div style="margin-bottom: 1.5rem;">
                   <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                     Password
                   </label>
-                  <input type="password" id="parent-login-password" required placeholder="Enter your password" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  <input type="password" id="parent-login-password" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                 </div>
                 <button type="submit" id="btn-parent-submit-login" class="btn-pill btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
                   Sign In to Parent Portal
@@ -6506,7 +6506,7 @@ const ParentPortalView = {
                     Ghanaian Phone Number
                   </label>
                   <div style="display: flex; gap: 0.5rem;">
-                    <input type="tel" id="parent-otp-phone" placeholder="024 412 3456" class="form-input" style="flex: 1; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="tel" id="parent-otp-phone" class="form-input" style="flex: 1; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                     <button type="button" id="btn-parent-send-otp" class="btn-pill btn-outline" style="padding: 0.8rem 1.25rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap;">
                       📲 Send OTP
                     </button>
@@ -6516,7 +6516,7 @@ const ParentPortalView = {
                   <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                     Enter 6-Digit Hubtel SMS Code
                   </label>
-                  <input type="text" id="parent-otp-code" maxlength="6" placeholder="e.g. 457133" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.1rem; letter-spacing: 4px; text-align: center; font-weight: 700;">
+                  <input type="text" id="parent-otp-code" maxlength="6" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.1rem; letter-spacing: 4px; text-align: center; font-weight: 700;">
                   <button type="button" id="btn-parent-verify-otp" class="btn-pill btn-gold" style="width: 100%; margin-top: 0.75rem; padding: 0.9rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
                     Verify & Sign In
                   </button>
