@@ -161,39 +161,35 @@ const HomeView = {
       <!-- ========================================================
            SECTION 03: PARENTS — TWO FREE EXPERIENCES (BLUEPRINT §05)
            ======================================================== -->
-      <section id="section-two-ways-free" style="background: #06162E; padding: 4.5rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: relative; overflow: hidden;">
-        <!-- Subtle Ambient Background Glow -->
-        <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 350px; background: radial-gradient(circle, rgba(18, 102, 196, 0.18) 0%, transparent 70%); pointer-events: none;"></div>
-
+      <section id="section-two-ways-free" style="background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.03) 0%, #f8fafc 100%); padding: 4.5rem 1.5rem; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative; overflow: hidden;">
         <div class="container" style="max-width: 960px; margin: 0 auto; position: relative; z-index: 1;">
           
           <!-- Section Eyebrow & Title -->
           <div style="text-align: center; max-width: 680px; margin: 0 auto 2.25rem;">
-            <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #D5A63B; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #B45309; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem;">
               <span>✦</span> YOUR JOURNEY, YOUR WAY
             </div>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0 0 0.75rem 0; letter-spacing: -0.02em;">
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; color: #0A2046; line-height: 1.2; margin: 0 0 0.75rem 0; letter-spacing: -0.02em;">
               Their Future Begins Here.
             </h2>
-            <p style="color: #94a3b8; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
               Discover exceptional school opportunities, explore freely, and plan every step of your child's education with confidence.
             </p>
           </div>
 
           <!-- Hero Family Photography Banner -->
-          <div style="width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 45px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); margin-bottom: 2rem; position: relative; background: #0A2046;">
+          <div style="width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 16px 36px rgba(10,32,70,0.08); border: 1px solid #e2e8f0; margin-bottom: 2rem; position: relative; background: #ffffff;">
             <picture>
               <source srcset="/assets/images/blueprint_family_hero.webp" type="image/webp">
               <img src="/assets/images/blueprint_family_hero.jpg" alt="Ghanaian family discovering schools together on SkoolFinder" style="width: 100%; height: clamp(220px, 40vw, 380px); object-fit: cover; object-position: center 25%; display: block;" loading="lazy">
             </picture>
-            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,22,46,0) 60%, rgba(6,22,46,0.5) 100%); pointer-events: none;"></div>
           </div>
 
           <!-- Dual Cards Grid: Side-by-Side (Fills 960px container nicely) -->
           <div class="parent-journey-cards-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; align-items: stretch; margin-bottom: 2rem;">
             
             <!-- CARD 1: EXPLORE AS A GUEST -->
-            <div class="parent-pathway-card parent-pathway-guest" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+            <div class="parent-pathway-card parent-pathway-guest" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 6px 20px rgba(10,32,70,0.04);">
               <div>
                 <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
                   <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
@@ -217,7 +213,7 @@ const HomeView = {
               </div>
 
               <div>
-                <button type="button" id="btn-home-guest-explore" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #ffffff; background: #0A2046; border: 1.5px solid #1e3a6a; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 14px rgba(10,32,70,0.3); box-sizing: border-box;">
+                <button type="button" id="btn-home-guest-explore" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #ffffff; background: #0A2046; border: 1.5px solid #1e3a6a; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 14px rgba(10,32,70,0.2); box-sizing: border-box;">
                   <span>Discover Schools</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
@@ -225,7 +221,7 @@ const HomeView = {
             </div>
 
             <!-- CARD 2: YOUR FREE PARENT ACCOUNT -->
-            <div class="parent-pathway-card parent-pathway-account" style="background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EE 100%); border: 1.5px solid #E5C378; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 12px 32px rgba(213,166,59,0.18);">
+            <div class="parent-pathway-card parent-pathway-account" style="background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EE 100%); border: 1.5px solid #E5C378; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.14);">
               <div>
                 <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
                   <div style="width: 30px; height: 30px; border-radius: 50%; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
@@ -249,7 +245,7 @@ const HomeView = {
               </div>
 
               <div>
-                <button type="button" id="btn-home-parent-signup" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #0A2046; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 16px rgba(213,166,59,0.4); box-sizing: border-box;">
+                <button type="button" id="btn-home-parent-signup" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #0A2046; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; cursor: pointer; border-radius: 9999px; transition: all 0.2s; box-shadow: 0 4px 16px rgba(213,166,59,0.35); box-sizing: border-box;">
                   <span>Create Free Account</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
@@ -260,13 +256,13 @@ const HomeView = {
 
           <!-- Bottom Reassurance Statement & Sign-in Link -->
           <div style="text-align: center; margin-top: 1.5rem;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem; flex-wrap: wrap;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; flex-wrap: wrap;">
               <span>⏱</span>
               <span>100% free school discovery. Registration is always optional.</span>
             </div>
-            <div style="font-size: 0.85rem; color: #94a3b8;">
+            <div style="font-size: 0.85rem; color: #64748b;">
               Already have an account? 
-              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #D5A63B; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
+              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
                 Sign in to continue your school journey &rarr;
               </button>
             </div>
