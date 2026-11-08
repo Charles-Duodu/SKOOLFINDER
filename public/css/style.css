@@ -1167,13 +1167,75 @@ button {
   }
 }
 
-/* WCAG 2.2 AA Minimum Touch Target Size (>= 44px) */
+/* WCAG 2.2 AA Minimum Touch Target Size (>= 44px) & Mobile-Fitted Hero Search Widget */
 @media (max-width: 768px) {
   .btn-pill, button.btn-pill, a.btn-pill, .search-btn-hero, .btn-primary, .btn-gold, .btn-outline {
     min-height: 44px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .hero-section {
+    padding: 0.85rem 0 1.25rem !important;
+  }
+
+  .hero-content > div:first-child {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .hero-tour-pill {
+    font-size: 0.75rem !important;
+    padding: 0.35rem 0.85rem !important;
+  }
+
+  .hero-title {
+    font-size: clamp(1.35rem, 4.8vw, 1.75rem) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 0.45rem !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.82rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0.85rem !important;
+  }
+
+  .search-widget-card {
+    padding: 0.85rem 0.95rem !important;
+    border-radius: 14px !important;
+    box-shadow: 0 10px 25px -4px rgba(10, 17, 40, 0.25) !important;
+  }
+
+  .search-grid {
+    gap: 0.55rem !important;
+  }
+
+  .search-field {
+    gap: 0.15rem !important;
+  }
+
+  .search-label {
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    margin-bottom: 0.1rem !important;
+  }
+
+  .search-input, .search-select {
+    padding: 0.5rem 0.75rem !important;
+    font-size: 0.84rem !important;
+    min-height: 42px !important;
+    border-radius: 8px !important;
+  }
+
+  .search-btn-hero {
+    font-size: 0.9rem !important;
+    font-weight: 800 !important;
+    padding: 0.62rem 1rem !important;
+    min-height: 44px !important;
+    border-radius: 8px !important;
+    margin-top: 0.15rem !important;
   }
 }
 
