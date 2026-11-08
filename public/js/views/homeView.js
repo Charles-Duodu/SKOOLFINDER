@@ -565,6 +565,164 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           SECTION: TEACHERS & EDUCATION PROFESSIONALS SPOTLIGHT
+           ======================================================== -->
+      <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+        <div class="container" style="max-width: 980px; margin: 0 auto;">
+          <div class="teachers-spotlight-card">
+            
+            <!-- Eyebrow Badge -->
+            <div class="teachers-eyebrow-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+              <span>TEACHERS &amp; EDUCATION PROFESSIONALS</span>
+            </div>
+
+            <!-- Top Hero Grid: Left Content + Right Curved Image -->
+            <div class="teachers-hero-grid">
+              <div>
+                <div class="teachers-title-wrap">
+                  <div class="teachers-accent-bar" aria-hidden="true"></div>
+                  <h2 class="teachers-title">
+                    Discover your next opportunity in education
+                  </h2>
+                </div>
+                <p class="teachers-desc">
+                  Explore teaching and non-teaching vacancies from schools across Greater Accra.
+                </p>
+              </div>
+
+              <div class="teachers-hero-image-wrap">
+                <picture>
+                  <source srcset="/assets/images/portals/teachers_mockup_clean.webp" type="image/webp">
+                  <img src="/assets/images/portals/03_teachers_professionals.jpg" alt="Ghanaian Teachers &amp; Education Professionals on SkoolFinder" loading="lazy">
+                </picture>
+              </div>
+            </div>
+
+            <!-- Opportunities Strip Divider -->
+            <div class="teachers-opportunities-strip">
+              <div class="teachers-strip-title">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a1b39" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+                <span>Latest Opportunities</span>
+              </div>
+              <div class="teachers-strip-line" aria-hidden="true"></div>
+              <div class="teachers-strip-badge">
+                <span>📍 Greater Accra</span>
+              </div>
+            </div>
+
+            <!-- 3-Column Jobs Grid -->
+            <div class="teachers-jobs-grid">
+              
+              <!-- Card 1: Mathematics Teacher -->
+              <div class="teachers-job-card teachers-card-maths">
+                <div>
+                  <div class="teachers-job-icon-box teachers-icon-maths" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                  </div>
+                  <h3 class="teachers-job-title">Mathematics Teacher</h3>
+                  <div class="teachers-job-school">Crownridge International School</div>
+                  
+                  <div class="teachers-job-meta-row">
+                    <span>📍 Accra</span>
+                    <span class="teachers-pill-fulltime">Full-time</span>
+                  </div>
+
+                  <div class="teachers-job-deadline">
+                    <span>📅</span>
+                    <span>Application Deadline: <strong>20 Nov 2026</strong></span>
+                  </div>
+                </div>
+
+                <button type="button" id="btn-job-details-1" class="btn-job-details-link">
+                  View Details &rarr;
+                </button>
+              </div>
+
+              <!-- Card 2: School Administrator -->
+              <div class="teachers-job-card teachers-card-admin">
+                <div>
+                  <div class="teachers-job-icon-box teachers-icon-admin" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  </div>
+                  <h3 class="teachers-job-title">School Administrator</h3>
+                  <div class="teachers-job-school">Tema Royal Academy</div>
+                  
+                  <div class="teachers-job-meta-row">
+                    <span>📍 Tema</span>
+                    <span class="teachers-pill-admin">Full-time</span>
+                  </div>
+
+                  <div class="teachers-job-deadline">
+                    <span>📅</span>
+                    <span>Application Deadline: <strong>24 Nov 2026</strong></span>
+                  </div>
+                </div>
+
+                <button type="button" id="btn-job-details-2" class="btn-job-details-link">
+                  View Details &rarr;
+                </button>
+              </div>
+
+              <!-- Card 3: Teaching Assistant -->
+              <div class="teachers-job-card teachers-card-assistant">
+                <div>
+                  <div class="teachers-job-icon-box teachers-icon-assistant" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                    </svg>
+                  </div>
+                  <h3 class="teachers-job-title">Teaching Assistant</h3>
+                  <div class="teachers-job-school">Hope Bridge Academy</div>
+                  
+                  <div class="teachers-job-meta-row">
+                    <span>📍 Accra</span>
+                    <span class="teachers-pill-parttime">Part-time</span>
+                  </div>
+
+                  <div class="teachers-job-deadline">
+                    <span>📅</span>
+                    <span>Application Deadline: <strong>27 Nov 2026</strong></span>
+                  </div>
+                </div>
+
+                <button type="button" id="btn-job-details-3" class="btn-job-details-link">
+                  View Details &rarr;
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Bottom Action CTAs -->
+            <div class="teachers-ctas-wrap">
+              <button type="button" id="btn-teachers-view-all-jobs" class="btn-teachers-all-jobs">
+                <span>🔍</span> View All Education Jobs &rarr;
+              </button>
+              <button type="button" id="btn-teachers-join-pro" class="btn-teachers-join-pro">
+                <span>👤+</span> Join as a Professional
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
            ======================================================== -->
       <section id="section-why-skoolfinder" style="background: #ffffff; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
@@ -995,6 +1153,24 @@ const HomeView = {
       } else {
         App.navigate('suppliers');
       }
+    });
+
+    // SECTION: Teachers & Education Professionals Spotlight CTAs
+    document.getElementById('btn-teachers-view-all-jobs')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('teachers');
+    });
+
+    document.getElementById('btn-teachers-join-pro')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-teachers');
+    });
+
+    ['btn-job-details-1', 'btn-job-details-2', 'btn-job-details-3'].forEach(id => {
+      document.getElementById(id)?.addEventListener('click', (e) => {
+        e.preventDefault();
+        App.navigate('teachers');
+      });
     });
 
     // SECTION 06: Getting Started Pathways
