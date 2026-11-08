@@ -58,9 +58,6 @@ const HomeView = {
 
         <div class="container hero-content">
           <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
-            <div class="hero-pill" style="margin: 0;">
-              <span>🇬🇭</span> Greater Accra &amp; Tema Pre-Tertiary Directory
-            </div>
             <button id="btn-hero-role-tour" class="hero-tour-pill" title="Take a 30-second guided tour for Parents, Schools, Suppliers &amp; Teachers">
               <span>🧭</span> New to SkoolFinder? Take a 30s Guided Tour &rarr;
             </button>
