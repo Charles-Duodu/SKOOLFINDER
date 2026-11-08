@@ -161,122 +161,112 @@ const HomeView = {
       <!-- ========================================================
            SECTION 03: PARENTS — TWO FREE EXPERIENCES (BLUEPRINT §05)
            ======================================================== -->
-      <section id="section-two-ways-free" style="background: #ffffff; padding: 3.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative;">
-        <div class="container">
-          <div style="text-align: center; max-width: 620px; margin: 0 auto 2rem;">
-            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
-              <span>👨‍👩‍👧</span> FREE PARENT ACCESS
-            </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 1.8rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
-              Your Child’s Education Journey Starts Here
+      <section id="section-two-ways-free" style="background: #06162E; padding: 4.5rem 1.5rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); position: relative; overflow: hidden;">
+        <!-- Subtle Ambient Background Glow -->
+        <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 700px; height: 350px; background: radial-gradient(circle, rgba(18, 102, 196, 0.18) 0%, transparent 70%); pointer-events: none;"></div>
+
+        <div class="container" style="max-width: 960px; margin: 0 auto; position: relative; z-index: 1;">
+          
+          <!-- Section Eyebrow & Title -->
+          <div style="text-align: center; max-width: 680px; margin: 0 auto 2.25rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; color: #D5A63B; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem;">
+              <span>✦</span> YOUR JOURNEY, YOUR WAY
+            </div>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0 0 0.75rem 0; letter-spacing: -0.02em;">
+              Their Future Begins Here.
             </h2>
-            <p style="color: #64748b; font-size: 0.95rem; line-height: 1.6; margin: 0 auto;">
-              From initial school discovery to making an informed choice, SkoolFinder offers free tools for every stage of your journey.
+            <p style="color: #94a3b8; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
+              Discover exceptional school opportunities, explore freely, and plan every step of your child's education with confidence.
             </p>
           </div>
 
-          <!-- Dual Cards: Side-by-Side 740px Width -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; align-items: stretch; max-width: 740px; margin: 0 auto;">
+          <!-- Hero Family Photography Banner -->
+          <div style="width: 100%; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 45px rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12); margin-bottom: 2rem; position: relative; background: #0A2046;">
+            <picture>
+              <source srcset="/assets/images/blueprint_family_hero.webp" type="image/webp">
+              <img src="/assets/images/blueprint_family_hero.jpg" alt="Ghanaian family discovering schools together on SkoolFinder" style="width: 100%; height: clamp(220px, 40vw, 380px); object-fit: cover; object-position: center 25%; display: block;" loading="lazy">
+            </picture>
+            <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,22,46,0) 60%, rgba(6,22,46,0.5) 100%); pointer-events: none;"></div>
+          </div>
+
+          <!-- Dual Cards Grid: Side-by-Side (Fills 960px container nicely) -->
+          <div class="parent-journey-cards-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; align-items: stretch; margin-bottom: 2rem;">
             
-            <!-- CARD A: EXPLORE AS A GUEST -->
-            <div class="access-mode-card" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 16px; padding: 1.75rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.2s, box-shadow 0.2s;">
+            <!-- CARD 1: EXPLORE AS A GUEST -->
+            <div class="parent-pathway-card parent-pathway-guest" style="background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
               <div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
+                <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
+                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
+                    🧭
+                  </div>
+                  <span style="font-size: 0.76rem; font-weight: 800; color: #475569; text-transform: uppercase; letter-spacing: 0.06em;">
+                    START EXPLORING
+                  </span>
+                </div>
+
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
                   Explore as a Guest
                 </h3>
-                <p style="color: #059669; font-size: 0.84rem; font-weight: 700; margin: 0 0 1.25rem 0;">
-                  Start discovering schools immediately. No account needed.
+                <p style="color: #475569; font-size: 0.92rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                  Find and compare schools instantly. No sign-up needed.
                 </p>
 
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #334155;">
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
-                    <span>Search and filter schools, browse public profiles</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
-                    <span>Filter by location, curriculum &amp; published fees</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
-                    <span>Compare up to 4 schools side-by-side</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #059669; font-weight: 800; font-size: 1rem; line-height: 1.2;">✓</span>
-                    <span>Use approved basic matching and make enquiries</span>
-                  </li>
-                </ul>
+                <div style="font-size: 0.84rem; font-weight: 700; color: #64748b; margin-bottom: 1.5rem; letter-spacing: 0.02em;">
+                  Search &bull; Compare &bull; Enquire
+                </div>
               </div>
 
               <div>
-                <button type="button" id="btn-home-guest-explore" class="btn-pill btn-outline" style="width: 100%; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s; white-space: nowrap; box-sizing: border-box;">
-                  <span>🔍</span> Explore Schools &rarr;
+                <button type="button" id="btn-home-guest-explore" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #ffffff; background: #0A2046; border: 1.5px solid #1e3a6a; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 14px rgba(10,32,70,0.3); box-sizing: border-box;">
+                  <span>Discover Schools</span>
+                  <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
-                <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  Instant access &bull; 100% free
-                </div>
               </div>
             </div>
 
-            <!-- CARD B: JOIN AS A PARENT — FREE -->
-            <div class="access-mode-card" style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 1.75rem 1.5rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 28px rgba(213,166,59,0.12); position: relative; transition: transform 0.2s, box-shadow 0.2s;">
-              <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #D5A63B 0%, #b45309 100%); color: #ffffff; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.9rem; border-radius: 9999px; box-shadow: 0 3px 8px rgba(180,83,9,0.25); white-space: nowrap;">
-                ⭐ RECOMMENDED FOR FAMILIES
-              </div>
+            <!-- CARD 2: YOUR FREE PARENT ACCOUNT -->
+            <div class="parent-pathway-card parent-pathway-account" style="background: linear-gradient(180deg, #FFFDF8 0%, #FEF9EE 100%); border: 1.5px solid #E5C378; border-radius: 18px; padding: 2rem 1.75rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 12px 32px rgba(213,166,59,0.18);">
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.55rem; margin-bottom: 1rem;">
+                  <div style="width: 30px; height: 30px; border-radius: 50%; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0;">
+                    🔖
+                  </div>
+                  <span style="font-size: 0.76rem; font-weight: 800; color: #92400e; text-transform: uppercase; letter-spacing: 0.06em;">
+                    PERSONALISED JOURNEY
+                  </span>
+                </div>
 
-              <div style="margin-top: 0.4rem;">
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">
-                  Join as a Parent — Free
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Your Free Parent Account
                 </h3>
-                <p style="color: #92400e; font-size: 0.84rem; font-weight: 700; margin: 0 0 1.25rem 0;">
-                  Make your discovery journey more organised and personal.
+                <p style="color: #475569; font-size: 0.92rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                  Save favourites, organise shortlists and plan ahead.
                 </p>
 
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.5rem 0; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem; color: #1e293b;">
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
-                    <span><strong>Everything in Guest</strong>, plus persistent shortlists</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
-                    <span><strong>Save favourite schools</strong> &amp; searches</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
-                    <span><strong>Personalised recommendations</strong> &amp; relevant alerts</span>
-                  </li>
-                  <li style="display: flex; gap: 0.6rem; align-items: flex-start;">
-                    <span style="color: #D5A63B; font-weight: 900; font-size: 1rem; line-height: 1.2;">✦</span>
-                    <span><strong>Track admissions, visits</strong> &amp; school journey planning</span>
-                  </li>
-                </ul>
+                <div style="font-size: 0.84rem; font-weight: 700; color: #92400e; margin-bottom: 1.5rem; letter-spacing: 0.02em;">
+                  Save &bull; Plan &bull; Track
+                </div>
               </div>
 
               <div>
-                <button type="button" id="btn-home-parent-signup" class="btn-pill btn-gold" style="width: 100%; height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; padding: 0.75rem 1rem; font-size: 0.9rem; font-weight: 800; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 12px rgba(213,166,59,0.3); transition: all 0.2s; white-space: nowrap; box-sizing: border-box; border: 2px solid transparent;">
-                  <span>✨</span> Create Free Parent Account &rarr;
+                <button type="button" id="btn-home-parent-signup" class="btn-pill pathway-cta-btn" style="width: 100%; height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; padding: 0.75rem 1rem; font-size: 0.95rem; font-weight: 800; color: #0A2046; background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); border: none; cursor: pointer; border-radius: 9999px; box-shadow: 0 4px 16px rgba(213,166,59,0.4); box-sizing: border-box;">
+                  <span>Create Free Account</span>
+                  <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
-                <div style="text-align: center; font-size: 0.74rem; color: #64748b; margin-top: 0.5rem;">
-                  Takes 30 seconds &bull; No card required &bull; 100% free
-                </div>
               </div>
             </div>
 
           </div>
 
-          <!-- Reassurance statement integrated cleanly into parent access section -->
-          <div style="margin-top: 1.75rem; text-align: center;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem; font-size: 0.88rem; font-weight: 700; color: #0A2046; margin-bottom: 0.35rem; flex-wrap: wrap;">
-              <span>🛡️</span>
-              <span>100% Free to Explore</span>
-              <span style="color: #cbd5e1;">&bull;</span>
-              <span>No Subscription Fees</span>
-              <span style="color: #cbd5e1;">&bull;</span>
-              <span>No Payment Card Required</span>
+          <!-- Bottom Reassurance Statement & Sign-in Link -->
+          <div style="text-align: center; margin-top: 1.5rem;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem; flex-wrap: wrap;">
+              <span>⏱</span>
+              <span>100% free school discovery. Registration is always optional.</span>
             </div>
-            <div style="font-size: 0.84rem; color: #64748b;">
+            <div style="font-size: 0.85rem; color: #94a3b8;">
               Already have an account? 
-              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.84rem; padding: 0.15rem 0.35rem;">
+              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #D5A63B; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
                 Sign in to continue your school journey &rarr;
               </button>
             </div>

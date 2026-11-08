@@ -3370,3 +3370,47 @@ body.has-comparison-dock .sd-chat-window {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ========================================================
+   Section 03: Parent Connected Pathways (Blueprint v1.0)
+   ======================================================== */
+.parent-pathway-card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+.parent-pathway-card:hover {
+  transform: translateY(-5px);
+}
+
+.parent-pathway-guest:hover {
+  box-shadow: 0 16px 36px -4px rgba(18, 102, 196, 0.25) !important;
+  border-color: #93c5fd !important;
+}
+
+.parent-pathway-account:hover {
+  box-shadow: 0 18px 40px -4px rgba(213, 166, 59, 0.35) !important;
+  border-color: #D5A63B !important;
+}
+
+.pathway-cta-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.pathway-cta-btn .cta-arrow {
+  display: inline-block;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pathway-cta-btn:hover .cta-arrow {
+  transform: translate(3px, -3px);
+}
+
+.pathway-cta-btn:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 768px) {
+  .parent-journey-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
