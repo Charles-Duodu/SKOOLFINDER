@@ -6319,38 +6319,65 @@ const ParentPortalView = {
     const totalGuestSaved = compCount + bookmarkCount;
 
     return `
-      <section style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); min-height: 85vh; padding: 3rem 1.5rem 5rem;">
-        <div class="container" style="max-width: 920px; margin: 0 auto;">
-          
-          <!-- Header Banner -->
-          <div style="text-align: center; margin-bottom: 2.25rem;">
-            <span class="badge" style="background: #eff6ff; color: #1e40af; border: 1.5px solid #bfdbfe; padding: 6px 16px; font-weight: 700; font-size: 0.85rem; border-radius: 9999px;">
-              🇬🇭 SkoolFinder Ghana • Unified Admissions & Student Life
-            </span>
-            <h1 style="font-family: var(--font-heading); font-size: 2.3rem; font-weight: 800; color: #0f172a; margin: 0.85rem 0 0.5rem 0;">
-              Parent Admissions & Student Portal
-            </h1>
-            <p style="color: #64748b; font-size: 1.05rem; max-width: 680px; margin: 0 auto; line-height: 1.6;">
-              Sign up as a new parent or log in to submit admissions applications to accredited Ghanaian schools, verify digital student ID cards, settle school fees via Mobile Money, and track school bus routes.
-            </p>
-          </div>
+      <div class="parent-portal-gateway-page" style="background: var(--bg-main, #f8fafc); min-height: 100vh;">
+        <!-- Hero Section with Luxury Radial Gradient & Ambient Lighting -->
+        <section style="background: linear-gradient(135deg, #06162E 0%, #0A224E 45%, #124B94 100%); color: #ffffff; padding: 5rem 1.5rem 6.5rem; position: relative; overflow: hidden;">
+          <!-- Dual Ambient Lighting Glows -->
+          <div style="position: absolute; top: -120px; right: -120px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, transparent 70%); pointer-events: none;"></div>
+          <div style="position: absolute; bottom: -120px; left: -100px; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(18, 102, 196, 0.3) 0%, transparent 70%); pointer-events: none;"></div>
 
-          ${totalGuestSaved > 0 ? `
-          <div style="background: #fffbeb; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1.1rem 1.4rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 4px 12px rgba(245,158,11,0.12);">
-            <div style="font-size: 2rem;">⚖️</div>
-            <div style="flex: 1;">
-              <div style="font-weight: 800; color: #92400e; font-size: 0.95rem;">
-                You have ${compCount > 0 ? `${compCount} school${compCount > 1 ? 's' : ''} in comparison` : ''}${compCount > 0 && bookmarkCount > 0 ? ' and ' : ''}${bookmarkCount > 0 ? `${bookmarkCount} saved bookmark${bookmarkCount > 1 ? 's' : ''}` : ''}!
-              </div>
-              <div style="font-size: 0.82rem; color: #b45309; margin-top: 0.2rem;">
-                Create your free parent account or sign in below to import these schools into your permanent shortlist, track deadlines, and submit applications.
-              </div>
+          <div class="container" style="position: relative; z-index: 2; max-width: 920px; margin: 0 auto; text-align: center;">
+            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(245, 158, 11, 0.5); padding: 0.45rem 1.25rem; border-radius: 9999px; margin-bottom: 1.5rem; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+              <span style="font-size: 1rem;">🇬🇭</span>
+              <span style="font-size: 0.82rem; font-weight: 800; color: #fde68a; text-transform: uppercase; letter-spacing: 0.08em;">
+                National Pre-Tertiary Parent &amp; Admissions Workspace
+              </span>
+            </div>
+
+            <h1 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2.2rem, 4.5vw, 3.2rem); font-weight: 800; line-height: 1.18; color: #ffffff; margin-bottom: 1.25rem; letter-spacing: -0.02em;">
+              Simplify Admissions &amp; Establish Your Child's Educational Future
+            </h1>
+            <p style="font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; color: rgba(255, 255, 255, 0.88); max-width: 740px; margin: 0 auto 2.25rem;">
+              Directly submit admissions inquiries to accredited Ghanaian institutions, track real-time application milestones, verify school fees transparently, and plan every academic transition with absolute clarity.
+            </p>
+
+            <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 0.88rem; color: #cbd5e1;">
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span style="color: #34d399; font-weight: 800;">✓</span> 100% Free Parent Experience
+              </span>
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span style="color: #34d399; font-weight: 800;">✓</span> Direct Admissions WhatsApp Inquiries
+              </span>
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span style="color: #34d399; font-weight: 800;">✓</span> Official NaSIA Regulatory Alignment
+              </span>
+              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <span style="color: #34d399; font-weight: 800;">✓</span> Ghana Mobile Money &amp; Bank Integrated
+              </span>
             </div>
           </div>
-          ` : ''}
+        </section>
 
-          <!-- Auth Card -->
-          <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08); border: 1px solid #e2e8f0; overflow: hidden; margin-bottom: 3rem;">
+        <!-- Main Body Section with Floating Elevated Auth Card -->
+        <section style="padding: 0 1.5rem 5rem; position: relative;">
+          <div class="container" style="max-width: 920px; margin: -3.75rem auto 0; position: relative; z-index: 5;">
+            
+            ${totalGuestSaved > 0 ? `
+            <div style="background: #ffffff; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1.1rem 1.4rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 12px 30px rgba(245,158,11,0.18);">
+              <div style="font-size: 2rem;">⚖️</div>
+              <div style="flex: 1;">
+                <div style="font-weight: 800; color: #92400e; font-size: 0.95rem;">
+                  You have ${compCount > 0 ? `${compCount} school${compCount > 1 ? 's' : ''} in comparison` : ''}${compCount > 0 && bookmarkCount > 0 ? ' and ' : ''}${bookmarkCount > 0 ? `${bookmarkCount} saved bookmark${bookmarkCount > 1 ? 's' : ''}` : ''}!
+                </div>
+                <div style="font-size: 0.82rem; color: #b45309; margin-top: 0.2rem;">
+                  Create your free parent account or sign in below to import these schools into your permanent shortlist, track deadlines, and submit applications.
+                </div>
+              </div>
+            </div>
+            ` : ''}
+
+            <!-- Auth Card with High-End Elevation -->
+            <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 24px 60px -12px rgba(6, 22, 46, 0.22), 0 0 0 1px #e2e8f0; overflow: hidden; margin-bottom: 3.5rem;">
             <!-- Tab Switcher -->
             <div style="display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
               <button id="tab-btn-parent-signup" class="parent-auth-tab" style="flex: 1; padding: 1.25rem 1rem; border: none; background: #ffffff; font-weight: 800; font-size: 1.05rem; color: #1e3a8a; border-bottom: 3px solid #f59e0b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
@@ -6565,6 +6592,7 @@ const ParentPortalView = {
           </div>
         </div>
       </section>
+    </div>
     `;
   },
 
