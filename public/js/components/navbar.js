@@ -160,9 +160,6 @@ const Navbar = {
                 </button>
               </div>
             ` : `
-              <button id="btn-nav-join" class="btn-pill btn-gold nav-action-desktop" style="font-size: 0.82rem; padding: 0.42rem 0.95rem; font-weight: 800; cursor: pointer; border-radius: 9999px; box-shadow: 0 2px 8px rgba(213,166,59,0.3);" title="Join Free as Parent, School, Teacher, or Supplier">
-                <span>✨</span> Join Free
-              </button>
               <button id="btn-nav-signin" class="btn-pill nav-action-desktop" style="font-size: 0.84rem; padding: 0.42rem 0.95rem; font-weight: 800; background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); color: #ffffff; border: 1px solid #2563eb; box-shadow: 0 2px 8px rgba(9,30,66,0.25); display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;" title="Super Admin HQ & User Sign In">
                 <span>🛡️</span> Sign In
               </button>
@@ -378,13 +375,7 @@ const Navbar = {
 
 
 
-    // Join SkoolFinder CTA
-    document.getElementById('btn-nav-join')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
-        Modals.openLoginModal({ initialTab: 'signup' });
-      }
-    });
+
 
     // Desktop Nav Links
     const handleHomeNav = (e) => {

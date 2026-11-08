@@ -254,12 +254,8 @@ const HomeView = {
 
           </div>
 
-          <!-- Bottom Reassurance Statement & Sign-in Link -->
-          <div style="text-align: center; margin-top: 1.5rem;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem; flex-wrap: wrap;">
-              <span>⏱</span>
-              <span>100% free school discovery. Registration is always optional.</span>
-            </div>
+          <!-- Bottom Sign-in Link -->
+          <div style="text-align: center; margin-top: 1.25rem;">
             <div style="font-size: 0.85rem; color: #64748b;">
               Already have an account? 
               <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
