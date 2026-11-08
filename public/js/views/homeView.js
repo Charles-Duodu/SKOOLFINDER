@@ -508,11 +508,6 @@ const HomeView = {
               </button>
             </div>
 
-            <!-- Secondary Engagements Divider -->
-            <div class="proprietors-divider" role="separator" aria-label="Secondary Engagements">
-              <span>SECONDARY ENGAGEMENTS</span>
-            </div>
-
             <!-- Secondary 2-Column Grid -->
             <div class="proprietors-secondary-grid">
               
