@@ -1337,6 +1337,315 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
+/* ========================================================
+   School Owners & Proprietors Spotlight Card
+   ======================================================== */
+.proprietors-spotlight-card {
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 20px;
+  box-shadow: 0 12px 36px -8px rgba(10, 32, 70, 0.08);
+  overflow: hidden;
+  padding: 2.25rem 2.25rem 2rem;
+}
+
+.proprietors-hero-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.proprietors-accent-bar {
+  width: 48px;
+  height: 5px;
+  background: #eab308;
+  border-radius: 3px;
+  margin-bottom: 1.25rem;
+}
+
+.proprietors-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+  font-weight: 800;
+  color: #0a1b39;
+  line-height: 1.2;
+  margin: 0 0 0.85rem 0;
+  letter-spacing: -0.015em;
+}
+
+.proprietors-desc {
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  max-width: 480px;
+}
+
+.btn-proprietors-gold {
+  background: #f59e0b;
+  color: #0a1b39;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.85rem 1.65rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+  text-decoration: none;
+}
+
+.btn-proprietors-gold:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.35);
+}
+
+.proprietors-hero-image-wrap {
+  width: 100%;
+  height: 240px;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(10, 32, 70, 0.08);
+}
+
+.proprietors-hero-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Middle Banner: Schools Open for Admissions */
+.proprietors-admissions-banner {
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 14px;
+  padding: 1.25rem 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.proprietors-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 1.15rem;
+}
+
+.proprietors-banner-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.proprietors-banner-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: #0a1b39;
+  margin: 0 0 0.25rem 0;
+}
+
+.proprietors-banner-sub {
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.btn-proprietors-navy {
+  background: #0A2046;
+  color: #ffffff;
+  padding: 0.8rem 1.4rem;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.btn-proprietors-navy:hover {
+  background: #123068;
+  transform: translateY(-1px);
+}
+
+/* Secondary Engagements Divider */
+.proprietors-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 0.5rem 0 1.5rem;
+}
+
+.proprietors-divider::before,
+.proprietors-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.proprietors-divider span {
+  padding: 0 1rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #94a3b8;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Secondary 2-Column Cards Grid */
+.proprietors-secondary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+}
+
+.proprietors-secondary-card {
+  border-radius: 14px;
+  padding: 1.35rem 1.5rem;
+  display: flex;
+  gap: 1.15rem;
+  align-items: flex-start;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.proprietors-secondary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.06);
+}
+
+.proprietors-card-vacancies {
+  background: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%);
+  border: 1.5px solid #c7d2fe;
+}
+
+.proprietors-card-tenders {
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1.5px solid #bbf7d0;
+}
+
+.proprietors-sec-icon-vacancies {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.proprietors-sec-icon-tenders {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.proprietors-sec-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.08rem;
+  font-weight: 800;
+  color: #0a1b39;
+  margin: 0 0 0.35rem 0;
+}
+
+.proprietors-sec-sub {
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  margin: 0 0 0.75rem 0;
+}
+
+.proprietors-sec-link-blue {
+  color: #1d4ed8;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.proprietors-sec-link-blue:hover {
+  text-decoration: underline;
+}
+
+.proprietors-sec-link-green {
+  color: #15803d;
+  font-weight: 800;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.proprietors-sec-link-green:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .proprietors-spotlight-card {
+    padding: 1.5rem 1.15rem;
+    border-radius: 16px;
+  }
+  .proprietors-hero-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .proprietors-hero-image-wrap {
+    height: 190px;
+  }
+  .proprietors-admissions-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+    gap: 1.15rem;
+  }
+  .btn-proprietors-navy {
+    width: 100%;
+    justify-content: center;
+  }
+  .proprietors-secondary-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
 
 
 

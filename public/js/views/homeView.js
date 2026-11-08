@@ -452,6 +452,124 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           SECTION: SCHOOL OWNERS & PROPRIETORS SPOTLIGHT
+           ======================================================== -->
+      <section id="section-school-proprietors-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+        <div class="container" style="max-width: 980px; margin: 0 auto;">
+          <div class="proprietors-spotlight-card">
+            
+            <!-- Top Hero Grid: Left Content + Right Curved Image -->
+            <div class="proprietors-hero-grid">
+              <div>
+                <div class="proprietors-accent-bar"></div>
+                <h2 class="proprietors-title">
+                  For School Owners &amp; Proprietors
+                </h2>
+                <p class="proprietors-desc">
+                  Grow your school's visibility, attract prospective families, manage admissions, recruit staff and connect with suppliers through one platform.
+                </p>
+                <button type="button" id="btn-proprietors-solutions" class="btn-proprietors-gold">
+                  Explore School Owner Solutions
+                </button>
+              </div>
+
+              <div class="proprietors-hero-image-wrap">
+                <picture>
+                  <source srcset="/assets/images/portals/school_proprietors_mockup_clean.webp" type="image/webp">
+                  <img src="/assets/images/portals/02_school_owners.jpg" alt="Ghanaian School Owners &amp; Proprietors on SkoolFinder" loading="lazy">
+                </picture>
+              </div>
+            </div>
+
+            <!-- Primary Feature Banner: Schools Open for Admissions -->
+            <div class="proprietors-admissions-banner">
+              <div class="proprietors-banner-left">
+                <div class="proprietors-banner-icon" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <polyline points="9 16 11 18 15 14"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h3 class="proprietors-banner-title">
+                    Schools Open for Admissions
+                  </h3>
+                  <p class="proprietors-banner-sub">
+                    Showcase schools accepting applications and help parents discover available admission opportunities.
+                  </p>
+                </div>
+              </div>
+
+              <button type="button" id="btn-proprietors-open-admissions" class="btn-proprietors-navy">
+                Explore Open Admissions &rarr;
+              </button>
+            </div>
+
+            <!-- Secondary Engagements Divider -->
+            <div class="proprietors-divider" role="separator" aria-label="Secondary Engagements">
+              <span>SECONDARY ENGAGEMENTS</span>
+            </div>
+
+            <!-- Secondary 2-Column Grid -->
+            <div class="proprietors-secondary-grid">
+              
+              <!-- Card 1: Advertise Teaching & Staff Vacancies -->
+              <div class="proprietors-secondary-card proprietors-card-vacancies">
+                <div class="proprietors-sec-icon-vacancies" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="proprietors-sec-title">
+                    Advertise Teaching &amp; Staff Vacancies
+                  </h4>
+                  <p class="proprietors-sec-sub">
+                    Reach qualified teachers and education professionals through SkoolFinder.
+                  </p>
+                  <button type="button" id="btn-proprietors-post-vacancy" class="proprietors-sec-link-blue">
+                    Post a Staff Vacancy &rarr;
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 2: Publish School Tenders -->
+              <div class="proprietors-secondary-card proprietors-card-tenders">
+                <div class="proprietors-sec-icon-tenders" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                    <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                    <path d="M9 12h6"></path>
+                    <path d="M9 16h6"></path>
+                    <polyline points="10 9 12 11 16 7"></polyline>
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="proprietors-sec-title">
+                    Publish School Tenders
+                  </h4>
+                  <p class="proprietors-sec-sub">
+                    Advertise your school's procurement needs and receive bids from trusted suppliers and service providers.
+                  </p>
+                  <button type="button" id="btn-proprietors-publish-tender" class="proprietors-sec-link-green">
+                    Publish a Tender &rarr;
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
            ======================================================== -->
       <section id="section-why-skoolfinder" style="background: #ffffff; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
@@ -857,6 +975,31 @@ const HomeView = {
     document.getElementById('btn-portal-card-suppliers')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('for-suppliers');
+    });
+
+    // SECTION: School Owners & Proprietors Spotlight CTAs
+    document.getElementById('btn-proprietors-solutions')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-schools');
+    });
+
+    document.getElementById('btn-proprietors-open-admissions')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-proprietors-post-vacancy')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('teachers');
+    });
+
+    document.getElementById('btn-proprietors-publish-tender')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (typeof Modals !== 'undefined' && Modals.openPostRFQModal) {
+        Modals.openPostRFQModal();
+      } else {
+        App.navigate('suppliers');
+      }
     });
 
     // SECTION 06: Getting Started Pathways
