@@ -6360,16 +6360,16 @@ const ParentPortalView = {
 
         <!-- Main Body Section with Floating Elevated Auth Card -->
         <section style="padding: 0 1.5rem 5rem; position: relative;">
-          <div class="container" style="max-width: 920px; margin: -3.75rem auto 0; position: relative; z-index: 5;">
+          <div class="container" style="max-width: 560px; margin: -3.75rem auto 0; position: relative; z-index: 5;">
             
             ${totalGuestSaved > 0 ? `
-            <div style="background: #ffffff; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1.1rem 1.4rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 12px 30px rgba(245,158,11,0.18);">
-              <div style="font-size: 2rem;">⚖️</div>
+            <div style="background: #ffffff; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 12px 30px rgba(245,158,11,0.18);">
+              <div style="font-size: 1.8rem;">⚖️</div>
               <div style="flex: 1;">
-                <div style="font-weight: 800; color: #92400e; font-size: 0.95rem;">
+                <div style="font-weight: 800; color: #92400e; font-size: 0.92rem;">
                   You have ${compCount > 0 ? `${compCount} school${compCount > 1 ? 's' : ''} in comparison` : ''}${compCount > 0 && bookmarkCount > 0 ? ' and ' : ''}${bookmarkCount > 0 ? `${bookmarkCount} saved bookmark${bookmarkCount > 1 ? 's' : ''}` : ''}!
                 </div>
-                <div style="font-size: 0.82rem; color: #b45309; margin-top: 0.2rem;">
+                <div style="font-size: 0.8rem; color: #b45309; margin-top: 0.2rem;">
                   Create your free parent account or sign in below to import these schools into your permanent shortlist, track deadlines, and submit applications.
                 </div>
               </div>
@@ -6377,69 +6377,78 @@ const ParentPortalView = {
             ` : ''}
 
             <!-- Auth Card with High-End Elevation -->
-            <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 24px 60px -12px rgba(6, 22, 46, 0.22), 0 0 0 1px #e2e8f0; overflow: hidden; margin-bottom: 3.5rem;">
+            <div style="background: #ffffff; border-radius: 18px; box-shadow: 0 20px 50px -12px rgba(6, 22, 46, 0.2), 0 0 0 1px #e2e8f0; overflow: hidden; margin-bottom: 3.5rem;">
             <!-- Card Header -->
-            <div id="parent-card-header" style="padding: 1.25rem 2rem; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
-              <div id="parent-card-title" style="font-weight: 800; font-size: 1.15rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem;">
+            <div id="parent-card-header" style="padding: 1.15rem 1.75rem; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+              <div id="parent-card-title" style="font-weight: 800; font-size: 1.1rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem;">
                 <span>✨</span> Create New Parent Account
               </div>
             </div>
 
             <!-- Tab 1: SIGN UP FORM -->
-            <div id="parent-signup-panel" style="padding: 2.5rem 2rem;">
-              <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: flex-start; gap: 0.75rem;">
-                <span style="font-size: 1.3rem;">ℹ️</span>
-                <div style="font-size: 0.88rem; color: #1e3a8a; line-height: 1.5;">
+            <div id="parent-signup-panel" style="padding: 1.75rem 1.75rem 2rem;">
+              <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.35rem; display: flex; align-items: flex-start; gap: 0.65rem;">
+                <span style="font-size: 1.15rem;">ℹ️</span>
+                <div style="font-size: 0.84rem; color: #1e3a8a; line-height: 1.45;">
                   <strong>New Parent Registration:</strong> Fill in your details below to create your parent profile and access school discovery, admissions, and verified parent tools.
                 </div>
               </div>
 
               <form id="form-parent-signup">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem;">
+                  <!-- 1. FULL NAME -->
                   <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                       Parent / Guardian Full Name <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
                   </div>
 
+                  <!-- 2. EMAIL -->
                   <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Ghana Mobile Number <span style="color: #ef4444;">*</span>
-                    </label>
-                    <input type="tel" id="parent-reg-phone" required class="form-input" placeholder="e.g. 0244123456" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
-                    <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts & MoMo fee invoices.</div>
-                  </div>
-
-                  <div style="grid-column: 1 / -1;">
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                       Email Address <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="email" id="parent-reg-email" required class="form-input" placeholder="e.g. parent@example.com" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="email" id="parent-reg-email" required class="form-input" placeholder="e.g. parent@example.com" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
                   </div>
 
+                  <!-- 3. MOBILE NUMBER -->
                   <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Create Password <span style="color: #ef4444;">*</span>
+                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                      Ghana Mobile Number <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="password" id="parent-reg-password" required minlength="6" placeholder="At least 6 characters" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="tel" id="parent-reg-phone" required class="form-input" placeholder="e.g. 0244123456" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                    <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts &amp; MoMo fee invoices.</div>
                   </div>
 
-                  <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Confirm Password <span style="color: #ef4444;">*</span>
-                    </label>
-                    <input type="password" id="parent-reg-confirm-password" required minlength="6" placeholder="Re-enter your password" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
-                    <div id="parent-reg-password-match-hint" style="font-size: 0.76rem; margin-top: 0.25rem; display: none;"></div>
+                  <!-- 4. CREATE PASSWORD & 5. CONFIRM PASSWORD -->
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem;">
+                    <div>
+                      <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                        Create Password <span style="color: #ef4444;">*</span>
+                      </label>
+                      <input type="password" id="parent-reg-password" required minlength="6" placeholder="At least 6 characters" class="form-input" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                    </div>
+
+                    <div>
+                      <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                        Confirm Password <span style="color: #ef4444;">*</span>
+                      </label>
+                      <input type="password" id="parent-reg-confirm-password" required minlength="6" placeholder="Re-enter password" class="form-input" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                      <div id="parent-reg-password-match-hint" style="font-size: 0.76rem; margin-top: 0.25rem; display: none;"></div>
+                    </div>
                   </div>
                 </div>
 
-                <button type="submit" id="btn-parent-submit-signup" class="btn-pill btn-gold" style="width: 100%; padding: 1.05rem; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(245,158,11,0.35); cursor: pointer; border: none;">
-                  <span>🚀</span> Create Parent Account & Enter Portal
-                </button>
+                <!-- Reduced, Centered Create Parent Account Button -->
+                <div style="text-align: center; margin-top: 1.35rem;">
+                  <button type="submit" id="btn-parent-submit-signup" class="btn-pill btn-gold" style="padding: 0.72rem 1.85rem; font-size: 0.92rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; box-shadow: 0 4px 12px rgba(245,158,11,0.3); cursor: pointer; border: none; border-radius: 9999px;">
+                    <span>🚀</span> Create Parent Account &amp; Enter Portal
+                  </button>
+                </div>
               </form>
 
-              <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b;">
+              <div style="text-align: center; margin-top: 1.35rem; font-size: 0.86rem; color: #64748b;">
                 Already have an account? 
                 <a href="javascript:void(0)" id="link-switch-to-signin" style="color: #1e3a8a; font-weight: 700; text-decoration: underline; margin-left: 0.25rem;">
                   Sign In to Parent Portal
@@ -6448,7 +6457,7 @@ const ParentPortalView = {
             </div>
 
             <!-- Tab 2: SIGN IN FORM -->
-            <div id="parent-signin-panel" style="padding: 2.5rem 2rem; display: none;">
+            <div id="parent-signin-panel" style="padding: 1.75rem 1.75rem 2rem; display: none;">
               <!-- Sub-tabs: Email Password vs SMS OTP -->
               <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
                 <button type="button" id="subtab-btn-email" style="flex: 1; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #3b82f6; background: #eff6ff; color: #1e40af; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
