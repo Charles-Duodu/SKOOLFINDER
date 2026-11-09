@@ -2744,50 +2744,100 @@ button {
   border-color: #cbd5e1;
 }
 
-/* Horizontal Display on Mobile & Tablet */
-@media (max-width: 900px) {
+.why-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.why-card-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0A2046;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.why-card-desc {
+  color: #475569;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Tablet & Intermediate Viewports (601px - 900px) */
+@media (max-width: 900px) and (min-width: 601px) {
   .why-skoolfinder-grid {
-    display: flex !important;
-    flex-direction: row !important;
-    overflow-x: auto !important;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    gap: 1.15rem;
-    padding: 0.5rem 1.5rem 1.25rem !important;
-    margin: 0 -1.5rem !important;
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
   }
-
-  .why-skoolfinder-grid::-webkit-scrollbar {
-    height: 6px;
-  }
-
-  .why-skoolfinder-grid::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 9999px;
-    margin: 0 1.5rem;
-  }
-
-  .why-skoolfinder-grid::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 9999px;
-  }
-
-  .why-skoolfinder-grid::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
-  }
-
   .why-skoolfinder-card {
-    flex: 0 0 85% !important;
-    max-width: 320px !important;
-    min-width: 270px !important;
-    scroll-snap-align: center;
-    box-shadow: 0 4px 14px rgba(10, 32, 70, 0.05);
+    padding: 1.25rem 1rem;
+    border-radius: 14px;
+    gap: 0.75rem;
   }
+  .why-icon-box {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+    border-radius: 10px;
+  }
+  .why-card-title {
+    font-size: 1rem;
+  }
+  .why-card-desc {
+    font-size: 0.8rem;
+    line-height: 1.45;
+  }
+}
 
-  .why-mobile-scroll-hint {
-    display: flex !important;
+/* Compact Horizontal 3-Column Display on Mobile (<= 600px) */
+@media (max-width: 600px) {
+  #section-why-skoolfinder {
+    padding: 2.75rem 0 3rem;
+  }
+  #section-why-skoolfinder .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  .why-skoolfinder-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.45rem;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow-x: visible;
+    padding: 0;
+  }
+  .why-skoolfinder-card {
+    padding: 0.85rem 0.5rem;
+    border-radius: 12px;
+    gap: 0.45rem;
+    box-shadow: 0 2px 6px rgba(10, 32, 70, 0.04);
+  }
+  .why-icon-box {
+    width: 32px;
+    height: 32px;
+    font-size: 1.05rem;
+    border-radius: 8px;
+  }
+  .why-card-title {
+    font-size: 0.8rem;
+    line-height: 1.2;
+    margin: 0 0 0.25rem 0;
+    hyphens: auto;
+    word-break: break-word;
+  }
+  .why-card-desc {
+    font-size: 0.67rem;
+    line-height: 1.35;
+    color: #64748b;
   }
 }
 

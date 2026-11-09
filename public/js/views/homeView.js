@@ -785,14 +785,14 @@ const HomeView = {
             
             <!-- Theme 1: Informed Decisions -->
             <div class="why-skoolfinder-card">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+              <div class="why-icon-box" style="background: #eff6ff; border: 1px solid #bfdbfe;">
                 💡
               </div>
               <div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 class="why-card-title">
                   Informed Decisions
                 </h3>
-                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                <p class="why-card-desc">
                   Relevant information to explore and compare education options with verified curriculum data, transparent fee guidance, and real parent planning tools.
                 </p>
               </div>
@@ -800,14 +800,14 @@ const HomeView = {
 
             <!-- Theme 2: Connected Community -->
             <div class="why-skoolfinder-card">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+              <div class="why-icon-box" style="background: #fef3c7; border: 1px solid #fde68a;">
                 🤝
               </div>
               <div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 class="why-card-title">
                   Connected Community
                 </h3>
-                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                <p class="why-card-desc">
                   Families, institutions, education professionals, and accredited suppliers unified in one collaborative ecosystem to improve educational outcomes.
                 </p>
               </div>
@@ -815,24 +815,19 @@ const HomeView = {
 
             <!-- Theme 3: Trust & Transparency -->
             <div class="why-skoolfinder-card">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+              <div class="why-icon-box" style="background: #ecfdf5; border: 1px solid #a7f3d0;">
                 🛡️
               </div>
               <div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.25rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 class="why-card-title">
                   Trust &amp; Transparency
                 </h3>
-                <p style="color: #475569; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                <p class="why-card-desc">
                   Clear information and verification labels backed by defined evidence standards, statutory NaSIA licensing checks, and honest data policies.
                 </p>
               </div>
             </div>
 
-          </div>
-
-          <!-- Mobile Swipe Hint -->
-          <div class="why-mobile-scroll-hint" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; color: #94a3b8; font-size: 0.8rem; font-weight: 600;">
-            <span>&larr;</span> Swipe to view standards <span>&rarr;</span>
           </div>
         </div>
       </section>
