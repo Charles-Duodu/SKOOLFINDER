@@ -436,7 +436,7 @@ const HomeView = {
             <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 800; color: #0A2046; line-height: 1.2; margin: 0 0 0.75rem 0; letter-spacing: -0.02em;">
               Their Future Begins Here.
             </h2>
-            <p style="color: #0b1f38; font-weight: 600; font-size: 1.05rem; line-height: 1.6; margin: 0 auto; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);">
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
               Discover exceptional school opportunities, explore freely, and plan every step of your child's education with confidence.
             </p>
           </div>
@@ -463,22 +463,22 @@ const HomeView = {
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.4rem, 2.5vw, 1.65rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.5rem 0;">
                   Explore as a Guest
                 </h3>
-                <p style="color: #0f172a; font-weight: 500; font-size: 0.96rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
                   Discover schools and private tutors without creating an account.
                 </p>
 
                 <div style="height: 1px; background: #e2e8f0; margin-bottom: 1.25rem;"></div>
 
                 <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.85rem;">
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>Find schools and private tutors</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>Compare your preferred schools</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><polyline points="20 6 9 17 4 12"/></svg>
                     <span>Browse profiles and send enquiries</span>
                   </li>
@@ -490,7 +490,7 @@ const HomeView = {
                   <span>Start Exploring</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
-                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.84rem; color: #0A2046; font-weight: 700;">
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.82rem; color: #64748b; font-weight: 500;">
                   No registration required
                 </div>
               </div>
@@ -507,26 +507,26 @@ const HomeView = {
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.4rem, 2.5vw, 1.65rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.5rem 0;">
                   Your Free Parent Account
                 </h3>
-                <p style="color: #0f172a; font-weight: 500; font-size: 0.96rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
+                <p style="color: #64748b; font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.25rem 0;">
                   Enjoy everything guests can access, plus tools to plan and stay organised.
                 </p>
 
                 <div style="height: 1px; background: #fde68a; margin-bottom: 1.25rem;"></div>
 
                 <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; display: flex; flex-direction: column; gap: 0.85rem;">
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                     <span>Save favourite schools and tutors</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                     <span>Get personalised recommendations</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                     <span>Track enquiries and school visits</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #0A2046; font-weight: 600; line-height: 1.45;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.92rem; color: #334155; line-height: 1.45;">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                     <span>Receive alerts and reminders</span>
                   </li>
@@ -538,7 +538,7 @@ const HomeView = {
                   <span>Create Free Account</span>
                   <span class="cta-arrow" style="font-size: 1.05rem;">&nearr;</span>
                 </button>
-                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.84rem; color: #0A2046; font-weight: 700;">
+                <div style="text-align: center; margin-top: 0.75rem; font-size: 0.82rem; color: #64748b; font-weight: 500;">
                   100% free &bull; No subscription required
                 </div>
               </div>
@@ -562,7 +562,7 @@ const HomeView = {
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.35rem, 2.5vw, 1.8rem); font-weight: 800; color: #ffffff; line-height: 1.25; margin: 0;">
                   Need Dedicated Support? Find Verified Tutors in Any Desired Field
                 </h3>
-                <p style="color: #f1f5f9; font-weight: 500; font-size: 0.98rem; line-height: 1.55; margin: 0; max-width: 820px; text-align: center;">
+                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.55; margin: 0; max-width: 820px; text-align: center;">
                   Whether your child needs targeted help in STEM, Cambridge IGCSE prep, BECE/WASSCE revision, coding, or foreign languages &mdash; search verified, NTC-licensed Ghanaian educators for private home visits or live online tutoring.
                 </p>
               </div>
@@ -583,9 +583,9 @@ const HomeView = {
 
           <!-- Bottom Sign-in Link (Placed below the tutor section) -->
           <div style="text-align: center; margin-top: 1.75rem;">
-            <div style="font-size: 0.88rem; color: #0A2046; font-weight: 700; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);">
+            <div style="font-size: 0.85rem; color: #64748b;">
               Already have an account? 
-              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.88rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
+              <button type="button" id="btn-home-parent-signin" style="background: none; border: none; color: #1266C4; font-weight: 800; text-decoration: underline; cursor: pointer; font-size: 0.85rem; padding: 0.2rem 0.35rem; transition: color 0.15s;">
                 Sign in to continue your school journey &rarr;
               </button>
             </div>
@@ -960,10 +960,10 @@ const HomeView = {
             <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #fde68a; margin-bottom: 0.5rem;">
               <span>🇬🇭</span> VALUE &amp; TRUST STANDARDS
             </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);">
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
               Why SkoolFinder Ghana?
             </h2>
-            <p style="color: #0b1f38; font-weight: 600; font-size: 1.05rem; line-height: 1.6; margin: 0 auto; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);">
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
               A connected, trusted educational ecosystem built to empower Ghanaian families, schools, educators, and service partners.
             </p>
           </div>
@@ -1028,10 +1028,10 @@ const HomeView = {
             <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
               <span>🚀</span> SIMPLE STEPS
             </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);">
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
               Getting Started is Simple
             </h2>
-            <p style="color: #0b1f38; font-weight: 600; font-size: 1.05rem; line-height: 1.6; margin: 0 auto; text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);">
+            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
               Choose your audience pathway and take your first step in minutes.
             </p>
           </div>
@@ -1044,7 +1044,7 @@ const HomeView = {
               <div>
                 <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">👨‍👩‍👧</div>
                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Parents &amp; Families</h4>
-                <div style="font-size: 0.86rem; color: #0f172a; font-weight: 600; line-height: 1.5; margin-bottom: 1rem;">
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
                   Search Schools &rarr; Compare Options &rarr; Enquire or Save
                 </div>
               </div>
@@ -1058,7 +1058,7 @@ const HomeView = {
               <div>
                 <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🏫</div>
                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">School Proprietors</h4>
-                <div style="font-size: 0.86rem; color: #0f172a; font-weight: 600; line-height: 1.5; margin-bottom: 1rem;">
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
                   Explore Portal &rarr; Register Institution &rarr; Manage Presence
                 </div>
               </div>
@@ -1072,7 +1072,7 @@ const HomeView = {
               <div>
                 <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🧑‍🏫</div>
                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Teachers &amp; Tutors</h4>
-                <div style="font-size: 0.86rem; color: #0f172a; font-weight: 600; line-height: 1.5; margin-bottom: 1rem;">
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
                   Explore Portal &rarr; Create Profile &rarr; Discover Opportunities
                 </div>
               </div>
@@ -1086,7 +1086,7 @@ const HomeView = {
               <div>
                 <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📦</div>
                 <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Suppliers &amp; Vendors</h4>
-                <div style="font-size: 0.86rem; color: #0f172a; font-weight: 600; line-height: 1.5; margin-bottom: 1rem;">
+                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
                   Explore Portal &rarr; Register Business &rarr; Showcase Offerings
                 </div>
               </div>
