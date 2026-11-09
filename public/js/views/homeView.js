@@ -1322,22 +1322,30 @@ const HomeView = {
 
     document.getElementById('btn-home-parent-signup')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
-        Modals.openLoginModal({
-          initialTab: 'signup',
-          notice: 'Create your 100% free Parent account to save shortlists, plan admissions, and track school journeys.'
-        });
-      }
+      App.navigate('parents');
+      setTimeout(() => {
+        const authCard = document.querySelector('#parent-card-header') || document.querySelector('#form-parent-signup');
+        if (authCard) {
+          authCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          const nameInput = document.querySelector('#parent-reg-name');
+          if (nameInput) nameInput.focus();
+        }
+      }, 100);
     });
 
     document.getElementById('btn-home-parent-signin')?.addEventListener('click', (e) => {
       e.preventDefault();
-      if (typeof Modals !== 'undefined' && Modals.openLoginModal) {
-        Modals.openLoginModal({
-          initialTab: 'signin',
-          notice: 'Sign in to access your saved shortlists, school journeys, and parent planning tools.'
-        });
-      }
+      App.navigate('parents');
+      setTimeout(() => {
+        const linkSignin = document.querySelector('#link-switch-to-signin');
+        if (linkSignin) {
+          linkSignin.click();
+        }
+        const authCard = document.querySelector('#parent-card-header') || document.querySelector('#parent-signin-panel');
+        if (authCard) {
+          authCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
     });
 
     // Parent Tutor Discovery Actions (Any Desired Field)
