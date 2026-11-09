@@ -6378,14 +6378,11 @@ const ParentPortalView = {
 
             <!-- Auth Card with High-End Elevation -->
             <div style="background: #ffffff; border-radius: 20px; box-shadow: 0 24px 60px -12px rgba(6, 22, 46, 0.22), 0 0 0 1px #e2e8f0; overflow: hidden; margin-bottom: 3.5rem;">
-            <!-- Tab Switcher -->
-            <div style="display: flex; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
-              <button id="tab-btn-parent-signup" class="parent-auth-tab" style="flex: 1; padding: 1.25rem 1rem; border: none; background: #ffffff; font-weight: 800; font-size: 1.05rem; color: #1e3a8a; border-bottom: 3px solid #f59e0b; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
+            <!-- Card Header -->
+            <div id="parent-card-header" style="padding: 1.25rem 2rem; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+              <div id="parent-card-title" style="font-weight: 800; font-size: 1.15rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem;">
                 <span>✨</span> Create New Parent Account
-              </button>
-              <button id="tab-btn-parent-signin" class="parent-auth-tab" style="flex: 1; padding: 1.25rem 1rem; border: none; background: transparent; font-weight: 600; font-size: 1.05rem; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.2s;">
-                <span>🔑</span> Sign In (Existing Parent)
-              </button>
+              </div>
             </div>
 
             <!-- Tab 1: SIGN UP FORM -->
@@ -6552,37 +6549,26 @@ const ParentPortalView = {
   },
 
   attachAuthGatewayEvents() {
-    const tabSignup = document.getElementById('tab-btn-parent-signup');
-    const tabSignin = document.getElementById('tab-btn-parent-signin');
     const panelSignup = document.getElementById('parent-signup-panel');
     const panelSignin = document.getElementById('parent-signin-panel');
+    const cardTitle = document.getElementById('parent-card-title');
 
     const showSignup = () => {
-      if (!tabSignup || !tabSignin || !panelSignup || !panelSignin) return;
-      tabSignup.style.background = '#ffffff';
-      tabSignup.style.color = '#1e3a8a';
-      tabSignup.style.borderBottom = '3px solid #f59e0b';
-      tabSignin.style.background = 'transparent';
-      tabSignin.style.color = '#64748b';
-      tabSignin.style.borderBottom = '3px solid transparent';
-      panelSignup.style.display = 'block';
-      panelSignin.style.display = 'none';
+      if (cardTitle) {
+        cardTitle.innerHTML = '<span>✨</span> Create New Parent Account';
+      }
+      if (panelSignup) panelSignup.style.display = 'block';
+      if (panelSignin) panelSignin.style.display = 'none';
     };
 
     const showSignin = () => {
-      if (!tabSignup || !tabSignin || !panelSignup || !panelSignin) return;
-      tabSignin.style.background = '#ffffff';
-      tabSignin.style.color = '#1e3a8a';
-      tabSignin.style.borderBottom = '3px solid #f59e0b';
-      tabSignup.style.background = 'transparent';
-      tabSignup.style.color = '#64748b';
-      tabSignup.style.borderBottom = '3px solid transparent';
-      panelSignin.style.display = 'block';
-      panelSignup.style.display = 'none';
+      if (cardTitle) {
+        cardTitle.innerHTML = '<span>🔑</span> Sign In to Parent Portal';
+      }
+      if (panelSignin) panelSignin.style.display = 'block';
+      if (panelSignup) panelSignup.style.display = 'none';
     };
 
-    tabSignup?.addEventListener('click', showSignup);
-    tabSignin?.addEventListener('click', showSignin);
     document.getElementById('link-switch-to-signin')?.addEventListener('click', showSignin);
     document.getElementById('link-switch-to-signup')?.addEventListener('click', showSignup);
 
