@@ -6395,46 +6395,44 @@ const ParentPortalView = {
               </div>
 
               <form id="form-parent-signup">
-                <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem;">
-                  <!-- 1. FULL NAME -->
+                <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.25rem;">
+                  <!-- Row 1: Parent / Guardian Full Name * (Full Width) -->
                   <div>
                     <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                      Parent / Guardian Full Name <span style="color: #ef4444;">*</span>
+                      Parent / Guardian Full Name *
                     </label>
-                    <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                    <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                   </div>
 
-                  <!-- 2. EMAIL -->
-                  <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                      Email Address <span style="color: #ef4444;">*</span>
-                    </label>
-                    <input type="email" id="parent-reg-email" required class="form-input" placeholder="e.g. parent@example.com" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
-                  </div>
-
-                  <!-- 3. MOBILE NUMBER -->
-                  <div>
-                    <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                      Ghana Mobile Number <span style="color: #ef4444;">*</span>
-                    </label>
-                    <input type="tel" id="parent-reg-phone" required class="form-input" placeholder="e.g. 0244123456" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
-                    <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts &amp; MoMo fee invoices.</div>
-                  </div>
-
-                  <!-- 4. CREATE PASSWORD & 5. CONFIRM PASSWORD -->
-                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.85rem;">
+                  <!-- Row 2: Mobile Phone & Email Address (2 Columns) -->
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                        Create Password <span style="color: #ef4444;">*</span>
+                        Mobile Phone (Ghana or Intl) *
                       </label>
-                      <input type="password" id="parent-reg-password" required minlength="6" placeholder="At least 6 characters" class="form-input" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                      <input type="tel" id="parent-reg-phone" required class="form-input" placeholder="e.g. 0244123456" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                     </div>
-
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
-                        Confirm Password <span style="color: #ef4444;">*</span>
+                        Email Address *
                       </label>
-                      <input type="password" id="parent-reg-confirm-password" required minlength="6" placeholder="Re-enter password" class="form-input" style="width: 100%; padding: 0.7rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                      <input type="email" id="parent-reg-email" required class="form-input" placeholder="e.g. parent@example.com" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                    </div>
+                  </div>
+
+                  <!-- Row 3: Create Password & Confirm Password (2 Columns) -->
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                    <div>
+                      <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                        Create Password *
+                      </label>
+                      <input type="password" id="parent-reg-password" required minlength="6" placeholder="At least 6 characters" class="form-input" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
+                    </div>
+                    <div>
+                      <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
+                        Confirm Password *
+                      </label>
+                      <input type="password" id="parent-reg-confirm-password" required minlength="6" placeholder="Re-enter password" class="form-input" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                       <div id="parent-reg-password-match-hint" style="font-size: 0.76rem; margin-top: 0.25rem; display: none;"></div>
                     </div>
                   </div>
