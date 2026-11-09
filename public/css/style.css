@@ -2720,7 +2720,7 @@ button {
 .home-arch-backdrop-img {
   position: absolute;
   inset: 0;
-  background-image: url('/assets/images/independence_arch_bg.webp');
+  background-image: url('/assets/images/independence_arch_bg.webp?v=3');
   background-position: center 25%;
   background-size: cover;
   background-repeat: no-repeat;
