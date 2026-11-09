@@ -137,6 +137,193 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           SECTION 02: THE SKOOLFINDER ECOSYSTEM (IMAGE 3 DESIGN)
+           ======================================================== -->
+      <section id="section-portal-cards" class="eco-v3-section">
+        <!-- Ghana Flag & Arch Corner Watermarks -->
+        <div class="eco-v3-flag-corner" aria-hidden="true">
+          <img src="/assets/images/portals/eco_v3_flag.webp" alt="Ghana Flag Emblem" class="eco-v3-flag-img">
+        </div>
+        <div class="eco-v3-arch-corner" aria-hidden="true">
+          <img src="/assets/images/portals/eco_v3_arch.webp" alt="Independence Arch Greater Accra" class="eco-v3-arch-img">
+        </div>
+
+        <div class="container eco-v3-container">
+          <div class="eco-v3-header">
+            <div class="eco-v3-eyebrow">
+              <span class="eco-v3-dot"></span>
+              <span>OUR ECOSYSTEM</span>
+              <span class="eco-v3-dot"></span>
+            </div>
+            <h2 class="eco-v3-title">
+              A Connected Education Platform for Greater Accra
+            </h2>
+            <p class="eco-v3-subtitle">
+              Bringing families, schools, education professionals and service providers together to support quality private pre-tertiary education across Greater Accra.
+            </p>
+          </div>
+
+          <div class="eco-v3-hub-wrapper">
+            <svg class="eco-v3-circuit-svg" viewBox="0 0 1140 440" fill="none" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M 440 100 C 500 100, 500 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <path d="M 700 100 C 640 100, 640 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <path d="M 440 340 C 500 340, 500 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <path d="M 700 340 C 640 340, 640 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
+              <circle cx="440" cy="100" r="4.5" fill="#F59E0B" />
+              <circle cx="700" cy="100" r="4.5" fill="#F59E0B" />
+              <circle cx="440" cy="340" r="4.5" fill="#F59E0B" />
+              <circle cx="700" cy="340" r="4.5" fill="#F59E0B" />
+            </svg>
+
+            <div class="eco-v3-center-node">
+              <div class="eco-v3-center-cap">🎓</div>
+              <div class="eco-v3-center-title">
+                <span class="eco-navy">SkoolFinder</span> <span class="eco-gold">Ghana</span>
+              </div>
+              <div class="eco-v3-center-sub">
+                The education hub that connects people, opportunities and trusted services.
+              </div>
+            </div>
+
+            <div class="eco-v3-cards-grid">
+              <!-- Card 1: Parents & Guardians -->
+              <div class="eco-v3-card eco-v3-card-parents">
+                <div class="eco-v3-card-img-wrap">
+                  <img src="/assets/images/portals/eco_v3_parents.webp" alt="Ghanaian Mother and Child Exploring Schools" class="eco-v3-card-img">
+                </div>
+                <div class="eco-v3-card-content">
+                  <div class="eco-v3-card-header">
+                    <div class="eco-v3-icon-box">👥</div>
+                    <div>
+                      <h3 class="eco-v3-card-title">Parents &amp; Guardians</h3>
+                      <p class="eco-v3-card-desc">Discover, compare and choose the right school for your child.</p>
+                    </div>
+                  </div>
+                  <ul class="eco-v3-bullets">
+                    <li><span class="eco-v3-check">✓</span><span>Search and compare schools</span></li>
+                    <li><span class="eco-v3-check">✓</span><span>Enquire and connect with schools</span></li>
+                  </ul>
+                  <button type="button" id="btn-portal-card-parents" class="eco-v3-btn">
+                    <span>Explore Parent Tools</span>
+                    <span class="eco-v3-btn-arrow">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 2: School Owners & Proprietors -->
+              <div class="eco-v3-card eco-v3-card-schools">
+                <div class="eco-v3-card-img-wrap">
+                  <img src="/assets/images/portals/eco_v3_schools.webp" alt="Ghanaian Private School Campus" class="eco-v3-card-img">
+                </div>
+                <div class="eco-v3-card-content">
+                  <div class="eco-v3-card-header">
+                    <div class="eco-v3-icon-box">🏫</div>
+                    <div>
+                      <h3 class="eco-v3-card-title">School Owners &amp; Proprietors</h3>
+                      <p class="eco-v3-card-desc">Grow your school's visibility and manage key opportunities.</p>
+                    </div>
+                  </div>
+                  <ul class="eco-v3-bullets">
+                    <li><span class="eco-v3-check">✓</span><span>Showcase your school</span></li>
+                    <li><span class="eco-v3-check">✓</span><span>Manage admissions and hiring</span></li>
+                  </ul>
+                  <button type="button" id="btn-portal-card-schools" class="eco-v3-btn">
+                    <span>Explore School Tools</span>
+                    <span class="eco-v3-btn-arrow">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 3: Teachers & Education Professionals -->
+              <div class="eco-v3-card eco-v3-card-teachers">
+                <div class="eco-v3-card-img-wrap">
+                  <img src="/assets/images/portals/eco_v3_teachers.webp" alt="Ghanaian Teacher with Digital Tablet" class="eco-v3-card-img">
+                </div>
+                <div class="eco-v3-card-content">
+                  <div class="eco-v3-card-header">
+                    <div class="eco-v3-icon-box">🎓</div>
+                    <div>
+                      <h3 class="eco-v3-card-title">Teachers &amp; Education Professionals</h3>
+                      <p class="eco-v3-card-desc">Find teaching, coaching and specialist opportunities in education.</p>
+                    </div>
+                  </div>
+                  <ul class="eco-v3-bullets">
+                    <li><span class="eco-v3-check">✓</span><span>Teaching and school vacancies</span></li>
+                    <li><span class="eco-v3-check">✓</span><span>Tutoring, music, swimming and sports</span></li>
+                  </ul>
+                  <button type="button" id="btn-portal-card-teachers" class="eco-v3-btn">
+                    <span>Find Education Opportunities</span>
+                    <span class="eco-v3-btn-arrow">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card 4: Suppliers & Service Providers -->
+              <div class="eco-v3-card eco-v3-card-suppliers">
+                <div class="eco-v3-card-img-wrap">
+                  <img src="/assets/images/portals/eco_v3_suppliers.webp" alt="Ghanaian Education Supplier with School Bus" class="eco-v3-card-img">
+                </div>
+                <div class="eco-v3-card-content">
+                  <div class="eco-v3-card-header">
+                    <div class="eco-v3-icon-box">🤝</div>
+                    <div>
+                      <h3 class="eco-v3-card-title">Suppliers &amp; Service Providers</h3>
+                      <p class="eco-v3-card-desc">Provide the products and services schools need to run and grow.</p>
+                    </div>
+                  </div>
+                  <ul class="eco-v3-bullets">
+                    <li><span class="eco-v3-check">✓</span><span>Supply goods and specialist services (e.g. books, uniforms, catering, transport)</span></li>
+                    <li><span class="eco-v3-check">✓</span><span>Respond to school tenders and RFQs</span></li>
+                  </ul>
+                  <button type="button" id="btn-portal-card-suppliers" class="eco-v3-btn">
+                    <span>Find Supply Opportunities</span>
+                    <span class="eco-v3-btn-arrow">&rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Trust Bar -->
+          <div class="eco-v3-trust-bar">
+            <div class="eco-v3-trust-lead">
+              <span class="eco-v3-lead-title">A trusted and safe platform</span>
+            </div>
+            <div class="eco-v3-trust-items">
+              <div class="eco-v3-trust-item">
+                <div class="eco-v3-trust-icon">🛡️</div>
+                <div>
+                  <div class="eco-v3-trust-name">Verified schools (and business participants)</div>
+                  <div class="eco-v3-trust-caption">Identity and key document checks</div>
+                </div>
+              </div>
+              <div class="eco-v3-trust-item">
+                <div class="eco-v3-trust-icon">👥</div>
+                <div>
+                  <div class="eco-v3-trust-name">A connected education community</div>
+                  <div class="eco-v3-trust-caption">Families, schools, professionals and trusted providers</div>
+                </div>
+              </div>
+              <div class="eco-v3-trust-item">
+                <div class="eco-v3-trust-icon">🔒</div>
+                <div>
+                  <div class="eco-v3-trust-name">Privacy and child safety first</div>
+                  <div class="eco-v3-trust-caption">Built with safeguarding and data protection in mind</div>
+                </div>
+              </div>
+              <div class="eco-v3-trust-item">
+                <div class="eco-v3-trust-icon">📈</div>
+                <div>
+                  <div class="eco-v3-trust-name">Real opportunities across Greater Accra</div>
+                  <div class="eco-v3-trust-caption">Admissions, jobs, tutoring, services and tenders</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            TRANSITION: PLATFORM METRICS STRIP (GREATER ACCRA PILOT)
            ======================================================== -->
       <section class="metrics-strip">
@@ -386,115 +573,7 @@ const HomeView = {
         </div>
       </section>
 
-      <!-- ========================================================
-           SECTION 04: THE SKOOLFINDER ECOSYSTEM (4-COLUMN COMMUNITY CARDS)
-           ======================================================== -->
-      <section id="section-portal-cards" class="eco-section-wrap">
-        <div class="eco-skyline-watermark" aria-hidden="true"></div>
 
-        <div class="container" style="position: relative; z-index: 2;">
-          <!-- Section Header -->
-          <div style="text-align: center; max-width: 760px; margin: 0 auto 1.5rem;">
-            <div class="eco-eyebrow-badge">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a1b39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: middle;">
-                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                <polyline points="2 17 12 22 22 17"></polyline>
-                <polyline points="2 12 12 17 22 12"></polyline>
-              </svg>
-              <span>THE SKOOLFINDER ECOSYSTEM</span>
-            </div>
-
-            <h2 class="eco-main-title">
-              One Platform. A Connected <span class="eco-title-highlight">Education Community.<span class="eco-brush-underline" aria-hidden="true"></span></span>
-            </h2>
-
-            <div class="eco-subtitle-wrap">
-              <span class="eco-subtitle-rule" aria-hidden="true"></span>
-              <p class="eco-subtitle">Bringing together parents, schools, education professionals and service providers.</p>
-              <span class="eco-subtitle-rule" aria-hidden="true"></span>
-            </div>
-          </div>
-
-          <!-- 4-Column Horizontal Grid -->
-          <div class="eco-4col-grid">
-
-            <!-- CARD 01: PARENTS & GUARDIANS -->
-            <div class="eco-persona-card eco-card-parents" style="--eco-accent: #0284c7;">
-              <div class="eco-card-badge-top" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="9" cy="7" r="4"></circle>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-              </div>
-              <div class="eco-card-body-clean">
-                <h3 class="eco-card-title">Parents &amp; Guardians</h3>
-                <p class="eco-card-desc">Discover, compare and choose the right school for your child.</p>
-              </div>
-              <button type="button" id="btn-portal-card-parents" class="btn-eco-portal">
-                Explore Parents Portal &rarr;
-              </button>
-            </div>
-
-            <!-- CARD 02: SCHOOL OWNERS & PROPRIETORS -->
-            <div class="eco-persona-card eco-card-schools" style="--eco-accent: #f59e0b;">
-              <div class="eco-card-badge-top" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M3 21h18"></path>
-                  <path d="M5 21V9l7-5 7 5v12"></path>
-                  <path d="M9 13h6"></path>
-                  <path d="M9 17h6"></path>
-                  <path d="M12 4v2"></path>
-                </svg>
-              </div>
-              <div class="eco-card-body-clean">
-                <h3 class="eco-card-title">School Owners &amp; Proprietors</h3>
-                <p class="eco-card-desc">Grow your school's visibility and manage key opportunities.</p>
-              </div>
-              <button type="button" id="btn-portal-card-schools" class="btn-eco-portal">
-                Explore School Portal &rarr;
-              </button>
-            </div>
-
-            <!-- CARD 03: TEACHERS & EDUCATION PROFESSIONALS -->
-            <div class="eco-persona-card eco-card-teachers" style="--eco-accent: #16a34a;">
-              <div class="eco-card-badge-top" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                </svg>
-              </div>
-              <div class="eco-card-body-clean">
-                <h3 class="eco-card-title">Teachers &amp; Education Professionals</h3>
-                <p class="eco-card-desc">Find teaching and non-teaching opportunities in education.</p>
-              </div>
-              <button type="button" id="btn-portal-card-teachers" class="btn-eco-portal">
-                Explore Teachers Portal &rarr;
-              </button>
-            </div>
-
-            <!-- CARD 04: SUPPLIERS & SERVICE PROVIDERS -->
-            <div class="eco-persona-card eco-card-suppliers" style="--eco-accent: #7c3aed;">
-              <div class="eco-card-badge-top" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"></path>
-                  <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.8-2.8L15 13"></path>
-                  <path d="m2 13 4 4"></path>
-                </svg>
-              </div>
-              <div class="eco-card-body-clean">
-                <h3 class="eco-card-title">Suppliers &amp; Service Providers</h3>
-                <p class="eco-card-desc">Connect with schools through tenders and service opportunities.</p>
-              </div>
-              <button type="button" id="btn-portal-card-suppliers" class="btn-eco-portal">
-                Explore Suppliers Portal &rarr;
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </section>
 
       <!-- ========================================================
            SECTION: SCHOOL OWNERS & PROPRIETORS SPOTLIGHT
