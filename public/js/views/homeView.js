@@ -137,6 +137,32 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           TRANSITION: PLATFORM METRICS STRIP (GREATER ACCRA PILOT)
+           ======================================================== -->
+      <section class="metrics-strip">
+        <div class="container">
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <span class="metric-number">${stats.schoolsCount || 20}+</span>
+              <span class="metric-label">Listed Campuses (Greater Accra)</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-number">${stats.verifiedEntities || 15}+</span>
+              <span class="metric-label">Verified Institutional Profiles</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-number">${stats.teachersCount || 12}+</span>
+              <span class="metric-label">Vetted Tutors &amp; Educators</span>
+            </div>
+            <div class="metric-item">
+              <span class="metric-number">${stats.suppliersCount || 8}+</span>
+              <span class="metric-label">Accredited School Vendors</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            SECTION 02: THE SKOOLFINDER ECOSYSTEM (IMAGE 3 DESIGN)
            ======================================================== -->
       <section id="section-portal-cards" class="eco-v3-section">
@@ -388,32 +414,6 @@ const HomeView = {
                   <div class="eco-v3-trust-caption">Admissions, jobs, tutoring, services and tenders</div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           TRANSITION: PLATFORM METRICS STRIP (GREATER ACCRA PILOT)
-           ======================================================== -->
-      <section class="metrics-strip">
-        <div class="container">
-          <div class="metrics-grid">
-            <div class="metric-item">
-              <span class="metric-number">${stats.schoolsCount || 20}+</span>
-              <span class="metric-label">Listed Campuses (Greater Accra)</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-number">${stats.verifiedEntities || 15}+</span>
-              <span class="metric-label">Verified Institutional Profiles</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-number">${stats.teachersCount || 12}+</span>
-              <span class="metric-label">Vetted Tutors &amp; Educators</span>
-            </div>
-            <div class="metric-item">
-              <span class="metric-number">${stats.suppliersCount || 8}+</span>
-              <span class="metric-label">Accredited School Vendors</span>
             </div>
           </div>
         </div>
