@@ -6518,30 +6518,6 @@ const ParentPortalView = {
               </div>
             </div>
           </div>
-
-          <!-- 4 Pillars Feature Ribbon -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: center;">
-            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🏫</div>
-              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">NaSIA Accreditation</div>
-              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Direct access to vetted Ghanaian schools</div>
-            </div>
-            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">📲</div>
-              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">MoMo Fee Settlements</div>
-              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">MTN, Telecel Cash & AT Money receipts</div>
-            </div>
-            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🪪</div>
-              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Digital Student ID</div>
-              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Optical QR scanner & medical passports</div>
-            </div>
-            <div style="background: #ffffff; padding: 1.25rem; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.04);">
-              <div style="font-size: 1.8rem; margin-bottom: 0.35rem;">🚌</div>
-              <div style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">Live Bus Route GPS</div>
-              <div style="font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;">Real-time boarding & delay alerts</div>
-            </div>
-          </div>
         </div>
       </section>
     </div>
