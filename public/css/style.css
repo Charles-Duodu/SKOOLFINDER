@@ -2797,6 +2797,106 @@ button {
   height: 100%;
   pointer-events: none;
   z-index: 1;
+  overflow: visible;
+}
+
+/* Layer 1: Ambient Conduit Wire Track */
+.eco-wire-track {
+  stroke: rgba(245, 158, 11, 0.45);
+  stroke-width: 2.5px;
+  stroke-dasharray: 6 6;
+  fill: none;
+  filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.5));
+}
+
+/* Layer 2: High Voltage Continuous Current (Flowing Outward) */
+.eco-electric-stream {
+  fill: none;
+  stroke-width: 3px;
+  stroke-dasharray: 18 12;
+  stroke-linecap: round;
+  animation: ecoElectricStreamFlow 0.85s linear infinite;
+  filter: drop-shadow(0 0 5px #F59E0B) drop-shadow(0 0 10px #38BDF8);
+  opacity: 0.95;
+}
+
+@keyframes ecoElectricStreamFlow {
+  from {
+    stroke-dashoffset: 60;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Layer 3: Traveling Electric Lightning Surge Bolts */
+.eco-electric-surge {
+  fill: none;
+  stroke: #FDE047;
+  stroke-width: 5px;
+  stroke-dasharray: 24 60 12 70;
+  stroke-linecap: round;
+  animation: ecoElectricSurgePulse 1.4s linear infinite;
+  filter: drop-shadow(0 0 8px #FACC15) drop-shadow(0 0 16px #38BDF8);
+}
+
+@keyframes ecoElectricSurgePulse {
+  0% {
+    stroke-dashoffset: 166;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Layer 4: Intense White-Hot Plasma Core Sparks */
+.eco-electric-plasma {
+  fill: none;
+  stroke: #FFFFFF;
+  stroke-width: 2.5px;
+  stroke-dasharray: 8 76 6 76;
+  stroke-linecap: round;
+  animation: ecoElectricPlasmaPulse 1.4s linear infinite;
+  filter: drop-shadow(0 0 4px #FFFFFF);
+}
+
+@keyframes ecoElectricPlasmaPulse {
+  0% {
+    stroke-dashoffset: 166;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Layer 5: Pulsing Receiving Power Terminals at Portals */
+.eco-terminal-core {
+  fill: #F59E0B;
+  filter: drop-shadow(0 0 6px #F59E0B) drop-shadow(0 0 12px #38BDF8);
+}
+
+.eco-terminal-ring {
+  fill: none;
+  stroke: #38BDF8;
+  stroke-width: 2.5px;
+  transform-origin: center;
+  animation: ecoTerminalRingPulse 1.4s ease-out infinite;
+}
+
+@keyframes ecoTerminalRingPulse {
+  0% {
+    r: 4px;
+    opacity: 1;
+    stroke: #FDE047;
+  }
+  50% {
+    stroke: #38BDF8;
+  }
+  100% {
+    r: 18px;
+    opacity: 0;
+    stroke: #0284C7;
+  }
 }
 
 .eco-v3-center-node {
@@ -2818,6 +2918,22 @@ button {
   padding: 1rem;
   box-sizing: border-box;
   z-index: 3;
+  animation: ecoHubPowerAura 3.2s ease-in-out infinite alternate;
+}
+
+@keyframes ecoHubPowerAura {
+  0% {
+    border-color: #1266C4;
+    box-shadow: 0 0 0 6px rgba(18, 102, 196, 0.12), 0 0 20px rgba(245, 158, 11, 0.22), 0 16px 36px rgba(10, 32, 70, 0.12);
+  }
+  50% {
+    border-color: #F59E0B;
+    box-shadow: 0 0 0 10px rgba(245, 158, 11, 0.25), 0 0 35px rgba(56, 189, 248, 0.38), 0 16px 36px rgba(10, 32, 70, 0.16);
+  }
+  100% {
+    border-color: #38BDF8;
+    box-shadow: 0 0 0 7px rgba(56, 189, 248, 0.2), 0 0 28px rgba(245, 158, 11, 0.32), 0 16px 36px rgba(10, 32, 70, 0.12);
+  }
 }
 
 .eco-v3-center-cap {
@@ -2867,12 +2983,29 @@ button {
   box-shadow: 0 10px 28px rgba(10, 32, 70, 0.05);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   box-sizing: border-box;
+  animation: ecoCardPowerSurge 4s ease-in-out infinite;
+}
+
+.eco-v3-card-parents { animation-delay: 0s; }
+.eco-v3-card-schools { animation-delay: 0.5s; }
+.eco-v3-card-teachers { animation-delay: 1s; }
+.eco-v3-card-suppliers { animation-delay: 1.5s; }
+
+@keyframes ecoCardPowerSurge {
+  0%, 100% {
+    border-color: #e2e8f0;
+    box-shadow: 0 10px 28px rgba(10, 32, 70, 0.05);
+  }
+  50% {
+    border-color: rgba(245, 158, 11, 0.55);
+    box-shadow: 0 14px 34px rgba(245, 158, 11, 0.12), 0 0 16px rgba(56, 189, 248, 0.1);
+  }
 }
 
 .eco-v3-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 36px rgba(10, 32, 70, 0.1);
-  border-color: #cbd5e1;
+  box-shadow: 0 16px 40px rgba(10, 32, 70, 0.12), 0 0 24px rgba(245, 158, 11, 0.25);
+  border-color: #F59E0B;
 }
 
 .eco-v3-card-img-wrap {

@@ -164,15 +164,85 @@ const HomeView = {
           </div>
 
           <div class="eco-v3-hub-wrapper">
-            <svg class="eco-v3-circuit-svg" viewBox="0 0 1140 440" fill="none" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M 440 100 C 500 100, 500 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
-              <path d="M 700 100 C 640 100, 640 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
-              <path d="M 440 340 C 500 340, 500 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
-              <path d="M 700 340 C 640 340, 640 220, 570 220" stroke="#F59E0B" stroke-width="2" stroke-dasharray="4 4" opacity="0.6" />
-              <circle cx="440" cy="100" r="4.5" fill="#F59E0B" />
-              <circle cx="700" cy="100" r="4.5" fill="#F59E0B" />
-              <circle cx="440" cy="340" r="4.5" fill="#F59E0B" />
-              <circle cx="700" cy="340" r="4.5" fill="#F59E0B" />
+            <!-- Electrifying Current SVG Circuit Grid -->
+            <svg class="eco-v3-circuit-svg" viewBox="0 0 1152 530" fill="none" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <!-- Multi-stage Electric Glow Filters -->
+                <filter id="electric-glow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="3" result="blur1" />
+                  <feGaussianBlur stdDeviation="7" result="blur2" />
+                  <feMerge>
+                    <feMergeNode in="blur2" />
+                    <feMergeNode in="blur1" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                <filter id="electric-terminal-glow" x="-60%" y="-60%" width="220%" height="220%">
+                  <feGaussianBlur stdDeviation="4.5" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
+                
+                <!-- Electric Current Linear Gradients -->
+                <linearGradient id="electric-grad-left" x1="100%" y1="50%" x2="0%" y2="50%">
+                  <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.9" />
+                  <stop offset="40%" stop-color="#F59E0B" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#FDE047" stop-opacity="1" />
+                </linearGradient>
+
+                <linearGradient id="electric-grad-right" x1="0%" y1="50%" x2="100%" y2="50%">
+                  <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.9" />
+                  <stop offset="40%" stop-color="#F59E0B" stop-opacity="1" />
+                  <stop offset="100%" stop-color="#FDE047" stop-opacity="1" />
+                </linearGradient>
+              </defs>
+
+              <!-- Layer 1: Ambient Conduit Wire Tracks -->
+              <path class="eco-wire-track" d="M 576 265 C 520 265, 515 120, 480 120" />
+              <path class="eco-wire-track" d="M 576 265 C 632 265, 637 120, 672 120" />
+              <path class="eco-wire-track" d="M 576 265 C 520 265, 515 405, 480 405" />
+              <path class="eco-wire-track" d="M 576 265 C 632 265, 637 405, 672 405" />
+
+              <!-- Layer 2: High-Voltage Flowing Currents (Center Outward) -->
+              <path class="eco-electric-stream" d="M 576 265 C 520 265, 515 120, 480 120" stroke="url(#electric-grad-left)" />
+              <path class="eco-electric-stream" d="M 576 265 C 632 265, 637 120, 672 120" stroke="url(#electric-grad-right)" />
+              <path class="eco-electric-stream" d="M 576 265 C 520 265, 515 405, 480 405" stroke="url(#electric-grad-left)" />
+              <path class="eco-electric-stream" d="M 576 265 C 632 265, 637 405, 672 405" stroke="url(#electric-grad-right)" />
+
+              <!-- Layer 3: Rapid Traveling Lightning Surge Pulses -->
+              <path class="eco-electric-surge" d="M 576 265 C 520 265, 515 120, 480 120" filter="url(#electric-glow)" />
+              <path class="eco-electric-surge" d="M 576 265 C 632 265, 637 120, 672 120" filter="url(#electric-glow)" />
+              <path class="eco-electric-surge" d="M 576 265 C 520 265, 515 405, 480 405" filter="url(#electric-glow)" />
+              <path class="eco-electric-surge" d="M 576 265 C 632 265, 637 405, 672 405" filter="url(#electric-glow)" />
+
+              <!-- Layer 4: White-Hot Plasma Core Sparks -->
+              <path class="eco-electric-plasma" d="M 576 265 C 520 265, 515 120, 480 120" />
+              <path class="eco-electric-plasma" d="M 576 265 C 632 265, 637 120, 672 120" />
+              <path class="eco-electric-plasma" d="M 576 265 C 520 265, 515 405, 480 405" />
+              <path class="eco-electric-plasma" d="M 576 265 C 632 265, 637 405, 672 405" />
+
+              <!-- Layer 5: Pulsing Receiving Power Terminals at Portals -->
+              <!-- Parents Terminal (Top-Left) -->
+              <circle cx="480" cy="120" r="12" class="eco-terminal-ring" />
+              <circle cx="480" cy="120" r="5.5" class="eco-terminal-core" filter="url(#electric-terminal-glow)" />
+              <circle cx="480" cy="120" r="2.5" fill="#FFFFFF" />
+
+              <!-- Schools Terminal (Top-Right) -->
+              <circle cx="672" cy="120" r="12" class="eco-terminal-ring" />
+              <circle cx="672" cy="120" r="5.5" class="eco-terminal-core" filter="url(#electric-terminal-glow)" />
+              <circle cx="672" cy="120" r="2.5" fill="#FFFFFF" />
+
+              <!-- Teachers Terminal (Bottom-Left) -->
+              <circle cx="480" cy="405" r="12" class="eco-terminal-ring" />
+              <circle cx="480" cy="405" r="5.5" class="eco-terminal-core" filter="url(#electric-terminal-glow)" />
+              <circle cx="480" cy="405" r="2.5" fill="#FFFFFF" />
+
+              <!-- Suppliers Terminal (Bottom-Right) -->
+              <circle cx="672" cy="405" r="12" class="eco-terminal-ring" />
+              <circle cx="672" cy="405" r="5.5" class="eco-terminal-core" filter="url(#electric-terminal-glow)" />
+              <circle cx="672" cy="405" r="2.5" fill="#FFFFFF" />
             </svg>
 
             <div class="eco-v3-center-node">
