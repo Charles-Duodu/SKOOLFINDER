@@ -597,7 +597,7 @@ const HomeView = {
               <div class="teachers-hero-image-wrap">
                 <picture>
                   <source srcset="/assets/images/portals/teachers_mockup_clean.webp" type="image/webp">
-                  <img src="/assets/images/portals/03_teachers_professionals.jpg" alt="Ghanaian Teachers &amp; Education Professionals on SkoolFinder" loading="lazy">
+                  <img src="/assets/images/portals/teachers_mockup_clean.jpg" alt="Ghanaian Teachers &amp; Education Professionals on SkoolFinder" loading="lazy">
                 </picture>
               </div>
             </div>
