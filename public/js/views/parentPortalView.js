@@ -6393,7 +6393,7 @@ const ParentPortalView = {
               <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: flex-start; gap: 0.75rem;">
                 <span style="font-size: 1.3rem;">ℹ️</span>
                 <div style="font-size: 0.88rem; color: #1e3a8a; line-height: 1.5;">
-                  <strong>New Parent Registration:</strong> Fill in your details below to create your parent profile. You can register your child now so your admissions dashboard is set up immediately.
+                  <strong>New Parent Registration:</strong> Fill in your details below to create your parent profile and access school discovery, admissions, and verified parent tools.
                 </div>
               </div>
 
@@ -6403,82 +6403,37 @@ const ParentPortalView = {
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Parent / Guardian Full Name <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="text" id="parent-reg-name" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Ghana Mobile Number <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="tel" id="parent-reg-phone" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="tel" id="parent-reg-phone" required class="form-input" placeholder="e.g. 0244123456" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                     <div style="color: #64748b; font-size: 0.72rem; margin-top: 0.25rem;">Used for instant SMS admissions alerts & MoMo fee invoices.</div>
                   </div>
 
-                  <div>
+                  <div style="grid-column: 1 / -1;">
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Email Address <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="email" id="parent-reg-email" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="email" id="parent-reg-email" required class="form-input" placeholder="e.g. parent@example.com" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
                       Create Password <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="password" id="parent-reg-password" required minlength="6" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <input type="password" id="parent-reg-password" required minlength="6" placeholder="At least 6 characters" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
                   </div>
 
                   <div>
                     <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Child / Ward Full Name <span style="color: #ef4444;">*</span>
+                      Confirm Password <span style="color: #ef4444;">*</span>
                     </label>
-                    <input type="text" id="parent-reg-child-name" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
-                  </div>
-
-                  <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Class / Grade Level Applying For <span style="color: #ef4444;">*</span>
-                    </label>
-                    <select id="parent-reg-child-level" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
-                      <option value="Daycare / Crèche">Daycare / Crèche (Age 6m - 2 yrs)</option>
-                      <option value="Nursery / KG">Nursery & Kindergarten (KG 1 - 2)</option>
-                      <option value="Lower Primary (Class 1-3)" selected>Lower Primary (Class 1 - 3)</option>
-                      <option value="Upper Primary (Class 4-6)">Upper Primary (Class 4 - 6)</option>
-                      <option value="Junior High (JHS 1-3 / BECE)">Junior High School (JHS 1 - 3 / BECE)</option>
-                      <option value="Senior High (SHS 1-3 / WASSCE)">Senior High School (SHS 1 - 3 / WASSCE)</option>
-                      <option value="Cambridge Primary / Checkpoint">Cambridge Primary / Checkpoint</option>
-                      <option value="Cambridge IGCSE / A-Levels">Cambridge IGCSE / A-Levels</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Residential Region / Suburb
-                    </label>
-                    <select id="parent-reg-suburb" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
-                      <option value="East Legon, Greater Accra">Greater Accra - East Legon / Adjiringanor</option>
-                      <option value="Cantonments, Greater Accra">Greater Accra - Cantonments / Labone / Airport</option>
-                      <option value="Tema, Greater Accra">Greater Accra - Tema / Community 1-25</option>
-                      <option value="Spintex, Greater Accra">Greater Accra - Spintex / Sakumono</option>
-                      <option value="Achimota, Greater Accra">Greater Accra - Achimota / Dome / West Legon</option>
-                      <option value="Kumasi, Ashanti">Ashanti - Kumasi / Ahodwo / Nhyiaeso</option>
-                      <option value="Cape Coast, Central">Central - Cape Coast / Elmina</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
-                      Preferred School for Initial Admission
-                    </label>
-                    <select id="parent-reg-school" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem; background: #fff;">
-                      <option value="sch-gis-accra">Ghana International School (GIS) - Cantonments</option>
-                      <option value="sch-sos-tema">SOS-Hermann Gmeiner College - Tema</option>
-                      <option value="sch-morning-star-cantonments">Morning Star School - Cantonments</option>
-                      <option value="sch-roman-ridge-accra">The Roman Ridge School - Accra</option>
-                      <option value="sch-ridge-school-kumasi">The Ridge School - Kumasi</option>
-                      <option value="sch-east-legon-montessori">East Legon Montessori - Accra</option>
-                      <option value="sch-galaxy-international-accra">Galaxy International School - Accra</option>
-                    </select>
+                    <input type="password" id="parent-reg-confirm-password" required minlength="6" placeholder="Re-enter your password" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                    <div id="parent-reg-password-match-hint" style="font-size: 0.76rem; margin-top: 0.25rem; display: none;"></div>
                   </div>
                 </div>
 
@@ -6661,9 +6616,44 @@ const ParentPortalView = {
 
     // 1. Submit Sign Up Form
     const formSignup = document.getElementById('form-parent-signup');
+    const inputPass = document.getElementById('parent-reg-password');
+    const inputConfirm = document.getElementById('parent-reg-confirm-password');
+    const matchHint = document.getElementById('parent-reg-password-match-hint');
+
+    const updateMatchHint = () => {
+      if (!inputPass || !inputConfirm || !matchHint) return;
+      const pass = inputPass.value;
+      const conf = inputConfirm.value;
+      if (!conf) {
+        matchHint.style.display = 'none';
+        return;
+      }
+      matchHint.style.display = 'block';
+      if (pass === conf) {
+        matchHint.style.color = '#16a34a';
+        matchHint.textContent = '✓ Passwords match';
+      } else {
+        matchHint.style.color = '#ef4444';
+        matchHint.textContent = '✗ Passwords do not match';
+      }
+    };
+
+    inputPass?.addEventListener('input', updateMatchHint);
+    inputConfirm?.addEventListener('input', updateMatchHint);
+
     formSignup?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('btn-parent-submit-signup');
+
+      const password = document.getElementById('parent-reg-password').value;
+      const confirmPassword = document.getElementById('parent-reg-confirm-password')?.value || '';
+
+      if (password !== confirmPassword) {
+        State.showToast('Passwords do not match. Please ensure both passwords are identical.', 'error');
+        document.getElementById('parent-reg-confirm-password')?.focus();
+        return;
+      }
+
       submitBtn.disabled = true;
       submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
 
@@ -6672,11 +6662,7 @@ const ParentPortalView = {
           name: document.getElementById('parent-reg-name').value.trim(),
           phone: document.getElementById('parent-reg-phone').value.trim(),
           email: document.getElementById('parent-reg-email').value.trim(),
-          password: document.getElementById('parent-reg-password').value,
-          childName: document.getElementById('parent-reg-child-name').value.trim(),
-          childLevel: document.getElementById('parent-reg-child-level').value,
-          suburb: document.getElementById('parent-reg-suburb').value,
-          targetSchoolId: document.getElementById('parent-reg-school').value,
+          password: password,
           role: 'parent'
         };
 
