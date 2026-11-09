@@ -418,7 +418,7 @@ const HomeView = {
             
             <!-- Top Hero Grid: Left Content + Right Curved Image -->
             <div class="proprietors-hero-grid">
-              <div>
+              <div class="proprietors-hero-text">
                 <div class="proprietors-accent-bar"></div>
                 <h2 class="proprietors-title">
                   For School Owners &amp; Proprietors
@@ -528,19 +528,18 @@ const HomeView = {
       <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="teachers-spotlight-card">
-            
-            <!-- Eyebrow Badge -->
-            <div class="teachers-eyebrow-badge">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
-                <path d="M6 12v5c3 3 9 3 12 0v-5"/>
-              </svg>
-              <span>TEACHERS &amp; EDUCATION PROFESSIONALS</span>
-            </div>
 
             <!-- Top Hero Grid: Left Content + Right Curved Image -->
             <div class="teachers-hero-grid">
-              <div>
+              <div class="teachers-hero-text">
+                <!-- Eyebrow Badge -->
+                <div class="teachers-eyebrow-badge">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                  </svg>
+                  <span>TEACHERS &amp; EDUCATION PROFESSIONALS</span>
+                </div>
                 <div class="teachers-title-wrap">
                   <div class="teachers-accent-bar" aria-hidden="true"></div>
                   <h2 class="teachers-title">
@@ -667,14 +666,13 @@ const HomeView = {
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="suppliers-spotlight-card">
 
-            <!-- Eyebrow Badge -->
-            <div class="suppliers-eyebrow-badge">
-              <span>🤝</span> SUPPLIERS &amp; SERVICE PROVIDERS
-            </div>
-
             <!-- Hero Row: Header Text Left + Photo Right -->
             <div class="suppliers-hero-grid">
               <div class="suppliers-hero-text">
+                <!-- Eyebrow Badge -->
+                <div class="suppliers-eyebrow-badge">
+                  <span>🤝</span> SUPPLIERS &amp; SERVICE PROVIDERS
+                </div>
                 <div class="suppliers-title-wrap">
                   <div class="suppliers-accent-bar" aria-hidden="true"></div>
                   <h2 class="suppliers-title">Supply, Serve and Partner with Schools</h2>

@@ -1352,9 +1352,15 @@ button {
 .proprietors-hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
+  align-items: stretch;
   gap: 2.5rem;
+  margin-top: -2.25rem;
+  margin-right: -2.25rem;
   margin-bottom: 2rem;
+}
+
+.proprietors-hero-text {
+  padding-top: 2.25rem;
 }
 
 .proprietors-accent-bar {
@@ -1408,11 +1414,12 @@ button {
 
 .proprietors-hero-image-wrap {
   width: 100%;
-  height: 340px;
-  border-radius: 18px;
+  height: 100%;
+  min-height: 360px;
+  border-radius: 0 0 0 24px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
+  box-shadow: -4px 6px 20px rgba(10, 32, 70, 0.08);
 }
 
 .proprietors-hero-image-wrap img {
@@ -1626,9 +1633,16 @@ button {
   .proprietors-hero-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    margin-top: 0;
+    margin-right: 0;
+  }
+  .proprietors-hero-text {
+    padding-top: 0;
   }
   .proprietors-hero-image-wrap {
-    height: 190px;
+    height: 220px;
+    min-height: 220px;
+    border-radius: 14px;
   }
   .proprietors-admissions-banner {
     flex-direction: column;
@@ -1677,9 +1691,15 @@ button {
 .teachers-hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
+  align-items: stretch;
   gap: 2.5rem;
+  margin-top: -2.25rem;
+  margin-right: -2.25rem;
   margin-bottom: 2rem;
+}
+
+.teachers-hero-text {
+  padding-top: 2.25rem;
 }
 
 .teachers-title-wrap {
@@ -1716,11 +1736,12 @@ button {
 
 .teachers-hero-image-wrap {
   width: 100%;
-  height: 340px;
-  border-radius: 18px;
+  height: 100%;
+  min-height: 360px;
+  border-radius: 0 0 0 24px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
+  box-shadow: -4px 6px 20px rgba(10, 32, 70, 0.08);
 }
 
 .teachers-hero-image-wrap img {
@@ -2006,9 +2027,16 @@ button {
   .teachers-hero-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    margin-top: 0;
+    margin-right: 0;
+  }
+  .teachers-hero-text {
+    padding-top: 0;
   }
   .teachers-hero-image-wrap {
-    height: 190px;
+    height: 220px;
+    min-height: 220px;
+    border-radius: 14px;
   }
   .teachers-opportunities-banner {
     flex-direction: column;
@@ -2057,9 +2085,15 @@ button {
 .suppliers-hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  align-items: center;
+  align-items: stretch;
   gap: 2.5rem;
+  margin-top: -2.25rem;
+  margin-right: -2.25rem;
   margin-bottom: 2rem;
+}
+
+.suppliers-hero-text {
+  padding-top: 2.25rem;
 }
 
 .suppliers-title-wrap {
@@ -2096,11 +2130,12 @@ button {
 
 .suppliers-hero-image-wrap {
   width: 100%;
-  height: 340px;
-  border-radius: 18px;
+  height: 100%;
+  min-height: 360px;
+  border-radius: 0 0 0 24px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
+  box-shadow: -4px 6px 20px rgba(10, 32, 70, 0.08);
 }
 
 .suppliers-hero-image-wrap img {
@@ -2401,9 +2436,16 @@ button {
   .suppliers-hero-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    margin-top: 0;
+    margin-right: 0;
+  }
+  .suppliers-hero-text {
+    padding-top: 0;
   }
   .suppliers-hero-image-wrap {
-    height: 190px;
+    height: 220px;
+    min-height: 220px;
+    border-radius: 14px;
   }
   .suppliers-tenders-banner {
     flex-direction: column;
