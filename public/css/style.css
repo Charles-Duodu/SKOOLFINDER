@@ -2715,6 +2715,82 @@ button {
   }
 }
 
+/* ========================================================
+   SECTION: WHY SKOOLFINDER GHANA (VALUE & TRUST CARDS)
+   ======================================================== */
+.why-skoolfinder-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.why-skoolfinder-card {
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.why-skoolfinder-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(10, 32, 70, 0.08);
+  border-color: #cbd5e1;
+}
+
+/* Horizontal Display on Mobile & Tablet */
+@media (max-width: 900px) {
+  .why-skoolfinder-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 1.15rem;
+    padding: 0.5rem 1.5rem 1.25rem !important;
+    margin: 0 -1.5rem !important;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .why-skoolfinder-grid::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .why-skoolfinder-grid::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 9999px;
+    margin: 0 1.5rem;
+  }
+
+  .why-skoolfinder-grid::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 9999px;
+  }
+
+  .why-skoolfinder-grid::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .why-skoolfinder-card {
+    flex: 0 0 85% !important;
+    max-width: 320px !important;
+    min-width: 270px !important;
+    scroll-snap-align: center;
+    box-shadow: 0 4px 14px rgba(10, 32, 70, 0.05);
+  }
+
+  .why-mobile-scroll-hint {
+    display: flex !important;
+  }
+}
+
 
 
 

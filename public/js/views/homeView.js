@@ -781,11 +781,11 @@ const HomeView = {
             </p>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem; max-width: 1080px; margin: 0 auto;">
+          <div class="why-skoolfinder-grid">
             
             <!-- Theme 1: Informed Decisions -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <div class="why-skoolfinder-card">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                 💡
               </div>
               <div>
@@ -799,8 +799,8 @@ const HomeView = {
             </div>
 
             <!-- Theme 2: Connected Community -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <div class="why-skoolfinder-card">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #fef3c7; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                 🤝
               </div>
               <div>
@@ -814,8 +814,8 @@ const HomeView = {
             </div>
 
             <!-- Theme 3: Trust & Transparency -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem 1.75rem; display: flex; flex-direction: column; gap: 1rem;">
-              <div style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+            <div class="why-skoolfinder-card">
+              <div style="width: 48px; height: 48px; border-radius: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                 🛡️
               </div>
               <div>
@@ -828,6 +828,11 @@ const HomeView = {
               </div>
             </div>
 
+          </div>
+
+          <!-- Mobile Swipe Hint -->
+          <div class="why-mobile-scroll-hint" style="display: none; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 1rem; color: #94a3b8; font-size: 0.8rem; font-weight: 600;">
+            <span>&larr;</span> Swipe to view standards <span>&rarr;</span>
           </div>
         </div>
       </section>
