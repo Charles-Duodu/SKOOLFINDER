@@ -971,11 +971,11 @@ button {
 }
 
 .metric-label {
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #0A2046;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
 }
 
 /* ========================================================
@@ -1394,8 +1394,9 @@ button {
 }
 
 .proprietors-desc {
-  color: #475569;
-  font-size: 0.98rem;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 1rem;
   line-height: 1.6;
   margin: 0 0 1.5rem 0;
   max-width: 480px;
@@ -1739,8 +1740,9 @@ button {
 }
 
 .teachers-desc {
-  color: #475569;
-  font-size: 0.98rem;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 1rem;
   line-height: 1.6;
   margin: 0;
   max-width: 480px;
@@ -2133,8 +2135,9 @@ button {
 }
 
 .suppliers-desc {
-  color: #475569;
-  font-size: 0.98rem;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 1rem;
   line-height: 1.6;
   margin: 0;
   max-width: 480px;
@@ -2848,13 +2851,16 @@ button {
   line-height: 1.25;
   margin: 0 0 0.85rem;
   letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
 }
 
 .eco-v3-subtitle {
-  color: #475569;
-  font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+  color: #0b1f38;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
   line-height: 1.6;
   margin: 0 auto;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.85);
 }
 
 /* Hub & Cards Layout */
@@ -3032,8 +3038,9 @@ button {
 }
 
 .eco-v3-center-sub {
-  font-size: 0.72rem;
-  color: #64748b;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: #0A2046;
   line-height: 1.35;
   margin-top: 0.35rem;
   max-width: 170px;
@@ -3138,9 +3145,10 @@ button {
 }
 
 .eco-v3-card-desc {
-  color: #64748b;
-  font-size: 0.78rem;
-  line-height: 1.4;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.82rem;
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -3157,8 +3165,9 @@ button {
   display: flex;
   align-items: flex-start;
   gap: 0.45rem;
-  font-size: 0.78rem;
-  color: #334155;
+  font-size: 0.8rem;
+  color: #0A2046;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -3259,8 +3268,9 @@ button {
 }
 
 .eco-v3-trust-caption {
-  font-size: 0.72rem;
-  color: #64748b;
+  font-size: 0.74rem;
+  color: #0f172a;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -3481,8 +3491,9 @@ button {
 }
 
 .why-card-desc {
-  color: #475569;
-  font-size: 0.9rem;
+  color: #0f172a;
+  font-weight: 500;
+  font-size: 0.94rem;
   line-height: 1.6;
   margin: 0;
 }
