@@ -2401,6 +2401,260 @@ button {
   }
 }
 
+/* ========================================================
+   Ecosystem 4-Column Community Cards
+   ======================================================== */
+.eco-section-wrap {
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%);
+  position: relative;
+  padding: 4.5rem 1.5rem 6.5rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-light, #e2e8f0);
+  scroll-margin-top: 80px;
+}
+
+.eco-skyline-watermark {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background-image: url('/assets/images/portals/accra_skyline_watermark.webp');
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.85;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.eco-eyebrow-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #f59e0b;
+  color: #0a1b39;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.38rem 1.15rem;
+  border-radius: 9999px;
+  margin-bottom: 0.85rem;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
+}
+
+.eco-main-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: clamp(1.85rem, 3.2vw, 2.35rem);
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.25;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.015em;
+}
+
+.eco-title-highlight {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.eco-brush-underline {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0,15 Q50,0 100,15' fill='none' stroke='%23f59e0b' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+}
+
+.eco-subtitle-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0.85rem auto 3rem;
+}
+
+.eco-subtitle-rule {
+  height: 1px;
+  width: 44px;
+  background: #cbd5e1;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.eco-subtitle {
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0;
+  text-align: center;
+}
+
+/* 4-Column Grid */
+.eco-4col-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  max-width: 1140px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.eco-persona-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 8px 24px -4px rgba(10, 32, 70, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+
+.eco-persona-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px -4px rgba(10, 32, 70, 0.12);
+}
+
+.eco-card-parents {
+  border: 1.5px solid #bae6fd;
+}
+
+.eco-card-schools {
+  border: 1.5px solid #fde68a;
+}
+
+.eco-card-teachers {
+  border: 1.5px solid #bbf7d0;
+}
+
+.eco-card-suppliers {
+  border: 1.5px solid #e9d5ff;
+}
+
+.eco-card-header {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  overflow: visible;
+  border-radius: 18px 18px 0 0;
+}
+
+.eco-card-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 18px 18px 0 0;
+  display: block;
+}
+
+.eco-card-wave {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 38px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.eco-card-badge {
+  position: absolute;
+  bottom: -14px;
+  left: 18px;
+  width: 44px;
+  height: 44px;
+  background: #0A2046;
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(10, 32, 70, 0.25);
+  z-index: 3;
+}
+
+.eco-card-body {
+  padding: 1.6rem 1.25rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+}
+
+.eco-card-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.3;
+  margin: 0 0 0.5rem 0;
+}
+
+.eco-card-desc {
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0 0 1.25rem 0;
+}
+
+.btn-eco-portal {
+  width: 100%;
+  height: 46px;
+  background: #0A2046;
+  color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  font-family: var(--font-heading, sans-serif);
+  font-size: 0.88rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(10, 32, 70, 0.2);
+  margin-top: auto;
+  text-decoration: none;
+}
+
+.btn-eco-portal:hover {
+  background: #123068;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(10, 32, 70, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .eco-4col-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 680px;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .eco-4col-grid {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+    gap: 1.5rem;
+  }
+  .eco-subtitle-wrap {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .eco-subtitle-rule {
+    display: none;
+  }
+}
+
 
 
 

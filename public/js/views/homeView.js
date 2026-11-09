@@ -300,148 +300,154 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
-           SECTION 04: FOUR PREMIUM PORTAL CARDS (OPTION A — 2x2 GRID)
+           SECTION 04: THE SKOOLFINDER ECOSYSTEM (4-COLUMN COMMUNITY CARDS)
            ======================================================== -->
-      <section id="section-portal-cards" style="background: #f8fafc; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0); scroll-margin-top: 80px;">
-        <div class="container">
-          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
-            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
-              <span>🌐</span> THE SKOOLFINDER ECOSYSTEM
-            </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
-              Explore the SkoolFinder Community
+      <section id="section-portal-cards" class="eco-section-wrap">
+        <div class="eco-skyline-watermark" aria-hidden="true"></div>
+
+        <div class="container" style="position: relative; z-index: 2;">
+          <!-- Section Header -->
+          <div style="text-align: center; max-width: 760px; margin: 0 auto 1.5rem;">
+            <div class="eco-eyebrow-badge">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0a1b39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align: middle;">
+                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                <polyline points="2 17 12 22 22 17"></polyline>
+                <polyline points="2 12 12 17 22 12"></polyline>
+              </svg>
+              <span>THE SKOOLFINDER ECOSYSTEM</span>
+            </div>
+
+            <h2 class="eco-main-title">
+              One Platform. A Connected <span class="eco-title-highlight">Education Community.<span class="eco-brush-underline" aria-hidden="true"></span></span>
             </h2>
-            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
-              Four connected communities, each with dedicated tools to help families, schools, education professionals and businesses achieve more.
-            </p>
+
+            <div class="eco-subtitle-wrap">
+              <span class="eco-subtitle-rule" aria-hidden="true"></span>
+              <p class="eco-subtitle">Bringing together parents, schools, education professionals and service providers.</p>
+              <span class="eco-subtitle-rule" aria-hidden="true"></span>
+            </div>
           </div>
 
-          <!-- 2x2 Premium Grid on Desktop, 1 Column on Mobile -->
-          <div class="portals-premium-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.75rem; max-width: 980px; margin: 0 auto;">
-            
+          <!-- 4-Column Horizontal Grid -->
+          <div class="eco-4col-grid">
+
             <!-- CARD 01: PARENTS & GUARDIANS -->
-            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
-              <div>
-                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
-                  <picture>
-                    <source srcset="/assets/images/portals/01_parents_guardians.webp" type="image/webp">
-                    <img src="/assets/images/portals/01_parents_guardians.jpg" alt="Parents &amp; Guardians exploring schools on SkoolFinder" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                  </picture>
-                </div>
-                <div style="padding: 1.5rem 1.5rem 1rem;">
-                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                    Parents &amp; Guardians
-                  </h3>
-                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
-                    Discover schools, compare important information and confidently plan your child's education journey using free, practical tools.
-                  </p>
-                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">School Search</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Comparison</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Planning</span>
-                  </div>
+            <div class="eco-persona-card eco-card-parents" style="--eco-accent: #0284c7;">
+              <div class="eco-card-header">
+                <picture>
+                  <source srcset="/assets/images/portals/eco_real_parents.webp" type="image/webp">
+                  <img src="/assets/images/portals/eco_real_parents.jpg" alt="Parents &amp; Guardians on SkoolFinder" class="eco-card-photo" loading="lazy">
+                </picture>
+                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
+                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#0284c7" stroke-width="3.5"/>
+                </svg>
+                <div class="eco-card-badge" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
                 </div>
               </div>
-              <div style="padding: 0 1.5rem 1.5rem;">
-                <button type="button" id="btn-portal-card-parents" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+              <div class="eco-card-body">
+                <div>
+                  <h3 class="eco-card-title">Parents &amp; Guardians</h3>
+                  <p class="eco-card-desc">Discover, compare and choose the right school for your child.</p>
+                </div>
+                <button type="button" id="btn-portal-card-parents" class="btn-eco-portal">
                   Explore Parents Portal &rarr;
                 </button>
               </div>
             </div>
 
             <!-- CARD 02: SCHOOL OWNERS & PROPRIETORS -->
-            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
-              <div>
-                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
-                  <picture>
-                    <source srcset="/assets/images/portals/02_school_owners.webp" type="image/webp">
-                    <img src="/assets/images/portals/02_school_owners.jpg" alt="School Owners &amp; Proprietors showcase campus on SkoolFinder" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                  </picture>
-                </div>
-                <div style="padding: 1.5rem 1.5rem 1rem;">
-                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                    School Owners &amp; Proprietors
-                  </h3>
-                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
-                    Showcase your institution, reach prospective families and manage school enquiries, admissions and growth opportunities.
-                  </p>
-                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Visibility</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Enrolment</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Management</span>
-                  </div>
+            <div class="eco-persona-card eco-card-schools" style="--eco-accent: #f59e0b;">
+              <div class="eco-card-header">
+                <picture>
+                  <source srcset="/assets/images/portals/eco_real_schools.webp" type="image/webp">
+                  <img src="/assets/images/portals/eco_real_schools.jpg" alt="School Owners &amp; Proprietors on SkoolFinder" class="eco-card-photo" loading="lazy">
+                </picture>
+                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
+                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#f59e0b" stroke-width="3.5"/>
+                </svg>
+                <div class="eco-card-badge" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 21h18"></path>
+                    <path d="M5 21V9l7-5 7 5v12"></path>
+                    <path d="M9 13h6"></path>
+                    <path d="M9 17h6"></path>
+                    <path d="M12 4v2"></path>
+                  </svg>
                 </div>
               </div>
-              <div style="padding: 0 1.5rem 1.5rem;">
-                <button type="button" id="btn-portal-card-schools" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
-                  Explore School Owners Portal &rarr;
+              <div class="eco-card-body">
+                <div>
+                  <h3 class="eco-card-title">School Owners &amp; Proprietors</h3>
+                  <p class="eco-card-desc">Grow your school's visibility and manage key opportunities.</p>
+                </div>
+                <button type="button" id="btn-portal-card-schools" class="btn-eco-portal">
+                  Explore School Portal &rarr;
                 </button>
               </div>
             </div>
 
             <!-- CARD 03: TEACHERS & EDUCATION PROFESSIONALS -->
-            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
-              <div>
-                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
-                  <picture>
-                    <source srcset="/assets/images/portals/03_teachers_professionals.webp" type="image/webp">
-                    <img src="/assets/images/portals/03_teachers_professionals.jpg" alt="Teachers and Education Professionals connect with careers" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                  </picture>
-                </div>
-                <div style="padding: 1.5rem 1.5rem 1rem;">
-                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                    Teachers &amp; Education Professionals
-                  </h3>
-                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
-                    Build your professional profile, discover teaching and education career opportunities, and connect with families seeking your expertise.
-                  </p>
-                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Career Growth</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Tutoring</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Services</span>
-                  </div>
+            <div class="eco-persona-card eco-card-teachers" style="--eco-accent: #16a34a;">
+              <div class="eco-card-header">
+                <picture>
+                  <source srcset="/assets/images/portals/eco_real_teachers.webp" type="image/webp">
+                  <img src="/assets/images/portals/eco_real_teachers.jpg" alt="Teachers &amp; Education Professionals on SkoolFinder" class="eco-card-photo" loading="lazy">
+                </picture>
+                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
+                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#16a34a" stroke-width="3.5"/>
+                </svg>
+                <div class="eco-card-badge" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                  </svg>
                 </div>
               </div>
-              <div style="padding: 0 1.5rem 1.5rem;">
-                <button type="button" id="btn-portal-card-teachers" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+              <div class="eco-card-body">
+                <div>
+                  <h3 class="eco-card-title">Teachers &amp; Education Professionals</h3>
+                  <p class="eco-card-desc">Find teaching and non-teaching opportunities in education.</p>
+                </div>
+                <button type="button" id="btn-portal-card-teachers" class="btn-eco-portal">
                   Explore Teachers Portal &rarr;
                 </button>
               </div>
             </div>
 
             <!-- CARD 04: SUPPLIERS & SERVICE PROVIDERS -->
-            <div class="portal-feature-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(10,32,70,0.04); transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;">
-              <div>
-                <div style="width: 100%; aspect-ratio: 16/10; overflow: hidden; position: relative; background: #e2e8f0;">
-                  <picture>
-                    <source srcset="/assets/images/portals/04_suppliers_service_providers.webp" type="image/webp">
-                    <img src="/assets/images/portals/04_suppliers_service_providers.jpg" alt="Suppliers and Service Providers connect with schools" loading="lazy" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;">
-                  </picture>
-                </div>
-                <div style="padding: 1.5rem 1.5rem 1rem;">
-                  <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                    Suppliers &amp; Service Providers
-                  </h3>
-                  <p style="color: #475569; font-size: 0.9rem; line-height: 1.55; margin: 0 0 1rem 0;">
-                    Present your products and services to schools, build business visibility and discover relevant procurement and tender opportunities.
-                  </p>
-                  <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Business Visibility</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">School Buyers</span>
-                    <span style="color: #cbd5e1; align-self: center;">&bull;</span>
-                    <span class="badge" style="background: #f1f5f9; color: #0A2046; font-size: 0.76rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 6px;">Tenders</span>
-                  </div>
+            <div class="eco-persona-card eco-card-suppliers" style="--eco-accent: #7c3aed;">
+              <div class="eco-card-header">
+                <picture>
+                  <source srcset="/assets/images/portals/eco_real_suppliers.webp" type="image/webp">
+                  <img src="/assets/images/portals/eco_real_suppliers.jpg" alt="Suppliers &amp; Service Providers on SkoolFinder" class="eco-card-photo" loading="lazy">
+                </picture>
+                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
+                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
+                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#7c3aed" stroke-width="3.5"/>
+                </svg>
+                <div class="eco-card-badge" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"></path>
+                    <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.8-2.8L15 13"></path>
+                    <path d="m2 13 4 4"></path>
+                  </svg>
                 </div>
               </div>
-              <div style="padding: 0 1.5rem 1.5rem;">
-                <button type="button" id="btn-portal-card-suppliers" class="btn-pill btn-outline" style="width: 100%; height: 46px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.88rem; font-weight: 800; color: #0A2046; border: 2px solid #0A2046; background: #ffffff; cursor: pointer; border-radius: 9999px; transition: all 0.2s;">
+              <div class="eco-card-body">
+                <div>
+                  <h3 class="eco-card-title">Suppliers &amp; Service Providers</h3>
+                  <p class="eco-card-desc">Connect with schools through tenders and service opportunities.</p>
+                </div>
+                <button type="button" id="btn-portal-card-suppliers" class="btn-eco-portal">
                   Explore Suppliers Portal &rarr;
                 </button>
               </div>
