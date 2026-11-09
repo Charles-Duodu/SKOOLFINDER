@@ -333,124 +333,76 @@ const HomeView = {
 
             <!-- CARD 01: PARENTS & GUARDIANS -->
             <div class="eco-persona-card eco-card-parents" style="--eco-accent: #0284c7;">
-              <div class="eco-card-header">
-                <picture>
-                  <source srcset="/assets/images/portals/eco_real_parents.webp" type="image/webp">
-                  <img src="/assets/images/portals/eco_real_parents.jpg" alt="Parents &amp; Guardians on SkoolFinder" class="eco-card-photo" loading="lazy">
-                </picture>
-                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
-                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#0284c7" stroke-width="3.5"/>
+              <div class="eco-card-badge-top" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
-                <div class="eco-card-badge" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                  </svg>
-                </div>
               </div>
-              <div class="eco-card-body">
-                <div>
-                  <h3 class="eco-card-title">Parents &amp; Guardians</h3>
-                  <p class="eco-card-desc">Discover, compare and choose the right school for your child.</p>
-                </div>
-                <button type="button" id="btn-portal-card-parents" class="btn-eco-portal">
-                  Explore Parents Portal &rarr;
-                </button>
+              <div class="eco-card-body-clean">
+                <h3 class="eco-card-title">Parents &amp; Guardians</h3>
+                <p class="eco-card-desc">Discover, compare and choose the right school for your child.</p>
               </div>
+              <button type="button" id="btn-portal-card-parents" class="btn-eco-portal">
+                Explore Parents Portal &rarr;
+              </button>
             </div>
 
             <!-- CARD 02: SCHOOL OWNERS & PROPRIETORS -->
             <div class="eco-persona-card eco-card-schools" style="--eco-accent: #f59e0b;">
-              <div class="eco-card-header">
-                <picture>
-                  <source srcset="/assets/images/portals/eco_real_schools.webp" type="image/webp">
-                  <img src="/assets/images/portals/eco_real_schools.jpg" alt="School Owners &amp; Proprietors on SkoolFinder" class="eco-card-photo" loading="lazy">
-                </picture>
-                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
-                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#f59e0b" stroke-width="3.5"/>
+              <div class="eco-card-badge-top" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 21h18"></path>
+                  <path d="M5 21V9l7-5 7 5v12"></path>
+                  <path d="M9 13h6"></path>
+                  <path d="M9 17h6"></path>
+                  <path d="M12 4v2"></path>
                 </svg>
-                <div class="eco-card-badge" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 21h18"></path>
-                    <path d="M5 21V9l7-5 7 5v12"></path>
-                    <path d="M9 13h6"></path>
-                    <path d="M9 17h6"></path>
-                    <path d="M12 4v2"></path>
-                  </svg>
-                </div>
               </div>
-              <div class="eco-card-body">
-                <div>
-                  <h3 class="eco-card-title">School Owners &amp; Proprietors</h3>
-                  <p class="eco-card-desc">Grow your school's visibility and manage key opportunities.</p>
-                </div>
-                <button type="button" id="btn-portal-card-schools" class="btn-eco-portal">
-                  Explore School Portal &rarr;
-                </button>
+              <div class="eco-card-body-clean">
+                <h3 class="eco-card-title">School Owners &amp; Proprietors</h3>
+                <p class="eco-card-desc">Grow your school's visibility and manage key opportunities.</p>
               </div>
+              <button type="button" id="btn-portal-card-schools" class="btn-eco-portal">
+                Explore School Portal &rarr;
+              </button>
             </div>
 
             <!-- CARD 03: TEACHERS & EDUCATION PROFESSIONALS -->
             <div class="eco-persona-card eco-card-teachers" style="--eco-accent: #16a34a;">
-              <div class="eco-card-header">
-                <picture>
-                  <source srcset="/assets/images/portals/eco_real_teachers.webp" type="image/webp">
-                  <img src="/assets/images/portals/eco_real_teachers.jpg" alt="Teachers &amp; Education Professionals on SkoolFinder" class="eco-card-photo" loading="lazy">
-                </picture>
-                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
-                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#16a34a" stroke-width="3.5"/>
+              <div class="eco-card-badge-top" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
                 </svg>
-                <div class="eco-card-badge" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
-                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
-                  </svg>
-                </div>
               </div>
-              <div class="eco-card-body">
-                <div>
-                  <h3 class="eco-card-title">Teachers &amp; Education Professionals</h3>
-                  <p class="eco-card-desc">Find teaching and non-teaching opportunities in education.</p>
-                </div>
-                <button type="button" id="btn-portal-card-teachers" class="btn-eco-portal">
-                  Explore Teachers Portal &rarr;
-                </button>
+              <div class="eco-card-body-clean">
+                <h3 class="eco-card-title">Teachers &amp; Education Professionals</h3>
+                <p class="eco-card-desc">Find teaching and non-teaching opportunities in education.</p>
               </div>
+              <button type="button" id="btn-portal-card-teachers" class="btn-eco-portal">
+                Explore Teachers Portal &rarr;
+              </button>
             </div>
 
             <!-- CARD 04: SUPPLIERS & SERVICE PROVIDERS -->
             <div class="eco-persona-card eco-card-suppliers" style="--eco-accent: #7c3aed;">
-              <div class="eco-card-header">
-                <picture>
-                  <source srcset="/assets/images/portals/eco_real_suppliers.webp" type="image/webp">
-                  <img src="/assets/images/portals/eco_real_suppliers.jpg" alt="Suppliers &amp; Service Providers on SkoolFinder" class="eco-card-photo" loading="lazy">
-                </picture>
-                <svg class="eco-card-wave" viewBox="0 0 280 42" preserveAspectRatio="none" aria-hidden="true">
-                  <path d="M 0,16 C 85,38 185,36 280,12 L 280,42 L 0,42 Z" fill="#ffffff"/>
-                  <path d="M 0,16 C 85,38 185,36 280,12" fill="none" stroke="#7c3aed" stroke-width="3.5"/>
+              <div class="eco-card-badge-top" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"></path>
+                  <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.8-2.8L15 13"></path>
+                  <path d="m2 13 4 4"></path>
                 </svg>
-                <div class="eco-card-badge" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"></path>
-                    <path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.8-2.8L15 13"></path>
-                    <path d="m2 13 4 4"></path>
-                  </svg>
-                </div>
               </div>
-              <div class="eco-card-body">
-                <div>
-                  <h3 class="eco-card-title">Suppliers &amp; Service Providers</h3>
-                  <p class="eco-card-desc">Connect with schools through tenders and service opportunities.</p>
-                </div>
-                <button type="button" id="btn-portal-card-suppliers" class="btn-eco-portal">
-                  Explore Suppliers Portal &rarr;
-                </button>
+              <div class="eco-card-body-clean">
+                <h3 class="eco-card-title">Suppliers &amp; Service Providers</h3>
+                <p class="eco-card-desc">Connect with schools through tenders and service opportunities.</p>
               </div>
+              <button type="button" id="btn-portal-card-suppliers" class="btn-eco-portal">
+                Explore Suppliers Portal &rarr;
+              </button>
             </div>
 
           </div>

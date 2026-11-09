@@ -2509,105 +2509,103 @@ button {
 .eco-persona-card {
   background: #ffffff;
   border-radius: 20px;
-  overflow: visible;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  padding: 2.25rem 1.6rem 1.85rem;
   box-shadow: 0 8px 24px -4px rgba(10, 32, 70, 0.06);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   position: relative;
 }
 
 .eco-persona-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 14px 30px -4px rgba(10, 32, 70, 0.12);
+  transform: translateY(-5px);
 }
 
 .eco-card-parents {
   border: 1.5px solid #bae6fd;
+  background: linear-gradient(180deg, #ffffff 55%, #f0f9ff 100%);
+}
+
+.eco-card-parents:hover {
+  border-color: #0284c7;
+  box-shadow: 0 16px 32px -4px rgba(2, 132, 199, 0.16);
 }
 
 .eco-card-schools {
   border: 1.5px solid #fde68a;
+  background: linear-gradient(180deg, #ffffff 55%, #fffbeb 100%);
+}
+
+.eco-card-schools:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 16px 32px -4px rgba(245, 158, 11, 0.18);
 }
 
 .eco-card-teachers {
   border: 1.5px solid #bbf7d0;
+  background: linear-gradient(180deg, #ffffff 55%, #f0fdf4 100%);
+}
+
+.eco-card-teachers:hover {
+  border-color: #16a34a;
+  box-shadow: 0 16px 32px -4px rgba(22, 163, 74, 0.16);
 }
 
 .eco-card-suppliers {
   border: 1.5px solid #e9d5ff;
+  background: linear-gradient(180deg, #ffffff 55%, #faf5ff 100%);
 }
 
-.eco-card-header {
-  position: relative;
-  width: 100%;
-  height: 160px;
-  overflow: visible;
-  border-radius: 18px 18px 0 0;
+.eco-card-suppliers:hover {
+  border-color: #7c3aed;
+  box-shadow: 0 16px 32px -4px rgba(124, 58, 237, 0.16);
 }
 
-.eco-card-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 18px 18px 0 0;
-  display: block;
-}
-
-.eco-card-wave {
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  width: 100%;
-  height: 38px;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.eco-card-badge {
-  position: absolute;
-  bottom: -14px;
-  left: 18px;
-  width: 44px;
-  height: 44px;
+.eco-card-badge-top {
+  width: 52px;
+  height: 52px;
   background: #0A2046;
   border: 2px solid #f59e0b;
-  border-radius: 12px;
-  display: flex;
+  border-radius: 14px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(10, 32, 70, 0.25);
-  z-index: 3;
+  box-shadow: 0 4px 14px rgba(10, 32, 70, 0.2);
+  margin-bottom: 1.35rem;
+  transition: transform 0.25s ease;
 }
 
-.eco-card-body {
-  padding: 1.6rem 1.25rem 1.4rem;
+.eco-persona-card:hover .eco-card-badge-top {
+  transform: scale(1.06);
+}
+
+.eco-card-body-clean {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   flex: 1;
 }
 
 .eco-card-title {
   font-family: var(--font-heading, sans-serif);
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   font-weight: 800;
   color: #0A2046;
   line-height: 1.3;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.65rem 0;
 }
 
 .eco-card-desc {
   color: #475569;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   line-height: 1.55;
-  margin: 0 0 1.25rem 0;
+  margin: 0 0 1.6rem 0;
+  flex: 1;
 }
 
 .btn-eco-portal {
   width: 100%;
-  height: 46px;
+  height: 48px;
   background: #0A2046;
   color: #ffffff;
   border: none;
@@ -2618,7 +2616,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(10, 32, 70, 0.2);
