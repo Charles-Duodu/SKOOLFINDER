@@ -1289,20 +1289,26 @@ const HomeView = {
   attachEvents() {
     // Hero Search Form
     const searchForm = document.getElementById('hero-search-form');
+    const handleHeroSearch = (e) => {
+      if (e) e.preventDefault();
+      const suburb = document.getElementById('hero-search-suburb')?.value.trim() || '';
+      const level = document.getElementById('hero-search-level')?.value || 'All';
+      const curriculum = document.getElementById('hero-search-curriculum')?.value || 'All';
+
+      State.filters.search = suburb;
+      State.filters.suburb = 'All';
+      State.filters.level = level;
+      State.filters.curriculum = curriculum;
+
+      App.navigate('directory');
+    };
+
     if (searchForm) {
-      searchForm.onsubmit = (e) => {
-        e.preventDefault();
-        const suburb = document.getElementById('hero-search-suburb')?.value.trim() || '';
-        const level = document.getElementById('hero-search-level')?.value || 'All';
-        const curriculum = document.getElementById('hero-search-curriculum')?.value || 'All';
-
-        State.filters.search = suburb;
-        State.filters.suburb = 'All';
-        State.filters.level = level;
-        State.filters.curriculum = curriculum;
-
-        App.navigate('directory');
-      };
+      searchForm.onsubmit = handleHeroSearch;
+    }
+    const searchBtn = document.getElementById('btn-hero-search-submit');
+    if (searchBtn) {
+      searchBtn.onclick = handleHeroSearch;
     }
 
     // Hero Discovery Choices

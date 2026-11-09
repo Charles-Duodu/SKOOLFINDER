@@ -6196,12 +6196,43 @@ const ParentPortalView = {
     });
   },
 
+  openGuideModal(guideKey) {
+    return this.showAdvisoryGuideModal(guideKey);
+  },
+
   showAdvisoryGuideModal(guideKey) {
     const guides = {
+      admissions_checklist: {
+        tag: "Admissions Readiness Checklist",
+        title: "Ghanaian Private School Admissions Checklist: 4 Essential Documents",
+        author: "SkoolFinder Admissions Advisory Desk & Private School Registry",
+        actionBtnText: "🔍 Find Schools Accepting Admissions",
+        actionView: "directory",
+        content: `
+          <h4>1. Four Statutory Documents Required by Accredited Schools</h4>
+          <p>Before submitting admissions applications or attending assessment interviews at private basic or international schools in Ghana, prepare certified copies of the following documents:</p>
+          <ul>
+            <li><strong>1. Original &amp; Certified Copy of Child's Birth Certificate:</strong> Issued by the Registrar of Births and Deaths, Ghana (or valid passport bio-data page for international students).</li>
+            <li><strong>2. Yellow Immunization / Child Health Record Card:</strong> Verification of essential childhood vaccinations (Polio, Measles/MMR, Yellow Fever, Hepatitis B, Meningitis) compliant with the Expanded Programme on Immunization (EPI).</li>
+            <li><strong>3. Past 2 Terms of Continuous Academic Report Cards:</strong> Stamped and signed by the previous school headteacher or class administrator with conduct notes.</li>
+            <li><strong>4. Official Transfer &amp; Clearance Slip:</strong> NaSIA-aligned transfer documentation verifying that all term liabilities and fees have been cleared at the prior school.</li>
+          </ul>
+          <h4>2. Supporting Credentials (Select Cambridge &amp; IB Schools)</h4>
+          <ul>
+            <li>2 to 4 recent passport-size photographs of the child with white background.</li>
+            <li>Copy of Parent / Guardian National ID (Ghana Card or International Passport).</li>
+            <li>Special Educational Needs (SEN) or Speech Therapy evaluation reports (if applicable).</li>
+          </ul>
+          <h4>3. Assessment Day Preparation</h4>
+          <p>Most competitive Cambridge and GES schools conduct written numeracy, reading comprehension, and phonetics diagnostics for Class 1 and above. Arrive at least 20 minutes prior to scheduled assessment interviews.</p>
+        `
+      },
       cambridge_vs_ges: {
         tag: "Curriculum Strategy & Planning",
         title: "Cambridge vs. GES Standards-Based Curriculum: Which is Right for Your Child?",
         author: "Dr. Kwesi Mensah & SkoolFinder Educational Advisory Desk",
+        actionBtnText: "📚 Filter Schools by Curriculum",
+        actionView: "directory",
         content: `
           <h4>1. Structural Frameworks</h4>
           <p>The <strong>Ghana Education Service (GES) Standards-Based Curriculum</strong> focuses on Ghanaian cultural identity, inquiry-based STEM, and regional language integration. It transitions through the Basic Education Certificate Examination (BECE) directly into Senior High Schools via the CSSPS placement system.</p>
@@ -6218,6 +6249,8 @@ const ParentPortalView = {
         tag: "Senior High Admissions",
         title: "BECE CSSPS Demystified: How the 30% Public School Quota Affects Category A Selection",
         author: "SkoolFinder CSSPS Placement Advisory Board",
+        actionBtnText: "🎯 Launch BECE CSSPS Predictor",
+        actionView: "cssps",
         content: `
           <h4>1. What is the 30% Public Feeder Quota?</h4>
           <p>Under Ghana Ministry of Education regulations, 30% of all available admissions seats in Category A Senior High Schools (e.g., PRESEC Legon, Achimota, Wesley Girls) are statutorily reserved for candidates graduating from public basic (JHS) schools.</p>
@@ -6238,6 +6271,8 @@ const ParentPortalView = {
         tag: "School Finance & Budgeting",
         title: "Understanding Private School Fee Structures in Greater Accra: Hidden Ancillary Charges",
         author: "SkoolFinder Family Financial Desk",
+        actionBtnText: "💰 View Verified Fee Schedules",
+        actionView: "directory",
         content: `
           <h4>1. Beyond the Base Tuition</h4>
           <p>When evaluating school fees, always request a certified, itemized fee schedule. Published tuition often represents only 55% to 65% of the total cash outflow required per term.</p>
@@ -6257,6 +6292,8 @@ const ParentPortalView = {
         tag: "Child Safeguarding & Health",
         title: "Assessing Campus Safety & Sickbay Readiness: What Ghanaian Parents Must Check",
         author: "Ghana Child Safeguarding Policy Desk (Act 560)",
+        actionBtnText: "🛡️ Browse Accredited Schools",
+        actionView: "directory",
         content: `
           <h4>1. Statutory Safeguarding Requirements</h4>
           <p>Under the Children's Act 1998 (Act 560) and NaSIA regulatory standards, all accredited basic schools in Ghana must maintain verified physical and emotional safeguarding protocols.</p>
@@ -6280,7 +6317,7 @@ const ParentPortalView = {
 
     overlay.innerHTML = `
       <div class="modal-card" style="background: #ffffff; border-radius: var(--radius-xl); max-width: 680px; width: 100%; max-height: 88vh; overflow-y: auto; padding: 2rem; box-shadow: var(--shadow-xl); position: relative;">
-        <button id="btn-close-guide-modal" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
+        <button id="btn-close-guide-modal" aria-label="Close guide" style="position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-muted);">&times;</button>
         <span class="badge" style="background: #eff6ff; color: #1e40af; font-weight: 800; font-size: 0.75rem; margin-bottom: 0.5rem; display: inline-block;">
           📖 ${guide.tag}
         </span>
@@ -6293,11 +6330,18 @@ const ParentPortalView = {
         <div class="guide-modal-content" style="font-size: 0.88rem; line-height: 1.65; color: #334155;">
           ${guide.content}
         </div>
-        <div style="margin-top: 1.75rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="margin-top: 1.75rem; border-top: 1px solid #e2e8f0; padding-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: space-between; align-items: center;">
           <span style="font-size: 0.8rem; color: #059669; font-weight: 600;">✓ Verified Educational Guidance</span>
-          <button type="button" class="btn-pill btn-primary" id="btn-close-guide-modal-2" style="font-size: 0.85rem; font-weight: 700;">
-            Close Guide
-          </button>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            ${guide.actionBtnText ? `
+            <button type="button" class="btn-pill btn-gold" id="btn-guide-modal-action" style="font-size: 0.85rem; font-weight: 800; padding: 0.55rem 1.15rem; cursor: pointer; border: none; border-radius: 9999px;">
+              ${guide.actionBtnText}
+            </button>
+            ` : ''}
+            <button type="button" class="btn-pill btn-outline" id="btn-close-guide-modal-2" style="font-size: 0.85rem; font-weight: 700; padding: 0.55rem 1.15rem; cursor: pointer;">
+              Close Guide
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -6305,11 +6349,21 @@ const ParentPortalView = {
     document.body.appendChild(overlay);
 
     const close = () => {
+      document.removeEventListener('keydown', handleKeyDown);
       if (document.body.contains(overlay)) overlay.remove();
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') close();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+
     overlay.querySelector('#btn-close-guide-modal')?.addEventListener('click', close);
     overlay.querySelector('#btn-close-guide-modal-2')?.addEventListener('click', close);
+    overlay.querySelector('#btn-guide-modal-action')?.addEventListener('click', () => {
+      close();
+      if (guide.actionView) App.navigate(guide.actionView);
+    });
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   },
 
@@ -6317,7 +6371,22 @@ const ParentPortalView = {
     if (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard) {
       return HomeView.renderSchoolCard(school);
     }
-    return '';
+    // Defensive graceful fallback card
+    const name = school.name || 'Accredited Institution';
+    const suburb = school.suburb || school.locality || 'Greater Accra';
+    const curriculum = Array.isArray(school.curriculum) ? school.curriculum.join(', ') : (school.curriculum || 'Standard');
+    return `
+      <div class="school-card" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <span class="badge badge-ges" style="margin-bottom: 0.5rem; display: inline-block;">${curriculum}</span>
+          <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.35rem 0;">${name}</h4>
+          <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 1rem 0;">📍 ${suburb}</p>
+        </div>
+        <button type="button" class="btn-pill btn-outline btn-card-view" data-school-id="${school.id}" style="width: 100%; justify-content: center; font-size: 0.85rem; font-weight: 700;">
+          View School Profile &rarr;
+        </button>
+      </div>
+    `;
   },
 
   async renderAuthGateway() {
@@ -6735,32 +6804,36 @@ const ParentPortalView = {
                 Recommended for Parents
               </div>
               <div>
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: #fefce8; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
-                  ✨
+                <div style="font-size: 0.78rem; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>📍</span> YOUR PERSONALISED JOURNEY
                 </div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
                   Your Free Parent Account
                 </h3>
-                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.25rem;">
-                  A personalized admissions workspace to organize your child's educational transitions.
+                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.55; margin-bottom: 1.25rem;">
+                  Enjoy everything guests can access, plus tools to plan and stay organised.
                 </p>
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.86rem; color: #334155;">
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #D5A63B; font-weight: 800;">★</span> Save permanent school shortlists &amp; custom notes
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.7rem; font-size: 0.88rem; color: #334155;">
+                  <li style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
+                    <span>Save favourite schools and tutors</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #D5A63B; font-weight: 800;">★</span> 5-state application tracker (Shortlist &rarr; Tour &rarr; Enrolled)
+                  <li style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
+                    <span>Get personalised recommendations</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #D5A63B; font-weight: 800;">★</span> Multi-child sibling management under one login
+                  <li style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
+                    <span>Track enquiries and school visits</span>
                   </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #D5A63B; font-weight: 800;">★</span> Automated SMS &amp; email alerts for term fee due dates
+                  <li style="display: flex; align-items: center; gap: 0.6rem;">
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
+                    <span>Receive alerts and reminders</span>
                   </li>
                 </ul>
               </div>
-              <button type="button" id="btn-parents-scroll-signup" class="btn-pill btn-gold" style="width: 100%; padding: 0.85rem; font-size: 0.92rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer; border: none;">
-                Create Free Parent Account &uarr;
+              <button type="button" id="btn-parents-scroll-signup" class="btn-pill" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer; border: none; background: #e67e00; color: #ffffff; box-shadow: 0 4px 14px rgba(230, 126, 0, 0.35);">
+                Create Free Account &#x2197;
               </button>
             </div>
           </div>
@@ -6981,10 +7054,10 @@ const ParentPortalView = {
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem;">
             <!-- CARD 1 -->
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <div class="parent-guide-card" data-guide="admissions_checklist" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
-                  Admissions Readiness
+                <div style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>📋</span> Admissions Readiness
                 </div>
                 <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
                   Ghanaian Private School Admissions Checklist
@@ -6994,15 +7067,17 @@ const ParentPortalView = {
                 </p>
               </div>
               <div style="padding: 0 1.75rem 1.5rem;">
-                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Read Checklist &rarr;</span>
+                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="admissions_checklist" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
+                  Read Checklist &rarr;
+                </button>
               </div>
             </div>
 
             <!-- CARD 2 -->
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <div class="parent-guide-card" data-guide="cambridge_vs_ges" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
-                  Curriculum Decoded
+                <div style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>📖</span> Curriculum Decoded
                 </div>
                 <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
                   GES vs. Cambridge CIE vs. IB World
@@ -7012,15 +7087,17 @@ const ParentPortalView = {
                 </p>
               </div>
               <div style="padding: 0 1.75rem 1.5rem;">
-                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Compare Curricula &rarr;</span>
+                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="cambridge_vs_ges" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
+                  Compare Curricula &rarr;
+                </button>
               </div>
             </div>
 
             <!-- CARD 3 -->
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <div class="parent-guide-card" data-guide="cssps_quota" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
               <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
-                  SHS Placement
+                <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
+                  <span>🎯</span> SHS Placement
                 </div>
                 <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
                   Understanding BECE &amp; CSSPS Placement
@@ -7030,7 +7107,9 @@ const ParentPortalView = {
                 </p>
               </div>
               <div style="padding: 0 1.75rem 1.5rem;">
-                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Learn About CSSPS &rarr;</span>
+                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="cssps_quota" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
+                  Learn About CSSPS &rarr;
+                </button>
               </div>
             </div>
           </div>
@@ -7109,6 +7188,30 @@ const ParentPortalView = {
               </p>
             </div>
           </div>
+
+          <!-- Expandable Verification Methodology Details -->
+          <div style="text-align: center; margin-top: 2.25rem;">
+            <button type="button" id="btn-toggle-verification-policy" class="btn-pill btn-outline" style="font-size: 0.88rem; font-weight: 700; padding: 0.65rem 1.5rem; border-radius: 9999px; cursor: pointer; background: #ffffff;">
+              Learn About Our Verification Methodology &darr;
+            </button>
+            <div id="panel-verification-policy" style="display: none; max-width: 780px; margin: 1.5rem auto 0; text-align: left; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 1.75rem; font-size: 0.9rem; line-height: 1.6; color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+              <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin-top: 0; margin-bottom: 0.5rem;">
+                SkoolFinder Verification &amp; Accuracy Methodology
+              </h4>
+              <p style="margin-bottom: 0.75rem;">
+                <strong>1. Statutory Registry Alignment:</strong> We cross-reference school records against public registers from the National Schools Inspectorate Authority (NaSIA) pursuant to the Education Regulatory Bodies Act 2020 (Act 1023). Schools are designated as "Verified" only upon confirming their active institutional license status.
+              </p>
+              <p style="margin-bottom: 0.75rem;">
+                <strong>2. Leadership &amp; Contact Directness:</strong> All phone numbers and WhatsApp admissions contacts are independently dialed and authenticated directly with school proprietors, headteachers, or authorized admissions registrars.
+              </p>
+              <p style="margin-bottom: 0.75rem;">
+                <strong>3. Fee Transparency Standard:</strong> Where official fee schedules have been submitted and stamped, exact ranges are published. If a school has not provided official schedules, it is explicitly designated as "Fee Not Disclosed" — we never fabricate estimates.
+              </p>
+              <p style="margin: 0; font-size: 0.84rem; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 0.65rem;">
+                Notice an outdated contact or incorrect fee? Contact our data governance desk at <a href="mailto:governance@skoolfinder.gh" style="color: #1266C4; font-weight: 700;">governance@skoolfinder.gh</a>.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -7132,7 +7235,7 @@ const ParentPortalView = {
           <div class="faq-accordion" style="display: flex; flex-direction: column; gap: 0.85rem;">
             <!-- FAQ 1 -->
             <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>Is creating a parent account completely free?</span>
                 <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
               </button>
@@ -7143,7 +7246,7 @@ const ParentPortalView = {
 
             <!-- FAQ 2 -->
             <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>Do I have to create an account to search for schools?</span>
                 <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
               </button>
@@ -7154,7 +7257,7 @@ const ParentPortalView = {
 
             <!-- FAQ 3 -->
             <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>How do schools receive my admission inquiries?</span>
                 <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
               </button>
@@ -7165,7 +7268,7 @@ const ParentPortalView = {
 
             <!-- FAQ 4 -->
             <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>Why do some schools show "Fee Not Disclosed"?</span>
                 <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
               </button>
@@ -7176,12 +7279,23 @@ const ParentPortalView = {
 
             <!-- FAQ 5 -->
             <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>Can I manage applications for multiple children?</span>
                 <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
               </button>
               <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
                 Yes! When registered, your parent workspace allows you to manage multiple children with individual profiles, grade levels, and separate application milestones under one login.
+              </div>
+            </div>
+
+            <!-- FAQ 6 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>How current is school and admissions information?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                School profiles are updated continuously against NaSIA regulatory bulletins and re-authenticated directly with school administration every academic term (September, January, and May). Verification timestamps appear on school profiles.
               </div>
             </div>
           </div>
@@ -7543,7 +7657,7 @@ const ParentPortalView = {
       };
     });
 
-    // 8. Section P06, P07, P09 CTAs
+    // 8. Section P06, P07, P08, P09, P10 CTAs & Modals
     document.getElementById('btn-parents-open-compare')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('compare');
@@ -7551,7 +7665,7 @@ const ParentPortalView = {
 
     document.getElementById('btn-parents-fees-guide')?.addEventListener('click', (e) => {
       e.preventDefault();
-      App.navigate('directory');
+      ParentPortalView.openGuideModal('fee_structures');
     });
 
     document.getElementById('btn-parents-admissions-search')?.addEventListener('click', (e) => {
@@ -7559,9 +7673,31 @@ const ParentPortalView = {
       App.navigate('directory');
     });
 
+    // Guidance Cards & Modals (Section P08)
+    document.querySelectorAll('.parent-guide-card, .btn-read-guide-portal').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const guideKey = el.dataset.guide || el.closest('[data-guide]')?.dataset.guide;
+        if (guideKey) {
+          ParentPortalView.openGuideModal(guideKey);
+        }
+      });
+    });
+
     document.getElementById('btn-parents-goto-teachers')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('teachers');
+    });
+
+    // Verification Methodology Expandable Panel (Section P10)
+    const btnVerify = document.getElementById('btn-toggle-verification-policy');
+    const panelVerify = document.getElementById('panel-verification-policy');
+    btnVerify?.addEventListener('click', () => {
+      if (!panelVerify) return;
+      const isHidden = panelVerify.style.display === 'none';
+      panelVerify.style.display = isHidden ? 'block' : 'none';
+      btnVerify.textContent = isHidden ? 'Hide Verification Methodology ↑' : 'Learn About Our Verification Methodology ↓';
     });
 
     // 9. Section P11: FAQ Accordions
@@ -7573,6 +7709,7 @@ const ParentPortalView = {
 
         // Close all other panels
         document.querySelectorAll('.faq-answer-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.faq-toggle-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
         document.querySelectorAll('.faq-icon').forEach(i => {
           i.textContent = '+';
           i.style.transform = 'rotate(0deg)';
@@ -7580,6 +7717,7 @@ const ParentPortalView = {
 
         if (!isOpen && panel) {
           panel.style.display = 'block';
+          btn.setAttribute('aria-expanded', 'true');
           if (icon) {
             icon.textContent = '−';
             icon.style.transform = 'rotate(180deg)';

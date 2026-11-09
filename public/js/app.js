@@ -229,11 +229,11 @@ const App = {
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Schools Directory', url: '/directory' }, { name: 'Fit Matchmaker', url: '/matchmaker' }]
       },
       'parents': {
-        title: 'Parent Admissions Hub | SkoolFinder Ghana',
-        description: 'Book campus tours, apply for admission vouchers, save shortlist schools, and track application status for your children.',
-        keywords: 'parent admissions Ghana, school tour booking, admissions vouchers MoMo, parent portal Accra',
+        title: 'Parents & Guardians Hub | Verified Pre-Tertiary School Discovery Ghana',
+        description: 'Discover accredited Ghanaian schools, compare transparent fee ranges, submit admissions inquiries directly to schools, and plan your child\'s education with confidence.',
+        keywords: 'parents portal Ghana, school admissions tracker, school shortlist Accra, child education planning, accredited Ghanaian schools, NaSIA verified schools',
         canonicalUrl: 'https://skoolfinder.vercel.app/parents',
-        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parents Portal', url: '/parents' }]
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parents & Guardians Hub', url: '/parents' }]
       },
       'teachers': {
         title: 'Teaching & Educational Vacancies in Ghana | SkoolFinder Careers',
@@ -269,13 +269,6 @@ const App = {
         keywords: 'GES calendar 2026, BECE past questions download, WASSCE syllabi, Ghana education resources',
         canonicalUrl: 'https://skoolfinder.vercel.app/resources',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Resource Centre', url: '/resources' }]
-      },
-      'parents': {
-        title: 'Parent Admissions Cockpit & School Journey Tracker | SkoolFinder Ghana',
-        description: 'Track school applications, campus tour bookings, 5-state decision board shortlists, and fee planning in one 100% free parent dashboard.',
-        keywords: 'parents portal Ghana, school admissions tracker, school shortlist Accra, child education planning',
-        canonicalUrl: 'https://skoolfinder.vercel.app/parents',
-        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parent Space', url: '/parents' }]
       },
       'pricing': {
         title: 'Platform Pricing & Plans | SkoolFinder Ghana',
