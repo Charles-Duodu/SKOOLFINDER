@@ -2701,6 +2701,7 @@ button {
   padding: 4.75rem 1.5rem 4.5rem;
   border-bottom: 1px solid #e2e8f0;
   overflow: hidden;
+  scroll-margin-top: 75px;
 }
 
 .eco-v3-flag-corner {

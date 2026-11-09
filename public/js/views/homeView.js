@@ -142,10 +142,10 @@ const HomeView = {
       <section id="section-portal-cards" class="eco-v3-section">
         <!-- Ghana Flag & Arch Corner Watermarks -->
         <div class="eco-v3-flag-corner" aria-hidden="true">
-          <img src="/assets/images/portals/eco_v3_flag.webp" alt="Ghana Flag Emblem" class="eco-v3-flag-img">
+          <img src="/assets/images/portals/eco_v3_flag.webp?v=2" alt="Ghana Flag Emblem" class="eco-v3-flag-img">
         </div>
         <div class="eco-v3-arch-corner" aria-hidden="true">
-          <img src="/assets/images/portals/eco_v3_arch.webp" alt="Independence Arch Greater Accra" class="eco-v3-arch-img">
+          <img src="/assets/images/portals/eco_v3_arch.webp?v=2" alt="Independence Arch Greater Accra" class="eco-v3-arch-img">
         </div>
 
         <div class="container eco-v3-container">
