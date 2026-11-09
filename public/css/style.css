@@ -1730,42 +1730,61 @@ button {
   object-position: center top;
 }
 
-/* Opportunities Strip Divider */
-.teachers-opportunities-strip {
+/* Middle Banner: Latest Opportunities */
+.teachers-opportunities-banner {
+  background: linear-gradient(135deg, #0A2046 0%, #123068 100%);
+  border-radius: 12px;
+  padding: 0.95rem 1.35rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 14px rgba(10, 32, 70, 0.12);
+}
+
+.teachers-banner-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: 0.75rem;
 }
 
-.teachers-strip-title {
-  display: inline-flex;
+.teachers-banner-icon {
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.teachers-banner-divider {
+  width: 1.5px;
+  height: 20px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.teachers-banner-title {
   font-family: var(--font-heading, sans-serif);
-  font-size: 1.22rem;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: #0a1b39;
-  white-space: nowrap;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.01em;
 }
 
-.teachers-strip-line {
-  flex: 1;
-  height: 1px;
-  background: #e2e8f0;
-}
-
-.teachers-strip-badge {
+.teachers-banner-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  background: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
+  background: #f59e0b;
+  color: #0a1b39;
   padding: 0.35rem 0.85rem;
   border-radius: 9999px;
   font-size: 0.82rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -1991,9 +2010,10 @@ button {
   .teachers-hero-image-wrap {
     height: 190px;
   }
-  .teachers-opportunities-strip {
-    flex-wrap: wrap;
-    gap: 0.5rem;
+  .teachers-opportunities-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
   .teachers-ctas-wrap {
     flex-direction: column;

@@ -560,19 +560,19 @@ const HomeView = {
               </div>
             </div>
 
-            <!-- Opportunities Strip Divider -->
-            <div class="teachers-opportunities-strip">
-              <div class="teachers-strip-title">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0a1b39" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-                </svg>
-                <span>Latest Opportunities</span>
+            <!-- Middle Banner: Latest Opportunities -->
+            <div class="teachers-opportunities-banner">
+              <div class="teachers-banner-left">
+                <div class="teachers-banner-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                </div>
+                <div class="teachers-banner-divider" aria-hidden="true"></div>
+                <h3 class="teachers-banner-title">Latest Opportunities</h3>
               </div>
-              <div class="teachers-strip-line" aria-hidden="true"></div>
-              <div class="teachers-strip-badge">
-                <span>📍 Greater Accra</span>
-              </div>
+              <div class="teachers-banner-badge">📍 Greater Accra</div>
             </div>
 
             <!-- 3-Column Jobs Grid -->
