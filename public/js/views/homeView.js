@@ -42,6 +42,16 @@ const HomeView = {
 
     return `
       <!-- ========================================================
+           HOMEPAGE INDEPENDENCE ARCH GLOBAL BACKDROP
+           Fixed atmospheric architectural landmark behind all sections
+           ======================================================== -->
+      <div class="home-arch-backdrop" aria-hidden="true">
+        <div class="home-arch-backdrop-img"></div>
+        <div class="home-arch-backdrop-scrim"></div>
+      </div>
+
+      <div class="home-arch-canvas">
+      <!-- ========================================================
            SECTION 02: HERO & LIVE SCHOOL SEARCH (MAINTAINED EXACTLY)
            ======================================================== -->
       <section class="hero-section" id="section-hero">
@@ -166,14 +176,6 @@ const HomeView = {
            SECTION 02: THE SKOOLFINDER ECOSYSTEM (IMAGE 3 DESIGN)
            ======================================================== -->
       <section id="section-portal-cards" class="eco-v3-section">
-        <!-- Ghana Flag & Arch Corner Watermarks -->
-        <div class="eco-v3-flag-corner" aria-hidden="true">
-          <img src="/assets/images/portals/eco_v3_flag.webp?v=2" alt="Ghana Flag Emblem" class="eco-v3-flag-img">
-        </div>
-        <div class="eco-v3-arch-corner" aria-hidden="true">
-          <img src="/assets/images/portals/eco_v3_arch.webp?v=2" alt="Independence Arch Greater Accra" class="eco-v3-arch-img">
-        </div>
-
         <div class="container eco-v3-container">
           <div class="eco-v3-header">
             <div class="eco-v3-eyebrow">
@@ -423,7 +425,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION 03: PARENTS — TWO FREE EXPERIENCES (BLUEPRINT §05)
            ======================================================== -->
-      <section id="section-two-ways-free" style="background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.03) 0%, #f8fafc 100%); padding: 4.5rem 1.5rem; border-bottom: 1px solid var(--border-light, #e2e8f0); position: relative; overflow: hidden;">
+      <section id="section-two-ways-free" class="home-section-overlay home-section-overlay-two-ways" style="padding: 4.5rem 1.5rem; position: relative; overflow: hidden;">
         <div class="container" style="max-width: 960px; margin: 0 auto; position: relative; z-index: 1;">
           
           <!-- Section Eyebrow & Title -->
@@ -611,7 +613,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION: SCHOOL OWNERS & PROPRIETORS SPOTLIGHT
            ======================================================== -->
-      <section id="section-school-proprietors-spotlight" style="background: #f8fafc; padding: 3.75rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
+      <section id="section-school-proprietors-spotlight" class="home-section-overlay home-section-overlay-light" style="padding: 3.75rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="proprietors-spotlight-card">
             
@@ -724,7 +726,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION: TEACHERS & EDUCATION PROFESSIONALS SPOTLIGHT
            ======================================================== -->
-      <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 2.25rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
+      <section id="section-teachers-professionals-spotlight" class="home-section-overlay home-section-overlay-tint" style="padding: 2.25rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="teachers-spotlight-card">
 
@@ -861,7 +863,7 @@ const HomeView = {
       <!-- ========================================================
            SPOTLIGHT SECTION: SUPPLIERS & SERVICE PROVIDERS
            ======================================================== -->
-      <section id="section-suppliers-providers-spotlight" style="background: #f8fafc; padding: 2.25rem 1.5rem 4.5rem; scroll-margin-top: 80px;">
+      <section id="section-suppliers-providers-spotlight" class="home-section-overlay home-section-overlay-light" style="padding: 2.25rem 1.5rem 4.5rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="suppliers-spotlight-card">
 
@@ -966,7 +968,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
            ======================================================== -->
-      <section id="section-why-skoolfinder" style="background: #ffffff; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
+      <section id="section-why-skoolfinder" class="home-section-overlay home-section-overlay-tint" style="padding: 4.5rem 0;">
         <div class="container">
           <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
             <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #fde68a; margin-bottom: 0.5rem;">
@@ -1034,7 +1036,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION 06: GETTING STARTED IS SIMPLE (BLUEPRINT §07)
            ======================================================== -->
-      <section id="section-getting-started" style="background: #f8fafc; padding: 4.5rem 0; border-bottom: 1px solid var(--border-light, #e2e8f0);">
+      <section id="section-getting-started" class="home-section-overlay home-section-overlay-light" style="padding: 4.5rem 0;">
         <div class="container">
           <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
             <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
@@ -1110,6 +1112,8 @@ const HomeView = {
           </div>
         </div>
       </section>
+
+      </div><!-- /.home-arch-canvas -->
 
       <!-- ========================================================
            ACCESSIBLE ARCHIVAL & TEST INTEGRITY CONTAINER
