@@ -413,7 +413,7 @@ const HomeView = {
            SECTION: SCHOOL OWNERS & PROPRIETORS SPOTLIGHT
            ======================================================== -->
       <section id="section-school-proprietors-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
-        <div class="container" style="max-width: 980px; margin: 0 auto;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="proprietors-spotlight-card">
             
             <!-- Top Hero Grid: Left Content + Right Curved Image -->
@@ -526,7 +526,7 @@ const HomeView = {
            SECTION: TEACHERS & EDUCATION PROFESSIONALS SPOTLIGHT
            ======================================================== -->
       <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
-        <div class="container" style="max-width: 980px; margin: 0 auto;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="teachers-spotlight-card">
             
             <!-- Eyebrow Badge -->
@@ -664,7 +664,7 @@ const HomeView = {
            SPOTLIGHT SECTION: SUPPLIERS & SERVICE PROVIDERS
            ======================================================== -->
       <section id="section-suppliers-providers-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
-        <div style="max-width: 980px; margin: 0 auto;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="suppliers-spotlight-card">
 
             <!-- Eyebrow Badge -->

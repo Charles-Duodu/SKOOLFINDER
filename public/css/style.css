@@ -1351,9 +1351,9 @@ button {
 
 .proprietors-hero-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   margin-bottom: 2rem;
 }
 
@@ -1408,11 +1408,11 @@ button {
 
 .proprietors-hero-image-wrap {
   width: 100%;
-  height: 240px;
-  border-radius: 16px;
+  height: 340px;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 6px 20px rgba(10, 32, 70, 0.08);
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
 }
 
 .proprietors-hero-image-wrap img {
@@ -1676,9 +1676,9 @@ button {
 
 .teachers-hero-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   margin-bottom: 2rem;
 }
 
@@ -1716,11 +1716,11 @@ button {
 
 .teachers-hero-image-wrap {
   width: 100%;
-  height: 240px;
-  border-radius: 16px;
+  height: 340px;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 6px 20px rgba(10, 32, 70, 0.08);
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
 }
 
 .teachers-hero-image-wrap img {
@@ -2036,9 +2036,9 @@ button {
 
 .suppliers-hero-grid {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
   margin-bottom: 2rem;
 }
 
@@ -2076,11 +2076,11 @@ button {
 
 .suppliers-hero-image-wrap {
   width: 100%;
-  height: 240px;
-  border-radius: 16px;
+  height: 340px;
+  border-radius: 18px;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 6px 20px rgba(10, 32, 70, 0.08);
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
 }
 
 .suppliers-hero-image-wrap img {
