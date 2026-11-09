@@ -558,38 +558,24 @@ const HomeView = {
             <div style="position: relative; z-index: 1;">
               
               <!-- Header & Subtitle -->
-              <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem; text-align: center; align-items: center;">
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.35rem, 2.5vw, 1.8rem); font-weight: 800; color: #ffffff; line-height: 1.25; margin: 0;">
                   Need Dedicated Support? Find Verified Tutors in Any Desired Field
                 </h3>
-                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.55; margin: 0; max-width: 820px;">
+                <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.55; margin: 0; max-width: 820px; text-align: center;">
                   Whether your child needs targeted help in STEM, Cambridge IGCSE prep, BECE/WASSCE revision, coding, or foreign languages &mdash; search verified, NTC-licensed Ghanaian educators for private home visits or live online tutoring.
                 </p>
               </div>
 
-              <!-- Trust Pillars & Action Row -->
-              <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.12);">
-                <div style="display: flex; flex-wrap: wrap; gap: 1.25rem; font-size: 0.84rem; color: #cbd5e1;">
-                  <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span style="color: #10B981; font-weight: 800;">✓</span> NTC Licensure Vetted
-                  </span>
-                  <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span style="color: #10B981; font-weight: 800;">✓</span> In-Person Home Visits or Online
-                  </span>
-                  <span style="display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <span style="color: #10B981; font-weight: 800;">✓</span> Zero Agency Commissions
-                  </span>
-                </div>
-
-                <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;">
-                  <button type="button" id="btn-parent-search-tutors" class="btn-pill" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #0A2046; font-weight: 800; font-size: 0.92rem; padding: 0.65rem 1.45rem; border: none; border-radius: 9999px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); transition: transform 0.15s, box-shadow 0.15s;">
-                    <span>Find a Vetted Tutor</span>
-                    <span style="font-size: 1.05rem;">&rarr;</span>
-                  </button>
-                  <button type="button" id="btn-parent-tutor-subjects" class="btn-pill" style="background: rgba(255, 255, 255, 0.08); color: #ffffff; font-weight: 700; font-size: 0.88rem; padding: 0.65rem 1.15rem; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 9999px; cursor: pointer; transition: all 0.15s;">
-                    Browse All Educators
-                  </button>
-                </div>
+              <!-- Centered Action Buttons Row -->
+              <div style="display: flex; flex-wrap: wrap; gap: 0.85rem; align-items: center; justify-content: center; padding-top: 0.5rem;">
+                <button type="button" id="btn-parent-search-tutors" class="btn-pill" style="background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); color: #0A2046; font-weight: 800; font-size: 0.92rem; padding: 0.65rem 1.45rem; border: none; border-radius: 9999px; cursor: pointer; display: inline-flex; align-items: center; gap: 0.45rem; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35); transition: transform 0.15s, box-shadow 0.15s;">
+                  <span>Find a Vetted Tutor</span>
+                  <span style="font-size: 1.05rem;">&rarr;</span>
+                </button>
+                <button type="button" id="btn-parent-tutor-subjects" class="btn-pill" style="background: rgba(255, 255, 255, 0.08); color: #ffffff; font-weight: 700; font-size: 0.88rem; padding: 0.65rem 1.15rem; border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 9999px; cursor: pointer; transition: all 0.15s;">
+                  Browse All Educators
+                </button>
               </div>
 
             </div>
