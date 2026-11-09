@@ -322,7 +322,7 @@ const DirectoryView = {
                   </div>
                 ` : `
                   <div class="schools-grid">
-                    ${schools.map(s => HomeView.renderSchoolCard(s)).join('')}
+                    ${schools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
                   </div>
                 `}
               `}
@@ -423,11 +423,86 @@ const DirectoryView = {
     } else {
       mainEl.innerHTML = `
         <div class="schools-grid">
-          ${schools.map(s => HomeView.renderSchoolCard(s)).join('')}
+          ${schools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
         </div>
       `;
-      HomeView.attachEvents();
+      this.attachCardEvents();
     }
+  },
+
+  renderSchoolCard(school) {
+    if (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard) {
+      return HomeView.renderSchoolCard(school);
+    }
+    return '';
+  },
+
+  attachCardEvents() {
+    if (typeof HomeView !== 'undefined' && HomeView.attachEvents) {
+      try { HomeView.attachEvents(); } catch(e) {}
+    }
+
+    document.querySelectorAll('.btn-card-view').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId) App.navigate('school-detail', schoolId);
+      };
+    });
+
+    document.querySelectorAll('.btn-card-wa').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const wa = btn.dataset.wa;
+        if (wa) {
+          const cleanWa = wa.replace(/[^0-9]/g, '');
+          window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-card-compare').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId) {
+          State.toggleCompare(schoolId);
+          btn.classList.toggle('active', State.isInCompare(schoolId));
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-card-bookmark').forEach(btn => {
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        const schoolName = btn.dataset.schoolName || 'School';
+        if (schoolId) {
+          await State.toggleBookmark(schoolId, schoolName);
+          const isNowSaved = State.isBookmarked(schoolId);
+          btn.classList.toggle('active', isNowSaved);
+          btn.innerHTML = isNowSaved ? '🔖' : '🤍';
+        }
+      };
+    });
+
+    document.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.onclick = (e) => {
+        e.stopPropagation();
+        const parentDots = dot.parentElement;
+        const schoolId = parentDots?.dataset?.schoolId;
+        const targetImg = document.getElementById(`img-${schoolId}`);
+        if (targetImg && dot.dataset.img) {
+          targetImg.style.opacity = '0.5';
+          setTimeout(() => {
+            targetImg.src = dot.dataset.img;
+            targetImg.style.opacity = '1';
+          }, 120);
+          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+        }
+      };
+    });
   },
 
   resetFilters() {
@@ -586,7 +661,7 @@ const DirectoryView = {
       API.getSchools(State.filters).then(schools => this.initMap(schools));
     } else {
       // School card click events for grid mode
-      HomeView.attachEvents();
+      this.attachCardEvents();
     }
   }
 };

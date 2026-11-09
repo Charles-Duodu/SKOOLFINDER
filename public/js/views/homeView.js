@@ -1175,14 +1175,15 @@ const HomeView = {
   },
 
   createSchoolCard(school) {
-    const isSaved = typeof State !== 'undefined' && State.isBookmarked && State.isBookmarked(school.id);
-    const curriculumTag = Array.isArray(school.curriculum) ? school.curriculum.join(', ') : (school.curriculum || 'Standard');
+    const isCompared = typeof State !== 'undefined' && State.isInCompare ? State.isInCompare(school.id) : false;
+    const isSaved = typeof State !== 'undefined' && State.isBookmarked ? State.isBookmarked(school.id) : false;
+    const curriculumTag = Array.isArray(school.curriculum) && school.curriculum.length > 0 ? school.curriculum[0] : (school.curriculum || 'Standard');
     let badgeClass = 'badge-cambridge';
-    if (curriculumTag.includes('GES')) badgeClass = 'badge-ges';
-    if (curriculumTag.includes('IB')) badgeClass = 'badge-ib';
-    if (curriculumTag.includes('Montessori')) badgeClass = 'badge-montessori';
+    if (String(curriculumTag).includes('GES')) badgeClass = 'badge-ges';
+    if (String(curriculumTag).includes('IB')) badgeClass = 'badge-ib';
+    if (String(curriculumTag).includes('Montessori')) badgeClass = 'badge-montessori';
 
-    const isFeeDisclosed = school.is_fee_disclosed !== false && school.fee_disclosed !== false && !school.isFeeNotDisclosed;
+    const isFeeDisclosed = school.is_fee_disclosed !== false && school.fee_disclosed !== false && !school.isFeeNotDisclosed && (school.tuition_min || school.tuition_max || (school.feeBand && !school.feeBand.includes('Not Disclosed')));
     let feeDisplay = 'Fee Not Disclosed';
     let feeTierClass = 'badge-fee-moderate';
 
@@ -1208,13 +1209,15 @@ const HomeView = {
     ];
 
     const levelsList = Array.isArray(school.levels) ? school.levels : (Array.isArray(school.education_level) ? school.education_level : ['Primary', 'JHS']);
+    const facilitiesList = Array.isArray(school.facilities) ? school.facilities : [];
+    const hasPhoneOrWa = Boolean(school.whatsapp || school.phone);
 
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
         <div class="card-mini-carousel" id="carousel-${school.id}">
           <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" />
           
-          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}">
+          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
             ${isSaved ? '🔖' : '🤍'}
           </button>
 
@@ -1226,32 +1229,61 @@ const HomeView = {
 
           <div class="school-card-badges">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
-            ${(school.verified || school.is_verified) ? '<span class="badge badge-verified">🛡️ Verified Profile</span>' : ''}
+            ${(school.verified || school.is_verified) ? '<span class="badge badge-verified" title="School ownership &amp; profile reviewed">🛡️ Verified Profile</span>' : ''}
             <span class="badge-radar-container"><span class="radar-pulse-core"></span> Admissions Open</span>
           </div>
           
-          <div class="school-card-fee-pill ${isFeeDisclosed ? feeTierClass : ''}">
+          <div class="school-card-fee-pill ${isFeeDisclosed ? feeTierClass : ''}" style="${!isFeeDisclosed ? 'background: rgba(15,23,42,0.85); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.25);' : ''}">
             ${feeDisplay}
           </div>
         </div>
         <div class="school-card-body">
           <div class="school-card-location">
-            <span>📍</span> ${school.suburb || school.locality || 'Greater Accra'}, ${school.region || 'Greater Accra'}
+            <span>📍</span> ${school.suburb || school.locality || school.district || 'Greater Accra'}, ${school.region || 'Greater Accra'}
           </div>
           <h3 class="school-card-name">${school.name}</h3>
           
-          <div class="school-card-levels">
-            ${levelsList.slice(0, 3).map(l => `<span class="level-tag">${l}</span>`).join('')}
+          <div style="display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; margin: 0.2rem 0 0.45rem; color: var(--text-muted);">
+            <span>🏫 ${school.category || 'Pre-Tertiary Campus'}</span>
+            <span>•</span>
+            <span>${school.genderType || school.gender_type || 'Co-educational'}</span>
           </div>
 
-          <div class="school-card-actions">
-            <button class="btn-pill btn-primary btn-card-view" data-school-id="${school.id}">View Campus</button>
-            <button class="btn-pill btn-outline btn-card-compare" data-school-id="${school.id}">Compare</button>
-            <button class="btn-pill btn-emerald btn-card-wa" data-wa="${school.whatsapp || ''}">WhatsApp</button>
+          <div class="school-card-motto">"${school.motto || 'Nurturing Academic Distinction & Integrity'}"</div>
+          
+          <div class="school-card-levels">
+            ${levelsList.slice(0, 3).map(l => `<span class="level-tag">${l}</span>`).join('')}
+            <span class="level-tag" style="background: var(--primary-50); color: var(--primary-700);">${school.boardingType || school.boarding_type || 'Day &amp; Boarding'}</span>
+          </div>
+
+          <div class="school-card-facilities">
+            ${facilitiesList.length > 0 ? facilitiesList.slice(0, 3).map(f => `<span class="facility-chip">✓ ${f}</span>`).join('') : '<span class="facility-chip" style="color: var(--text-muted); font-style: italic;">Campus facilities on profile</span>'}
+          </div>
+
+          <div class="school-card-footer">
+            <button class="btn-card-view btn-pill btn-primary" style="padding: 0.6rem 1.15rem; font-size: 0.88rem;" data-school-id="${school.id}">
+              View Profile
+            </button>
+            ${hasPhoneOrWa ? `
+              <button class="btn-card-wa btn-quick-wa btn-whatsapp-glow" style="padding: 0.6rem 1rem; font-size: 0.88rem;" data-school-id="${school.id}" data-wa="${school.whatsapp || school.phone || ''}" title="Chat Admissions on WhatsApp">
+                💬 WhatsApp
+              </button>
+            ` : `
+              <button class="btn-card-view btn-pill btn-outline" style="padding: 0.6rem 0.85rem; font-size: 0.84rem;" data-school-id="${school.id}">
+                Details
+              </button>
+            `}
+            <button class="btn-card-compare ${isCompared ? 'active' : ''}" data-school-id="${school.id}" title="${isCompared ? 'Remove from Compare' : 'Add to Compare (Up to 4 schools)'}">
+              ⚖️
+            </button>
           </div>
         </div>
       </div>
     `;
+  },
+
+  renderSchoolCard(school) {
+    return this.createSchoolCard(school);
   },
 
   attachEvents() {
@@ -1537,6 +1569,25 @@ const HomeView = {
           const isNowSaved = State.isBookmarked(schoolId);
           btn.classList.toggle('active', isNowSaved);
           btn.innerHTML = isNowSaved ? '🔖' : '🤍';
+        }
+      };
+    });
+
+    // Carousel mini dots switcher
+    document.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.onclick = (e) => {
+        e.stopPropagation();
+        const parentDots = dot.parentElement;
+        const schoolId = parentDots?.dataset?.schoolId;
+        const targetImg = document.getElementById(`img-${schoolId}`);
+        if (targetImg && dot.dataset.img) {
+          targetImg.style.opacity = '0.5';
+          setTimeout(() => {
+            targetImg.src = dot.dataset.img;
+            targetImg.style.opacity = '1';
+          }, 120);
+          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
         }
       };
     });
