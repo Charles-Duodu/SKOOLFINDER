@@ -417,9 +417,9 @@ async function runPackageFTests() {
 
     // 5. index.html cache buster incremented to v=74+
     const htmlContent = fs.readFileSync(path.join(__dirname, '../public/index.html'), 'utf8');
-    assert.ok(/\/js\/api\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for api.js');
-    assert.ok(/\/js\/components\/modals\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for modals.js');
-    assert.ok(/\/js\/views\/dashboardView\.js\?v=(7[4-9]|[8-9][0-9])/.test(htmlContent), 'index.html must have ?v=74+ for dashboardView.js');
+    assert.ok(/\/js\/api\.js\?v=(7[4-9]|[8-9][0-9]|[1-9][0-9]{2,})/.test(htmlContent), 'index.html must have ?v=74+ for api.js');
+    assert.ok(/\/js\/components\/modals\.js\?v=(7[4-9]|[8-9][0-9]|[1-9][0-9]{2,})/.test(htmlContent), 'index.html must have ?v=74+ for modals.js');
+    assert.ok(/\/js\/views\/dashboardView\.js\?v=(7[4-9]|[8-9][0-9]|[1-9][0-9]{2,})/.test(htmlContent), 'index.html must have ?v=74+ for dashboardView.js');
   });
 
   console.log('\n========================================================================');

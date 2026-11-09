@@ -219,7 +219,7 @@ const ParentPortalView = {
   async render() {
     // 1. If not authenticated or not logged in as a parent, render Parent Sign Up & Auth Gateway
     if (!State.isAuthenticated() || !State.isParent()) {
-      return this.renderAuthGateway();
+      return await this.renderAuthGateway();
     }
 
     const user = State.currentUser;
@@ -6313,7 +6313,72 @@ const ParentPortalView = {
     overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
   },
 
-  renderAuthGateway() {
+  renderPublicSchoolCard(school) {
+    if (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard) {
+      return HomeView.renderSchoolCard(school);
+    }
+    return '';
+  },
+
+  async renderAuthGateway() {
+    let previewSchools = [];
+    try {
+      if (typeof API !== 'undefined' && API.getSchools) {
+        const schools = await API.getSchools({ region: 'All' });
+        if (Array.isArray(schools) && schools.length > 0) {
+          previewSchools = schools.slice(0, 3);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch preview schools:", e);
+    }
+
+    if (!previewSchools || previewSchools.length === 0) {
+      previewSchools = [
+        {
+          id: 'sch-gis-accra',
+          name: 'Ghana International School (GIS)',
+          suburb: 'Cantonments',
+          region: 'Greater Accra',
+          curriculum: ['Cambridge (CIE)'],
+          levels: ['Primary', 'JHS', 'SHS'],
+          feeBand: 'Premium Tier (GH₵ 18,000 - 32,000 / Term)',
+          tuition_min: 18000,
+          tuition_max: 32000,
+          verified: true,
+          coverImage: '/assets/images/campus_hero.webp',
+          whatsapp: '+233244123456'
+        },
+        {
+          id: 'sch-sos-tema',
+          name: 'SOS-Hermann Gmeiner International College',
+          suburb: 'Tema Community 6',
+          region: 'Greater Accra',
+          curriculum: ['International Baccalaureate (IB)'],
+          levels: ['JHS', 'SHS'],
+          feeBand: 'Elite Tier (GH₵ 22,000 - 48,000 / Term)',
+          tuition_min: 22000,
+          tuition_max: 48000,
+          verified: true,
+          coverImage: '/assets/images/science_lab.webp',
+          whatsapp: '+233244654321'
+        },
+        {
+          id: 'sch-achi-accra',
+          name: 'Achimota Basic School',
+          suburb: 'Achimota',
+          region: 'Greater Accra',
+          curriculum: ['GES (NaCCA)'],
+          levels: ['Primary', 'JHS'],
+          feeBand: 'Moderate Tier (GH₵ 1,200 - 3,500 / Term)',
+          tuition_min: 1200,
+          tuition_max: 3500,
+          verified: true,
+          coverImage: '/assets/images/montessori_class.webp',
+          whatsapp: '+233244987654'
+        }
+      ];
+    }
     const compCount = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.length : 0;
     const bookmarkCount = (typeof State !== 'undefined' && Array.isArray(State.bookmarkedSchoolIds)) ? State.bookmarkedSchoolIds.length : 0;
     const totalGuestSaved = compCount + bookmarkCount;
@@ -6524,6 +6589,623 @@ const ParentPortalView = {
                 </a>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P03: EXPLORE BY NEED (BLUEPRINT §03)
+           ======================================================== -->
+      <section id="section-explore-by-need" style="background: #ffffff; padding: 4.5rem 1.5rem; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+            <span>🎯</span> TARGETED DISCOVERY
+          </div>
+          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+            Explore Schools by Need &amp; Priority
+          </h2>
+          <p style="color: #64748b; font-size: 1rem; max-width: 680px; margin: 0 auto 2.5rem; line-height: 1.6;">
+            Select a stage of education, curriculum pathway, or residential locality to instantly discover verified Ghanaian institutions matching your family's criteria.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 980px; margin: 0 auto; text-align: left;">
+            <!-- Group 1: Grade Level Pathways -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
+              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
+                <span>🎓</span> Browse by Grade Level
+              </div>
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Crèche" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Crèche &amp; Daycare (0–2 yrs)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Kindergarten" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Nursery &amp; Kindergarten (2–5 yrs)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Primary" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Primary School (Class 1–6)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="JHS" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Junior High (JHS 1–3)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="SHS" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Senior High (SHS Form 1–3)
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 2: Curriculum Options -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
+              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
+                <span>📖</span> Browse by Curriculum
+              </div>
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="GES (NaCCA)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  GES National Standards-Based
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="Cambridge (CIE)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Cambridge International (IGCSE &amp; A-Level)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="International Baccalaureate (IB)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  International Baccalaureate (IB)
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="Montessori" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  Montessori Method
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 3: Greater Accra Suburbs -->
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
+              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
+                <span>📍</span> Browse by Suburb &amp; Locality
+              </div>
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Cantonments" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  📍 Cantonments
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="East Legon" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  📍 East Legon
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Airport Residential" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  📍 Airport Residential
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Tema" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  📍 Spintex &amp; Tema
+                </button>
+                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Achimota" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                  📍 Achimota &amp; Dzorwulu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P04: TWO FREE WAYS TO EXPLORE (BLUEPRINT §04)
+           ======================================================== -->
+      <section id="section-parents-two-ways" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1040px; margin: 0 auto; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+            <span>🛡️</span> TRANSPARENT &amp; NO HIDDEN CHARGES
+          </div>
+          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+            Two Completely Free Ways to Explore
+          </h2>
+          <p style="color: #64748b; font-size: 1rem; max-width: 650px; margin: 0 auto 3rem; line-height: 1.6;">
+            No paywalls, mandatory account creation, or subscription fees. Choose the pathway that matches your workflow.
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; text-align: left;">
+            <!-- CARD A: GUEST EXPLORATION -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div>
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+                  🔍
+                </div>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Explore as a Guest
+                </h3>
+                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.25rem;">
+                  Immediate, unhindered access to directory search without registering an account.
+                </p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.86rem; color: #334155;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #10b981; font-weight: 800;">✓</span> Search and filter all accredited Ghanaian schools
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #10b981; font-weight: 800;">✓</span> View transparent term fee ranges &amp; caution deposits
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #10b981; font-weight: 800;">✓</span> Side-by-side comparison matrix for up to 4 schools
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #10b981; font-weight: 800;">✓</span> Direct admissions WhatsApp &amp; campus phone lines
+                  </li>
+                </ul>
+              </div>
+              <button type="button" id="btn-parents-guest-explore" class="btn-pill btn-outline" style="width: 100%; padding: 0.85rem; font-size: 0.92rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer;">
+                Search Schools as Guest &rarr;
+              </button>
+            </div>
+
+            <!-- CARD B: FREE PARENT ACCOUNT -->
+            <div style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(213, 166, 59, 0.12); position: relative;">
+              <div style="position: absolute; top: -12px; right: 20px; background: #D5A63B; color: #0A2046; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">
+                Recommended for Parents
+              </div>
+              <div>
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: #fefce8; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
+                  ✨
+                </div>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                  Your Free Parent Account
+                </h3>
+                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.25rem;">
+                  A personalized admissions workspace to organize your child's educational transitions.
+                </p>
+                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.86rem; color: #334155;">
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #D5A63B; font-weight: 800;">★</span> Save permanent school shortlists &amp; custom notes
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #D5A63B; font-weight: 800;">★</span> 5-state application tracker (Shortlist &rarr; Tour &rarr; Enrolled)
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #D5A63B; font-weight: 800;">★</span> Multi-child sibling management under one login
+                  </li>
+                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                    <span style="color: #D5A63B; font-weight: 800;">★</span> Automated SMS &amp; email alerts for term fee due dates
+                  </li>
+                </ul>
+              </div>
+              <button type="button" id="btn-parents-scroll-signup" class="btn-pill btn-gold" style="width: 100%; padding: 0.85rem; font-size: 0.92rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer; border: none;">
+                Create Free Parent Account &uarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P05: SCHOOL DISCOVERY PREVIEW (BLUEPRINT §05)
+           ======================================================== -->
+      <section id="section-parents-discovery-preview" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+            <span>🏛️</span> ACCREDITED INSTITUTIONS
+          </div>
+          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+            Featured Schools in Greater Accra
+          </h2>
+          <p style="color: #64748b; font-size: 1rem; max-width: 650px; margin: 0 auto 3rem; line-height: 1.6;">
+            A live preview of verified institutions with published curricula, admissions status, and transparent fee structures.
+          </p>
+
+          <div class="schools-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; text-align: left; margin-bottom: 2.75rem;">
+            ${previewSchools.map(s => this.renderPublicSchoolCard(s)).join('')}
+          </div>
+
+          <div>
+            <button type="button" id="btn-parents-view-all-schools" class="btn-pill btn-primary" style="padding: 0.85rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
+              View All Schools in Directory &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P06: COMPARE THE ESSENTIALS & TOTAL COST (BLUEPRINT §06)
+           ======================================================== -->
+      <section id="section-parents-compare" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+              <span>⚖️</span> OBJECTIVE COMPARISON
+            </div>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+              Compare Essentials &amp; Understand Total Costs
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
+              Make side-by-side decisions grounded in facts: evaluate tuition, pupil-to-teacher ratios, and caution deposits side-by-side.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+            <!-- PANEL 1: SIDE-BY-SIDE MATRIX -->
+            <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); color: #ffffff; border-radius: 18px; padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(10,32,70,0.15);">
+              <div>
+                <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 800; margin-bottom: 0.85rem; display: inline-block;">
+                  ⚖️ Side-by-Side Matrix
+                </span>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0;">
+                  Compare Up to 4 Schools Free
+                </h3>
+                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
+                  Compare Cambridge vs. GES vs. IB curricula, pupil-teacher ratios, campus laboratories, sports facilities, and intake terms side-by-side with no paywalls.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem;">
+                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Curricula Mapping</span>
+                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Class Size Ratios</span>
+                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Science &amp; STEM</span>
+                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Day vs. Boarding</span>
+                </div>
+              </div>
+              <button type="button" id="btn-parents-open-compare" class="btn-pill btn-gold" style="font-weight: 800; padding: 0.8rem 1.75rem; align-self: flex-start; cursor: pointer; border: none; border-radius: 9999px;">
+                Open 4-School Compare Matrix &rarr;
+              </button>
+            </div>
+
+            <!-- PANEL 2: UNDERSTAND FULL COST -->
+            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
+              <div>
+                <span class="badge" style="background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.85rem; display: inline-block;">
+                  💡 Fee Transparency
+                </span>
+                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.75rem 0;">
+                  The Real Cost of Education in Ghana
+                </h3>
+                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem;">
+                  Avoid hidden fees. SkoolFinder educates parents on the components of Ghanaian private school billing before enrollment:
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.84rem; color: #334155; margin-bottom: 1.5rem;">
+                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
+                    <strong>Tuition Fee</strong>
+                    <span style="color: #64748b;">Per term instruction fee</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
+                    <strong>PTA &amp; Capital Levies</strong>
+                    <span style="color: #64748b;">Mandatory termly levies</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
+                    <strong>Caution Deposit</strong>
+                    <span style="color: #64748b;">Refundable one-time bond</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
+                    <strong>Lunch &amp; Bus Shuttles</strong>
+                    <span style="color: #64748b;">Optional ancillary services</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" id="btn-parents-fees-guide" class="btn-pill btn-outline" style="font-weight: 800; padding: 0.8rem 1.75rem; align-self: flex-start; cursor: pointer; border-radius: 9999px;">
+                Explore Fee Transparency Guide &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P07: ADMISSIONS & SCHOOL VISITS (BLUEPRINT §07)
+           ======================================================== -->
+      <section id="section-parents-admissions" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+              <span>📅</span> 2026/2027 CALENDAR
+            </div>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+              Admissions Windows &amp; Campus Open Days
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
+              Plan ahead with verified entry cycles, entrance assessment windows, and campus tour opportunities.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            <!-- TILE 1: CAMBRIDGE & INTERNATIONAL -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                  <span class="badge badge-cambridge">Cambridge (CIE)</span>
+                  <span style="font-size: 0.76rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 0.2rem 0.6rem; border-radius: 9999px;">Admissions Active</span>
+                </div>
+                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                  Cambridge International Schools
+                </h4>
+                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Institutions like GIS, Lincoln, and British International School currently accepting Term 2 transfers and January 2027 entrance assessments.
+                </p>
+                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
+                  <div>📅 <strong>Assessment Window:</strong> Dec 2026 &ndash; Jan 2027</div>
+                  <div>📍 <strong>Locations:</strong> Cantonments, East Legon</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TILE 2: IB WORLD SCHOOLS -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                  <span class="badge badge-ib">IB World Schools</span>
+                  <span style="font-size: 0.76rem; font-weight: 700; color: #b45309; background: #fefce8; padding: 0.2rem 0.6rem; border-radius: 9999px;">Waitlist Open</span>
+                </div>
+                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                  International Baccalaureate (IB)
+                </h4>
+                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  SOS Hermann Gmeiner International College &amp; Lincoln Community School DP1 and Middle Years intake notices published.
+                </p>
+                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
+                  <div>📅 <strong>Scholarship Deadline:</strong> 15 Jan 2027</div>
+                  <div>📍 <strong>Locations:</strong> Tema Community 6, Dzorwulu</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TILE 3: GES STANDARDS-BASED -->
+            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                  <span class="badge badge-ges">GES Standards-Based</span>
+                  <span style="font-size: 0.76rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 0.2rem 0.6rem; border-radius: 9999px;">Continuous</span>
+                </div>
+                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
+                  National Standards Basic Schools
+                </h4>
+                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
+                  Accredited private basic schools offering continuous admission into Kindergarten, Primary Class 1, and JHS 1.
+                </p>
+                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
+                  <div>📅 <strong>Term 2 Start:</strong> 12 January 2027</div>
+                  <div>📍 <strong>Locations:</strong> Achimota, Spintex, Airport</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align: center;">
+            <button type="button" id="btn-parents-admissions-search" class="btn-pill btn-primary" style="padding: 0.8rem 2rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
+              Search Schools with Open Admissions &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P08: PARENT GUIDANCE & INSIGHTS (BLUEPRINT §08)
+           ======================================================== -->
+      <section id="section-parents-guidance" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #fefce8; color: #854d0e; border: 1px solid #fef08a; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+              <span>📖</span> PARENT ADVISORY
+            </div>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+              Guidance &amp; Practical Checklists
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
+              Actionable, evidence-grounded articles to guide your family through critical educational transitions.
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem;">
+            <!-- CARD 1 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="padding: 1.75rem;">
+                <div style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                  Admissions Readiness
+                </div>
+                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
+                  Ghanaian Private School Admissions Checklist
+                </h4>
+                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
+                  The 4 essential documents every private school in Accra requires: child birth cert, immunization yellow card, past 2 term report cards, and NaSIA transfer slip.
+                </p>
+              </div>
+              <div style="padding: 0 1.75rem 1.5rem;">
+                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Read Checklist &rarr;</span>
+              </div>
+            </div>
+
+            <!-- CARD 2 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="padding: 1.75rem;">
+                <div style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                  Curriculum Decoded
+                </div>
+                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
+                  GES vs. Cambridge CIE vs. IB World
+                </h4>
+                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
+                  A balanced comparison of pedagogy, exam structures (BECE vs. IGCSE), tuition implications, and local vs. international university pathways.
+                </p>
+              </div>
+              <div style="padding: 0 1.75rem 1.5rem;">
+                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Compare Curricula &rarr;</span>
+              </div>
+            </div>
+
+            <!-- CARD 3 -->
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+              <div style="padding: 1.75rem;">
+                <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+                  SHS Placement
+                </div>
+                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
+                  Understanding BECE &amp; CSSPS Placement
+                </h4>
+                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
+                  How Core 4 + Best 2 aggregates work, Category A school selection quotas, and how private school candidates navigate the national placement engine.
+                </p>
+              </div>
+              <div style="padding: 0 1.75rem 1.5rem;">
+                <span style="font-size: 0.84rem; font-weight: 700; color: #1266C4; cursor: pointer;">Learn About CSSPS &rarr;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P09: VERIFIED EDUCATORS & SPECIALIST TUTORS (BLUEPRINT §09)
+           ======================================================== -->
+      <section id="section-parents-tutors" style="background: #ffffff; padding: 4rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 980px; margin: 0 auto;">
+          <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #bfdbfe; border-radius: 18px; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+            <div style="max-width: 600px;">
+              <span class="badge" style="background: #dbeafe; color: #1e40af; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.65rem; display: inline-block;">
+                🧑‍🏫 ACADEMIC SUPPORT
+              </span>
+              <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                Looking for 1-on-1 Academic Support?
+              </h3>
+              <p style="color: #475569; font-size: 0.92rem; line-height: 1.6; margin: 0;">
+                Connect with verified NTC-licensed educators and subject specialists for home tutoring, reading/phonetics, French immersion, and BECE/WASSCE preparation. Strictly safeguarding-compliant public discovery.
+              </p>
+            </div>
+            <div>
+              <button type="button" id="btn-parents-goto-teachers" class="btn-pill btn-primary" style="padding: 0.85rem 1.75rem; font-size: 0.92rem; font-weight: 800; white-space: nowrap; cursor: pointer; border: none; border-radius: 9999px;">
+                Explore Verified Educators &rarr;
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P10: TRUST & INFORMATION TRANSPARENCY (BLUEPRINT §10)
+           ======================================================== -->
+      <section id="section-parents-trust" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
+          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+            <span>🛡️</span> STATUTORY INTEGRITY
+          </div>
+          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+            Our Standard of Trust &amp; Data Integrity
+          </h2>
+          <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto 3rem; line-height: 1.6;">
+            We believe parents deserve accurate, unmanipulated school data. Here is our 3-tier verification standard:
+          </p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem; text-align: left;">
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">🏛️</div>
+              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                NaSIA Accreditation Audit
+              </h4>
+              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
+                We cross-reference school licenses against the National Schools Inspectorate Authority registry under Education Regulatory Bodies Act 1023.
+              </p>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">📞</div>
+              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                Direct Leadership Verification
+              </h4>
+              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
+                Official telephone lines, WhatsApp admissions channels, and campus locations are directly verified with school proprietors and headteachers.
+              </p>
+            </div>
+
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
+              <div style="font-size: 2rem; margin-bottom: 1rem;">🚫</div>
+              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
+                Zero Pay-to-Rank Policy
+              </h4>
+              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
+                Schools cannot buy algorithmic rankings or artificial ratings. Search results are returned strictly according to the parent's chosen filters.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P11: FREQUENTLY ASKED QUESTIONS (BLUEPRINT §11)
+           ======================================================== -->
+      <section id="section-parents-faq" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
+        <div class="container" style="max-width: 860px; margin: 0 auto;">
+          <div style="text-align: center; margin-bottom: 3rem;">
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
+              <span>❓</span> COMMON QUESTIONS
+            </div>
+            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
+              Frequently Asked Questions
+            </h2>
+            <p style="color: #64748b; font-size: 1rem; margin: 0; line-height: 1.6;">
+              Clear answers to help you navigate school discovery and admissions.
+            </p>
+          </div>
+
+          <div class="faq-accordion" style="display: flex; flex-direction: column; gap: 0.85rem;">
+            <!-- FAQ 1 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>Is creating a parent account completely free?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                Yes, 100% free. SkoolFinder does not charge parents for searching schools, viewing verified fee schedules, submitting admissions inquiries, or tracking application milestones.
+              </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>Do I have to create an account to search for schools?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                No. Guest discovery is completely unrestricted. You can search by suburb or curriculum, compare up to 4 schools, and view phone/WhatsApp contact details without creating an account.
+              </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>How do schools receive my admission inquiries?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                Inquiries are dispatched directly to verified school admissions officers via official WhatsApp lines and authorized institutional inboxes. No third-party brokers or unregistered agents are involved.
+              </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>Why do some schools show "Fee Not Disclosed"?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                We strictly enforce data truthfulness. We only publish fee schedules verified directly with school administrations. If a school has not yet submitted its official term fees, we truthfully mark it as "Fee Not Disclosed" rather than estimating.
+              </div>
+            </div>
+
+            <!-- FAQ 5 -->
+            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
+              <button type="button" class="faq-toggle-btn" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+                <span>Can I manage applications for multiple children?</span>
+                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
+              </button>
+              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
+                Yes! When registered, your parent workspace allows you to manage multiple children with individual profiles, grade levels, and separate application milestones under one login.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+           SECTION P12: CLOSING ACTION BANNER (BLUEPRINT §12)
+           ======================================================== -->
+      <section id="section-parents-closing-cta" style="background: linear-gradient(135deg, #0A2046 0%, #1e3a8a 100%); color: #ffffff; padding: 4.5rem 1.5rem; text-align: center;">
+        <div class="container" style="max-width: 820px; margin: 0 auto;">
+          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.7rem); font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0 0 1rem 0;">
+            Your Child's School Search Starts Here
+          </h2>
+          <p style="font-size: 1.05rem; color: rgba(255, 255, 255, 0.88); line-height: 1.6; margin: 0 auto 2.5rem; max-width: 620px;">
+            Join thousands of Ghanaian parents discovering accredited schools, comparing transparent fees, and establishing their children's future with confidence.
+          </p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button type="button" id="btn-parents-footer-find-schools" class="btn-pill btn-gold" style="padding: 0.9rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
+              🔍 Find Schools Now &rarr;
+            </button>
+            <button type="button" id="btn-parents-footer-signup" class="btn-pill" style="padding: 0.9rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; background: rgba(255,255,255,0.15); color: #ffffff; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 9999px;">
+              ✨ Create Free Account
+            </button>
           </div>
         </div>
       </section>
@@ -6755,6 +7437,170 @@ const ParentPortalView = {
         }
       } catch (err) {
         State.showToast("Could not load demo account: " + err.message, "error");
+      }
+    });
+
+    // 5. Section P03: Explore by Need Filter Chips
+    document.querySelectorAll('.parent-filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const type = chip.getAttribute('data-filter-type');
+        const val = chip.getAttribute('data-filter-val');
+        if (type === 'level') {
+          State.filters.level = val;
+          State.filters.search = '';
+        } else if (type === 'curriculum') {
+          State.filters.curriculum = val;
+          State.filters.search = '';
+        } else if (type === 'suburb') {
+          State.filters.suburb = val;
+          State.filters.search = '';
+        }
+        App.navigate('directory');
+      });
+    });
+
+    // 6. Section P04: Two Free Ways CTAs
+    document.getElementById('btn-parents-guest-explore')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-parents-scroll-signup')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const card = document.querySelector('#parent-card-header') || document.querySelector('#form-parent-signup');
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const nameInput = document.querySelector('#parent-reg-name');
+        if (nameInput) nameInput.focus();
+      }
+    });
+
+    // 7. Section P05: School Preview CTAs & Card Actions
+    document.getElementById('btn-parents-view-all-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.querySelectorAll('.btn-card-view').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId) App.navigate('school-detail', schoolId);
+      };
+    });
+
+    document.querySelectorAll('.btn-card-wa').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const wa = btn.dataset.wa;
+        if (wa) {
+          const cleanWa = wa.replace(/[^0-9]/g, '');
+          window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-card-compare').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId) {
+          State.toggleCompare(schoolId);
+          btn.classList.toggle('active', State.isInCompare(schoolId));
+        }
+      };
+    });
+
+    document.querySelectorAll('.btn-card-bookmark').forEach(btn => {
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        const schoolName = btn.dataset.schoolName || 'School';
+        if (schoolId) {
+          await State.toggleBookmark(schoolId, schoolName);
+          const isNowSaved = State.isBookmarked(schoolId);
+          btn.classList.toggle('active', isNowSaved);
+          btn.innerHTML = isNowSaved ? '🔖' : '🤍';
+        }
+      };
+    });
+
+    document.querySelectorAll('.carousel-dot').forEach(dot => {
+      dot.onclick = (e) => {
+        e.stopPropagation();
+        const parentDots = dot.parentElement;
+        const schoolId = parentDots?.dataset?.schoolId;
+        const targetImg = document.getElementById(`img-${schoolId}`);
+        if (targetImg && dot.dataset.img) {
+          targetImg.style.opacity = '0.5';
+          setTimeout(() => {
+            targetImg.src = dot.dataset.img;
+            targetImg.style.opacity = '1';
+          }, 120);
+          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+        }
+      };
+    });
+
+    // 8. Section P06, P07, P09 CTAs
+    document.getElementById('btn-parents-open-compare')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('compare');
+    });
+
+    document.getElementById('btn-parents-fees-guide')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-parents-admissions-search')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-parents-goto-teachers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('teachers');
+    });
+
+    // 9. Section P11: FAQ Accordions
+    document.querySelectorAll('.faq-toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const icon = btn.querySelector('.faq-icon');
+        const isOpen = panel && panel.style.display === 'block';
+
+        // Close all other panels
+        document.querySelectorAll('.faq-answer-panel').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.faq-icon').forEach(i => {
+          i.textContent = '+';
+          i.style.transform = 'rotate(0deg)';
+        });
+
+        if (!isOpen && panel) {
+          panel.style.display = 'block';
+          if (icon) {
+            icon.textContent = '−';
+            icon.style.transform = 'rotate(180deg)';
+          }
+        }
+      });
+    });
+
+    // 10. Section P12: Closing Actions
+    document.getElementById('btn-parents-footer-find-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-parents-footer-signup')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const card = document.querySelector('#parent-card-header') || document.querySelector('#form-parent-signup');
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const nameInput = document.querySelector('#parent-reg-name');
+        if (nameInput) nameInput.focus();
       }
     });
   }
