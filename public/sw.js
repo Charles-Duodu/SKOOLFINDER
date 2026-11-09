@@ -2,7 +2,7 @@
  * SkoolFinder Ghana - Progressive Web App (PWA) Service Worker
  * Strategy: Stale-While-Revalidate for Static Assets, Network-First for Navigation & APIs
  */
-const CACHE_NAME = 'skoolfinder-cache-v83';
+const CACHE_NAME = 'skoolfinder-cache-v84';
 
 // Critical core assets to precache during install for instant shell loading
 const PRECACHE_ASSETS = [

@@ -412,7 +412,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION: SCHOOL OWNERS & PROPRIETORS SPOTLIGHT
            ======================================================== -->
-      <section id="section-school-proprietors-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+      <section id="section-school-proprietors-spotlight" style="background: #f8fafc; padding: 3.75rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="proprietors-spotlight-card">
             
@@ -525,7 +525,7 @@ const HomeView = {
       <!-- ========================================================
            SECTION: TEACHERS & EDUCATION PROFESSIONALS SPOTLIGHT
            ======================================================== -->
-      <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+      <section id="section-teachers-professionals-spotlight" style="background: #f8fafc; padding: 2.25rem 1.5rem 2.25rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="teachers-spotlight-card">
 
@@ -662,7 +662,7 @@ const HomeView = {
       <!-- ========================================================
            SPOTLIGHT SECTION: SUPPLIERS & SERVICE PROVIDERS
            ======================================================== -->
-      <section id="section-suppliers-providers-spotlight" style="background: #f8fafc; padding: 0 1.5rem 5rem; scroll-margin-top: 80px;">
+      <section id="section-suppliers-providers-spotlight" style="background: #f8fafc; padding: 2.25rem 1.5rem 4.5rem; scroll-margin-top: 80px;">
         <div class="container" style="max-width: 1140px; margin: 0 auto;">
           <div class="suppliers-spotlight-card">
 
