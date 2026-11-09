@@ -6539,7 +6539,7 @@ const ParentPortalView = {
                   </div>
 
                   <!-- Row 2: Mobile Phone & Email Address (2 Columns) -->
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                  <div class="parent-form-row-2col">
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                         Mobile Phone (Ghana or Intl) *
@@ -6555,7 +6555,7 @@ const ParentPortalView = {
                   </div>
 
                   <!-- Row 3: Create Password & Confirm Password (2 Columns) -->
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
+                  <div class="parent-form-row-2col">
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                         Create Password *
