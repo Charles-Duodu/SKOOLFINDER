@@ -484,11 +484,6 @@ const HomeView = {
 
             <div style="position: relative; z-index: 1;">
               
-              <!-- Eyebrow Pill -->
-              <div style="display: inline-flex; align-items: center; gap: 0.45rem; background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.32); padding: 0.3rem 0.85rem; border-radius: 9999px; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.85rem;">
-                <span>🎓</span> PRIVATE 1-ON-1 &amp; HOME TUTORING
-              </div>
-
               <!-- Header & Subtitle -->
               <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;">
                 <h3 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.35rem, 2.5vw, 1.8rem); font-weight: 800; color: #ffffff; line-height: 1.25; margin: 0;">
@@ -497,39 +492,6 @@ const HomeView = {
                 <p style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.55; margin: 0; max-width: 820px;">
                   Whether your child needs targeted help in STEM, Cambridge IGCSE prep, BECE/WASSCE revision, coding, or foreign languages &mdash; search verified, NTC-licensed Ghanaian educators for private home visits or live online tutoring.
                 </p>
-              </div>
-
-              <!-- Popular Fields & Subjects Tag Cloud (Clickable) -->
-              <div style="margin-bottom: 1.5rem;">
-                <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: #94a3b8; font-weight: 700; margin-bottom: 0.65rem;">
-                  Popular Fields Parents Search:
-                </div>
-                <div class="tutor-subjects-cloud" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                  <button type="button" class="tutor-subject-chip" data-subject="Mathematics" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>📐</span> Mathematics
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="Integrated Science" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>🔬</span> Integrated Science
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="BECE & WASSCE Prep" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>🇬🇭</span> BECE &amp; WASSCE Prep
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="Cambridge IGCSE" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>🇬🇧</span> Cambridge IGCSE / A-Levels
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="Coding & ICT" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>💻</span> Coding &amp; Robotics
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="French & Languages" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>🇫🇷</span> French &amp; Local Languages
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="English & Phonics" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>📖</span> English &amp; Early Phonics
-                  </button>
-                  <button type="button" class="tutor-subject-chip" data-subject="Special Needs & SEN" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.18); color: #ffffff; font-size: 0.82rem; font-weight: 600; padding: 0.35rem 0.75rem; border-radius: 9999px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <span>🧩</span> Special Educational Needs
-                  </button>
-                </div>
               </div>
 
               <!-- Trust Pillars & Action Row -->
