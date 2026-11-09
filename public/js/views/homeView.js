@@ -581,12 +581,6 @@ const HomeView = {
               <!-- Card 1: Mathematics Teacher -->
               <div class="teachers-job-card teachers-card-maths">
                 <div>
-                  <div class="teachers-job-icon-box teachers-icon-maths" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                    </svg>
-                  </div>
                   <h3 class="teachers-job-title">Mathematics Teacher</h3>
                   <div class="teachers-job-school">Crownridge International School</div>
                   
@@ -609,14 +603,6 @@ const HomeView = {
               <!-- Card 2: School Administrator -->
               <div class="teachers-job-card teachers-card-admin">
                 <div>
-                  <div class="teachers-job-icon-box teachers-icon-admin" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                  </div>
                   <h3 class="teachers-job-title">School Administrator</h3>
                   <div class="teachers-job-school">Tema Royal Academy</div>
                   
@@ -639,12 +625,6 @@ const HomeView = {
               <!-- Card 3: Teaching Assistant -->
               <div class="teachers-job-card teachers-card-assistant">
                 <div>
-                  <div class="teachers-job-icon-box teachers-icon-assistant" aria-hidden="true">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-                      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-                    </svg>
-                  </div>
                   <h3 class="teachers-job-title">Teaching Assistant</h3>
                   <div class="teachers-job-school">Hope Bridge Academy</div>
                   
@@ -728,7 +708,6 @@ const HomeView = {
               <!-- Tender Card 1: ICT Equipment -->
               <div class="suppliers-tender-card suppliers-card-ict">
                 <div class="suppliers-tender-top">
-                  <div class="suppliers-tender-icon-box suppliers-icon-ict" aria-hidden="true">💻</div>
                   <h4 class="suppliers-tender-title">Supply of ICT Equipment</h4>
                   <p class="suppliers-tender-school">Accra Commonwealth School</p>
                   <div class="suppliers-tender-meta-row">
@@ -744,7 +723,6 @@ const HomeView = {
               <!-- Tender Card 2: Facility Maintenance -->
               <div class="suppliers-tender-card suppliers-card-maintenance">
                 <div class="suppliers-tender-top">
-                  <div class="suppliers-tender-icon-box suppliers-icon-maintenance" aria-hidden="true">🔧</div>
                   <h4 class="suppliers-tender-title">Maintenance of School Facilities</h4>
                   <p class="suppliers-tender-school">Tema Methodist Basic School</p>
                   <div class="suppliers-tender-meta-row">
@@ -760,7 +738,6 @@ const HomeView = {
               <!-- Tender Card 3: Cleaning Services -->
               <div class="suppliers-tender-card suppliers-card-cleaning">
                 <div class="suppliers-tender-top">
-                  <div class="suppliers-tender-icon-box suppliers-icon-cleaning" aria-hidden="true">🧹</div>
                   <h4 class="suppliers-tender-title">Provision of Cleaning Services</h4>
                   <p class="suppliers-tender-school">East Legon International School</p>
                   <div class="suppliers-tender-meta-row">
