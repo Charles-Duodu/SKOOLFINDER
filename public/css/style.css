@@ -934,10 +934,10 @@ button {
    Platform Metrics Bar (Compact Sleek Strip)
    ======================================================== */
 .metrics-strip {
-  background: rgba(255, 255, 255, 0.90);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.80);
   padding: 0.85rem 0;
   box-shadow: 0 4px 16px rgba(10, 32, 70, 0.04);
   position: relative;
@@ -945,8 +945,8 @@ button {
 }
 
 [data-theme="dark"] .metrics-strip {
-  background: rgba(15, 23, 42, 0.88);
-  border-bottom-color: rgba(51, 65, 85, 0.85);
+  background: rgba(15, 23, 42, 0.78);
+  border-bottom-color: rgba(51, 65, 85, 0.80);
 }
 
 .metrics-grid {
@@ -2734,12 +2734,12 @@ button {
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(248, 250, 252, 0.35) 35%,
-    rgba(241, 245, 249, 0.50) 100%
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(248, 250, 252, 0.18) 35%,
+    rgba(241, 245, 249, 0.30) 100%
   );
-  backdrop-filter: blur(1.5px);
-  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
 }
 
 .home-arch-canvas {
@@ -2751,41 +2751,41 @@ button {
 .home-section-overlay {
   position: relative;
   z-index: 2;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75);
 }
 
 .home-section-overlay-light {
-  background: rgba(255, 255, 255, 0.90) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.76) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .home-section-overlay-tint {
-  background: rgba(248, 250, 252, 0.91) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(248, 250, 252, 0.78) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .home-section-overlay-two-ways {
-  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.04) 0%, rgba(248, 250, 252, 0.90) 100%) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.04) 0%, rgba(248, 250, 252, 0.74) 100%) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 [data-theme="dark"] .home-arch-backdrop-scrim {
-  background: rgba(10, 20, 38, 0.78);
+  background: rgba(10, 20, 38, 0.65);
 }
 [data-theme="dark"] .home-section-overlay-light {
-  background: rgba(15, 23, 42, 0.90) !important;
-  border-bottom-color: rgba(51, 65, 85, 0.85) !important;
+  background: rgba(15, 23, 42, 0.78) !important;
+  border-bottom-color: rgba(51, 65, 85, 0.75) !important;
 }
 [data-theme="dark"] .home-section-overlay-tint {
-  background: rgba(10, 20, 38, 0.92) !important;
-  border-bottom-color: rgba(51, 65, 85, 0.85) !important;
+  background: rgba(10, 20, 38, 0.80) !important;
+  border-bottom-color: rgba(51, 65, 85, 0.75) !important;
 }
 [data-theme="dark"] .home-section-overlay-two-ways {
-  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.12) 0%, rgba(10, 20, 38, 0.92) 100%) !important;
-  border-bottom-color: rgba(51, 65, 85, 0.85) !important;
+  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.12) 0%, rgba(10, 20, 38, 0.80) 100%) !important;
+  border-bottom-color: rgba(51, 65, 85, 0.75) !important;
 }
 
 /* ========================================================
@@ -2793,18 +2793,18 @@ button {
    ======================================================== */
 .eco-v3-section {
   position: relative;
-  background: radial-gradient(circle at 50% 0%, rgba(237, 246, 255, 0.82) 0%, rgba(248, 250, 252, 0.85) 45%, rgba(255, 255, 255, 0.88) 100%);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: radial-gradient(circle at 50% 0%, rgba(237, 246, 255, 0.68) 0%, rgba(248, 250, 252, 0.72) 45%, rgba(255, 255, 255, 0.76) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 4.75rem 1.5rem 4.5rem;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75);
   overflow: hidden;
   scroll-margin-top: 75px;
   z-index: 2;
 }
 
 [data-theme="dark"] .eco-v3-section {
-  background: radial-gradient(circle at 50% 0%, rgba(15, 29, 58, 0.90) 0%, rgba(10, 20, 38, 0.93) 50%, rgba(8, 16, 32, 0.95) 100%);
+  background: radial-gradient(circle at 50% 0%, rgba(15, 29, 58, 0.80) 0%, rgba(10, 20, 38, 0.82) 50%, rgba(8, 16, 32, 0.85) 100%);
 }
 
 .eco-v3-container {
