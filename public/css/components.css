@@ -5378,12 +5378,13 @@ body.has-comparison-dock .sd-chat-window {
   }
 }
 
-/* Directory Found Schools Grid - Always Horizontal Display with Dividers */
+/* Directory Found Schools Grid - Always Horizontal Display with Dividers & Micro-Adjustments */
 .directory-schools-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 2rem;
+  gap: 2.25rem;
   width: 100%;
+  align-items: stretch;
 }
 
 .school-card-col {
@@ -5393,16 +5394,94 @@ body.has-comparison-dock .sd-chat-window {
   min-width: 0;
 }
 
-/* Thin line to separate each school */
+/* Refined Editorial Gradient Divider Line */
 .school-card-col:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  right: -1rem;
+  top: 10px;
+  bottom: 10px;
+  right: -1.125rem;
   width: 1px;
-  background: var(--border-light, #cbd5e1);
+  background: linear-gradient(180deg, rgba(203, 213, 225, 0.2) 0%, rgba(203, 213, 225, 0.95) 15%, rgba(203, 213, 225, 0.95) 85%, rgba(203, 213, 225, 0.2) 100%);
   pointer-events: none;
+}
+
+/* Enhanced School Card Micro-Polish & Hover Elevation */
+.directory-schools-grid .school-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(10, 32, 70, 0.05);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.directory-schools-grid .school-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 38px -8px rgba(10, 32, 70, 0.13), 0 0 0 1px rgba(18, 102, 196, 0.28);
+  border-color: rgba(18, 102, 196, 0.35);
+}
+
+/* Carousel Image Smooth Zoom on Hover */
+.directory-schools-grid .carousel-img {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.directory-schools-grid .school-card:hover .carousel-img {
+  transform: scale(1.045);
+}
+
+/* Unified Vertical Rhythm for School Names & Mottos */
+.directory-schools-grid .school-card-name {
+  min-height: 2.85rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 1.15rem;
+  line-height: 1.32;
+}
+
+.directory-schools-grid .school-card-motto {
+  min-height: 1.35rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8rem;
+}
+
+/* Bookmark Button Micro-interaction */
+.directory-schools-grid .btn-card-bookmark {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.2s ease;
+}
+
+.directory-schools-grid .btn-card-bookmark:hover {
+  transform: scale(1.15);
+  background: #ffffff;
+}
+
+/* Footer Buttons Micro-lift */
+.directory-schools-grid .school-card-footer {
+  padding-top: 0.85rem;
+  margin-top: auto;
+}
+
+.directory-schools-grid .btn-card-view,
+.directory-schools-grid .btn-card-wa {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.directory-schools-grid .btn-card-view:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(18, 102, 196, 0.2);
+}
+
+.directory-schools-grid .btn-card-wa:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
 }
 
 @media (max-width: 992px) {
