@@ -525,3 +525,4 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
     </div>
   );
 }
+

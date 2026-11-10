@@ -592,86 +592,6 @@ const HomeView = {
         </div>
       </section>
 
-      <!-- ========================================================
-           SECTION 06: GETTING STARTED IS SIMPLE (BLUEPRINT §07)
-           ======================================================== -->
-      <section id="section-getting-started" class="home-section-overlay home-section-overlay-light" style="padding: 4.5rem 0;">
-        <div class="container">
-          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
-            <span class="badge" style="background: #eff6ff; color: #1266C4; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bfdbfe; margin-bottom: 0.5rem;">
-              <span>🚀</span> SIMPLE STEPS
-            </span>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: 2rem; font-weight: 800; color: #0A2046; line-height: 1.3; margin: 0 0 0.5rem 0;">
-              Getting Started is Simple
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; line-height: 1.6; margin: 0 auto;">
-              Choose your audience pathway and take your first step in minutes.
-            </p>
-          </div>
-
-          <!-- 4 Columns Grid -->
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1.25rem; max-width: 1160px; margin: 0 auto;">
-            
-            <!-- Pathway 1: Parents -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">👨‍👩‍👧</div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Parents &amp; Families</h4>
-                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Search Schools &rarr; Compare Options &rarr; Enquire or Save
-                </div>
-              </div>
-              <button type="button" id="btn-start-parents" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
-                Start Exploring Schools &rarr;
-              </button>
-            </div>
-
-            <!-- Pathway 2: School Owners -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🏫</div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">School Proprietors</h4>
-                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Explore Portal &rarr; Register Institution &rarr; Manage Presence
-                </div>
-              </div>
-              <button type="button" id="btn-start-schools" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
-                Register Institution &rarr;
-              </button>
-            </div>
-
-            <!-- Pathway 3: Teachers -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">🧑‍🏫</div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Teachers &amp; Tutors</h4>
-                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Explore Portal &rarr; Create Profile &rarr; Discover Opportunities
-                </div>
-              </div>
-              <button type="button" id="btn-start-teachers" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
-                Create Educator Profile &rarr;
-              </button>
-            </div>
-
-            <!-- Pathway 4: Suppliers -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="font-size: 1.8rem; margin-bottom: 0.5rem;">📦</div>
-                <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">Suppliers &amp; Vendors</h4>
-                <div style="font-size: 0.84rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Explore Portal &rarr; Register Business &rarr; Showcase Offerings
-                </div>
-              </div>
-              <button type="button" id="btn-start-suppliers" class="btn-pill btn-outline" style="font-size: 0.82rem; font-weight: 800; padding: 0.5rem 1rem; color: #0A2046; border: 1.5px solid #0A2046; width: 100%; justify-content: center; cursor: pointer; border-radius: 9999px;">
-                Register as Supplier &rarr;
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
       </div><!-- /.home-arch-canvas -->
 
       <!-- ========================================================
@@ -972,27 +892,6 @@ const HomeView = {
       App.navigate('for-suppliers');
     });
 
-
-    // SECTION 06: Getting Started Pathways
-    document.getElementById('btn-start-parents')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('directory');
-    });
-
-    document.getElementById('btn-start-schools')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('for-schools');
-    });
-
-    document.getElementById('btn-start-teachers')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('for-teachers');
-    });
-
-    document.getElementById('btn-start-suppliers')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('for-suppliers');
-    });
 
     // Legacy Bridge CTAs
     document.getElementById('btn-browse-all-schools')?.addEventListener('click', () => App.navigate('directory'));
