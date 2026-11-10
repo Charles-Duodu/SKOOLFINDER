@@ -181,7 +181,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard', 'opportunities'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -238,6 +238,13 @@ const App = {
         keywords: 'parents portal Ghana, school admissions tracker, school shortlist Accra, child education planning, accredited Ghanaian schools, NaSIA verified schools',
         canonicalUrl: 'https://skoolfinder.vercel.app/parents',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Parents & Guardians Hub', url: '/parents' }]
+      },
+      'opportunities': {
+        title: 'Discover Opportunities Across SkoolFinder | Admissions, Careers & Procurement Tenders Ghana',
+        description: 'Explore opportunities across Ghana\'s education sector: school admissions, teaching careers, procurement tenders, and service contracts in Greater Accra.',
+        keywords: 'education opportunities Ghana, school tenders Accra, teaching jobs Ghana, school admissions Accra, educational procurement contracts',
+        canonicalUrl: 'https://skoolfinder.vercel.app/opportunities',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Opportunities', url: '/opportunities' }]
       },
       'teachers': {
         title: 'Teaching & Educational Vacancies in Ghana | SkoolFinder Careers',
@@ -401,6 +408,10 @@ const App = {
         content = await ResourcesView.render();
         mainRoot.innerHTML = content;
         ResourcesView.attachEvents();
+      } else if (viewName === 'opportunities') {
+        content = await OpportunitiesView.render();
+        mainRoot.innerHTML = content;
+        OpportunitiesView.attachEvents();
       } else if (viewName === 'for-schools') {
         content = await ForSchoolsView.render();
         mainRoot.innerHTML = content;
@@ -509,6 +520,7 @@ const App = {
         'schools': 'schools',
         'dashboard': 'schools',
         'admin': 'admin',
+        'opportunities': 'opportunities',
         'for-schools': 'for-schools',
         'for-teachers': 'for-teachers',
         'for-suppliers': 'for-suppliers',
