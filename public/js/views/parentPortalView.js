@@ -7202,8 +7202,8 @@ const ParentPortalView = {
 
             <!-- Main Layout: Sidebar Filters + Content Area -->
             <div class="directory-layout">
-              <!-- Filter Sidebar -->
-              <aside class="filter-sidebar">
+              <!-- Filter Sidebar (Blue Theme per Pin #2) -->
+              <aside class="filter-sidebar filter-sidebar-blue">
                 <div class="filter-header">
                   <span class="filter-title"><span>⚡</span> Refine Search</span>
                   <button id="parents-btn-reset-filters" class="filter-reset-btn" type="button">Reset All</button>
@@ -7310,26 +7310,6 @@ const ParentPortalView = {
                   `).join('')}
                 </div>
               </main>
-            </div>
-
-            <!-- Decision Band -->
-            <div class="decision-band" style="margin-top: 2.5rem;">
-              <div class="decision-text">
-                <span class="micro-label">OBJECTIVE COMPARISON</span>
-                <h3>Look beyond the school name.</h3>
-                <p>Compare what matters to your child: teaching approach, daily commute time, learning support, and total cost of attendance.</p>
-              </div>
-              <div class="decision-list">
-                <div>
-                  <span class="decision-icon">↔</span>
-                  <span><strong>Compare side-by-side</strong><small>Select up to 4 schools on desktop, 2 on mobile</small></span>
-                </div>
-                <div>
-                  <span class="decision-icon">₵</span>
-                  <span><strong>Understand total costs</strong><small>Tuition, uniforms, books, meals and transport</small></span>
-                </div>
-                <button class="btn btn-outline-navy" type="button" id="btn-parents-open-compare">Open comparison <span aria-hidden="true">→</span></button>
-              </div>
             </div>
           </div>
         </section>

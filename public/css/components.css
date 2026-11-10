@@ -450,6 +450,66 @@
 }
 
 /* ========================================================
+   Blue Theme Filter Sidebar (User Feedback Pin #2)
+   ======================================================== */
+.filter-sidebar-blue,
+.filter-sidebar.filter-sidebar-blue {
+  background: linear-gradient(180deg, #091e42 0%, #0d2857 100%) !important;
+  color: #ffffff !important;
+  border: 1.5px solid rgba(251, 191, 36, 0.4) !important;
+  box-shadow: 0 12px 32px rgba(9, 30, 66, 0.28) !important;
+}
+
+.filter-sidebar-blue .filter-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+.filter-sidebar-blue .filter-title {
+  color: #ffffff !important;
+}
+
+.filter-sidebar-blue .filter-reset-btn {
+  color: #fbbf24 !important;
+}
+
+.filter-sidebar-blue .filter-reset-btn:hover {
+  color: #fde68a !important;
+}
+
+.filter-sidebar-blue .filter-group-label {
+  color: #ffffff !important;
+}
+
+.filter-sidebar-blue .filter-select {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.filter-sidebar-blue .filter-select option {
+  background: #091e42 !important;
+  color: #ffffff !important;
+}
+
+.filter-sidebar-blue .filter-input {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
+.filter-sidebar-blue .filter-input::placeholder {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.filter-sidebar-blue .filter-checkbox-item {
+  color: #f1f5f9 !important;
+}
+
+.filter-sidebar-blue .filter-checkbox-item input {
+  accent-color: #fbbf24 !important;
+}
+
+/* ========================================================
    Floating Comparison Bar
    ======================================================== */
 .comparison-floating-bar,
