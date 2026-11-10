@@ -7004,21 +7004,6 @@ const ParentPortalView = {
             <p class="search-reassurance-text">
               <span>✓</span> 100% free to explore. No mandatory registration required to browse or compare.
             </p>
-
-            <!-- Floating Akosua AI Advisor Badge -->
-            <aside id="btn-portal-akosua-advisor" class="akosua-ai-floating">
-              <div class="akosua-avatar-wrap">
-                <img src="/preview-v3/assets/tutor.jpg" alt="Akosua AI Advisor" class="akosua-avatar-img">
-                <span class="online-indicator"></span>
-              </div>
-              <div class="akosua-text-wrap">
-                <div class="akosua-name-row">
-                  <strong>Akosua AI</strong>
-                  <span class="badge-gh-advisor">GH ADVISOR</span>
-                </div>
-                <small class="akosua-sub">CSSPS &amp; School Admissions</small>
-              </div>
-            </aside>
           </div>
         </section>
 
@@ -7672,14 +7657,7 @@ const ParentPortalView = {
       App.navigate('directory');
     });
 
-    // Floating Akosua AI advisor
-    document.getElementById('btn-portal-akosua-advisor')?.addEventListener('click', () => {
-      if (typeof AkosuaModal !== 'undefined' && AkosuaModal.open) {
-        AkosuaModal.open();
-      } else {
-        ParentPortalView.openGuideModal('cssps_quota');
-      }
-    });
+
 
     // Targeted Discovery Filter Tabs & Chips
     const chipFilters = {
