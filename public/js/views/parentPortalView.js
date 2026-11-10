@@ -7154,11 +7154,11 @@ const ParentPortalView = {
         <div class="tutors-strip-text">
           <div class="tutors-strip-eyebrow">
             <span class="tutors-strip-dot"></span>
-            <span>NEED DEDICATED SUPPORT?</span>
+            <span>PERSONALIZED LEARNING SUPPORT</span>
           </div>
-          <h3 class="tutors-strip-heading">Find Verified Tutors in Any Desired Field</h3>
+          <h3 class="tutors-strip-heading">Need Dedicated Home or Online Tutoring for Your Child?</h3>
           <p class="tutors-strip-desc">
-            Whether your child needs targeted help in STEM, Cambridge IGCSE prep, BECE/WASSCE revision, coding, or foreign languages &mdash; search verified, NTC-licensed Ghanaian educators for private home visits or live online tutoring.
+            Connect with verified, NTC-licensed Ghanaian educators for Cambridge IGCSE, STEM, BECE/WASSCE prep, coding, and language lessons &mdash; scheduled around your family.
           </p>
         </div>
         

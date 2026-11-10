@@ -5426,44 +5426,27 @@ body.has-comparison-dock .sd-chat-window {
 .parent-tutors-strip-banner {
   max-width: 1040px;
   margin: 22px auto 0;
-  background: linear-gradient(135deg, #0A2046 0%, #102A56 50%, #0D2248 100%);
-  border: 1.5px solid rgba(213, 166, 59, 0.4);
+  background: #ffffff;
+  border: 1px solid var(--border-light, #e2e8f0);
   border-radius: 20px;
   padding: 0.85rem 2rem;
-  color: #ffffff;
+  color: var(--text-main, #0f172a);
   position: relative;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(10, 32, 70, 0.12);
+  box-shadow: 0 4px 20px rgba(10, 32, 70, 0.06);
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
   box-sizing: border-box;
 }
 
 .parent-tutors-strip-banner:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 38px rgba(10, 32, 70, 0.2);
-  border-color: rgba(213, 166, 59, 0.65);
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.1);
+  border-color: rgba(213, 166, 59, 0.5);
 }
 
-.tutors-strip-glow-1 {
-  position: absolute;
-  top: -80px;
-  right: -80px;
-  width: 220px;
-  height: 220px;
-  background: radial-gradient(circle, rgba(213, 166, 59, 0.18) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
+.tutors-strip-glow-1,
 .tutors-strip-glow-2 {
-  position: absolute;
-  bottom: -60px;
-  left: -60px;
-  width: 180px;
-  height: 180px;
-  background: radial-gradient(circle, rgba(18, 102, 196, 0.22) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  display: none;
 }
 
 .tutors-strip-body {
@@ -5484,7 +5467,7 @@ body.has-comparison-dock .sd-chat-window {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #F59E0B;
+  color: #d97706;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.09em;
@@ -5495,7 +5478,7 @@ body.has-comparison-dock .sd-chat-window {
 .tutors-strip-dot {
   width: 6px;
   height: 6px;
-  background: #F59E0B;
+  background: #d97706;
   border-radius: 50%;
 }
 
@@ -5503,14 +5486,14 @@ body.has-comparison-dock .sd-chat-window {
   font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
   font-size: 1.22rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #06162E;
   line-height: 1.25;
   margin: 0 0 0.22rem 0;
   letter-spacing: -0.015em;
 }
 
 .tutors-strip-desc {
-  color: #cbd5e1;
+  color: #475569;
   font-size: 0.86rem;
   line-height: 1.4;
   margin: 0;
