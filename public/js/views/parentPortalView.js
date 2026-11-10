@@ -6838,6 +6838,33 @@ const ParentPortalView = {
     `;
   },
 
+  async loginAsDemoParent() {
+    try {
+      const demoUser = {
+        id: 'usr-parent-demo-nana',
+        name: 'Mrs. Nana Aba Mensah',
+        email: 'nana.mensah@parent.skoolfinder.gh',
+        phone: '+233 24 456 7890',
+        role: 'parent',
+        activePersona: 'parent',
+        locality: 'Airport Residential / Cantonments, Accra',
+        wardsCount: 2
+      };
+      if (typeof State !== 'undefined') {
+        State.setCurrentUser(demoUser, 'demo-parent-token-2026');
+        if (typeof State.importGuestContext === 'function') {
+          await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
+        }
+        State.showToast('Signed in as Mrs. Nana Aba Mensah (Demo Parent)', 'success');
+      }
+      if (typeof App !== 'undefined' && App.navigate) {
+        await App.navigate('parents');
+      }
+    } catch (e) {
+      console.error('Demo parent login error:', e);
+    }
+  },
+
   updateGuestShortlistCounter() {
     const el = document.getElementById('guest-portal-shortlist-counter');
     const pill = document.getElementById('guest-portal-persistence-status');
@@ -7004,6 +7031,18 @@ const ParentPortalView = {
             <p class="search-reassurance-text">
               <span>✓</span> 100% free to explore. No mandatory registration required to browse or compare.
             </p>
+
+            <!-- Prominent Practical Demo Launcher Banner -->
+            <div class="hero-demo-login-bar" style="margin-top: 1.4rem; display: flex; align-items: center; justify-content: center;">
+              <div style="display: inline-flex; align-items: center; gap: 0.85rem; background: rgba(6, 22, 46, 0.9); border: 1.5px solid #f59e0b; padding: 0.5rem 1.35rem; border-radius: 9999px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); backdrop-filter: blur(12px); flex-wrap: wrap; justify-content: center;">
+                <span style="display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.88rem; color: #fde68a; font-weight: 700;">
+                  <span style="font-size: 1.15rem;">⚡</span> Practicals &amp; Testing:
+                </span>
+                <button type="button" id="btn-hero-parent-demo" class="btn btn-gold" style="padding: 0.45rem 1.25rem; font-size: 0.84rem; font-weight: 800; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.04em; cursor: pointer; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45); transition: transform 0.15s;" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+                  Log In to Demo Parent Portal (Mrs. Nana Aba Mensah) &rarr;
+                </button>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -7090,7 +7129,10 @@ const ParentPortalView = {
         </ul>
         <div class="card-action-wrap">
           <button class="btn btn-gold-pill" type="button" id="btn-parents-scroll-signup" data-action="account">Create free account <span aria-hidden="true">→</span></button>
-          <span class="card-footnote">Registration connects cleanly to the existing Parent Portal.</span>
+          <button type="button" id="btn-card-parent-demo" class="btn" style="width: 100%; margin-top: 0.65rem; padding: 0.7rem 1rem; background: #06162E; color: #fde68a; border: 1.5px solid #f59e0b; border-radius: 9999px; font-weight: 800; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; transition: transform 0.15s; box-shadow: 0 4px 12px rgba(6, 22, 46, 0.25);" onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='none'">
+            <span>⚡</span> Demo Portal Login (Mrs. Nana Aba Mensah) &rarr;
+          </button>
+          <span class="card-footnote">Registration or 1-click instant demo connects to the full Parent Portal.</span>
         </div>
       </article>
     </div>
@@ -7777,6 +7819,17 @@ const ParentPortalView = {
 
     ParentPortalView.updateGuestShortlistCounter();
 
+    // 1-Click Demo Parent Portal Access (Practicals)
+    document.getElementById('btn-hero-parent-demo')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      ParentPortalView.loginAsDemoParent();
+    });
+
+    document.getElementById('btn-card-parent-demo')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      ParentPortalView.loginAsDemoParent();
+    });
+
     document.getElementById('btn-parents-scroll-signup')?.addEventListener('click', (e) => {
       e.preventDefault();
       showModal('signup');
@@ -7963,27 +8016,8 @@ const ParentPortalView = {
 
     // Quick Demo Handler
     document.getElementById('btn-parent-quick-demo')?.addEventListener('click', async () => {
-      try {
-        const demoUser = {
-          id: 'usr-parent-demo-nana',
-          name: 'Mrs. Nana Aba Mensah',
-          email: 'nana.mensah@parent.skoolfinder.gh',
-          phone: '+233 24 456 7890',
-          role: 'parent',
-          activePersona: 'parent',
-          locality: 'Airport Residential / Cantonments, Accra',
-          wardsCount: 2
-        };
-        State.setUser(demoUser);
-        if (typeof State.importGuestContext === 'function') {
-          await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
-        }
-        State.showToast('Signed in as Mrs. Nana Aba Mensah (Demo Parent)', 'success');
-        closeModal();
-        App.navigate('parents');
-      } catch (e) {
-        console.error('Quick demo error:', e);
-      }
+      closeModal();
+      await ParentPortalView.loginAsDemoParent();
     });
 
     // Send OTP Handler

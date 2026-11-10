@@ -148,6 +148,10 @@ const State = {
     }
   })(),
 
+  setUser(user, token = 'demo-parent-token-2026') {
+    this.setCurrentUser(user, token);
+  },
+
   setCurrentUser(user, token) {
     this.currentUser = user;
     this.authToken = token;
