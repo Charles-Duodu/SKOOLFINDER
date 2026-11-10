@@ -7187,44 +7187,39 @@ const ParentPortalView = {
               <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records under Education Regulatory Bodies Act 1023. NaSIA licensing status verified. Always confirm current intake and fee schedules with the school office.</span>
             </div>
 
-            <!-- Dynamic School Cards Grid -->
-            <div class="schools-grid" id="parents-preview-schools-grid">
-              ${previewSchools.map((s, idx) => {
-      const isComp = (typeof State !== 'undefined' && typeof State.isInCompare === 'function') ? State.isInCompare(s.id) : false;
-      const isBm = (typeof State !== 'undefined' && typeof State.isBookmarked === 'function') ? State.isBookmarked(s.id) : false;
-      const feeText = s.feeBand || (s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max || s.tuition_min * 1.5).toLocaleString()} / Term` : 'Fee Not Disclosed');
-      const localFallbacks = [
-        '/preview-v3/assets/school-campus.jpg',
-        '/preview-v3/assets/school-stem.jpg',
-        '/preview-v3/assets/school-early.jpg'
-      ];
-      const img = (s.coverImage && !s.coverImage.includes('unsplash.com')) ? s.coverImage : localFallbacks[idx % localFallbacks.length];
-      return `
-                  <article class="school-card" data-school-id="${s.id}">
-                    <div class="school-image">
-                      <img src="${img}" alt="${s.name}" loading="lazy" onerror="this.onerror=null;this.src='/preview-v3/assets/school-campus.jpg'">
-                      <span class="school-tag">${s.verified ? 'NaSIA Verified' : 'Accredited'}</span>
-                      <button type="button" class="card-bookmark-btn ${isBm ? 'saved' : ''}" data-id="${s.id}" data-name="${s.name}" aria-label="Shortlist school" title="${isBm ? 'Saved to shortlist' : 'Add to shortlist'}">${isBm ? '♥' : '♡'}</button>
-                    </div>
-                    <div class="school-body">
-                      <h3>${s.name}</h3>
-                      <p class="school-location"><span aria-hidden="true">📍</span> ${s.suburb || 'Accra'}, Greater Accra</p>
-                      <div class="school-facts">
-                        <span>${Array.isArray(s.levels) ? s.levels.join(' · ') : (s.levels || 'Crèche - JHS')}</span>
-                        <span>${Array.isArray(s.curriculum) ? s.curriculum.join(' · ') : (s.curriculum || 'National GES')}</span>
-                      </div>
-                      <div class="school-meta">
-                        <strong>${feeText}</strong><br>
-                        <small style="color: #64748b;">${s.feature || 'Verified campus facilities & admissions support'}</small>
-                      </div>
-                    </div>
-                    <div class="school-actions">
-                      <button type="button" class="primary btn-school-card-inspect" data-id="${s.id}">View profile ↗</button>
-                      <button type="button" class="btn-school-card-compare" data-id="${s.id}" aria-pressed="${isComp}">${isComp ? '✓ Added' : '↔ Compare'}</button>
-                    </div>
-                  </article>
-                `;
-    }).join('')}
+            <!-- Sponsored Spotlight Banner (Image 2 Match) -->
+            <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
+              <div style="display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
+                  ⭐
+                </div>
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                    <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+                      Sponsored Spotlight
+                    </span>
+                    <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
+                  </div>
+                  <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
+                    Experience World-Class British Cambridge Education in Cantonments
+                  </h3>
+                  <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
+                    📍 Accra, Greater Accra &bull; Verified Accreditation
+                  </p>
+                </div>
+              </div>
+              <button class="btn-pill btn-gold" id="btn-parent-spotlight-cta" data-target-url="/school/ab5af86d-c902-4853-9528-d6200104b5f6" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
+                Explore Admissions &rarr;
+              </button>
+            </div>
+
+            <!-- Dynamic Horizontal School Cards List (Directory Image 2 Layout) -->
+            <div class="schools-grid directory-schools-grid" id="parents-preview-schools-grid">
+              ${previewSchools.slice(0, 3).map(s => `
+                <div class="school-card-col">
+                  ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : ''}
+                </div>
+              `).join('')}
             </div>
 
             <!-- Decision Band -->
@@ -7773,6 +7768,81 @@ const ParentPortalView = {
       });
     });
 
+    // Spotlight Banner CTA
+    document.getElementById('btn-parent-spotlight-cta')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetUrl = e.currentTarget.dataset.targetUrl || '/school/ab5af86d-c902-4853-9528-d6200104b5f6';
+      const id = targetUrl.split('/').pop();
+      if (id) App.navigate('school-detail', id);
+    });
+
+    // Horizontal School Cards Action Listeners (Matching Directory View)
+    document.querySelectorAll('#parents-preview-schools-grid .btn-card-view').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId) App.navigate('school-detail', schoolId);
+      });
+    });
+
+    document.querySelectorAll('#parents-preview-schools-grid .btn-card-wa').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wa = btn.dataset.wa;
+        if (wa) {
+          const cleanWa = wa.replace(/[^0-9]/g, '');
+          window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+        }
+      });
+    });
+
+    document.querySelectorAll('#parents-preview-schools-grid .btn-card-compare').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        if (schoolId && typeof State !== 'undefined') {
+          const s = (ParentPortalView.previewSchoolsList || []).find(x => x.id === schoolId) || { id: schoolId };
+          State.toggleComparison(s);
+          const isComp = State.isInCompare(schoolId);
+          btn.classList.toggle('active', isComp);
+        }
+      });
+    });
+
+    document.querySelectorAll('#parents-preview-schools-grid .btn-card-bookmark').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const schoolId = btn.dataset.schoolId;
+        const schoolName = btn.dataset.schoolName || 'School';
+        if (schoolId && typeof State !== 'undefined') {
+          await State.toggleBookmark(schoolId, schoolName);
+          const isSaved = State.isBookmarked(schoolId);
+          btn.classList.toggle('active', isSaved);
+          btn.innerHTML = isSaved ? '🔖' : '🤍';
+          ParentPortalView.updateGuestShortlistCounter();
+        }
+      });
+    });
+
+    document.querySelectorAll('#parents-preview-schools-grid .carousel-dot').forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parentDots = dot.parentElement;
+        const schoolId = parentDots?.dataset?.schoolId;
+        const targetImg = document.getElementById(`img-${schoolId}`);
+        if (targetImg && dot.dataset.img) {
+          targetImg.style.opacity = '0.5';
+          setTimeout(() => {
+            targetImg.src = dot.dataset.img;
+            targetImg.style.opacity = '1';
+          }, 120);
+          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+        }
+      });
+    });
+
+    // Legacy card handlers for backwards compatibility
     document.querySelectorAll('.btn-school-card-compare').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const id = e.currentTarget.dataset.id;
@@ -7799,22 +7869,6 @@ const ParentPortalView = {
       } else {
         App.navigate('directory');
       }
-    });
-
-    // Card Bookmark / Shortlist buttons on preview cards
-    document.querySelectorAll('#parents-preview-schools-grid .card-bookmark-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const id = btn.dataset.id;
-        const name = btn.dataset.name || 'School';
-        if (!id || typeof State === 'undefined') return;
-        await State.toggleBookmark(id, name);
-        const isSaved = State.isBookmarked(id);
-        btn.classList.toggle('saved', isSaved);
-        btn.textContent = isSaved ? '♥' : '♡';
-        btn.setAttribute('title', isSaved ? 'Saved to shortlist' : 'Add to shortlist');
-        ParentPortalView.updateGuestShortlistCounter();
-      });
     });
 
     ParentPortalView.updateGuestShortlistCounter();

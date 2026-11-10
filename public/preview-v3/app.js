@@ -101,7 +101,7 @@
     grid.innerHTML=show.length?show.map(s=>{
       const selected=state.comparison.has(s.id);
       const bookmarked=state.bookmarks.has(s.id);
-      return `<article class="school-card">
+      return `<div class="school-card-col"><article class="school-card">
         <div class="school-image">
           <img src="${s.image}" alt="Illustrative educational environment, not a photo of a named school" loading="lazy">
           <span class="school-tag">FICTIONAL EXAMPLE</span>
@@ -117,7 +117,7 @@
           <button type="button" data-school="${s.id}" class="primary">View sample profile ↗</button>
           <button type="button" data-compare="${s.id}" aria-pressed="${selected}">${selected?'✓ Added':'↔ Compare'}</button>
         </div>
-      </article>`;
+      </article></div>`;
     }).join(''):`<div class="empty-state"><h3>No matching demonstration schools</h3><p>Try removing a filter or choosing another category. These are fictional examples, not a live school directory.</p><button type="button" class="btn btn-navy" id="clearFilters">Clear filters</button></div>`;
     const msg=$('#resultMessage');
     msg.textContent=filtered.length?`${show.length} of ${filtered.length} fictional school example${filtered.length===1?'':'s'} shown.`:'No fictional examples match those criteria.';

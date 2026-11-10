@@ -337,8 +337,34 @@
       <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records. Always confirm current intake and fee schedules with the school office.</span>
     </div>
 
-    <!-- School Cards Grid (Rendered by app.js) -->
-    <div class="schools-grid" id="schoolsGrid" aria-live="polite"></div>
+    <!-- Sponsored Spotlight Banner (Image 2 Match) -->
+    <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: 14px; padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
+          ⭐
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+            <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+              Sponsored Spotlight
+            </span>
+            <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
+          </div>
+          <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
+            Experience World-Class British Cambridge Education in Cantonments
+          </h3>
+          <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
+            📍 Accra, Greater Accra &bull; Verified Accreditation
+          </p>
+        </div>
+      </div>
+      <button class="btn btn-gold btn-small" id="btn-parent-spotlight-cta" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
+        Explore Admissions &rarr;
+      </button>
+    </div>
+
+    <!-- School Cards Grid (Rendered by app.js with Directory Layout) -->
+    <div class="schools-grid directory-schools-grid" id="schoolsGrid" aria-live="polite"></div>
     <div id="resultMessage" class="result-message" aria-live="polite"></div>
 
     <!-- Decision Band -->
