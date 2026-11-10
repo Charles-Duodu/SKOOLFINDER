@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#06162E">
+<title>Parents &amp; Guardians · SkoolFinder Ghana | Six-Section Refined Edition</title>
+<meta name="description" content="National Pre-Tertiary Parent & Admissions Workspace for Greater Accra families.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- PREVIEW STATUS RIBBON -->
+<div class="preview-ribbon" id="previewRibbon" role="status">
+  <div class="container ribbon-inner">
+    <span class="ribbon-dot"></span>
+    <strong>SKOOLFINDER GHANA · DESIGN PREVIEW v3.1</strong>
+    <span>Retained Header + Luxury Blue Hero + Consolidated 6-Section Storefront</span>
+    <button id="dismissRibbon" type="button" aria-label="Dismiss preview notification">×</button>
+  </div>
+</div>
+
+<!-- ========================================================
+     HEADER (EXACTLY RETAINED AS ATTACHED IMAGE 2)
+     ======================================================== -->
+<header class="site-header" id="top">
+  <!-- Top Nav Bar -->
+  <div class="container header-inner">
+    <a href="#top" class="brand" aria-label="SkoolFinder Ghana">
+      <span class="brand-icon-box">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#f5b63b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+          <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+        </svg>
+      </span>
+      <span class="brand-title">SkoolFinder</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#top" class="nav-item">
+        <span class="nav-icon">🏠</span> Home
+      </a>
+      <a href="#compare" class="nav-item">
+        <span class="nav-icon">🏫</span> Find Schools
+      </a>
+      <div class="portals-dropdown">
+        <button type="button" class="nav-item dropdown-btn" id="portalsBtn" aria-expanded="false">
+          <span class="nav-icon">🌐</span> Explore Portals <span class="arrow-down">▾</span>
+        </button>
+        <div class="portals-menu" id="portalsMenu">
+          <a href="javascript:void(0)" onclick="openDialog('School Proprietors Portal', 'Admissions management, student intake records, and school profiling.')">For Schools &amp; Proprietors</a>
+          <a href="#educators">For Education Professionals &amp; Tutors</a>
+          <a href="javascript:void(0)" onclick="openDialog('Suppliers Portal', 'Verified educational supply partners, textbooks, and campus equipment.')">For Educational Suppliers</a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="header-actions">
+      <button class="btn-signin-pill" data-action="signin" type="button">
+        <span class="signin-shield">🛡️</span> Sign In
+      </button>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Open navigation">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Sub-Header Portal Bar: CURRENT PORTAL: Parent Space / Switch Role -->
+  <div class="sub-header-bar">
+    <div class="container sub-header-inner">
+      <div class="portal-indicator">
+        <span class="portal-user-icon">👤</span>
+        <span class="portal-label">CURRENT PORTAL:</span>
+        <span class="portal-tag">
+          <span class="portal-tag-icon">👨‍👩‍👧‍👦</span> Parent Space
+        </span>
+      </div>
+      <button type="button" class="switch-role-btn" onclick="openDialog('Switch Ecosystem Portal', 'Navigate between Parent Space, School Administration, Education Professionals, and Suppliers.')">
+        <span class="switch-arrows">⇄</span> Switch Role
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <nav class="mobile-nav" id="mobileNav" hidden aria-label="Mobile navigation">
+    <a href="#top">🏠 Home</a>
+    <a href="#compare">🏫 Find Schools</a>
+    <a href="#free">✨ Free Parent Options</a>
+    <a href="#guidance">📚 Parent Guides</a>
+    <a href="#educators">🎓 Specialist Educators</a>
+    <a href="#trust">🛡️ Information &amp; FAQs</a>
+    <button class="btn-signin-pill" data-action="signin" type="button" style="width: 100%; justify-content: center; margin-top: 12px;">
+      🛡️ Sign In
+    </button>
+  </nav>
+</header>
+
+<main>
+<!-- ========================================================
+     SECTION 1: HERO (LUXURY BLUE BACKGROUND AS ATTACHED IMAGE 1)
+     ======================================================== -->
+<section class="section-hero-blue" id="discover" data-section="1">
+  <!-- Ambient Radial Glows -->
+  <div class="ambient-glow glow-top-right"></div>
+  <div class="ambient-glow glow-bottom-left"></div>
+
+  <div class="container hero-content-center">
+    <!-- National Workspace Badge -->
+    <div class="national-badge">
+      <span class="badge-flag">🇬🇭</span>
+      <span class="badge-text">GH NATIONAL PRE-TERTIARY PARENT &amp; ADMISSIONS WORKSPACE</span>
+    </div>
+
+    <!-- Main Headline -->
+    <h1 class="hero-blue-title">
+      Simplify Admissions &amp; Establish<br>Your Child's Educational Future
+    </h1>
+
+    <!-- Subtitle Copy -->
+    <p class="hero-blue-subtitle">
+      Directly submit admissions inquiries to accredited Ghanaian institutions, track real-time application milestones, verify school fees transparently, and plan every academic transition with absolute clarity.
+    </p>
+
+    <!-- 4 Trust Checkmarks -->
+    <div class="hero-trust-row">
+      <span class="trust-check-item">
+        <span class="check-green">✓</span> 100% Free Parent Experience
+      </span>
+      <span class="trust-check-item">
+        <span class="check-green">✓</span> Direct Admissions WhatsApp Inquiries
+      </span>
+      <span class="trust-check-item">
+        <span class="check-green">✓</span> Official NaSIA Regulatory Alignment
+      </span>
+      <span class="trust-check-item">
+        <span class="check-green">✓</span> Ghana Mobile Money &amp; Bank Integrated
+      </span>
+    </div>
+
+    <!-- FLOATING HORIZONTAL SEARCH PILL BAR -->
+    <form id="schoolSearch" class="search-pill-bar" onsubmit="event.preventDefault(); handleSearchSubmit();">
+      <div class="search-pill-field">
+        <label for="query" class="pill-label">
+          <span class="label-icon">📍</span> SUBURB / LOCALITY
+        </label>
+        <input id="query" name="query" class="pill-input" placeholder="e.g. Cantonments, East Legon, Tema..." autocomplete="off">
+      </div>
+
+      <div class="search-pill-divider"></div>
+
+      <div class="search-pill-field">
+        <label for="level" class="pill-label">
+          <span class="label-icon">🎓</span> SCHOOL LEVEL
+        </label>
+        <select id="level" name="level" class="pill-select">
+          <option value="">All Levels (Crèche to SHS)</option>
+          <option value="Early years">Crèche &amp; Preschool (0–5 yrs)</option>
+          <option value="Primary">Primary School (Class 1–6)</option>
+          <option value="Junior high">Junior High School (JHS 1–3)</option>
+          <option value="Senior high">Senior High School (SHS 1–3)</option>
+        </select>
+      </div>
+
+      <div class="search-pill-divider"></div>
+
+      <div class="search-pill-field">
+        <label for="curriculum" class="pill-label">
+          <span class="label-icon">📖</span> CURRICULUM
+        </label>
+        <select id="curriculum" name="curriculum" class="pill-select">
+          <option value="">All Curricula</option>
+          <option value="National">National (GES / NaCCA)</option>
+          <option value="Cambridge">Cambridge International (CIE)</option>
+          <option value="Montessori">Montessori Method</option>
+          <option value="IB">International Baccalaureate (IB)</option>
+        </select>
+      </div>
+
+      <button class="search-pill-btn" type="submit">
+        <span class="btn-search-icon">🔍</span> Search Schools
+      </button>
+    </form>
+    <p class="search-reassurance-text">
+      <span>✓</span> 100% free to explore. No mandatory registration required to browse or compare.
+    </p>
+
+    <!-- Floating Akosua AI Advisor Badge (As seen in Image 1 bottom right) -->
+    <aside class="akosua-ai-floating" onclick="openDialog('Akosua AI · School Admissions Advisor', akosuaModalHtml)">
+      <div class="akosua-avatar-wrap">
+        <img src="assets/tutor.jpg" alt="Akosua AI Advisor" class="akosua-avatar-img">
+        <span class="online-indicator"></span>
+      </div>
+      <div class="akosua-text-wrap">
+        <div class="akosua-name-row">
+          <strong>Akosua AI</strong>
+          <span class="badge-gh-advisor">GH ADVISOR</span>
+        </div>
+        <small class="akosua-sub">CSSPS &amp; School Admissions</small>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Compact Category Filter Chips -->
+  <div class="container quick-browse-container">
+    <div class="quick-browse-box">
+      <div class="quick-browse-header">
+        <span class="micro-label">TARGETED DISCOVERY</span>
+        <h3 class="quick-title">Explore schools your way</h3>
+      </div>
+      <div class="tab-group" role="tablist">
+        <button id="tab-level" data-tab="level" role="tab" aria-selected="true" class="active" type="button">School level</button>
+        <button id="tab-curriculum" data-tab="curriculum" role="tab" aria-selected="false" type="button">Curriculum</button>
+        <button id="tab-area" data-tab="area" role="tab" aria-selected="false" type="button">Locality / Area</button>
+      </div>
+      <div class="quick-panel" id="quickPanel">
+        <div class="chips" id="quickChips"></div>
+        <button id="viewAll" class="all-options" type="button">Explore all options <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     SECTION 2: DISCOVER & COMPARE (WITH DOCK & MATRIX)
+     ======================================================== -->
+<section class="section-two section-pad" id="compare" aria-labelledby="compare-heading" data-section="2">
+  <div class="container">
+    <div class="section-head split">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-line"></span> DISCOVER &amp; COMPARE</div>
+        <h2 id="compare-heading">A clearer picture of <em>your options.</em></h2>
+        <p>Explore accredited institutions across Greater Accra and compare essentials side-by-side: location, curriculum, learning environment, and fee transparency.</p>
+      </div>
+      <button class="underlined-link" type="button" id="resetSchools">View all example schools <span aria-hidden="true">↗</span></button>
+    </div>
+
+    <div class="data-warning">
+      <span class="warning-info" aria-hidden="true">i</span>
+      <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records. Always confirm current intake and fee schedules with the school office.</span>
+    </div>
+
+    <!-- School Cards Grid (Rendered by app.js) -->
+    <div class="schools-grid" id="schoolsGrid" aria-live="polite"></div>
+    <div id="resultMessage" class="result-message" aria-live="polite"></div>
+
+    <!-- Decision Band -->
+    <div class="decision-band">
+      <div class="decision-text">
+        <span class="micro-label">OBJECTIVE COMPARISON</span>
+        <h3>Look beyond the school name.</h3>
+        <p>Compare what matters to your child: teaching approach, daily commute time, learning support, and total cost of attendance.</p>
+      </div>
+      <div class="decision-list">
+        <div>
+          <span class="decision-icon">↔</span>
+          <span><strong>Compare side-by-side</strong><small>Select up to 4 schools on desktop, 2 on mobile</small></span>
+        </div>
+        <div>
+          <span class="decision-icon">₵</span>
+          <span><strong>Understand total costs</strong><small>Tuition, uniforms, books, meals and transport</small></span>
+        </div>
+        <button class="btn btn-outline-navy" type="button" id="openComparison">Open comparison <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     SECTION 3: TWO FREE ACCESS OPTIONS
+     ======================================================== -->
+<section class="section-three section-pad" id="free" aria-labelledby="free-heading" data-section="3">
+  <div class="container">
+    <div class="section-head centered">
+      <div class="eyebrow">BUILT AROUND YOUR CHOICE</div>
+      <h2 id="free-heading">Two ways to explore.<br><em>Both completely free.</em></h2>
+      <p>Start right away as a guest with no signup, or create a free parent account to save your shortlisted schools and comparison tables.</p>
+    </div>
+
+    <div class="access-grid">
+      <!-- Guest Card -->
+      <article class="access-card guest">
+        <div class="access-top">
+          <span class="access-symbol" aria-hidden="true">↗</span>
+          <span class="pill">NO ACCOUNT NEEDED</span>
+        </div>
+        <h3>Explore as a guest</h3>
+        <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
+        <ul class="checks">
+          <li>Search all accredited schools and view public profiles</li>
+          <li>Side-by-side comparison matrix for up to 4 institutions</li>
+          <li>Explore suburb locations, curricula, and fee transparency</li>
+          <li>Direct WhatsApp and phone contact channels where supported</li>
+        </ul>
+        <a href="#compare" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></a>
+      </article>
+
+      <!-- Registered Account Card -->
+      <article class="access-card registered">
+        <div class="access-top">
+          <span class="access-symbol" aria-hidden="true">✦</span>
+          <span class="pill">OPTIONAL · 100% FREE</span>
+        </div>
+        <h3>Make it your school search</h3>
+        <p>A proposed personal home for your family's school-planning preferences.</p>
+        <ul class="checks">
+          <li>Save school shortlists and bookmarks permanently</li>
+          <li>Save side-by-side comparison tables across your devices</li>
+          <li>Track application milestones, open days, and scheduled visits</li>
+          <li>Receive admissions window and deadline reminders</li>
+        </ul>
+        <button class="btn btn-gold" type="button" data-action="account">Create free account <span aria-hidden="true">→</span></button>
+        <small>Registration connects cleanly to the existing Parent Portal.</small>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     SECTION 4: ADMISSIONS & PARENT GUIDANCE
+     ======================================================== -->
+<section class="section-four section-pad" id="guidance" aria-labelledby="guidance-heading" data-section="4">
+  <div class="container">
+    <div class="section-head split">
+      <div>
+        <div class="eyebrow"><span class="eyebrow-line"></span> PARENT GUIDANCE &amp; CHECKLISTS</div>
+        <h2 id="guidance-heading">From first search to <em>next steps.</em></h2>
+        <p>Practical guidance for researching, visiting, and applying to Ghanaian schools—with realistic advice grounded in our local context.</p>
+      </div>
+      <button class="underlined-link" type="button" data-action="all-guides">Explore parent resources <span aria-hidden="true">↗</span></button>
+    </div>
+
+    <div class="guidance-main">
+      <div class="admissions-panel">
+        <div class="admissions-overline">ADMISSIONS &amp; SCHOOL VISITS</div>
+        <h3>A thoughtful school choice happens step by step.</h3>
+        <p>Keep your search simple. Start with a shortlist, ask the right questions, and tour the campus before you decide.</p>
+        <ol class="steps">
+          <li>
+            <b>01</b>
+            <span><strong>Make a shortlist</strong><small>Choose 2–3 schools that match your priorities.</small></span>
+          </li>
+          <li>
+            <b>02</b>
+            <span><strong>Ask about admissions</strong><small>Confirm open vacancies, deadlines, and itemized fees.</small></span>
+          </li>
+          <li>
+            <b>03</b>
+            <span><strong>Plan a campus visit</strong><small>Observe the learning environment and classroom interactions.</small></span>
+          </li>
+        </ol>
+        <button type="button" data-action="admissions" class="btn btn-outline-light">Admissions guidance <span aria-hidden="true">↗</span></button>
+      </div>
+
+      <div class="guides-grid">
+        <article class="guide-card">
+          <img src="assets/guide-visit.jpg" alt="Teacher interacting with pupils" loading="lazy">
+          <div>
+            <span>SCHOOL VISITS</span>
+            <h3>What to ask on a school visit</h3>
+            <button data-guide="visit" type="button">Read guide <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <article class="guide-card">
+          <img src="assets/guide-learning.jpg" alt="Children engaged in hands-on science" loading="lazy">
+          <div>
+            <span>CURRICULUM IN GHANA</span>
+            <h3>GES, Cambridge &amp; Montessori</h3>
+            <button data-guide="learning" type="button">Read guide <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+
+        <article class="guide-card">
+          <img src="assets/guide-admissions.jpg" alt="Parents reviewing school information" loading="lazy">
+          <div>
+            <span>ADMISSIONS PLANNING</span>
+            <h3>Preparing for the next school year</h3>
+            <button data-guide="admissions" type="button">Read guide <span aria-hidden="true">→</span></button>
+          </div>
+        </article>
+      </div>
+    </div>
+    <p class="section-footnote">Admissions requirements vary by institution. For public Senior High School admissions, verification is managed through the national CSSPS portal.</p>
+  </div>
+</section>
+
+<!-- ========================================================
+     SECTION 5: TUTORS & SPECIALIST EDUCATORS
+     ======================================================== -->
+<section class="section-five" id="educators" aria-labelledby="educator-heading" data-section="5">
+  <div class="container educator-grid">
+    <div class="educator-photo">
+      <img src="assets/tutor.jpg" alt="Educator in a classroom with pupils" loading="lazy">
+      <div class="photo-label">LEARNING BEYOND THE CLASSROOM</div>
+    </div>
+    <div class="educator-content">
+      <div class="eyebrow">MORE WAYS TO LEARN</div>
+      <h2 id="educator-heading">Support for the things <em>they love.</em></h2>
+      <p>From academic tutoring (BECE &amp; Cambridge prep) to music, swimming, sports, and STEM robotics, discover verified educators who support your child's distinct passions.</p>
+      <div class="service-pills">
+        <span>Academic tutoring</span>
+        <span>Music &amp; Piano</span>
+        <span>Swimming</span>
+        <span>Sports Coaching</span>
+        <span>STEM &amp; Coding</span>
+        <span>Learning support</span>
+      </div>
+      <button class="btn btn-navy" data-action="educators" type="button">Explore education professionals <span aria-hidden="true">→</span></button>
+      <small>Public professional discovery only. Verified credentials and safeguarding compliance prior to launch.</small>
+    </div>
+  </div>
+</section>
+
+<!-- ========================================================
+     SECTION 6: TRUST, FAQS & FINAL CALL TO ACTION
+     ======================================================== -->
+<section class="section-six" id="trust" aria-labelledby="trust-heading" data-section="6">
+  <div class="container">
+    <div class="trust-top">
+      <div class="trust-intro">
+        <div class="eyebrow">INFORMATION YOU CAN TRUST</div>
+        <h2 id="trust-heading">Know what stands behind <em>each school profile.</em></h2>
+        <p>A school-provided description, a platform-verified field, and a national regulatory license are distinct. Our provenance labels make that distinction transparent.</p>
+      </div>
+      <div class="trust-facts">
+        <div>
+          <span class="trust-symbol">▤</span>
+          <span><strong>School-provided</strong><small>Details supplied directly by the school administration</small></span>
+        </div>
+        <div>
+          <span class="trust-symbol">✓</span>
+          <span><strong>Details checked</strong><small>Facilities, location, and curriculum verified by SkoolFinder</small></span>
+        </div>
+        <div>
+          <span class="trust-symbol">⌘</span>
+          <span><strong>Regulatory licensing</strong><small>Independent check against NaSIA's official private schools register</small></span>
+        </div>
+      </div>
+    </div>
+    <p class="trust-note">SkoolFinder verifies directory listings but is not a licensing authority. Parents can verify official accreditation directly on <a href="https://www.nasia.gov.gh/school-licensing/" target="_blank" rel="noopener noreferrer">NaSIA's Official Portal ↗</a>.</p>
+
+    <!-- FAQ Accordions -->
+    <div class="faq-row">
+      <div class="faq-intro">
+        <div class="eyebrow">A FEW GOOD QUESTIONS</div>
+        <h3>Answers before <em>you begin.</em></h3>
+        <p>Straightforward guidance to make exploring Greater Accra schools effortless.</p>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>Is searching for schools free?<span aria-hidden="true">+</span></summary>
+          <p>Yes, 100% free. You can search, filter, and compare all accredited pre-tertiary schools across Greater Accra without paying any subscription.</p>
+        </details>
+        <details>
+          <summary>Do I need to register to compare schools?<span aria-hidden="true">+</span></summary>
+          <p>No. Side-by-side comparison is available to all guest visitors. Creating an account is completely optional for saving searches and bookmarks.</p>
+        </details>
+        <details>
+          <summary>Are school fees exact official quotes?<span aria-hidden="true">+</span></summary>
+          <p>School fees vary by academic year, entry grade, day vs boarding status, and optional services. SkoolFinder provides verified guidance, but parents should always request an itemized fee schedule directly from the school.</p>
+        </details>
+        <details>
+          <summary>Does SkoolFinder license or accredit schools?<span aria-hidden="true">+</span></summary>
+          <p>No. School licensing, inspection, and regulatory accreditation in Ghana is conducted exclusively by the National Schools Inspectorate Authority (NaSIA).</p>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Final CTA Strip -->
+  <div class="final-cta">
+    <div class="container final-cta-inner">
+      <div>
+        <span class="eyebrow" style="color: #fde68a;">READY WHEN YOU ARE</span>
+        <h2>Your school search <em>starts here.</em></h2>
+        <p>Take the next step with clarity, confidence, and complete control over your family's educational choices.</p>
+      </div>
+      <div class="final-actions">
+        <a href="#discover" class="btn btn-gold">Find schools <span aria-hidden="true">→</span></a>
+        <button class="btn btn-outline-light" type="button" data-action="account">Create free account <span aria-hidden="true">↗</span></button>
+        <small>No account needed to explore.</small>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="container footer-main">
+    <div>
+      <a href="#top" class="brand footer-brand">
+        <span class="brand-icon-box" style="background: rgba(255,255,255,0.1);">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#f5b63b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+        </span>
+        <span class="brand-title" style="color: #ffffff;">SkoolFinder</span>
+      </a>
+      <p>Helping Ghanaian families discover, compare, and connect with accredited pre-tertiary institutions with complete transparency.</p>
+    </div>
+    <div>
+      <strong>For Parents</strong>
+      <a href="#discover">Find Schools</a>
+      <a href="#compare">Compare Essentials</a>
+      <a href="#guidance">Parent Guides</a>
+      <a href="#free">Two Free Options</a>
+    </div>
+    <div>
+      <strong>Ecosystem Portals</strong>
+      <a href="#educators">Education Professionals</a>
+      <button type="button" data-action="other-portals">School Proprietors</button>
+      <button type="button" data-action="other-portals">Educational Suppliers</button>
+    </div>
+    <div>
+      <strong>Information &amp; Trust</strong>
+      <a href="#trust">Provenance &amp; Labels</a>
+      <a href="https://www.nasia.gov.gh" target="_blank" rel="noopener noreferrer">NaSIA Licensing Portal ↗</a>
+      <button type="button" data-action="legal">Privacy &amp; Contact</button>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 SkoolFinder Ghana · Pre-Tertiary Admissions Workspace</span>
+    <span>Independent Discovery Directory · Not a Regulatory Body</span>
+  </div>
+</footer>
+
+<!-- COMPARISON DOCK -->
+<div class="compare-dock" id="compareDock" hidden role="status">
+  <div>
+    <span class="dock-icon">↔</span>
+    <span><strong id="dockCount">0 selected</strong><small>School profiles ready to compare</small></span>
+  </div>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <button class="clear-btn" id="clearCompare" type="button">Clear</button>
+    <button class="btn btn-gold btn-small" id="viewCompare" type="button">Compare now →</button>
+  </div>
+</div>
+
+<!-- NATIVE DIALOG MODAL -->
+<dialog id="infoDialog" class="info-dialog" aria-labelledby="dialogTitle">
+  <button class="dialog-x" id="dialogX" type="button" aria-label="Close dialog">×</button>
+  <div class="dialog-eyebrow" id="dialogEyebrow">WORKSPACE PREVIEW</div>
+  <h2 id="dialogTitle">Details</h2>
+  <div id="dialogContent"></div>
+  <button class="btn btn-navy" id="dialogClose" type="button">Close Window</button>
+</dialog>
+
+<script src="app.js"></script>
+<script>
+  // Portals Dropdown Toggle
+  const portalsBtn = document.getElementById('portalsBtn');
+  const portalsMenu = document.getElementById('portalsMenu');
+  if (portalsBtn && portalsMenu) {
+    portalsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = portalsMenu.classList.toggle('is-open');
+      portalsBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', () => {
+      portalsMenu.classList.remove('is-open');
+      portalsBtn.setAttribute('aria-expanded', 'false');
+    });
+  }
+
+  // Akosua Modal Content
+  const akosuaModalHtml = `
+    <div style="font-size: 14px; line-height: 1.8; color: #334155;">
+      <p style="margin-bottom: 12px;"><strong>Akosua AI GH Advisor</strong> is a specialized smart assistant for Ghanaian school admissions:</p>
+      <ul style="list-style: disc; padding-left: 20px; margin-bottom: 16px;">
+        <li>Guidance on BECE school selection and the CSSPS computerized placement system</li>
+        <li>Curriculum explanations: GES Standards-Based vs Cambridge IGCSE vs IB vs Montessori</li>
+        <li>Locality commutes and neighborhood school options across Greater Accra</li>
+        <li>Tuition fee components and admissions interview preparation</li>
+      </ul>
+      <div style="background: #f8fafc; border-left: 3px solid #f5b63b; padding: 12px; font-size: 12.5px; color: #475569;">
+        Note: Akosua AI provides advisory guidance based on published school data. Final admission decisions rest with each school administration.
+      </div>
+    </div>
+  `;
+
+  function openDialog(title, content) {
+    const dlg = document.getElementById('infoDialog');
+    document.getElementById('dialogTitle').textContent = title;
+    document.getElementById('dialogContent').innerHTML = content;
+    if (!dlg.open) dlg.showModal();
+    dlg.scrollTop = 0;
+  }
+</script>
+</body>
+</html>

@@ -3487,6 +3487,26 @@ body.has-comparison-dock .sd-chat-window {
 }
 
 /* Mobile & Ultra-Narrow Viewport Hardening (320px - 560px) */
+@media (max-width: 820px) {
+  #portal-hero-search-form {
+    grid-template-columns: 1fr !important;
+    gap: 0.65rem !important;
+  }
+  #portal-hero-search-form > div:nth-child(2),
+  #portal-hero-search-form > div:nth-child(4) {
+    display: none !important;
+  }
+  #btn-portal-hero-search {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  #btn-portal-akosua-advisor {
+    position: static !important;
+    margin: 1.25rem auto 0 !important;
+    display: inline-flex !important;
+  }
+}
+
 @media (max-width: 560px) {
   .parent-form-row-2col {
     grid-template-columns: 1fr !important;
@@ -3501,4 +3521,5 @@ body.has-comparison-dock .sd-chat-window {
     grid-template-columns: 1fr !important;
   }
 }
+
 

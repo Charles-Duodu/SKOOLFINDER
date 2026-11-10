@@ -6475,7 +6475,7 @@ const ParentPortalView = {
               Directly submit admissions inquiries to accredited Ghanaian institutions, track real-time application milestones, verify school fees transparently, and plan every academic transition with absolute clarity.
             </p>
 
-            <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 0.88rem; color: #cbd5e1;">
+            <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 0.88rem; color: #cbd5e1; margin-bottom: 2.25rem;">
               <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
                 <span style="color: #34d399; font-weight: 800;">✓</span> 100% Free Parent Experience
               </span>
@@ -6488,6 +6488,68 @@ const ParentPortalView = {
               <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
                 <span style="color: #34d399; font-weight: 800;">✓</span> Ghana Mobile Money &amp; Bank Integrated
               </span>
+            </div>
+
+            <!-- Horizontal Search Pill Bar (Image 1 Blueprint Specification) -->
+            <form id="portal-hero-search-form" style="background: #ffffff; border-radius: 16px; padding: 0.75rem 1.15rem; display: grid; grid-template-columns: 1.3fr auto 1fr auto 1fr auto; align-items: center; gap: 0.85rem; box-shadow: 0 20px 45px rgba(6, 22, 46, 0.35), 0 0 0 1px rgba(255,255,255,0.1); text-align: left; max-width: 960px; margin: 0 auto 0.75rem;">
+              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
+                <label for="portal-search-suburb" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
+                  <span>📍</span> SUBURB / LOCALITY
+                </label>
+                <input id="portal-search-suburb" type="text" placeholder="e.g. Cantonments, East Legon, Tema..." style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+              </div>
+
+              <div style="width: 1px; height: 38px; background: #e2e8f0;"></div>
+
+              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
+                <label for="portal-search-level" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
+                  <span>🎓</span> SCHOOL LEVEL
+                </label>
+                <select id="portal-search-level" style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+                  <option value="">All Levels (Crèche to SHS)</option>
+                  <option value="Crèche">Crèche &amp; Preschool (0–5 yrs)</option>
+                  <option value="Primary">Primary School (Class 1–6)</option>
+                  <option value="JHS">Junior High School (JHS 1–3)</option>
+                  <option value="SHS">Senior High School (SHS 1–3)</option>
+                </select>
+              </div>
+
+              <div style="width: 1px; height: 38px; background: #e2e8f0;"></div>
+
+              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
+                <label for="portal-search-curriculum" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
+                  <span>📖</span> CURRICULUM
+                </label>
+                <select id="portal-search-curriculum" style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+                  <option value="">All Curricula</option>
+                  <option value="GES (NaCCA)">National (GES / NaCCA)</option>
+                  <option value="Cambridge (CIE)">Cambridge International (CIE)</option>
+                  <option value="Montessori">Montessori Method</option>
+                  <option value="International Baccalaureate (IB)">International Baccalaureate (IB)</option>
+                </select>
+              </div>
+
+              <button type="submit" id="btn-portal-hero-search" class="btn-pill" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0A224E; border-radius: 10px; padding: 0.85rem 1.6rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);">
+                <span>🔍</span> Search Schools
+              </button>
+            </form>
+            <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0.65rem;">
+              <span style="color: #34d399; font-weight: 800;">✓</span> 100% free to explore. No mandatory registration required to browse or compare.
+            </p>
+
+            <!-- Floating Akosua AI Advisor Badge (Image 1 Match) -->
+            <div id="btn-portal-akosua-advisor" style="position: absolute; right: 1.5rem; bottom: 1.25rem; z-index: 20; display: inline-flex; align-items: center; gap: 0.65rem; background: #06162E; border: 1.5px solid #f5b63b; border-radius: 9999px; padding: 0.4rem 1.15rem 0.4rem 0.45rem; box-shadow: 0 10px 25px rgba(0,0,0,0.35); cursor: pointer; text-align: left; transition: transform 0.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+              <div style="position: relative; width: 34px; height: 34px; border-radius: 50%; overflow: visible;">
+                <img src="/assets/images/portals/teachers_mockup_clean.jpg" alt="Akosua AI" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid #f5b63b;">
+                <span style="position: absolute; bottom: 0; right: 0; width: 9px; height: 9px; border-radius: 50%; background: #10b981; border: 1.5px solid #06162E;"></span>
+              </div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 0.35rem;">
+                  <strong style="font-size: 0.82rem; color: #ffffff;">Akosua AI</strong>
+                  <span style="font-size: 0.65rem; font-weight: 800; background: #f5b63b; color: #06162E; padding: 1px 5px; border-radius: 4px;">GH ADVISOR</span>
+                </div>
+                <small style="display: block; font-size: 0.72rem; color: #cbd5e1;">CSSPS &amp; School Admissions</small>
+              </div>
             </div>
           </div>
         </section>
@@ -7551,6 +7613,26 @@ const ParentPortalView = {
         }
       } catch (err) {
         State.showToast("Could not load demo account: " + err.message, "error");
+      }
+    });
+
+    // 4b. Hero Horizontal Search Pill Bar & Akosua AI Advisor
+    document.getElementById('portal-hero-search-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const suburb = document.getElementById('portal-search-suburb')?.value.trim() || '';
+      const level = document.getElementById('portal-search-level')?.value || '';
+      const curriculum = document.getElementById('portal-search-curriculum')?.value || '';
+      if (suburb) State.filters.suburb = suburb;
+      if (level) State.filters.level = level;
+      if (curriculum) State.filters.curriculum = curriculum;
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-portal-akosua-advisor')?.addEventListener('click', () => {
+      if (typeof Modals !== 'undefined' && Modals.openAIAdvisoryModal) {
+        Modals.openAIAdvisoryModal();
+      } else {
+        ParentPortalView.openGuideModal('cssps_quota');
       }
     });
 

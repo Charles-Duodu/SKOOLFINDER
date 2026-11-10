@@ -1,0 +1,2144 @@
+<!doctype html>
+<html lang="en-GH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Parents &amp; Guardians · SkoolFinder Ghana (Design Prototype v2.0)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       SKOOLFINDER GHANA - PARENTS & GUARDIANS DESIGN PROTOTYPE v2.0
+       Specification: Final Developer Handoff v2.0 (Decisions D01-D20)
+       Isolated Standalone Prototype - Zero Changes to Production App
+       ============================================================ */
+    :root {
+      --p-navy: #0A2046;
+      --p-navy-deep: #06162E;
+      --p-navy-light: #16366f;
+      --p-gold: #f5b63b;
+      --p-gold-hover: #e5a425;
+      --p-gold-dark: #b17a15;
+      --p-gold-light: #fef3c7;
+      --p-ink: #0f172a;
+      --p-muted: #566479;
+      --p-line: #e2e8f0;
+      --p-cream: #fbf8f1;
+      --p-pale: #f8fafc;
+      --p-white: #ffffff;
+      --p-green: #10b981;
+      --p-radius: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+    body {
+      margin: 0;
+      color: var(--p-ink);
+      background: #ffffff;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select { font: inherit; color: inherit; }
+    button, a, input, select, summary { -webkit-tap-highlight-color: transparent; }
+    button { cursor: pointer; border: 0; background: none; }
+    button:disabled { cursor: not-allowed; opacity: 0.6; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; height: auto; object-fit: cover; }
+    figure, p, h1, h2, h3, h4, ul, dl { margin: 0; }
+    ul { padding: 0; list-style: none; }
+
+    h1, h2, h3, h4, .p-brand {
+      font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+      line-height: 1.22;
+      letter-spacing: -0.03em;
+    }
+    h1 { font-size: clamp(34px, 3.8vw, 50px); font-weight: 800; }
+    h2 { font-size: clamp(26px, 2.6vw, 34px); font-weight: 800; }
+    h3 { font-size: clamp(19px, 1.8vw, 22px); font-weight: 750; }
+    p { color: var(--p-muted); }
+    [hidden] { display: none !important; }
+
+    :focus-visible {
+      outline: 3px solid var(--p-navy);
+      outline-offset: 3px;
+      box-shadow: 0 0 0 5px rgba(245, 182, 59, 0.4);
+    }
+
+    .p-container {
+      width: min(1180px, calc(100% - 48px));
+      margin-inline: auto;
+      min-width: 0;
+    }
+    .p-section { padding-block: 72px; }
+
+    .p-eyebrow, .p-kicker {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      line-height: 1.5;
+      color: var(--p-navy);
+      text-transform: uppercase;
+    }
+    .p-eyebrow { margin-bottom: 12px; }
+    .p-kicker { display: block; letter-spacing: 0.08em; }
+
+    .p-heading { margin-bottom: 32px; }
+    .p-heading--split {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 40px;
+    }
+    .p-heading--split > div { min-width: 0; }
+    .p-heading--split > p { max-width: 420px; font-size: 15px; line-height: 1.7; }
+
+    /* Button System */
+    .p-button {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 12px 24px;
+      border: 1.5px solid transparent;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.4;
+      text-align: center;
+      transition: all 0.18s ease;
+      white-space: nowrap;
+    }
+    .p-button:hover { transform: translateY(-1px); }
+    .p-button--gold {
+      background: var(--p-gold);
+      color: var(--p-navy);
+      box-shadow: 0 4px 14px rgba(245, 182, 59, 0.35);
+    }
+    .p-button--gold:hover { background: var(--p-gold-hover); }
+    .p-button--navy {
+      background: var(--p-navy);
+      color: #ffffff;
+      box-shadow: 0 4px 14px rgba(10, 32, 70, 0.25);
+    }
+    .p-button--navy:hover { background: var(--p-navy-light); }
+    .p-button--outline {
+      border-color: var(--p-navy);
+      background: transparent;
+      color: var(--p-navy);
+    }
+    .p-button--outline:hover { background: #edf2f7; }
+    .p-button--small {
+      font-size: 12px;
+      min-height: 40px;
+      padding: 8px 16px;
+    }
+    .p-button:disabled {
+      background: #e2e8f0;
+      color: #94a3b8;
+      border-color: #e2e8f0;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .p-text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 6px 0;
+      font-size: 13px;
+      font-weight: 750;
+      color: var(--p-navy);
+      line-height: 1.5;
+    }
+    .p-text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .p-text-link > span { font-size: 16px; color: var(--p-gold-dark); }
+
+    /* Top Prototype Notification Banner */
+    .p-prototype-banner {
+      padding: 9px 24px;
+      background: var(--p-navy-deep);
+      color: #fde68a;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(245, 182, 59, 0.3);
+    }
+    .p-prototype-banner span {
+      margin-left: 12px;
+      font-weight: 400;
+      letter-spacing: 0;
+      color: #cbd5e1;
+    }
+
+    /* P00: Header & Navigation */
+    .p-header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .p-header__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 78px;
+    }
+    .p-brand {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+      gap: 8px;
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--p-navy);
+      white-space: nowrap;
+    }
+    .p-brand__icon {
+      width: 32px;
+      height: 32px;
+      color: var(--p-gold-dark);
+    }
+    .p-brand__icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2; }
+    .p-brand__country {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      font-weight: 800;
+      color: var(--p-gold-dark);
+      margin-left: 4px;
+      padding: 2px 6px;
+      background: #fef3c7;
+      border-radius: 4px;
+    }
+    .p-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .p-nav > a {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      color: #334155;
+      transition: color 0.15s;
+    }
+    .p-nav > a:hover { color: var(--p-navy); }
+    .p-nav__active {
+      color: var(--p-navy) !important;
+      font-weight: 800;
+      position: relative;
+    }
+    .p-nav__active::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      left: 0;
+      right: 0;
+      height: 2.5px;
+      background: var(--p-gold);
+      border-radius: 2px;
+    }
+    .p-portals { position: relative; }
+    .p-portals summary {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      cursor: pointer;
+      list-style: none;
+      color: #334155;
+    }
+    .p-portals summary::-webkit-details-marker { display: none; }
+    .p-portals > div {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 240px;
+      background: #ffffff;
+      border: 1px solid var(--p-line);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 12px 35px rgba(10, 32, 70, 0.12);
+    }
+    .p-portals > div > a {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #334155;
+      transition: background 0.15s;
+    }
+    .p-portals > div > a:hover { background: var(--p-cream); color: var(--p-navy); }
+    .p-menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid var(--p-line);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .p-menu-toggle span { display: block; height: 2px; background: var(--p-navy); margin: 4px 0; }
+
+    /* P01: Parent-Led Hero & School Search (Two-Column Layout) */
+    .p-hero {
+      background: var(--p-cream);
+      border-bottom: 1px solid #ede7dc;
+      position: relative;
+    }
+    .p-hero__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 60px;
+      padding-top: 36px;
+      padding-bottom: 40px;
+      align-items: center;
+    }
+    .p-breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 20px;
+    }
+    .p-breadcrumb a:hover { text-decoration: underline; }
+    .p-breadcrumb span { color: #94a3b8; }
+    .p-hero .p-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .p-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--p-gold-dark);
+      display: inline-block;
+    }
+    .p-hero h1 { margin-bottom: 18px; color: var(--p-navy); }
+    .p-hero h1 span.highlight {
+      position: relative;
+      z-index: 0;
+      white-space: nowrap;
+    }
+    .p-hero h1 span.highlight::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 0;
+      right: 0;
+      height: 12px;
+      z-index: -1;
+      background: #fde68a;
+      transform: rotate(-1deg);
+      border-radius: 4px;
+    }
+    .p-hero__intro {
+      max-width: 530px;
+      font-size: 15.5px;
+      line-height: 1.75;
+      margin-bottom: 26px;
+      color: #475569;
+    }
+
+    /* Embedded Compact Search Card */
+    .p-search {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: 0 10px 30px rgba(10, 32, 70, 0.06);
+      max-width: 540px;
+    }
+    .p-search label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 750;
+      line-height: 1.5;
+      margin-bottom: 6px;
+      color: var(--p-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .p-search__query { position: relative; margin-bottom: 14px; }
+    .p-search__query svg {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #64748b;
+      stroke-width: 2;
+      pointer-events: none;
+    }
+    .p-search input, .p-search select {
+      display: block;
+      width: 100%;
+      height: 48px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 13.5px;
+      color: var(--p-ink);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .p-search input:focus, .p-search select:focus {
+      border-color: var(--p-navy);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(10, 32, 70, 0.12);
+    }
+    .p-search input { padding: 10px 14px 10px 42px; }
+    .p-search select { padding: 10px 14px; }
+    .p-search__filters {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .p-search > .p-button { width: 100%; font-size: 14.5px; }
+    .p-search__reassurance {
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 10px;
+    }
+    .p-search__reassurance span { color: var(--p-green); font-weight: 800; margin-right: 4px; }
+
+    /* Arch Photograph Frame */
+    .p-hero__photo {
+      position: relative;
+      overflow: hidden;
+      border-radius: 110px 20px 20px 20px;
+      height: 520px;
+      background: #e2e8f0;
+      box-shadow: 0 20px 45px rgba(10, 32, 70, 0.12);
+    }
+    .p-hero__photo img {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      inset: 0;
+      object-fit: cover;
+      object-position: center;
+    }
+    .p-hero__photo::after {
+      content: '';
+      position: absolute;
+      inset: 40% 0 0;
+      background: linear-gradient(transparent, rgba(6, 22, 46, 0.88));
+    }
+    .p-hero__photo figcaption {
+      position: absolute;
+      bottom: 26px;
+      left: 26px;
+      right: 24px;
+      z-index: 2;
+      color: #ffffff;
+    }
+    .p-hero__photo figcaption span {
+      display: block;
+      font-size: 9.5px;
+      letter-spacing: 0.16em;
+      font-weight: 800;
+      color: #fde68a;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .p-hero__photo strong {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 24px;
+      line-height: 1.25;
+      display: block;
+    }
+    .p-hero__photo small {
+      display: block;
+      margin-top: 10px;
+      font-size: 10px;
+      color: #cbd5e1;
+    }
+    .p-hero__photo-tag {
+      position: absolute;
+      z-index: 2;
+      top: 22px;
+      right: 20px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      color: var(--p-navy);
+      font-size: 11px;
+      font-weight: 750;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    .p-hero__photo-tag span { color: var(--p-gold-dark); margin-right: 4px; }
+
+    /* Bottom Reassurance Bar */
+    .p-hero__bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-top: 1px solid #e7ded0;
+      padding-top: 16px;
+      padding-bottom: 16px;
+      font-size: 12px;
+      color: #475569;
+    }
+    .p-hero__bottom span::before {
+      content: '✓';
+      color: var(--p-green);
+      font-weight: 800;
+      margin-right: 6px;
+    }
+    .p-hero__bottom a {
+      color: var(--p-navy);
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+
+    /* P02: Browse by Need (Level, Curriculum, Locality Tabs) */
+    .p-browse-need {
+      background: #ffffff;
+      padding-block: 54px;
+      border-bottom: 1px solid var(--p-line);
+    }
+    .p-tabs-bar {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid #e2e8f0;
+      margin-bottom: 24px;
+    }
+    .p-tab-btn {
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 750;
+      color: #64748b;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .p-tab-btn:hover { color: var(--p-navy); }
+    .p-tab-btn.is-active {
+      color: var(--p-navy);
+      border-bottom-color: var(--p-navy);
+    }
+    .p-chips-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .p-chip {
+      padding: 9px 16px;
+      background: var(--p-pale);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 9999px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .p-chip:hover {
+      background: var(--p-cream);
+      border-color: var(--p-gold-dark);
+      color: var(--p-navy);
+    }
+    .p-chip.p-chip--action {
+      background: var(--p-navy);
+      color: #ffffff;
+      border-color: var(--p-navy);
+      margin-left: auto;
+    }
+    .p-chip.p-chip--action:hover { background: var(--p-navy-light); }
+
+    /* P03: Two Ways to Explore (Both Completely Free) */
+    .p-access { background: var(--p-pale); }
+    .p-access__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .p-access-card {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 20px;
+      padding: 32px;
+      background: #ffffff;
+      border: 1.5px solid var(--p-line);
+      border-radius: var(--p-radius);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    }
+    .p-access-card--warm {
+      background: #fffdf7;
+      border-color: #fde68a;
+      box-shadow: 0 8px 25px rgba(245, 182, 59, 0.12);
+      position: relative;
+    }
+    .p-access-card__badge {
+      position: absolute;
+      top: -11px;
+      right: 20px;
+      background: var(--p-gold);
+      color: var(--p-navy);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .p-access-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: #edf2f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--p-navy);
+    }
+    .p-access-card--warm .p-access-card__icon {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .p-access-card h3 { margin-top: 6px; margin-bottom: 10px; color: var(--p-navy); }
+    .p-access-card p { font-size: 14px; margin-bottom: 14px; }
+    .p-checks { margin-bottom: 20px; }
+    .p-checks li {
+      position: relative;
+      padding-left: 22px;
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 8px;
+      color: #334155;
+    }
+    .p-checks li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--p-green);
+      font-weight: 800;
+    }
+    .p-access-card--warm .p-checks li::before { color: #d97706; }
+
+    /* P04: Featured Schools Preview & Compare Bottom Dock */
+    .p-school-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .p-school-card {
+      background: #ffffff;
+      border: 1.5px solid var(--p-line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(10, 32, 70, 0.04);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .p-school-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(10, 32, 70, 0.08);
+    }
+    .p-school-card__image {
+      position: relative;
+      height: 190px;
+      background: #e2e8f0;
+      overflow: hidden;
+    }
+    .p-school-card__image img { width: 100%; height: 100%; }
+    .p-school-card__badges {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .p-school-card__badge {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 750;
+      padding: 4px 8px;
+      color: var(--p-navy);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .p-school-card__body {
+      padding: 22px;
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+    }
+    .p-school-card h3 { font-size: 18.5px; margin-bottom: 6px; color: var(--p-navy); }
+    .p-school-card__location { font-size: 12.5px; color: #64748b; margin-bottom: 14px; }
+    .p-school-card__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .p-school-card__tags span {
+      background: var(--p-pale);
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .p-school-card__fees {
+      font-size: 12px;
+      line-height: 1.6;
+      margin-top: auto;
+      margin-bottom: 16px;
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border-left: 3px solid var(--p-gold);
+    }
+    .p-school-card__fees strong {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      margin-bottom: 2px;
+    }
+    .p-school-card__actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid var(--p-line);
+      padding-top: 12px;
+    }
+    .p-compare-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 7px 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--p-navy);
+      transition: all 0.15s;
+    }
+    .p-compare-toggle:hover { background: #f1f5f9; }
+    .p-compare-toggle.is-active {
+      background: var(--p-navy);
+      color: #ffffff;
+      border-color: var(--p-navy);
+    }
+
+    /* Sticky Floating Comparison Dock */
+    .p-compare-dock {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120%);
+      width: min(920px, calc(100% - 32px));
+      background: var(--p-navy-deep);
+      color: #ffffff;
+      border-radius: 16px;
+      padding: 16px 24px;
+      box-shadow: 0 20px 50px rgba(6, 22, 46, 0.45);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1px solid rgba(245, 182, 59, 0.3);
+    }
+    .p-compare-dock.is-visible { transform: translateX(-50%) translateY(0); }
+    .p-compare-dock strong { font-size: 14px; font-weight: 800; color: #fde68a; display: block; }
+    .p-compare-dock p { font-size: 12px; color: #cbd5e1; margin-top: 2px; }
+
+    /* P05: Compare Essentials & Understand Total Cost */
+    .p-decisions { background: var(--p-cream); }
+    .p-decisions__grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr 1fr;
+      gap: 26px;
+      align-items: stretch;
+    }
+    .p-decisions__intro h2 { font-size: 32px; color: var(--p-navy); margin-bottom: 16px; }
+    .p-decisions__intro p { font-size: 15px; margin-bottom: 20px; }
+    .p-feature-panel {
+      border: 1.5px solid #e7ded0;
+      border-radius: 14px;
+      background: #ffffff;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .p-feature-panel__number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1.5px solid #cbd5e1;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--p-navy);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .p-feature-panel h3 { margin-bottom: 12px; color: var(--p-navy); }
+    .p-feature-panel p { font-size: 13.5px; line-height: 1.7; margin-bottom: 14px; }
+    .p-cost-checklist { margin-block: 10px 18px; }
+    .p-cost-checklist li {
+      font-size: 12.5px;
+      color: #334155;
+      padding-block: 5px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+    .p-cost-checklist li span:last-child { color: #64748b; font-size: 11.5px; }
+
+    /* P06: Admissions & School Visits */
+    .p-admissions__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .p-admissions-card {
+      border: 1.5px solid var(--p-line);
+      border-radius: 16px;
+      padding: 32px;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(10, 32, 70, 0.05);
+    }
+    .p-admissions-card dl { margin-block: 18px 22px; }
+    .p-admissions-card dl > div {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding-block: 10px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 12.5px;
+    }
+    .p-admissions-card dt { color: #64748b; }
+    .p-admissions-card dd { margin: 0; font-weight: 700; color: var(--p-navy); text-align: right; }
+
+    /* P07: Parent Guidance & Practical Checklists */
+    .p-guides { background: #f8fafc; }
+    .p-guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .p-guide-card {
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1.5px solid var(--p-line);
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    }
+    .p-guide-card img { height: 180px; width: 100%; }
+    .p-guide-card > div { padding: 24px; display: flex; flex-direction: column; flex: 1; }
+    .p-guide-card .p-kicker { font-size: 9.5px; color: var(--p-gold-dark); margin-bottom: 10px; }
+    .p-guide-card h3 { font-size: 18.5px; margin-bottom: 10px; color: var(--p-navy); line-height: 1.35; }
+    .p-guide-card p { font-size: 13.5px; line-height: 1.7; margin-bottom: 16px; }
+
+    /* P08: Tutors & Specialist Educators Teaser */
+    .p-specialists {
+      display: grid;
+      grid-template-columns: 1fr 1.25fr;
+      overflow: hidden;
+      border: 1.5px solid #e7ded0;
+      border-radius: 18px;
+      background: var(--p-cream);
+    }
+    .p-specialists__photo { min-height: 380px; }
+    .p-specialists__photo img { height: 100%; width: 100%; }
+    .p-specialists > div:last-child { padding: 42px 48px; }
+    .p-specialists h2 { color: var(--p-navy); margin-bottom: 14px; }
+    .p-specialist-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-block: 18px 12px; }
+    .p-specialist-tags span {
+      border: 1px solid #cbd5e1;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      background: #ffffff;
+      color: var(--p-navy);
+    }
+    .p-specialists small { font-size: 11px; color: #64748b; display: block; margin-top: 10px; }
+
+    /* P09: Information Transparency & Trust */
+    .p-trust { background: #ffffff; }
+    .p-trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 36px;
+    }
+    .p-trust-grid > article {
+      border-top: 2px solid var(--p-navy);
+      padding-top: 20px;
+    }
+    .p-trust__index {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--p-gold-dark);
+      margin-bottom: 12px;
+      display: block;
+    }
+    .p-trust-grid h3 { font-size: 17.5px; margin-bottom: 10px; color: var(--p-navy); }
+    .p-trust-grid p { font-size: 13.5px; line-height: 1.7; }
+    .p-trust__bottom {
+      margin-top: 36px;
+      padding-top: 20px;
+      border-top: 1px solid var(--p-line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* P10: Frequently Asked Questions (Accordion) */
+    .p-faq { background: var(--p-pale); }
+    .p-faq__grid {
+      display: grid;
+      grid-template-columns: 0.85fr 1.35fr;
+      gap: 60px;
+    }
+    .p-faq__items details {
+      border-bottom: 1px solid var(--p-line);
+    }
+    .p-faq__items details:first-child { border-top: 1px solid var(--p-line); }
+    .p-faq__items summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      list-style: none;
+      font-size: 15px;
+      font-weight: 750;
+      padding: 18px 0;
+      color: var(--p-navy);
+    }
+    .p-faq__items summary::-webkit-details-marker { display: none; }
+    .p-faq__items summary::after {
+      content: '+';
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--p-gold-dark);
+    }
+    .p-faq__items details[open] summary::after { content: '−'; }
+    .p-faq__items details p {
+      font-size: 14px;
+      line-height: 1.8;
+      padding-bottom: 18px;
+    }
+
+    /* P11: Final Closing CTA & Clean Footer */
+    .p-final {
+      background: var(--p-navy);
+      color: #ffffff;
+      padding-block: 64px;
+    }
+    .p-final__inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 40px;
+    }
+    .p-final h2 { color: #ffffff; margin-bottom: 10px; }
+    .p-final p { color: #cbd5e1; max-width: 520px; }
+    .p-final__buttons { display: flex; gap: 14px; flex-wrap: wrap; }
+    .p-final .p-button--outline {
+      border-color: rgba(255, 255, 255, 0.4);
+      color: #ffffff;
+    }
+    .p-final .p-button--outline:hover { background: rgba(255, 255, 255, 0.1); }
+
+    .p-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--p-line);
+      padding-top: 50px;
+      padding-bottom: 24px;
+    }
+    .p-footer__grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 36px;
+    }
+    .p-footer h4 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--p-navy);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 16px;
+    }
+    .p-footer ul li { margin-bottom: 10px; font-size: 12.5px; color: #64748b; }
+    .p-footer ul li a:hover { color: var(--p-navy); text-decoration: underline; }
+    .p-footer__bottom {
+      border-top: 1px solid var(--p-line);
+      padding-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+
+    /* Native Modal Controller Dialog */
+    .p-dialog {
+      padding: 32px;
+      border: 1px solid var(--p-line);
+      border-radius: 18px;
+      color: var(--p-ink);
+      background: #ffffff;
+      width: min(840px, calc(100% - 32px));
+      max-height: 85vh;
+      box-shadow: 0 25px 70px rgba(10, 32, 70, 0.35);
+      overflow-y: auto;
+    }
+    .p-dialog::backdrop { background: rgba(6, 22, 46, 0.7); backdrop-filter: blur(4px); }
+    .p-dialog__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .p-dialog__close {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--p-line);
+      background: #f8fafc;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .p-dialog__close:hover { background: #edf2f7; }
+    .p-dialog h2 { margin-bottom: 16px; color: var(--p-navy); }
+    .p-dialog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-block: 16px;
+    }
+    .p-dialog-table th, .p-dialog-table td {
+      border: 1px solid var(--p-line);
+      padding: 12px 14px;
+      text-align: left;
+    }
+    .p-dialog-table th { background: #f8fafc; font-weight: 700; color: var(--p-navy); }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 960px) {
+      .p-menu-toggle { display: block; }
+      .p-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-bottom: 1px solid var(--p-line);
+        flex-direction: column;
+        align-items: stretch;
+        padding: 16px 24px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      }
+      .p-nav.is-open { display: flex; }
+      .p-hero__grid { grid-template-columns: 1fr; gap: 36px; }
+      .p-hero__photo { height: 380px; border-radius: 65px 16px 16px 16px; }
+      .p-decisions__grid { grid-template-columns: 1fr; }
+      .p-admissions__grid { grid-template-columns: 1fr; gap: 36px; }
+      .p-school-grid, .p-guide-grid { grid-template-columns: 1fr; }
+      .p-specialists { grid-template-columns: 1fr; }
+      .p-specialists__photo { height: 260px; min-height: 0; }
+      .p-specialists > div:last-child { padding: 32px 24px; }
+      .p-trust-grid { grid-template-columns: 1fr; }
+      .p-faq__grid { grid-template-columns: 1fr; gap: 30px; }
+      .p-final__inner { flex-direction: column; align-items: flex-start; }
+      .p-footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .p-container { width: calc(100% - 32px); }
+      .p-search__filters { grid-template-columns: 1fr; }
+      .p-access__grid { grid-template-columns: 1fr; }
+      .p-footer__grid { grid-template-columns: 1fr; }
+      .p-compare-dock { flex-direction: column; align-items: stretch; text-align: center; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <!-- STANDALONE PROTOTYPE WATERMARK -->
+  <aside class="p-prototype-banner">
+    🇬🇭 SKOOLFINDER GHANA · DESIGN PROTOTYPE v2.0
+    <span>Blueprint v2.0 Implementation · Standalone Preview · Zero modifications to live production</span>
+  </aside>
+
+  <!-- ========================================================
+       SECTION P00: GLOBAL HEADER & NAVIGATION (RETAIN V1 / D11)
+       ======================================================== -->
+  <header class="p-header">
+    <div class="p-container p-header__inner">
+      <a class="p-brand" href="#top" aria-label="SkoolFinder Ghana homepage">
+        <span class="p-brand__icon" aria-hidden="true">
+          <svg viewBox="0 0 32 32"><path d="m3 12 13-7 13 7-13 7L3 12Zm6 5v7c4 3 10 3 14 0v-7m6-5v9"></path></svg>
+        </span>
+        SkoolFinder<span class="p-brand__country">GHANA</span>
+      </a>
+
+      <button id="p-menu-btn" class="p-menu-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav id="p-main-nav" class="p-nav" aria-label="Main navigation">
+        <a href="#top" class="p-nav__active">For parents</a>
+        <a href="#schools">Find schools</a>
+        <a href="#compare">Compare</a>
+        <a href="#admissions">Admissions</a>
+        <a href="#guides">Parent guides</a>
+        
+        <details class="p-portals">
+          <summary>Our community <span aria-hidden="true">⌄</span></summary>
+          <div>
+            <a href="#specialists">For education professionals</a>
+            <a href="javascript:void(0)" onclick="openPreviewModal('School Proprietors Portal', 'School administration and admissions management dashboard for verified proprietors.')">For schools &amp; proprietors</a>
+            <a href="javascript:void(0)" onclick="openPreviewModal('Suppliers Directory', 'Verified educational supply partners, learning materials, and transport providers.')">For suppliers &amp; providers</a>
+          </div>
+        </details>
+
+        <button type="button" class="p-button p-button--outline p-button--small" onclick="openPreviewModal('Your Free Parent Account', parentAccountPreviewHtml)">
+          Free parent account <span aria-hidden="true">↗</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="parents-main">
+
+    <!-- ========================================================
+         SECTION P01: PARENT-LED HERO & SCHOOL SEARCH (D01 / D04 / D20)
+         ======================================================== -->
+    <section class="p-hero" id="discovery">
+      <div class="p-container p-hero__grid">
+        <div class="p-hero__copy">
+          <p class="p-breadcrumb">
+            <a href="#top">Home</a><span>/</span>Parents &amp; Guardians
+          </p>
+
+          <p class="p-eyebrow">
+            <span class="p-status-dot" aria-hidden="true"></span>
+            FOR FAMILIES IN GREATER ACCRA
+          </p>
+
+          <h1 id="parents-title">
+            Find the right school<br>for <span class="highlight">your child.</span>
+          </h1>
+
+          <p class="p-hero__intro">
+            A little clarity for a big decision. Explore accredited schools across Greater Accra, compare what matters and plan your next step—without mandatory registration.
+          </p>
+
+          <!-- Search Form Component -->
+          <form id="parents-search" class="p-search" onsubmit="event.preventDefault(); handleSearchSubmit();">
+            <label for="p-query">School name or area</label>
+            <div class="p-search__query">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="10.5" cy="10.5" r="6.5"></circle>
+                <path d="m16 16 5 5"></path>
+              </svg>
+              <input id="p-query" type="search" placeholder="Try East Legon, Cantonments, Tema or school name" autocomplete="off">
+            </div>
+
+            <div class="p-search__filters">
+              <div>
+                <label for="p-level">School level</label>
+                <select id="p-level">
+                  <option value="">All levels</option>
+                  <option value="Early years">Crèche &amp; preschool (0–5 yrs)</option>
+                  <option value="Primary">Primary School (Class 1–6)</option>
+                  <option value="JHS">Junior High School (JHS 1–3)</option>
+                  <option value="SHS">Senior High School (SHS 1–3)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="p-curriculum">Curriculum</label>
+                <select id="p-curriculum">
+                  <option value="">Any curriculum</option>
+                  <option value="National">National (GES / NaCCA)</option>
+                  <option value="Cambridge">Cambridge International (CIE)</option>
+                  <option value="Montessori">Montessori Method</option>
+                  <option value="IB">International Baccalaureate (IB)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="p-button p-button--gold">
+              Find schools <span aria-hidden="true">→</span>
+            </button>
+
+            <p class="p-search__reassurance">
+              <span>✓</span> Free to explore. No account needed.
+            </p>
+          </form>
+        </div>
+
+        <!-- Arch Photograph Frame with Family Image -->
+        <figure class="p-hero__photo">
+          <img src="assets/images/school-visit.jpg" alt="Family and teacher talking during a campus visit" width="1122" height="1402" fetchpriority="high">
+          <figcaption>
+            <span>THEIR NEXT CHAPTER</span>
+            <strong>Big possibilities.<br>One thoughtful choice.</strong>
+            <small>Authentic campus visit guidance for Ghanaian families</small>
+          </figcaption>
+          <div class="p-hero__photo-tag">
+            <span aria-hidden="true">✦</span> Crèche to SHS
+          </div>
+        </figure>
+      </div>
+
+      <!-- Hero Bottom Reassurance Bar -->
+      <div class="p-container p-hero__bottom">
+        <span>Explore at your own pace</span>
+        <span>Compare the essentials</span>
+        <span>Ask the right questions</span>
+        <a href="#how-information-works">Understand our information labels <span aria-hidden="true">↗</span></a>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P02: BROWSE SCHOOLS BY NEED (D04 / D17)
+         ======================================================== -->
+    <section id="browse-need" class="p-browse-need">
+      <div class="p-container">
+        <p class="p-eyebrow">A GOOD PLACE TO BEGIN</p>
+        <h2 style="margin-bottom: 8px; color: var(--p-navy);">Explore schools your way.</h2>
+        <p style="margin-bottom: 24px; font-size: 14.5px;">Select a stage of education, curriculum pathway, or residential locality to filter institutions:</p>
+
+        <!-- Compact Switchable Tabs -->
+        <div class="p-tabs-bar" role="tablist">
+          <button type="button" class="p-tab-btn is-active" id="tab-level" onclick="switchBrowseTab('level')">
+            <span>🎓</span> School Level
+          </button>
+          <button type="button" class="p-tab-btn" id="tab-curriculum" onclick="switchBrowseTab('curriculum')">
+            <span>📖</span> Curriculum Pathway
+          </button>
+          <button type="button" class="p-tab-btn" id="tab-area" onclick="switchBrowseTab('area')">
+            <span>📍</span> Locality &amp; Area
+          </button>
+        </div>
+
+        <!-- Tab 1: Level Chips -->
+        <div id="chips-level" class="p-chips-wrapper">
+          <button type="button" class="p-chip" onclick="filterByChip('level', 'Early years')">✿ Crèche &amp; Daycare (0–2 yrs)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('level', 'Early years')">❀ Nursery &amp; KG (2–5 yrs)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('level', 'Primary')">▤ Primary School (Class 1–6)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('level', 'JHS')">▥ Junior High (JHS 1–3)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('level', 'SHS')">◇ Senior High (SHS 1–3)</button>
+          <button type="button" class="p-chip p-chip--action" onclick="resetAllFilters()">Browse all schools <span aria-hidden="true">↗</span></button>
+        </div>
+
+        <!-- Tab 2: Curriculum Chips -->
+        <div id="chips-curriculum" class="p-chips-wrapper" style="display: none;">
+          <button type="button" class="p-chip" onclick="filterByChip('curriculum', 'National')">🇬🇭 National (GES / NaCCA)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('curriculum', 'Cambridge')">🇬🇧 Cambridge International (IGCSE &amp; A-Level)</button>
+          <button type="button" class="p-chip" onclick="filterByChip('curriculum', 'Montessori')">🧩 Montessori Method</button>
+          <button type="button" class="p-chip" onclick="filterByChip('curriculum', 'IB')">🌐 International Baccalaureate (IB)</button>
+          <button type="button" class="p-chip p-chip--action" onclick="resetAllFilters()">Browse all curricula <span aria-hidden="true">↗</span></button>
+        </div>
+
+        <!-- Tab 3: Locality Chips -->
+        <div id="chips-area" class="p-chips-wrapper" style="display: none;">
+          <button type="button" class="p-chip" onclick="filterByChip('area', 'Cantonments')">📍 Cantonments &amp; Labone</button>
+          <button type="button" class="p-chip" onclick="filterByChip('area', 'East Legon')">📍 East Legon &amp; Adjiringanor</button>
+          <button type="button" class="p-chip" onclick="filterByChip('area', 'Airport')">📍 Airport Residential &amp; Dzorwulu</button>
+          <button type="button" class="p-chip" onclick="filterByChip('area', 'Tema')">📍 Spintex &amp; Tema</button>
+          <button type="button" class="p-chip" onclick="filterByChip('area', 'Achimota')">📍 Achimota &amp; West Legon</button>
+          <button type="button" class="p-chip p-chip--action" onclick="resetAllFilters()">Explore all areas <span aria-hidden="true">↗</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P03: GUEST VS. REGISTERED (D03 / D10)
+         ======================================================== -->
+    <section id="access" class="p-section p-access">
+      <div class="p-container">
+        <div class="p-heading p-heading--split">
+          <div>
+            <p class="p-eyebrow">YOUR JOURNEY, YOUR WAY</p>
+            <h2>Two ways to explore.<br>Both completely free.</h2>
+          </div>
+          <p>Start with a simple search. An account is a choice you can make when it is useful to you.</p>
+        </div>
+
+        <div class="p-access__grid">
+          <!-- CARD A: GUEST -->
+          <article class="p-access-card">
+            <div class="p-access-card__icon" aria-hidden="true">↗</div>
+            <div>
+              <span class="p-kicker">JUST LOOKING? START HERE.</span>
+              <h3>Explore as a guest</h3>
+              <p>Get straight to school discovery, with zero registration step.</p>
+              <ul class="p-checks">
+                <li>Search and filter accredited schools across Greater Accra</li>
+                <li>Compare key essentials and facilities side-by-side</li>
+                <li>Access school contacts, visit guidance, and fee breakdowns</li>
+              </ul>
+              <a href="#schools" class="p-text-link">Start exploring <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+
+          <!-- CARD B: FREE PARENT ACCOUNT -->
+          <article class="p-access-card p-access-card--warm">
+            <span class="p-access-card__badge">Recommended for Families</span>
+            <div class="p-access-card__icon" aria-hidden="true">♡</div>
+            <div>
+              <span class="p-kicker">A LITTLE MORE ORGANISED.</span>
+              <h3>Your free parent account</h3>
+              <p>A proposed home for your family's school-planning preferences.</p>
+              <ul class="p-checks">
+                <li>Keep your search, shortlisted schools, and favorites in one place</li>
+                <li>Save custom side-by-side comparison tables across your devices</li>
+                <li>Track enquiry milestones, application deadlines, and scheduled visits</li>
+              </ul>
+              <button type="button" class="p-text-link" onclick="openPreviewModal('Your Free Parent Account', parentAccountPreviewHtml)">
+                Preview parent account <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P04: FEATURED SCHOOLS PREVIEW & COMPARE (D05 / D15 / D16)
+         ======================================================== -->
+    <section id="schools" class="p-section">
+      <div class="p-container">
+        <div class="p-heading p-heading--split">
+          <div>
+            <p class="p-eyebrow">A CLOSER LOOK</p>
+            <h2>Discover schools in Greater Accra.</h2>
+          </div>
+          <p>Representative institutional profiles demonstrating curriculum, verified facilities, and fee transparency.</p>
+        </div>
+
+        <div id="p-school-grid" class="p-school-grid">
+          <!-- School 1 -->
+          <article class="p-school-card">
+            <div class="p-school-card__image">
+              <img src="assets/images/campus_hero.webp" alt="Morning Star School campus" width="1200" height="800">
+              <div class="p-school-card__badges">
+                <span class="p-school-card__badge">National (GES)</span>
+                <span class="p-school-card__badge">Cantonments</span>
+              </div>
+            </div>
+            <div class="p-school-card__body">
+              <span class="p-kicker">VERIFIED INSTITUTION</span>
+              <h3>Morning Star School</h3>
+              <p class="p-school-card__location">Cantonments · Greater Accra</p>
+              <div class="p-school-card__tags">
+                <span>Crèche to JHS</span>
+                <span>NaCCA Standard Curriculum</span>
+                <span>Science Lab</span>
+                <span>ICT Centre</span>
+              </div>
+              <div class="p-school-card__fees">
+                <strong>FEE GUIDANCE</strong>
+                Term tuition schedule published by school administration. Fee breakdown available on enquiry.
+              </div>
+              <footer class="p-school-card__actions">
+                <button type="button" class="p-text-link" onclick="openSchoolModal('Morning Star School', 'Cantonments', 'National (GES)', 'Crèche to JHS 3', 'Science Lab, Library, Sports Field, ICT Suites', 'Term fee schedule provided upon admissions appointment.')">
+                  View profile <span aria-hidden="true">↗</span>
+                </button>
+                <button type="button" class="p-compare-toggle" id="cmp-btn-morning-star" onclick="toggleCompare('Morning Star School', 'National (GES)', 'Cantonments', 'Crèche to JHS', 'cmp-btn-morning-star')">
+                  + Compare
+                </button>
+              </footer>
+            </div>
+          </article>
+
+          <!-- School 2 -->
+          <article class="p-school-card">
+            <div class="p-school-card__image">
+              <img src="assets/images/montessori_class.webp" alt="Ghana International School classroom" width="1200" height="800">
+              <div class="p-school-card__badges">
+                <span class="p-school-card__badge">Cambridge &amp; IB</span>
+                <span class="p-school-card__badge">Cantonments</span>
+              </div>
+            </div>
+            <div class="p-school-card__body">
+              <span class="p-kicker">VERIFIED INSTITUTION</span>
+              <h3>Ghana International School</h3>
+              <p class="p-school-card__location">Cantonments · Greater Accra</p>
+              <div class="p-school-card__tags">
+                <span>Early Years to SHS</span>
+                <span>Cambridge IGCSE &amp; A-Level</span>
+                <span>Olympic Pool</span>
+                <span>STEM Studio</span>
+              </div>
+              <div class="p-school-card__fees">
+                <strong>FEE GUIDANCE</strong>
+                Annual international fee schedule with installment terms. Contact school for itemized schedule.
+              </div>
+              <footer class="p-school-card__actions">
+                <button type="button" class="p-text-link" onclick="openSchoolModal('Ghana International School', 'Cantonments', 'Cambridge International & A-Levels', 'Nursery to Form 6', 'Olympic Swimming Pool, STEM Labs, Art Theatres', 'Comprehensive termly and annual tuition breakdown available upon registration.')">
+                  View profile <span aria-hidden="true">↗</span>
+                </button>
+                <button type="button" class="p-compare-toggle" id="cmp-btn-gis" onclick="toggleCompare('Ghana International School', 'Cambridge (CIE)', 'Cantonments', 'Nursery to SHS', 'cmp-btn-gis')">
+                  + Compare
+                </button>
+              </footer>
+            </div>
+          </article>
+
+          <!-- School 3 -->
+          <article class="p-school-card">
+            <div class="p-school-card__image">
+              <img src="assets/images/science_lab.webp" alt="Tema International School campus" width="1200" height="800">
+              <div class="p-school-card__badges">
+                <span class="p-school-card__badge">IB World School</span>
+                <span class="p-school-card__badge">Tema</span>
+              </div>
+            </div>
+            <div class="p-school-card__body">
+              <span class="p-kicker">VERIFIED INSTITUTION</span>
+              <h3>Tema International School</h3>
+              <p class="p-school-card__location">Community 22, Tema · Greater Accra</p>
+              <div class="p-school-card__tags">
+                <span>Primary to SHS</span>
+                <span>IB MYP &amp; DP Program</span>
+                <span>Full Boarding</span>
+                <span>Robotics Lab</span>
+              </div>
+              <div class="p-school-card__fees">
+                <strong>FEE GUIDANCE</strong>
+                Boarding and day-pupil rates itemized with caution deposits. Published directly by admissions office.
+              </div>
+              <footer class="p-school-card__actions">
+                <button type="button" class="p-text-link" onclick="openSchoolModal('Tema International School', 'Tema', 'International Baccalaureate (IB)', 'Grade 7 to Grade 12', 'Full Boarding Hostels, Robotics Lab, Sports Stadium', 'Itemized day and boarding packages with caution deposit transparency.')">
+                  View profile <span aria-hidden="true">↗</span>
+                </button>
+                <button type="button" class="p-compare-toggle" id="cmp-btn-tis" onclick="toggleCompare('Tema International School', 'IB World School', 'Tema', 'JHS to SHS', 'cmp-btn-tis')">
+                  + Compare
+                </button>
+              </footer>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FLOATING COMPARISON DOCK -->
+    <aside id="p-compare-dock" class="p-compare-dock" aria-live="polite">
+      <div>
+        <strong id="p-dock-count">0 schools selected</strong>
+        <p>Choose 2 or 3 schools to compare curriculum, location, and essentials.</p>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button type="button" class="p-text-link" style="color: #cbd5e1;" onclick="clearAllCompare()">Clear selection</button>
+        <button type="button" class="p-button p-button--gold p-button--small" id="p-dock-btn" disabled onclick="openComparisonModal()">
+          Compare choices <span aria-hidden="true">⇄</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ========================================================
+         SECTION P05: COMPARE ESSENTIALS & UNDERSTAND TOTAL COST (D06 / D15)
+         ======================================================== -->
+    <section id="compare" class="p-section p-decisions">
+      <div class="p-container p-decisions__grid">
+        <div class="p-decisions__intro">
+          <p class="p-eyebrow">LOOK BEYOND THE FIRST IMPRESSION</p>
+          <h2>The right questions<br>make a difference.</h2>
+          <p>There is more to choosing a school than its marketing brochure or tuition headline. Take time to evaluate the complete educational environment for your family.</p>
+          <button type="button" class="p-button p-button--navy p-button--small" onclick="openChecklistModal()">
+            Open school-visit checklist <span aria-hidden="true">↗</span>
+          </button>
+        </div>
+
+        <!-- Panel 01: Compare Essentials -->
+        <article class="p-feature-panel">
+          <span class="p-feature-panel__number">01</span>
+          <h3>Compare the essentials</h3>
+          <p>Consider the classroom learning approach, commute distance, length of the school day, facilities, pupil-to-teacher ratio, and support for individual needs.</p>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-block: 14px;">
+            <span style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">Curriculum</span>
+            <span style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">Commute</span>
+            <span style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">Class Size</span>
+            <span style="font-size: 11px; background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">Facilities</span>
+          </div>
+          <a href="#schools" class="p-text-link" style="margin-top: auto;">Choose schools to compare <span aria-hidden="true">→</span></a>
+        </article>
+
+        <!-- Panel 02: Total Cost -->
+        <article class="p-feature-panel">
+          <span class="p-feature-panel__number">02</span>
+          <h3>Understand the full cost</h3>
+          <p>Ask each institution for an itemized breakdown across all 7 essential fee categories before committing:</p>
+          <ul class="p-cost-checklist">
+            <li><span>1. Tuition fee per term</span> <span>Required</span></li>
+            <li><span>2. Admission &amp; registration charge</span> <span>One-time</span></li>
+            <li><span>3. Books &amp; learning materials</span> <span>Per session</span></li>
+            <li><span>4. Uniforms &amp; sports kit</span> <span>Per set</span></li>
+            <li><span>5. Transportation / bus service</span> <span>Optional</span></li>
+            <li><span>6. Canteen / daily meal plan</span> <span>Optional</span></li>
+            <li><span>7. Caution deposit &amp; PTA dues</span> <span>Variable</span></li>
+          </ul>
+          <button type="button" class="p-text-link" style="margin-top: auto;" onclick="openPreviewModal('Total Cost Guidance', feeExplanationHtml)">
+            Read full cost guide <span aria-hidden="true">→</span>
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P06: ADMISSIONS & SCHOOL VISITS (D07 / D19)
+         ======================================================== -->
+    <section id="admissions" class="p-section">
+      <div class="p-container p-admissions__grid">
+        <div>
+          <p class="p-eyebrow">WHEN YOU ARE READY</p>
+          <h2 style="margin-bottom: 16px; color: var(--p-navy);">From a shortlist<br>to a school visit.</h2>
+          <p style="font-size: 16px; line-height: 1.7; margin-bottom: 20px;">
+            Speak directly to the school administration, verify current intake requirements, and arrange an in-person campus tour before making your final decision.
+          </p>
+          <div style="border-left: 3px solid var(--p-gold); padding-left: 16px; font-size: 13px; color: #64748b; line-height: 1.7;">
+            <strong>Important Admissions Distinction:</strong> Private school admissions are conducted directly with each institution. For government-assisted Senior High Schools (SHS/TVET), admissions are governed nationally through the official CSSPS placement system.
+          </div>
+        </div>
+
+        <div class="p-admissions-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <span style="font-size: 10px; font-weight: 800; background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px;">ADMISSIONS NOTICE</span>
+            <span style="font-size: 12px; color: #64748b;">Updated Q1 2026</span>
+          </div>
+          <h3 style="margin-bottom: 4px;">Sample Preparatory School</h3>
+          <p style="font-size: 12.5px; color: #64748b;">Tema Community 1 · Greater Accra</p>
+
+          <dl>
+            <div><dt>Admissions status</dt><dd style="color: var(--p-green);">Open for 2026/2027 Enquiries</dd></div>
+            <div><dt>Entry levels</dt><dd>Crèche, Nursery, KG &amp; Class 1</dd></div>
+            <div><dt>Campus tour schedule</dt><dd>Tuesdays &amp; Thursdays by appointment</dd></div>
+            <div><dt>Required documents</dt><dd>Birth certificate &amp; prior progress report</dd></div>
+          </dl>
+
+          <button type="button" class="p-button p-button--outline" style="width: 100%; font-size: 13px;" onclick="openPreviewModal('Admissions Enquiry Preview', admissionsPreviewHtml)">
+            Preview admissions enquiry <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P07: PARENT GUIDANCE & PRACTICAL CHECKLISTS (D08 / D18)
+         ======================================================== -->
+    <section id="guides" class="p-section p-guides">
+      <div class="p-container">
+        <div class="p-heading p-heading--split">
+          <div>
+            <p class="p-eyebrow">PARENT GUIDANCE &amp; INSIGHTS</p>
+            <h2>A little guidance.<br>A more confident next step.</h2>
+          </div>
+          <p>Practical reading for the questions that come up along the way. Developed specifically for families in Ghana.</p>
+        </div>
+
+        <div class="p-guide-grid">
+          <!-- Guide 1 -->
+          <article class="p-guide-card">
+            <img src="assets/images/classroom-learning.jpg" alt="Teacher and students in classroom activity" width="1200" height="800" loading="lazy">
+            <div>
+              <span class="p-kicker">CHOOSING A SCHOOL · EDITORIAL GUIDE</span>
+              <h3>Make your first school visit count.</h3>
+              <p>Key questions to ask, subtle classroom details to observe, and notes to capture before making a commitment.</p>
+              <button type="button" class="p-text-link" style="margin-top: auto;" onclick="openGuideModal('visit')">
+                Read the guide <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Guide 2 -->
+          <article class="p-guide-card">
+            <img src="assets/images/montessori_class.webp" alt="Montessori learning classroom" width="1200" height="800" loading="lazy">
+            <div>
+              <span class="p-kicker">CURRICULUM IN GHANA · EDITORIAL GUIDE</span>
+              <h3>Look at how your child will learn.</h3>
+              <p>Explore the practical classroom differences between GES National Standards-Based, Cambridge, and Montessori.</p>
+              <button type="button" class="p-text-link" style="margin-top: auto;" onclick="openGuideModal('curriculum')">
+                Read the guide <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </article>
+
+          <!-- Guide 3 -->
+          <article class="p-guide-card">
+            <img src="assets/images/school-visit.jpg" alt="Parents planning admissions" width="1200" height="800" loading="lazy">
+            <div>
+              <span class="p-kicker">PLANNING AHEAD · EDITORIAL GUIDE</span>
+              <h3>Prepare for the admissions conversation.</h3>
+              <p>Essential checklist for intake deadlines, interview readiness, and itemized fee schedules.</p>
+              <button type="button" class="p-text-link" style="margin-top: auto;" onclick="openGuideModal('admissions')">
+                Read the guide <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P08: TUTORS & SPECIALIST EDUCATORS TEASER (D08)
+         ======================================================== -->
+    <section id="specialists" class="p-section p-container">
+      <div class="p-specialists">
+        <div class="p-specialists__photo">
+          <img src="assets/images/portals/teachers_mockup_clean.jpg" alt="Teacher working with pupil" width="650" height="410" loading="lazy">
+        </div>
+        <div>
+          <p class="p-eyebrow">LEARNING DOES NOT STOP AT THE CLASSROOM</p>
+          <h2>Support for the things they love to learn.</h2>
+          <p>Academic tutoring, STEM, coding, languages, piano, swimming, and sports: discover verified education professionals alongside your school search.</p>
+          <div class="p-specialist-tags">
+            <span>Academic Tutoring</span>
+            <span>Music &amp; Piano</span>
+            <span>Swimming</span>
+            <span>STEM &amp; Robotics</span>
+            <span>Sports Coaching</span>
+          </div>
+          <button type="button" class="p-text-link" style="margin-top: 10px;" onclick="openPreviewModal('Education Professionals Directory', teacherDirectoryNoticeHtml)">
+            Preview education professionals <span aria-hidden="true">↗</span>
+          </button>
+          <small>Public professional discovery and verification credentials are confirmed prior to launch. No child-facing booking engine in this release.</small>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P09: INFORMATION TRANSPARENCY & TRUST (D09 / D14 / D16)
+         ======================================================== -->
+    <section id="how-information-works" class="p-section p-trust">
+      <div class="p-container">
+        <div class="p-heading p-heading--split">
+          <div>
+            <p class="p-eyebrow">CLEAR INFORMATION. CLEAR LIMITS.</p>
+            <h2>Know what is behind every school profile.</h2>
+          </div>
+          <p>A published profile, a school-confirmed detail, and a regulatory licence check are distinct things. Our provenance labels make that clear.</p>
+        </div>
+
+        <div class="p-trust-grid">
+          <article>
+            <span class="p-trust__index">01</span>
+            <h3>School-provided information</h3>
+            <p>Details supplied directly by the institution, with the last-updated date and administrative contact recorded for transparency.</p>
+          </article>
+          <article>
+            <span class="p-trust__index">02</span>
+            <h3>Profile details checked</h3>
+            <p>Specific operational attributes independently reviewed by SkoolFinder, including campus existence, contact validity, and curriculum.</p>
+          </article>
+          <article>
+            <span class="p-trust__index">03</span>
+            <h3>Regulatory licensing information</h3>
+            <p>Independent check against the National Schools Inspectorate Authority (NaSIA) official register of licensed pre-tertiary institutions.</p>
+          </article>
+        </div>
+
+        <div class="p-trust__bottom">
+          <p>SkoolFinder verifies profile information but is not a licensing authority. You can verify licensing directly on NaSIA's official portal at <a href="https://www.nasia.gov.gh" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; color: var(--p-navy);">nasia.gov.gh</a>.</p>
+          <button type="button" class="p-text-link" style="white-space: nowrap;" onclick="openPreviewModal('Report Information Update', 'Spot an error or outdated detail? SkoolFinder welcomes corrections from parents and schools to keep our national directory accurate.')">
+            Spot something that needs updating? <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P10: FREQUENTLY ASKED QUESTIONS (D09)
+         ======================================================== -->
+    <section id="faq" class="p-section p-faq">
+      <div class="p-container p-faq__grid">
+        <div>
+          <p class="p-eyebrow">A FEW COMMON QUESTIONS</p>
+          <h2 style="color: var(--p-navy); margin-bottom: 12px;">Before you begin.</h2>
+          <p>Simple, honest answers about exploring schools and using the information on SkoolFinder Ghana.</p>
+        </div>
+
+        <div class="p-faq__items">
+          <details>
+            <summary>Is searching for a school free on SkoolFinder?</summary>
+            <p>Yes, completely free. You can search, filter by curriculum, location, and level, view public school profiles, and compare schools without paying any fee or subscription.</p>
+          </details>
+
+          <details>
+            <summary>Do I need to create an account to browse?</summary>
+            <p>No. You can freely explore as a guest. Creating a free parent account is optional—it gives you convenience tools to save shortlists, bookmark favourite schools, and save comparison tables across your devices.</p>
+          </details>
+
+          <details>
+            <summary>Are school fees on profiles exact and official quotes?</summary>
+            <p>School fees vary by academic year, grade level, day vs boarding status, and optional services like transport or meals. SkoolFinder provides published fee guidance where verified, but we always recommend requesting a current, written fee schedule directly from the school.</p>
+          </details>
+
+          <details>
+            <summary>Does SkoolFinder license or accredit schools?</summary>
+            <p>No. School licensing, inspection, and regulatory accreditation in Ghana is conducted exclusively by the National Schools Inspectorate Authority (NaSIA). SkoolFinder provides directory verification and links directly to official licensing databases.</p>
+          </details>
+
+          <details>
+            <summary>How does the school comparison tool work?</summary>
+            <p>When browsing schools, click the "+ Compare" button on any school card. A bottom dock will track your selections. Once you have chosen 2 or 3 schools, click "Compare choices" to view a side-by-side matrix of their curriculum, pupil-teacher ratios, and facilities.</p>
+          </details>
+
+          <details>
+            <summary>Can I find private tutors and sports coaches?</summary>
+            <p>Yes. Our Education Professionals section connects families with qualified tutors, music teachers, swimming coaches, and STEM specialists. Professional discovery is linked directly alongside your school search.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================================
+         SECTION P11: CLOSING CTA & CLEAN FOOTER (D09 / D11)
+         ======================================================== -->
+    <section class="p-final">
+      <div class="p-container p-final__inner">
+        <div>
+          <p class="p-eyebrow" style="color: #fde68a;">YOUR SCHOOL SEARCH STARTS HERE</p>
+          <h2>Find the right school for your child today.</h2>
+          <p>Explore accredited institutions across Greater Accra at your own pace—with complete clarity and no paywalls.</p>
+        </div>
+        <div class="p-final__buttons">
+          <a href="#discovery" class="p-button p-button--gold">
+            Find schools <span aria-hidden="true">→</span>
+          </a>
+          <button type="button" class="p-button p-button--outline" onclick="openPreviewModal('Your Free Parent Account', parentAccountPreviewHtml)">
+            Create a free parent account
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Clean Footer -->
+  <footer class="p-footer">
+    <div class="p-container">
+      <div class="p-footer__grid">
+        <div>
+          <a class="p-brand" href="#top" style="font-size: 20px; margin-bottom: 12px; display: inline-flex;">
+            SkoolFinder<span class="p-brand__country">GHANA</span>
+          </a>
+          <p style="font-size: 12.5px; color: #64748b; line-height: 1.7; max-width: 280px;">
+            Ghana’s verified directory for pre-tertiary school discovery, admissions transparency, and family educational planning.
+          </p>
+        </div>
+
+        <div>
+          <h4>School Discovery</h4>
+          <ul>
+            <li><a href="#browse-need" onclick="filterByChip('level', 'Early years')">Crèche &amp; Preschools</a></li>
+            <li><a href="#browse-need" onclick="filterByChip('level', 'Primary')">Primary Schools</a></li>
+            <li><a href="#browse-need" onclick="filterByChip('level', 'JHS')">Junior High (JHS)</a></li>
+            <li><a href="#browse-need" onclick="filterByChip('level', 'SHS')">Senior High (SHS)</a></li>
+            <li><a href="#browse-need">Greater Accra Directory</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Parent Guides</h4>
+          <ul>
+            <li><a href="javascript:void(0)" onclick="openChecklistModal()">School Visit Checklist</a></li>
+            <li><a href="javascript:void(0)" onclick="openPreviewModal('Total Cost Guidance', feeExplanationHtml)">Itemized Fees Guide</a></li>
+            <li><a href="javascript:void(0)" onclick="openGuideModal('curriculum')">Curriculum Comparison</a></li>
+            <li><a href="javascript:void(0)" onclick="openGuideModal('admissions')">Admissions Timelines</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4>Community &amp; Trust</h4>
+          <ul>
+            <li><a href="#how-information-works">Information Provenance</a></li>
+            <li><a href="https://www.nasia.gov.gh" target="_blank" rel="noopener noreferrer">NaSIA Licensing Portal ↗</a></li>
+            <li><a href="#specialists">Education Professionals</a></li>
+            <li><a href="javascript:void(0)" onclick="openPreviewModal('Privacy Policy', 'SkoolFinder respects parent privacy. No student personal records or payment details are collected through guest discovery.')">Privacy Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-footer__bottom">
+        <span>© 2026 SkoolFinder Ghana. Greater Accra Pre-Tertiary Pilot.</span>
+        <span>Independent School Discovery Platform · Not a Licensing Body</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================
+       NATIVE MODAL CONTROLLER DIALOG
+       ======================================================== -->
+  <dialog id="p-modal-dialog" class="p-dialog">
+    <div class="p-dialog__top">
+      <span class="p-kicker" id="p-dialog-kicker">PROTOTYPE PREVIEW</span>
+      <button type="button" class="p-dialog__close" onclick="closeModal()" aria-label="Close dialog">×</button>
+    </div>
+    <h2 id="p-dialog-title">Modal Title</h2>
+    <div id="p-dialog-content">Modal Content Goes Here</div>
+    <div style="margin-top: 24px; text-align: right;">
+      <button type="button" class="p-button p-button--navy p-button--small" onclick="closeModal()">Close Window</button>
+    </div>
+  </dialog>
+
+  <!-- ========================================================
+       INTERACTIVE JAVASCRIPT CONTROLLER
+       ======================================================== -->
+  <script>
+    // State
+    const compareList = new Map();
+    const dialog = document.getElementById('p-modal-dialog');
+    const dialogTitle = document.getElementById('p-dialog-title');
+    const dialogContent = document.getElementById('p-dialog-content');
+    const dialogKicker = document.getElementById('p-dialog-kicker');
+    const compareDock = document.getElementById('p-compare-dock');
+    const dockCount = document.getElementById('p-dock-count');
+    const dockBtn = document.getElementById('p-dock-btn');
+
+    // Navigation Toggle for Mobile
+    const menuBtn = document.getElementById('p-menu-btn');
+    const mainNav = document.getElementById('p-main-nav');
+    menuBtn.addEventListener('click', () => {
+      const open = mainNav.classList.toggle('is-open');
+      menuBtn.setAttribute('aria-expanded', String(open));
+    });
+
+    // Modal Controller
+    function openModal(title, html, kicker = 'PROTOTYPE PREVIEW') {
+      dialogTitle.textContent = title;
+      dialogContent.innerHTML = html;
+      dialogKicker.textContent = kicker;
+      if (!dialog.open) dialog.showModal();
+      dialog.scrollTop = 0;
+    }
+    function closeModal() {
+      if (dialog.open) dialog.close();
+    }
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) closeModal();
+    });
+
+    // Content Templates
+    const parentAccountPreviewHtml = `
+      <div style="font-size: 14.5px; line-height: 1.8; color: #334155;">
+        <p style="margin-bottom: 14px;">
+          <strong>Your Free Parent Account</strong> gives you an organized dashboard to manage your family's school search journey across Greater Accra.
+        </p>
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+          <h4 style="color: var(--p-navy); margin-bottom: 10px; font-size: 14px;">What your account unlocks:</h4>
+          <ul style="list-style: disc; padding-left: 20px; font-size: 13.5px; color: #475569;">
+            <li>Permanent shortlist to save and group schools by priority</li>
+            <li>Saved side-by-side comparison tables accessible on any device</li>
+            <li>Admissions deadline reminders and campus open-day alerts</li>
+            <li>Private notes from your campus tours and interviews</li>
+          </ul>
+        </div>
+        <p style="font-size: 12.5px; color: #64748b;">
+          <em>Note: In the live application, this button links cleanly to the registered Parent Portal authentication route. No account form is embedded on the public landing page.</em>
+        </p>
+      </div>
+    `;
+
+    const feeExplanationHtml = `
+      <div style="font-size: 14px; line-height: 1.8; color: #334155;">
+        <p style="margin-bottom: 12px;">Before committing to an institution, request an itemized breakdown of these 7 essential components:</p>
+        <ol style="padding-left: 20px; margin-bottom: 18px;">
+          <li><strong>Tuition fee:</strong> Confirm whether quotes are per term (3 terms per Ghanaian academic year) or annual.</li>
+          <li><strong>Admission / Registration fee:</strong> A one-time non-refundable charge upon acceptance.</li>
+          <li><strong>Books & Learning Materials:</strong> Textbooks, workbooks, and digital subscriptions.</li>
+          <li><strong>Uniforms & Sports Kit:</strong> Day uniform, Friday wear, sports wear, and school shoes.</li>
+          <li><strong>Transportation:</strong> Dedicated school bus routes by suburb (e.g. Spintex, East Legon, Adenta).</li>
+          <li><strong>Canteen & Daily Meals:</strong> Hot lunch and morning snack programs.</li>
+          <li><strong>Caution Deposit & PTA:</strong> Refundable caution fees and annual parent association levies.</li>
+        </ol>
+        <div style="background: #fef3c7; border-left: 3px solid #d97706; padding: 12px 14px; font-size: 12.5px; color: #92400e;">
+          Always ask if fees are guaranteed for the full academic year or subject to mid-year review.
+        </div>
+      </div>
+    `;
+
+    const admissionsPreviewHtml = `
+      <div style="font-size: 14px; line-height: 1.8; color: #334155;">
+        <p style="margin-bottom: 12px;">This is a preview of the admissions enquiry handoff for accredited schools:</p>
+        <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+          <p style="margin-bottom: 6px;"><strong>Recipient:</strong> Sample Preparatory School Admissions Office</p>
+          <p style="margin-bottom: 6px;"><strong>Inquiry Scope:</strong> Class 1 & 2 Intake Availability, Academic Term 1</p>
+          <p style="margin-bottom: 0;"><strong>Direct Contact:</strong> admissions@sampleprep.edu.gh · +233 (0)30 200 0000</p>
+        </div>
+        <p style="font-size: 12.5px; color: #64748b;">
+          Guests can submit general enquiries or schedule school tours directly with verified school admissions coordinators.
+        </p>
+      </div>
+    `;
+
+    const teacherDirectoryNoticeHtml = `
+      <div style="font-size: 14px; line-height: 1.8; color: #334155;">
+        <p style="margin-bottom: 14px;">
+          SkoolFinder's <strong>Education Professionals Directory</strong> connects families with verified specialist educators:
+        </p>
+        <ul style="list-style: disc; padding-left: 20px; font-size: 13.5px; color: #475569; margin-bottom: 18px;">
+          <li>Math, Science & Literacy Private Tutors (BECE & Cambridge IGCSE prep)</li>
+          <li>Certified Piano, Guitar & Vocal Instructors</li>
+          <li>Licensed Swimming Instructors & Youth Athletics Coaches</li>
+          <li>Special Educational Needs & Speech Therapy Support</li>
+        </ul>
+        <div style="background: #f1f5f9; border-left: 3px solid var(--p-navy); padding: 12px; font-size: 12.5px; color: #475569;">
+          Safeguarding note: All tutors undergo identity verification and qualification credential checks before being published. No direct child communications are enabled.
+        </div>
+      </div>
+    `;
+
+    function openPreviewModal(title, html) {
+      openModal(title, html, 'PROTOTYPE PREVIEW');
+    }
+
+    function openChecklistModal() {
+      const checklistHtml = `
+        <div style="font-size: 14px; color: #334155;">
+          <p style="margin-bottom: 14px;">Use this interactive checklist during your campus visits to evaluate the school environment:</p>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+              <input type="checkbox" style="margin-top: 3px;">
+              <span><strong>Class Size & Ratio:</strong> Are class sizes comfortable (under 25 pupils) with dedicated teaching assistants?</span>
+            </label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+              <input type="checkbox" style="margin-top: 3px;">
+              <span><strong>Learning Atmosphere:</strong> Do pupils appear engaged, confident, and treated with respect?</span>
+            </label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+              <input type="checkbox" style="margin-top: 3px;">
+              <span><strong>Safety & Cleanliness:</strong> Are gates guarded, play equipment well-maintained, and sick bays staffed by a qualified nurse?</span>
+            </label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+              <input type="checkbox" style="margin-top: 3px;">
+              <span><strong>Itemized Fee Schedule:</strong> Did administration provide a signed, written fee schedule for the current academic year?</span>
+            </label>
+            <label style="display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; cursor: pointer;">
+              <input type="checkbox" style="margin-top: 3px;">
+              <span><strong>Parent Communication:</strong> How often are progress reports shared and how do parents interact with headteachers?</span>
+            </label>
+          </div>
+        </div>
+      `;
+      openModal('School-Visit Checklist', checklistHtml, 'PARENT TOOLKIT');
+    }
+
+    function openSchoolModal(name, area, curriculum, levels, facilities, fees) {
+      const html = `
+        <div style="font-size: 14px; color: #334155;">
+          <table class="p-dialog-table">
+            <tr><th style="width: 30%;">School Name</th><td><strong>${name}</strong></td></tr>
+            <tr><th>Location</th><td>${area} · Greater Accra</td></tr>
+            <tr><th>Curriculum</th><td>${curriculum}</td></tr>
+            <tr><th>Levels Offered</th><td>${levels}</td></tr>
+            <tr><th>Verified Facilities</th><td>${facilities}</td></tr>
+            <tr><th>Fee Information</th><td>${fees}</td></tr>
+            <tr><th>Verification Scope</th><td><span style="color: var(--p-green); font-weight: 700;">✓ Profile Verified</span> by SkoolFinder · Licensing records verified against NaSIA register.</td></tr>
+          </table>
+        </div>
+      `;
+      openModal(name, html, 'SCHOOL PROFILE PREVIEW');
+    }
+
+    function openGuideModal(guideKey) {
+      if (guideKey === 'visit') {
+        openModal(
+          'Make your first school visit count.',
+          `<div style="font-size: 14px; line-height: 1.8; color: #334155;">
+            <p>Visiting a campus gives you insights no brochure can capture. Arrive during regular lesson hours to observe genuine interactions between teachers and pupils.</p>
+            <h4 style="color: var(--p-navy); margin-block: 14px 6px;">What to observe:</h4>
+            <ul style="list-style: disc; padding-left: 20px; margin-bottom: 14px;">
+              <li>Do children seem enthusiastic and comfortable speaking up in class?</li>
+              <li>How are hygiene, dining halls, and washrooms maintained throughout the day?</li>
+              <li>Are science laboratories, libraries, and computers actually being utilized?</li>
+            </ul>
+            <p>Always write down your observations immediately after leaving while your impressions are fresh.</p>
+          </div>`,
+          'PARENT EDITORIAL GUIDE'
+        );
+      } else if (guideKey === 'curriculum') {
+        openModal(
+          'Understanding Curricula in Ghana',
+          `<div style="font-size: 14px; line-height: 1.8; color: #334155;">
+            <p>Ghana offers a rich variety of curriculum pathways suited to different learning styles and long-term academic transitions:</p>
+            <ul style="list-style: disc; padding-left: 20px; margin-bottom: 14px;">
+              <li><strong>National Standards-Based (GES/NaCCA):</strong> Emphasizes foundational literacy, numeracy, and Ghanaian cultural history leading to the BECE and WASSCE examinations.</li>
+              <li><strong>Cambridge International (CIE):</strong> Follows structured British stages (Checkpoint, IGCSE, and A-Levels) with international external moderation.</li>
+              <li><strong>Montessori:</strong> Self-directed hands-on learning with specialized manipulative sensory materials, ideal for early years and primary stages.</li>
+              <li><strong>International Baccalaureate (IB):</strong> Inquiry-led, project-based global curriculum focusing on critical thinking (PYP, MYP, DP).</li>
+            </ul>
+          </div>`,
+          'PARENT EDITORIAL GUIDE'
+        );
+      } else {
+        openModal(
+          'Preparing for the Admissions Conversation',
+          `<div style="font-size: 14px; line-height: 1.8; color: #334155;">
+            <p>Admissions conversations are two-way interviews: the school evaluates your child's placement, and you evaluate the school's suitability for your family.</p>
+            <h4 style="color: var(--p-navy); margin-block: 14px 6px;">Key questions to ask:</h4>
+            <ul style="list-style: disc; padding-left: 20px; margin-bottom: 14px;">
+              <li>What is the student-to-teacher ratio in my child's prospective class?</li>
+              <li>How do you support children transitioning from a different curriculum?</li>
+              <li>What is your policy regarding homework load and extracurricular sports?</li>
+              <li>What are the exact payment milestones and refund conditions for tuition?</li>
+            </ul>
+          </div>`,
+          'PARENT EDITORIAL GUIDE'
+        );
+      }
+    }
+
+    // Tab Switching for Browse by Need
+    function switchBrowseTab(tabKey) {
+      document.getElementById('tab-level').classList.toggle('is-active', tabKey === 'level');
+      document.getElementById('tab-curriculum').classList.toggle('is-active', tabKey === 'curriculum');
+      document.getElementById('tab-area').classList.toggle('is-active', tabKey === 'area');
+
+      document.getElementById('chips-level').style.display = tabKey === 'level' ? 'flex' : 'none';
+      document.getElementById('chips-curriculum').style.display = tabKey === 'curriculum' ? 'flex' : 'none';
+      document.getElementById('chips-area').style.display = tabKey === 'area' ? 'flex' : 'none';
+    }
+
+    // Filtering chips
+    function filterByChip(type, val) {
+      if (type === 'level') document.getElementById('p-level').value = val;
+      if (type === 'curriculum') document.getElementById('p-curriculum').value = val;
+      if (type === 'area') document.getElementById('p-query').value = val;
+      document.getElementById('schools').scrollIntoView({ behavior: 'smooth' });
+    }
+    function resetAllFilters() {
+      document.getElementById('p-level').value = '';
+      document.getElementById('p-curriculum').value = '';
+      document.getElementById('p-query').value = '';
+      document.getElementById('schools').scrollIntoView({ behavior: 'smooth' });
+    }
+    function handleSearchSubmit() {
+      document.getElementById('schools').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Comparison Manager
+    function toggleCompare(name, curriculum, area, levels, btnId) {
+      const btn = document.getElementById(btnId);
+      if (compareList.has(name)) {
+        compareList.delete(name);
+        btn.classList.remove('is-active');
+        btn.innerHTML = '+ Compare';
+      } else {
+        if (compareList.size >= 3) {
+          alert('You can compare up to 3 schools at a time in this prototype.');
+          return;
+        }
+        compareList.set(name, { name, curriculum, area, levels });
+        btn.classList.add('is-active');
+        btn.innerHTML = '✓ Added';
+      }
+      updateCompareDock();
+    }
+
+    function updateCompareDock() {
+      const count = compareList.size;
+      dockCount.textContent = count === 0 ? '0 schools selected' : `${count} school${count > 1 ? 's' : ''} selected`;
+      dockBtn.disabled = count < 2;
+      compareDock.classList.toggle('is-visible', count > 0);
+    }
+
+    function clearAllCompare() {
+      compareList.clear();
+      document.querySelectorAll('.p-compare-toggle').forEach(btn => {
+        btn.classList.remove('is-active');
+        btn.innerHTML = '+ Compare';
+      });
+      updateCompareDock();
+    }
+
+    function openComparisonModal() {
+      if (compareList.size < 2) return;
+      const schools = Array.from(compareList.values());
+      const tableRows = `
+        <table class="p-dialog-table">
+          <thead>
+            <tr>
+              <th>Comparison Criteria</th>
+              ${schools.map(s => `<th>${s.name}</th>`).join('')}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Curriculum</th>
+              ${schools.map(s => `<td>${s.curriculum}</td>`).join('')}
+            </tr>
+            <tr>
+              <th>Location</th>
+              ${schools.map(s => `<td>${s.area} · Greater Accra</td>`).join('')}
+            </tr>
+            <tr>
+              <th>Levels Offered</th>
+              ${schools.map(s => `<td>${s.levels}</td>`).join('')}
+            </tr>
+            <tr>
+              <th>Inspection Status</th>
+              ${schools.map(() => `<td><span style="color: var(--p-green); font-weight: 700;">✓ Verified</span> NaSIA licensed</td>`).join('')}
+            </tr>
+            <tr>
+              <th>Fee Guidance</th>
+              ${schools.map(() => `<td>Schedule available from school upon enquiry</td>`).join('')}
+            </tr>
+          </tbody>
+        </table>
+      `;
+      openModal('Side-by-Side School Comparison', tableRows, 'COMPARISON MATRIX');
+    }
+  </script>
+</body>
+</html>
+
