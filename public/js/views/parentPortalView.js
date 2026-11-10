@@ -7181,28 +7181,24 @@ const ParentPortalView = {
              ======================================================== -->
         <section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3" style="background: var(--bg-main, #f8fafc); padding: 3rem 0 4rem;">
           <div class="directory-container" style="max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;">
-            <!-- Directory Header -->
-            <div style="padding: 0.5rem 0 1.5rem;">
-              <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                <div>
-                  <h2 id="compare-heading" style="font-family: var(--font-heading, inherit); font-size: 2.25rem; font-weight: 800; color: var(--primary-900, #06162E); margin: 0 0 0.35rem 0;">
-                    Nationwide School Directory &amp; Regional Hubs
-                  </h2>
-                  <p id="parents-dir-count-text" style="color: var(--text-muted, #64748b); font-size: 0.95rem; margin: 0;">
-                    Showing <strong id="parents-dir-count-num">${previewSchools.slice(0, 3).length}</strong> accredited schools across Greater Accra, Kumasi, Cape Coast &amp; Takoradi.
-                  </p>
-                </div>
+            <!-- Directory Header (Centered) -->
+            <div style="padding: 0.5rem 0 2rem; text-align: center;">
+              <h2 id="compare-heading" style="font-family: var(--font-heading, inherit); font-size: 2.25rem; font-weight: 800; color: var(--primary-900, #06162E); margin: 0 0 0.5rem 0; text-align: center;">
+                Nationwide School Directory &amp; Regional Hubs
+              </h2>
+              <p id="parents-dir-count-text" style="color: var(--text-muted, #64748b); font-size: 0.95rem; margin: 0 auto 1.25rem auto; text-align: center; max-width: 700px;">
+                Showing <strong id="parents-dir-count-num">${previewSchools.slice(0, 3).length}</strong> accredited schools across Greater Accra, Kumasi, Cape Coast &amp; Takoradi.
+              </p>
 
-                <!-- Top Controls: Map/List View Toggle -->
-                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-                  <div class="directory-view-toggle">
-                    <button id="parents-toggle-list-view" class="view-toggle-btn active" type="button">
-                      📋 Cards View
-                    </button>
-                    <button id="parents-toggle-map-view" class="view-toggle-btn" type="button">
-                      🗺️ Map View
-                    </button>
-                  </div>
+              <!-- Top Controls: Map/List View Toggle (Centered) -->
+              <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+                <div class="directory-view-toggle">
+                  <button id="parents-toggle-list-view" class="view-toggle-btn active" type="button">
+                    📋 Cards View
+                  </button>
+                  <button id="parents-toggle-map-view" class="view-toggle-btn" type="button">
+                    🗺️ Map View
+                  </button>
                 </div>
               </div>
             </div>
