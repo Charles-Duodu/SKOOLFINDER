@@ -7026,30 +7026,6 @@ const ParentPortalView = {
               </div>
             </aside>
           </div>
-
-          <!-- Compact Category Filter Chips -->
-          <div class="container quick-browse-container">
-            <div class="quick-browse-box">
-              <div class="quick-browse-header">
-                <span class="micro-label">TARGETED DISCOVERY</span>
-                <h2>Explore Schools by Need &amp; Priority</h2>
-              </div>
-              <div class="tab-group" role="tablist">
-                <button id="portal-tab-level" data-tab="level" role="tab" aria-selected="true" class="active" type="button">School level</button>
-                <button id="portal-tab-curriculum" data-tab="curriculum" role="tab" aria-selected="false" type="button">Curriculum</button>
-                <button id="portal-tab-area" data-tab="area" role="tab" aria-selected="false" type="button">Locality / Area</button>
-              </div>
-              <div class="quick-panel" id="portalQuickPanel">
-                <div class="chips" id="quickChips">
-                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Crèche">Crèche &amp; Preschool</button>
-                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Primary">Primary School</button>
-                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="JHS">Junior High</button>
-                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="SHS">Senior High</button>
-                </div>
-                <button id="btn-quick-explore-all" class="all-options" type="button">Explore all options <span aria-hidden="true">→</span></button>
-              </div>
-            </div>
-          </div>
         </section>
 
         <!-- ========================================================

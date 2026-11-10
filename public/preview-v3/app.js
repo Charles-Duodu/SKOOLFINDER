@@ -131,8 +131,10 @@
     $('#query').value='';$('#level').value='';$('#curriculum').value='';renderSchools();
   }
   function renderChips(){
-    $('#quickChips').innerHTML=filters[state.tab].map(v=>`<button type="button" data-filter="${escapeHTML(v)}">${escapeHTML(v)}</button>`).join('');
-    $('#quickChips').querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
+    const qc = $('#quickChips');
+    if (!qc) return;
+    qc.innerHTML=filters[state.tab].map(v=>`<button type="button" data-filter="${escapeHTML(v)}">${escapeHTML(v)}</button>`).join('');
+    qc.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{
       const v=b.dataset.filter;
       if(state.tab==='level'){$('#level').value=v;state.level=v}
       else if(state.tab==='curriculum'){$('#curriculum').value=v;state.curriculum=v}
@@ -144,20 +146,20 @@
   function changeTab(tab){
     state.tab=tab;
     document.querySelectorAll('[data-tab]').forEach(b=>{const active=b.dataset.tab===tab;b.classList.toggle('active',active);b.setAttribute('aria-selected',String(active));b.tabIndex=active?0:-1});
-    $('#quickPanel').setAttribute('aria-labelledby','tab-'+tab);renderChips();
+    $('#quickPanel')?.setAttribute('aria-labelledby','tab-'+tab);renderChips();
   }
-  document.querySelector('.tab-group').addEventListener('keydown',e=>{
+  document.querySelector('.tab-group')?.addEventListener('keydown',e=>{
     if(!['ArrowRight','ArrowLeft','Home','End'].includes(e.key))return;e.preventDefault();
     const keys=['level','curriculum','area'];let i=keys.indexOf(state.tab);
     i=e.key==='Home'?0:e.key==='End'?2:(i+(e.key==='ArrowRight'?1:2))%3;
-    changeTab(keys[i]);$('#tab-'+keys[i]).focus();
+    changeTab(keys[i]);$('#tab-'+keys[i])?.focus();
   });
-  $('#schoolSearch').addEventListener('submit',e=>{
+  $('#schoolSearch')?.addEventListener('submit',e=>{
     e.preventDefault();state.q=$('#query').value.trim();state.level=$('#level').value;state.curriculum=$('#curriculum').value;state.area='';state.showAll=true;
     renderSchools();$('#compare').scrollIntoView({behavior:'smooth'});
   });
-  $('#viewAll').addEventListener('click',()=>{clearFilters();state.showAll=true;renderSchools();$('#compare').scrollIntoView({behavior:'smooth'})});
-  $('#resetSchools').addEventListener('click',()=>{clearFilters();state.showAll=true;renderSchools()});
+  $('#viewAll')?.addEventListener('click',()=>{clearFilters();state.showAll=true;renderSchools();$('#compare').scrollIntoView({behavior:'smooth'})});
+  $('#resetSchools')?.addEventListener('click',()=>{clearFilters();state.showAll=true;renderSchools()});
   function showProfile(id){
     const s=schools.find(x=>x.id===id);if(!s)return;
     showDialog(s.name,`<p><strong>Fictional demonstration profile — not a real school listing.</strong></p><p><strong>Location:</strong> ${escapeHTML(s.area)}, Greater Accra<br><strong>Levels:</strong> ${escapeHTML(s.level.join(', '))}<br><strong>Curriculum:</strong> ${escapeHTML(s.curriculum.join(', '))}</p><p>${escapeHTML(s.detail)}</p><p>No real fees, admissions status, school contact details or licensing claims are provided in this concept.</p>`,'SAMPLE PROFILE');
