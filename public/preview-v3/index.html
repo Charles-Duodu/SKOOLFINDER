@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -240,16 +240,20 @@
       <article class="access-card guest">
         <div class="access-top">
           <span class="access-symbol" aria-hidden="true">↗</span>
-          <span class="pill">NO ACCOUNT NEEDED</span>
+          <span class="pill pill-guest">NO ACCOUNT NEEDED · INSTANT ACCESS</span>
         </div>
         <h3>Explore as a guest</h3>
-        <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
+        <p>Start immediately with complete public directory access—zero sign-up or card details required.</p>
         <ul class="checks">
           <li>Search all accredited schools and view public profiles</li>
           <li>Side-by-side comparison matrix for up to 4 institutions</li>
-          <li>Explore suburb locations, curricula, and fee transparency</li>
-          <li>Direct WhatsApp and phone contact channels where supported</li>
+          <li>Offline-ready shortlist &amp; comparison tray saved on this device</li>
+          <li>Direct WhatsApp and phone channels to admissions offices</li>
         </ul>
+        <div class="guest-persistence-pill" id="guestSyncStatus">
+          <span class="persistence-dot"></span>
+          <span><strong id="guestShortlistCount">0 saved</strong> in browser shortlist</span>
+        </div>
         <a href="#compare" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></a>
       </article>
 
@@ -257,18 +261,22 @@
       <article class="access-card registered">
         <div class="access-top">
           <span class="access-symbol" aria-hidden="true">✦</span>
-          <span class="pill">OPTIONAL · 100% FREE</span>
+          <span class="pill pill-gold">RECOMMENDED · 100% FREE</span>
         </div>
         <h3>Make it your school search</h3>
-        <p>A proposed personal home for your family's school-planning preferences.</p>
+        <p>A permanent personal admissions hub for your family with automated milestone tracking.</p>
         <ul class="checks">
-          <li>Save school shortlists and bookmarks permanently</li>
-          <li>Save side-by-side comparison tables across your devices</li>
-          <li>Track application milestones, open days, and scheduled visits</li>
-          <li>Receive admissions window and deadline reminders</li>
+          <li>Permanent shortlist sync across your phone, tablet, and computer</li>
+          <li>Automatic cloud transfer of your guest shortlist upon registration</li>
+          <li>Track application status, open days, and scheduled school visits</li>
+          <li>Direct admissions enquiry desk with official school responses</li>
         </ul>
+        <div class="registered-sync-highlight">
+          <span class="sync-icon">☁️</span>
+          <span>Guest shortlists auto-sync to your account upon registration</span>
+        </div>
         <button class="btn btn-gold" type="button" data-action="account">Create free account <span aria-hidden="true">→</span></button>
-        <small>Registration connects cleanly to the existing Parent Portal.</small>
+        <small>Takes less than 30 seconds · No credit card required</small>
       </article>
     </div>
   </div>
@@ -551,7 +559,7 @@
   <button class="btn btn-navy" id="dialogClose" type="button">Close Window</button>
 </dialog>
 
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 <script>
   // Portals Dropdown Toggle
   const portalsBtn = document.getElementById('portalsBtn');

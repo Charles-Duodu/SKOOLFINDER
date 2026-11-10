@@ -17,7 +17,61 @@
     curriculum:['Ghana national','Montessori','Cambridge'],
     area:['East Legon','Tema','Spintex','Adenta','Madina']
   };
-  const state={tab:'level',q:'',level:'',curriculum:'',area:'',showAll:false,comparison:new Set()};
+  const state={tab:'level',q:'',level:'',curriculum:'',area:'',showAll:false,comparison:new Set(),bookmarks:new Set()};
+  const STORAGE_COMPARE = 'skoolfinder_guest_comparison_v3';
+  const STORAGE_BOOKMARKS = 'skoolfinder_guest_bookmarks_v3';
+
+  function loadSavedState(){
+    try {
+      const rawComp = localStorage.getItem(STORAGE_COMPARE);
+      if(rawComp) {
+        const arr = JSON.parse(rawComp);
+        if(Array.isArray(arr)) arr.forEach(id => { if(schools.some(s=>s.id===id)) state.comparison.add(id); });
+      }
+    } catch(e) {}
+    try {
+      const rawBm = localStorage.getItem(STORAGE_BOOKMARKS);
+      if(rawBm) {
+        const arr = JSON.parse(rawBm);
+        if(Array.isArray(arr)) arr.forEach(id => { if(schools.some(s=>s.id===id)) state.bookmarks.add(id); });
+      }
+    } catch(e) {}
+  }
+
+  function saveState(){
+    try {
+      localStorage.setItem(STORAGE_COMPARE, JSON.stringify([...state.comparison]));
+      localStorage.setItem(STORAGE_BOOKMARKS, JSON.stringify([...state.bookmarks]));
+    } catch(e) {}
+    updateGuestSyncStatus();
+  }
+
+  function updateGuestSyncStatus(){
+    const count = state.bookmarks.size;
+    const compCount = state.comparison.size;
+    const el = $('#guestShortlistCount');
+    const pill = $('#guestSyncStatus');
+    if(el) {
+      if(count > 0 || compCount > 0) {
+        el.textContent = `${count} shortlisted · ${compCount} in compare`;
+        if(pill) pill.classList.add('active');
+      } else {
+        el.textContent = '0 saved';
+        if(pill) pill.classList.remove('active');
+      }
+    }
+  }
+
+  function toggleBookmark(id){
+    if(state.bookmarks.has(id)){
+      state.bookmarks.delete(id);
+    } else {
+      state.bookmarks.add(id);
+    }
+    saveState();
+    renderSchools();
+  }
+
   const maxCompare=()=>window.matchMedia('(max-width: 680px)').matches?2:4;
   const escapeHTML=(str)=>String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const dialog=$('#infoDialog');
@@ -46,13 +100,31 @@
     const grid=$('#schoolsGrid');
     grid.innerHTML=show.length?show.map(s=>{
       const selected=state.comparison.has(s.id);
-      return `<article class="school-card"><div class="school-image"><img src="${s.image}" alt="Illustrative educational environment, not a photo of a named school" loading="lazy"><span class="school-tag">FICTIONAL EXAMPLE</span></div><div class="school-body"><h3>${escapeHTML(s.name)}</h3><p class="school-location"><span aria-hidden="true">⌖</span> ${escapeHTML(s.area)}, Greater Accra</p><div class="school-facts"><span>${escapeHTML(s.level.join(' · '))}</span><span>${escapeHTML(s.curriculum.join(' · '))}</span></div><div class="school-meta">${escapeHTML(s.feature)} · Fees not supplied</div></div><div class="school-actions"><button type="button" data-school="${s.id}" class="primary">View sample profile ↗</button><button type="button" data-compare="${s.id}" aria-pressed="${selected}">${selected?'✓ Added':'↔ Compare'}</button></div></article>`
+      const bookmarked=state.bookmarks.has(s.id);
+      return `<article class="school-card">
+        <div class="school-image">
+          <img src="${s.image}" alt="Illustrative educational environment, not a photo of a named school" loading="lazy">
+          <span class="school-tag">FICTIONAL EXAMPLE</span>
+          <button type="button" class="card-bookmark-btn ${bookmarked ? 'saved' : ''}" data-bookmark="${s.id}" aria-label="${bookmarked ? 'Remove from shortlist' : 'Save to shortlist'}" title="${bookmarked ? 'Saved to shortlist' : 'Save to shortlist'}">${bookmarked ? '♥' : '♡'}</button>
+        </div>
+        <div class="school-body">
+          <h3>${escapeHTML(s.name)}</h3>
+          <p class="school-location"><span aria-hidden="true">⌖</span> ${escapeHTML(s.area)}, Greater Accra</p>
+          <div class="school-facts"><span>${escapeHTML(s.level.join(' · '))}</span><span>${escapeHTML(s.curriculum.join(' · '))}</span></div>
+          <div class="school-meta">${escapeHTML(s.feature)} · Fees not supplied</div>
+        </div>
+        <div class="school-actions">
+          <button type="button" data-school="${s.id}" class="primary">View sample profile ↗</button>
+          <button type="button" data-compare="${s.id}" aria-pressed="${selected}">${selected?'✓ Added':'↔ Compare'}</button>
+        </div>
+      </article>`;
     }).join(''):`<div class="empty-state"><h3>No matching demonstration schools</h3><p>Try removing a filter or choosing another category. These are fictional examples, not a live school directory.</p><button type="button" class="btn btn-navy" id="clearFilters">Clear filters</button></div>`;
     const msg=$('#resultMessage');
     msg.textContent=filtered.length?`${show.length} of ${filtered.length} fictional school example${filtered.length===1?'':'s'} shown.`:'No fictional examples match those criteria.';
     grid.querySelector('#clearFilters')?.addEventListener('click',clearFilters);
     grid.querySelectorAll('[data-school]').forEach(b=>b.addEventListener('click',()=>showProfile(b.dataset.school)));
     grid.querySelectorAll('[data-compare]').forEach(b=>b.addEventListener('click',()=>toggleCompare(b.dataset.compare)));
+    grid.querySelectorAll('[data-bookmark]').forEach(b=>b.addEventListener('click',(e)=>{e.stopPropagation();toggleBookmark(b.dataset.bookmark)}));
   }
   function clearFilters(){
     state.q='';state.level='';state.curriculum='';state.area='';state.showAll=false;
@@ -95,12 +167,13 @@
     else if(state.comparison.size>=maxCompare()){
       showDialog('Comparison limit reached',`<p>You can compare up to <strong>${maxCompare()}</strong> illustrative schools in this preview at your current screen width. Remove one to add another.</p>`);return;
     }else state.comparison.add(id);
+    saveState();
     renderSchools();renderDock();
   }
   function renderDock(){
     const count=state.comparison.size;$('#compareDock').hidden=count===0;$('#dockCount').textContent=`${count} school${count===1?'':'s'} selected`;
   }
-  $('#clearCompare').addEventListener('click',()=>{state.comparison.clear();renderSchools();renderDock()});
+  $('#clearCompare').addEventListener('click',()=>{state.comparison.clear();saveState();renderSchools();renderDock()});
   function showCompare(){
     const selected=[...state.comparison].map(id=>schools.find(s=>s.id===id)).filter(Boolean);
     if(!selected.length){showDialog('Choose schools to compare','<p>Use the Compare button on the fictional school cards to build a sample side-by-side comparison. No account is needed in this demonstration.</p>');return}
@@ -128,5 +201,9 @@
     }[action];
     if(content)showDialog(content[0],content[1]);
   }));
-  renderChips();renderSchools();renderDock();
+  loadSavedState();
+  renderChips();
+  renderSchools();
+  renderDock();
+  updateGuestSyncStatus();
 })();

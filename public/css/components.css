@@ -4174,7 +4174,91 @@ body.has-comparison-dock .sd-chat-window {
   background: #f1f5f9;
   color: #475569;
 }
-.registered .pill { background: var(--gold); color: var(--navy); }
+.pill.pill-guest {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+.pill.pill-gold, .registered .pill {
+  background: var(--gold);
+  color: var(--navy);
+  border: 1px solid #d99a2b;
+}
+
+.guest-persistence-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #334155;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.guest-persistence-pill.active {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+.persistence-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  display: inline-block;
+}
+
+.registered-sync-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #92400e;
+  margin-bottom: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  font-weight: 600;
+}
+
+.card-bookmark-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 5;
+}
+.card-bookmark-btn:hover {
+  transform: scale(1.1);
+  color: #e11d48;
+  background: #ffffff;
+}
+.card-bookmark-btn.saved {
+  color: #e11d48;
+  background: #ffffff;
+  border-color: #fecdd3;
+  box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
+}
 .access-card h3 { font-size: 22px; color: var(--navy); margin-bottom: 8px; }
 .access-card p { font-size: 13.5px; line-height: 1.6; margin-bottom: 18px; }
 .checks { margin-bottom: 24px; }

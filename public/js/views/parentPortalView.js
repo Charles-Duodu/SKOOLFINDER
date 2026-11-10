@@ -6838,6 +6838,22 @@ const ParentPortalView = {
     `;
   },
 
+  updateGuestShortlistCounter() {
+    const el = document.getElementById('guest-portal-shortlist-counter');
+    const pill = document.getElementById('guest-portal-persistence-status');
+    const bms = (typeof State !== 'undefined' && Array.isArray(State.bookmarkedSchoolIds)) ? State.bookmarkedSchoolIds.length : 0;
+    const comps = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.length : 0;
+    if (el) {
+      if (bms > 0 || comps > 0) {
+        el.innerHTML = '<strong>' + bms + ' shortlisted</strong> · ' + comps + ' in compare';
+        if (pill) pill.classList.add('active');
+      } else {
+        el.textContent = '0 saved in browser shortlist';
+        if (pill) pill.classList.remove('active');
+      }
+    }
+  },
+
   async renderAuthGateway() {
     let previewSchools = [];
     try {
@@ -7052,16 +7068,20 @@ const ParentPortalView = {
               <article class="access-card guest">
                 <div class="access-top">
                   <span class="access-symbol" aria-hidden="true">↗</span>
-                  <span class="pill">NO ACCOUNT NEEDED</span>
+                  <span class="pill pill-guest">NO ACCOUNT NEEDED · INSTANT ACCESS</span>
                 </div>
-                <h3>Explore as a guest</h3>
-                <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
+                <h3>Explore as a Guest</h3>
+                <p>Start immediately with complete public directory access—zero sign-up or card details required.</p>
                 <ul class="checks">
-                  <li>Search all accredited schools and view public profiles</li>
+                  <li>Search all accredited schools and view verified NaSIA profiles</li>
                   <li>Side-by-side comparison matrix for up to 4 institutions</li>
-                  <li>Explore suburb locations, curricula, and fee transparency</li>
-                  <li>Direct WhatsApp and phone contact channels where supported</li>
+                  <li>Offline-ready shortlist &amp; comparison tray saved on this device</li>
+                  <li>Direct WhatsApp and phone channels to admissions offices</li>
                 </ul>
+                <div class="guest-persistence-pill" id="guest-portal-persistence-status">
+                  <span class="persistence-dot"></span>
+                  <span id="guest-portal-shortlist-counter">0 saved in browser shortlist</span>
+                </div>
                 <button type="button" id="btn-parents-guest-explore" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></button>
               </article>
 
@@ -7069,18 +7089,22 @@ const ParentPortalView = {
               <article class="access-card registered">
                 <div class="access-top">
                   <span class="access-symbol" aria-hidden="true">✦</span>
-                  <span class="pill">OPTIONAL · 100% FREE</span>
+                  <span class="pill pill-gold">RECOMMENDED · 100% FREE</span>
                 </div>
-                <h3>Make it your school search</h3>
-                <p>A proposed personal home for your family's school-planning preferences.</p>
+                <h3>Make It Your School Search</h3>
+                <p>A permanent personal admissions hub for your family with automated milestone tracking.</p>
                 <ul class="checks">
-                  <li>Save school shortlists and bookmarks permanently</li>
-                  <li>Save side-by-side comparison tables across your devices</li>
-                  <li>Track application milestones, open days, and scheduled visits</li>
-                  <li>Receive admissions window and deadline reminders</li>
+                  <li>Permanent shortlist sync across your phone, tablet, and computer</li>
+                  <li>Automatic cloud transfer of your guest shortlist upon registration</li>
+                  <li>Track application status, open days, and scheduled school visits</li>
+                  <li>Direct admissions enquiry desk with official school responses</li>
                 </ul>
+                <div class="registered-sync-highlight">
+                  <span class="sync-icon">☁️</span>
+                  <span>Guest shortlists auto-sync to your account upon registration</span>
+                </div>
                 <button class="btn btn-gold" type="button" id="btn-parents-scroll-signup">Create free account <span aria-hidden="true">→</span></button>
-                <small>Registration connects cleanly to the existing Parent Portal dashboard.</small>
+                <small>Takes less than 30 seconds · No credit card required</small>
               </article>
             </div>
           </div>
@@ -7109,6 +7133,7 @@ const ParentPortalView = {
             <div class="schools-grid" id="parents-preview-schools-grid">
               ${previewSchools.map((s, idx) => {
       const isComp = (typeof State !== 'undefined' && typeof State.isInCompare === 'function') ? State.isInCompare(s.id) : false;
+      const isBm = (typeof State !== 'undefined' && typeof State.isBookmarked === 'function') ? State.isBookmarked(s.id) : false;
       const feeText = s.feeBand || (s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max || s.tuition_min * 1.5).toLocaleString()} / Term` : 'Fee Not Disclosed');
       const localFallbacks = [
         '/preview-v3/assets/school-campus.jpg',
@@ -7121,6 +7146,7 @@ const ParentPortalView = {
                     <div class="school-image">
                       <img src="${img}" alt="${s.name}" loading="lazy" onerror="this.onerror=null;this.src='/preview-v3/assets/school-campus.jpg'">
                       <span class="school-tag">${s.verified ? 'NaSIA Verified' : 'Accredited'}</span>
+                      <button type="button" class="card-bookmark-btn ${isBm ? 'saved' : ''}" data-id="${s.id}" data-name="${s.name}" aria-label="Shortlist school" title="${isBm ? 'Saved to shortlist' : 'Add to shortlist'}">${isBm ? '♥' : '♡'}</button>
                     </div>
                     <div class="school-body">
                       <h3>${s.name}</h3>
@@ -7748,11 +7774,34 @@ const ParentPortalView = {
       App.navigate('compare');
     });
 
-    // Section 3: Two Free Options
+    // Section 2: Two Free Options
     document.getElementById('btn-parents-guest-explore')?.addEventListener('click', (e) => {
       e.preventDefault();
-      App.navigate('directory');
+      const compareSec = document.getElementById('compare');
+      if (compareSec) {
+        compareSec.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        App.navigate('directory');
+      }
     });
+
+    // Card Bookmark / Shortlist buttons on preview cards
+    document.querySelectorAll('#parents-preview-schools-grid .card-bookmark-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const id = btn.dataset.id;
+        const name = btn.dataset.name || 'School';
+        if (!id || typeof State === 'undefined') return;
+        await State.toggleBookmark(id, name);
+        const isSaved = State.isBookmarked(id);
+        btn.classList.toggle('saved', isSaved);
+        btn.textContent = isSaved ? '♥' : '♡';
+        btn.setAttribute('title', isSaved ? 'Saved to shortlist' : 'Add to shortlist');
+        ParentPortalView.updateGuestShortlistCounter();
+      });
+    });
+
+    ParentPortalView.updateGuestShortlistCounter();
 
     document.getElementById('btn-parents-scroll-signup')?.addEventListener('click', (e) => {
       e.preventDefault();
