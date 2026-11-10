@@ -1544,3 +1544,190 @@ p { color: var(--muted); }
     padding: 30px 24px;
   }
 }
+
+/* ========================================================
+   Redesigned Tutor Discovery Horizontal Banner Strip
+   (Smaller vertical profile, longer horizontal span fitting beneath the 2 boxes)
+   ======================================================== */
+.parent-tutors-strip-banner {
+  max-width: 1040px;
+  margin: 22px auto 0;
+  background: linear-gradient(135deg, #0A2046 0%, #102A56 50%, #0D2248 100%);
+  border: 1.5px solid rgba(213, 166, 59, 0.4);
+  border-radius: 20px;
+  padding: 0.85rem 2rem;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(10, 32, 70, 0.12);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+  box-sizing: border-box;
+}
+
+.parent-tutors-strip-banner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 38px rgba(10, 32, 70, 0.2);
+  border-color: rgba(213, 166, 59, 0.65);
+}
+
+.tutors-strip-glow-1 {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(213, 166, 59, 0.18) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tutors-strip-glow-2 {
+  position: absolute;
+  bottom: -60px;
+  left: -60px;
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, rgba(18, 102, 196, 0.22) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.tutors-strip-body {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.tutors-strip-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.tutors-strip-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #F59E0B;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 0.18rem;
+}
+
+.tutors-strip-dot {
+  width: 6px;
+  height: 6px;
+  background: #F59E0B;
+  border-radius: 50%;
+}
+
+.tutors-strip-heading {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  margin: 0 0 0.22rem 0;
+  letter-spacing: -0.015em;
+}
+
+.tutors-strip-desc {
+  color: #cbd5e1;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  margin: 0;
+  max-width: 660px;
+}
+
+.tutors-strip-actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tutors-strip-btn-primary {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%) !important;
+  color: #0A2046 !important;
+  font-weight: 800 !important;
+  font-size: 0.86rem !important;
+  padding: 0.58rem 1.3rem !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  white-space: nowrap !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35) !important;
+  transition: transform 0.15s, box-shadow 0.15s, filter 0.15s !important;
+  text-decoration: none !important;
+}
+
+.tutors-strip-btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45) !important;
+  filter: brightness(1.05) !important;
+}
+
+.tutors-strip-btn-secondary {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 0.84rem !important;
+  padding: 0.58rem 1.1rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  white-space: nowrap !important;
+  transition: all 0.15s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.tutors-strip-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  transform: translateY(-2px) !important;
+}
+
+@media (max-width: 900px) {
+  .tutors-strip-body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+  .tutors-strip-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .parent-tutors-strip-banner {
+    padding: 1.25rem 1.25rem;
+    border-radius: 16px;
+    margin-top: 20px;
+  }
+  .tutors-strip-heading {
+    font-size: 1.15rem;
+  }
+  .tutors-strip-desc {
+    font-size: 0.84rem;
+  }
+  .tutors-strip-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .tutors-strip-btn-primary,
+  .tutors-strip-btn-secondary {
+    width: 100% !important;
+    justify-content: center !important;
+    text-align: center !important;
+  }
+}

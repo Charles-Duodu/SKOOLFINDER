@@ -36,9 +36,9 @@ const HomeView = {
       const promoRes = await API.getActivePromotions('homepage_hero');
       if (promoRes?.success && promoRes?.promotions?.length > 0) {
         heroPromo = promoRes.promotions[0];
-        API.trackPromotionImpression(heroPromo.id).catch(() => {});
+        API.trackPromotionImpression(heroPromo.id).catch(() => { });
       }
-    } catch(e) {}
+    } catch (e) { }
 
     return `
       <!-- ========================================================
@@ -1786,7 +1786,7 @@ const HomeView = {
       const campaignId = e.currentTarget.dataset.campaignId;
       const targetUrl = e.currentTarget.dataset.targetUrl;
       if (campaignId && typeof API !== 'undefined' && API.trackPromotionClick) {
-        API.trackPromotionClick(campaignId).catch(() => {});
+        API.trackPromotionClick(campaignId).catch(() => { });
       }
       if (targetUrl) {
         if (targetUrl.startsWith('http')) {
