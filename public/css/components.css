@@ -5574,3 +5574,302 @@ body.has-comparison-dock .sd-chat-window {
     min-height: 220px !important;
   }
 }
+
+/* ========================================================
+   EXPLORE MORE ACROSS SKOOLFINDER SECTION
+   ======================================================== */
+.explore-more-section {
+  position: relative;
+  background: radial-gradient(circle at 50% 10%, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%);
+  padding: 5rem 1.5rem 5.5rem;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .explore-more-section {
+  background: radial-gradient(circle at 50% 10%, #0a1628 0%, #060e1a 100%);
+  border-bottom: 1px solid rgba(30, 41, 59, 0.85);
+}
+
+.explore-more-container {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.explore-more-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 3.25rem;
+}
+
+.explore-more-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #B45309;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.65rem;
+}
+
+.explore-more-title {
+  font-family: var(--font-heading, sans-serif);
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.2;
+  margin: 0 0 0.75rem 0;
+  letter-spacing: -0.02em;
+}
+
+[data-theme="dark"] .explore-more-title {
+  color: #FFFFFF;
+}
+
+.explore-more-subtitle {
+  color: #64748B;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin: 0 auto;
+  max-width: 620px;
+}
+
+[data-theme="dark"] .explore-more-subtitle {
+  color: #94A3B8;
+}
+
+.explore-more-gold-dash {
+  width: 48px;
+  height: 3px;
+  background: #F59E0B;
+  border-radius: 9999px;
+  margin: 1.15rem auto 0;
+}
+
+/* 4 Alternating Persona Cards */
+.explore-more-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.explore-card {
+  display: flex;
+  align-items: stretch;
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.05);
+  overflow: hidden;
+  min-height: 250px;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease;
+}
+
+[data-theme="dark"] .explore-card {
+  background: #0D1C38;
+  border-color: rgba(30, 58, 102, 0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.explore-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(10, 32, 70, 0.10);
+  border-color: rgba(18, 102, 196, 0.35);
+}
+
+/* Image Wrappers */
+.explore-card-img-wrap {
+  flex: 0 0 44%;
+  position: relative;
+  overflow: hidden;
+  background: #06162E;
+  min-height: 240px;
+}
+
+.explore-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.explore-card:nth-child(1) .explore-card-img {
+  object-position: center 25%;
+}
+
+.explore-card:nth-child(2) .explore-card-img {
+  object-position: center 12%;
+}
+
+.explore-card:nth-child(3) .explore-card-img {
+  object-position: center 15%;
+}
+
+.explore-card:nth-child(4) .explore-card-img {
+  object-position: center 18%;
+}
+
+.explore-card:hover .explore-card-img {
+  transform: scale(1.05);
+}
+
+/* Number Badges (01/04, 02/04, etc.) */
+.explore-card-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  background: rgba(10, 32, 70, 0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.explore-card-badge.explore-badge-right {
+  left: auto;
+  right: 14px;
+}
+
+/* Golden Curved Accents */
+.explore-card-gold-arc-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 14px;
+  background: radial-gradient(ellipse at 100% 50%, rgba(245, 158, 11, 0.85) 0%, rgba(245, 158, 11, 0) 70%);
+  pointer-events: none;
+  border-right: 3px solid #F59E0B;
+}
+
+.explore-card-gold-arc-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 14px;
+  background: radial-gradient(ellipse at 0% 50%, rgba(245, 158, 11, 0.85) 0%, rgba(245, 158, 11, 0) 70%);
+  pointer-events: none;
+  border-left: 3px solid #F59E0B;
+}
+
+/* Text Content */
+.explore-card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2.25rem 2.75rem;
+  min-width: 0;
+}
+
+.explore-card-eyebrow {
+  color: #B45309;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.45rem;
+}
+
+.explore-card-heading {
+  font-family: var(--font-heading, sans-serif);
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.25;
+  margin: 0 0 0.55rem 0;
+  letter-spacing: -0.015em;
+}
+
+[data-theme="dark"] .explore-card-heading {
+  color: #FFFFFF;
+}
+
+.explore-card-desc {
+  color: #64748B;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 0 0 1.25rem 0;
+  max-width: 520px;
+}
+
+[data-theme="dark"] .explore-card-desc {
+  color: #94A3B8;
+}
+
+/* Buttons */
+.explore-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 0.65rem 1.4rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  width: fit-content;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.explore-card-btn:hover {
+  transform: translateX(4px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 16px rgba(10, 32, 70, 0.15);
+}
+
+.explore-btn-gold {
+  background: #F59E0B;
+  color: #0A2046;
+}
+
+.explore-btn-navy {
+  background: #0A2046;
+  color: #FFFFFF;
+}
+
+[data-theme="dark"] .explore-btn-navy {
+  background: #1E3A8A;
+  color: #FFFFFF;
+}
+
+/* Tablet & Mobile Responsiveness */
+@media (max-width: 900px) {
+  .explore-card,
+  .explore-card.explore-card-right {
+    flex-direction: column !important;
+  }
+  .explore-card-img-wrap {
+    flex: none;
+    width: 100%;
+    height: 210px;
+    min-height: 210px;
+  }
+  .explore-card.explore-card-right .explore-card-content {
+    order: 2;
+  }
+  .explore-card.explore-card-right .explore-card-img-wrap {
+    order: 1;
+  }
+  .explore-card-content {
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+  .explore-card-heading {
+    font-size: 1.35rem;
+  }
+  .explore-card-gold-arc-right,
+  .explore-card-gold-arc-left {
+    display: none;
+  }
+}

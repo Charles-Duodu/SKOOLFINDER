@@ -423,6 +423,108 @@ const HomeView = {
       </section>
 
       <!-- ========================================================
+           SECTION 02.5: EXPLORE MORE ACROSS SKOOLFINDER
+           ======================================================== -->
+      <section id="section-explore-more" class="explore-more-section">
+        <div class="explore-more-container">
+          <!-- Section Header -->
+          <div class="explore-more-header">
+            <div class="explore-more-eyebrow">
+              <span>✦</span> A PLACE FOR EVERYONE <span>✦</span>
+            </div>
+            <h2 class="explore-more-title">
+              Explore More Across SkoolFinder
+            </h2>
+            <p class="explore-more-subtitle">
+              Four simple ways to discover opportunities, connect with schools and grow in Ghana's education community.
+            </p>
+            <div class="explore-more-gold-dash"></div>
+          </div>
+
+          <!-- 4 Alternating Persona Cards -->
+          <div class="explore-more-cards">
+            
+            <!-- Card 01: Parents & Guardians (Image Left, Text Right) -->
+            <div class="explore-card explore-card-left">
+              <div class="explore-card-img-wrap">
+                <span class="explore-card-badge">01/04</span>
+                <img src="/assets/images/portals/eco_real_parents.webp" alt="Ghanaian Parents and Student" class="explore-card-img" loading="lazy" onerror="this.src='/assets/images/blueprint_family_hero.webp'" />
+                <div class="explore-card-gold-arc-right"></div>
+              </div>
+              <div class="explore-card-content">
+                <div class="explore-card-eyebrow">PARENTS &amp; GUARDIANS</div>
+                <h3 class="explore-card-heading">Find the right school for your child.</h3>
+                <p class="explore-card-desc">
+                  Explore schools across Greater Accra, compare options and connect with admissions teams — all for free.
+                </p>
+                <button type="button" id="btn-explore-parents" class="explore-card-btn explore-btn-gold">
+                  Explore Parent Services <span>&rarr;</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 02: School Owners & Proprietors (Text Left, Image Right) -->
+            <div class="explore-card explore-card-right">
+              <div class="explore-card-content">
+                <div class="explore-card-eyebrow">SCHOOL OWNERS &amp; PROPRIETORS</div>
+                <h3 class="explore-card-heading">Grow your school. Reach more families.</h3>
+                <p class="explore-card-desc">
+                  Showcase your school, attract enquiries and discover recruitment and procurement opportunities.
+                </p>
+                <button type="button" id="btn-explore-schools" class="explore-card-btn explore-btn-navy">
+                  Explore School Owner Solutions <span>&rarr;</span>
+                </button>
+              </div>
+              <div class="explore-card-img-wrap">
+                <span class="explore-card-badge explore-badge-right">02/04</span>
+                <img src="/assets/images/portals/02_school_owners.webp" alt="Ghanaian School Proprietor" class="explore-card-img" loading="lazy" />
+                <div class="explore-card-gold-arc-left"></div>
+              </div>
+            </div>
+
+            <!-- Card 03: Teachers & Education Professionals (Image Left, Text Right) -->
+            <div class="explore-card explore-card-left">
+              <div class="explore-card-img-wrap">
+                <span class="explore-card-badge">03/04</span>
+                <img src="/assets/images/portals/03_teachers_professionals.webp" alt="Ghanaian Teacher in Classroom" class="explore-card-img" loading="lazy" />
+                <div class="explore-card-gold-arc-right"></div>
+              </div>
+              <div class="explore-card-content">
+                <div class="explore-card-eyebrow">TEACHERS &amp; EDUCATION PROFESSIONALS</div>
+                <h3 class="explore-card-heading">Your skills. More opportunities.</h3>
+                <p class="explore-card-desc">
+                  Discover education jobs, showcase your expertise and connect with schools seeking talent.
+                </p>
+                <button type="button" id="btn-explore-teachers" class="explore-card-btn explore-btn-navy">
+                  Explore Education Opportunities <span>&rarr;</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Card 04: Suppliers & Service Providers (Text Left, Image Right) -->
+            <div class="explore-card explore-card-right">
+              <div class="explore-card-content">
+                <div class="explore-card-eyebrow">SUPPLIERS &amp; SERVICE PROVIDERS</div>
+                <h3 class="explore-card-heading">Connect with schools. Grow your business.</h3>
+                <p class="explore-card-desc">
+                  Present your products and services and explore procurement and tender opportunities.
+                </p>
+                <button type="button" id="btn-explore-suppliers" class="explore-card-btn explore-btn-navy">
+                  Explore Supplier Opportunities <span>&rarr;</span>
+                </button>
+              </div>
+              <div class="explore-card-img-wrap">
+                <span class="explore-card-badge explore-badge-right">04/04</span>
+                <img src="/assets/images/portals/04_suppliers_service_providers.webp" alt="Ghanaian Education Supplier" class="explore-card-img" loading="lazy" />
+                <div class="explore-card-gold-arc-left"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
            SECTION 03: PARENTS — TWO FREE EXPERIENCES (BLUEPRINT §05)
            ======================================================== -->
       <section id="section-two-ways-free" class="home-section-overlay home-section-overlay-two-ways" style="padding: 4.5rem 1.5rem; position: relative; overflow: hidden;">
@@ -1425,6 +1527,27 @@ const HomeView = {
     });
 
     document.getElementById('btn-portal-card-suppliers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-suppliers');
+    });
+
+    // SECTION 02.5: Explore More Across SkoolFinder Alternating Cards
+    document.getElementById('btn-explore-parents')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('parents');
+    });
+
+    document.getElementById('btn-explore-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-schools');
+    });
+
+    document.getElementById('btn-explore-teachers')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('for-teachers');
+    });
+
+    document.getElementById('btn-explore-suppliers')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('for-suppliers');
     });
