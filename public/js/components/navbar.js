@@ -91,11 +91,6 @@ const Navbar = {
                 <span>🏠</span> Home
               </a>
             </li>
-            <li>
-              <a href="/directory" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
-                <span>🏫</span> Browse Schools
-              </a>
-            </li>
             <li class="nav-item-dropdown" style="position: relative;">
               <button type="button" id="nav-link-portals" class="nav-link-direct" style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #0A2046; font-size: 0.92rem;">
                 <span>🌐</span> Explore Portals <span style="font-size: 0.65rem;">▼</span>
