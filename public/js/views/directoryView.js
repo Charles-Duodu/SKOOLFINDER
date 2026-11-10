@@ -243,7 +243,7 @@ const DirectoryView = {
                     </button>
                   </div>
                 ` : `
-                  <div class="schools-grid">
+                  <div class="schools-grid directory-schools-grid">
                     ${schools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
                   </div>
                 `}
@@ -345,7 +345,7 @@ const DirectoryView = {
       document.getElementById('btn-empty-reset')?.addEventListener('click', () => this.resetFilters());
     } else {
       mainEl.innerHTML = `
-        <div class="schools-grid">
+        <div class="schools-grid directory-schools-grid">
           ${displaySchools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
         </div>
       `;
