@@ -7063,50 +7063,82 @@ const ParentPortalView = {
               <p>Start right away as a guest with no signup, or create a free parent account to save your shortlisted schools and comparison tables.</p>
             </div>
 
-            <div class="access-grid">
-              <!-- Guest Card -->
-              <article class="access-card guest">
-                <div class="access-top">
-                  <span class="access-symbol" aria-hidden="true">↗</span>
-                  <span class="pill pill-guest">NO ACCOUNT NEEDED · INSTANT ACCESS</span>
-                </div>
-                <h3>Explore as a Guest</h3>
-                <p>Start immediately with complete public directory access—zero sign-up or card details required.</p>
-                <ul class="checks">
-                  <li>Search all accredited schools and view verified NaSIA profiles</li>
-                  <li>Side-by-side comparison matrix for up to 4 institutions</li>
-                  <li>Offline-ready shortlist &amp; comparison tray saved on this device</li>
-                  <li>Direct WhatsApp and phone channels to admissions offices</li>
-                </ul>
-                <div class="guest-persistence-pill" id="guest-portal-persistence-status">
-                  <span class="persistence-dot"></span>
-                  <span id="guest-portal-shortlist-counter">0 saved in browser shortlist</span>
-                </div>
-                <button type="button" id="btn-parents-guest-explore" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></button>
-              </article>
+            <div class="access-grid access-grid-v2">
+      <!-- Guest Card (Image 2 style) -->
+      <article class="access-card-v2 guest">
+        <div class="card-eyebrow guest-eyebrow">
+          <span class="eyebrow-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+            </svg>
+          </span>
+          <span>NO ACCOUNT NEEDED</span>
+        </div>
+        <h3 class="card-title">Explore as a guest</h3>
+        <p class="card-desc">Everything you need to discover and evaluate schools—zero sign-up required.</p>
+        <hr class="card-divider" />
+        <ul class="checks-v2">
+          <li>
+            <span class="check-icon blue-check">✓</span>
+            <span>Search all accredited schools and view public profiles</span>
+          </li>
+          <li>
+            <span class="check-icon blue-check">✓</span>
+            <span>Side-by-side comparison matrix for up to 4 institutions</span>
+          </li>
+          <li>
+            <span class="check-icon blue-check">✓</span>
+            <span>Explore suburb locations, curricula, and fee transparency</span>
+          </li>
+          <li>
+            <span class="check-icon blue-check">✓</span>
+            <span>Direct WhatsApp and phone contact channels where supported</span>
+          </li>
+        </ul>
+        <div class="card-action-wrap">
+          <a href="#compare" id="btn-parents-guest-explore" class="btn btn-navy-pill">Continue as guest <span aria-hidden="true">→</span></a>
+          <span class="card-footnote">No registration required</span>
+        </div>
+      </article>
 
-              <!-- Registered Account Card -->
-              <article class="access-card registered">
-                <div class="access-top">
-                  <span class="access-symbol" aria-hidden="true">✦</span>
-                  <span class="pill pill-gold">RECOMMENDED · 100% FREE</span>
-                </div>
-                <h3>Make It Your School Search</h3>
-                <p>A permanent personal admissions hub for your family with automated milestone tracking.</p>
-                <ul class="checks">
-                  <li>Permanent shortlist sync across your phone, tablet, and computer</li>
-                  <li>Automatic cloud transfer of your guest shortlist upon registration</li>
-                  <li>Track application status, open days, and scheduled school visits</li>
-                  <li>Direct admissions enquiry desk with official school responses</li>
-                </ul>
-                <div class="registered-sync-highlight">
-                  <span class="sync-icon">☁️</span>
-                  <span>Guest shortlists auto-sync to your account upon registration</span>
-                </div>
-                <button class="btn btn-gold" type="button" id="btn-parents-scroll-signup">Create free account <span aria-hidden="true">→</span></button>
-                <small>Takes less than 30 seconds · No credit card required</small>
-              </article>
-            </div>
+      <!-- Registered Account Card (Image 2 style) -->
+      <article class="access-card-v2 registered">
+        <div class="card-eyebrow gold-eyebrow">
+          <span class="eyebrow-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z"></path>
+            </svg>
+          </span>
+          <span>OPTIONAL · 100% FREE</span>
+        </div>
+        <h3 class="card-title">Make it your school search</h3>
+        <p class="card-desc">A proposed personal home for your family's school-planning preferences.</p>
+        <hr class="card-divider gold-divider" />
+        <ul class="checks-v2">
+          <li>
+            <span class="check-icon circle-check">✓</span>
+            <span>Save school shortlists and bookmarks permanently</span>
+          </li>
+          <li>
+            <span class="check-icon circle-check">✓</span>
+            <span>Save side-by-side comparison tables across your devices</span>
+          </li>
+          <li>
+            <span class="check-icon circle-check">✓</span>
+            <span>Track application milestones, open days, and scheduled visits</span>
+          </li>
+          <li>
+            <span class="check-icon circle-check">✓</span>
+            <span>Receive admissions window and deadline reminders</span>
+          </li>
+        </ul>
+        <div class="card-action-wrap">
+          <button class="btn btn-gold-pill" type="button" id="btn-parents-scroll-signup" data-action="account">Create free account <span aria-hidden="true">→</span></button>
+          <span class="card-footnote">Registration connects cleanly to the existing Parent Portal.</span>
+        </div>
+      </article>
+    </div>
           </div>
         </section>
 

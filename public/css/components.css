@@ -5142,3 +5142,229 @@ body.has-comparison-dock .sd-chat-window {
   }
 }
 
+
+
+/* ========================================================
+   BUILT AROUND YOUR CHOICE - IMAGE 2 VISUAL ARCHITECTURE
+   ======================================================== */
+.access-grid-v2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  max-width: 1040px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+.access-card-v2 {
+  border-radius: 24px;
+  padding: 40px 38px 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.access-card-v2.guest {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 35px rgba(15, 23, 42, 0.04), 0 2px 6px rgba(15, 23, 42, 0.02);
+}
+
+.access-card-v2.registered {
+  background: #FFFDF7;
+  border: 1.5px solid #F3E8CE;
+  box-shadow: 0 12px 35px rgba(217, 154, 43, 0.08), 0 2px 6px rgba(217, 154, 43, 0.03);
+}
+
+.access-card-v2:hover {
+  transform: translateY(-2px);
+}
+.access-card-v2.guest:hover {
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+}
+.access-card-v2.registered:hover {
+  box-shadow: 0 18px 45px rgba(217, 154, 43, 0.12);
+}
+
+.card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.card-eyebrow.guest-eyebrow {
+  color: #0284c7;
+}
+.card-eyebrow.gold-eyebrow {
+  color: #B45309;
+}
+.card-eyebrow .eyebrow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 26px;
+  font-weight: 800;
+  color: #06162E;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.card-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #64748b;
+  margin: 0 0 22px 0;
+  min-height: 44px;
+}
+.access-card-v2.registered .card-desc {
+  color: #57534e;
+}
+
+.card-divider {
+  border: none;
+  border-top: 1px solid #f1f5f9;
+  margin: 0 0 26px 0;
+}
+.card-divider.gold-divider {
+  border-top-color: #f3e8ce;
+}
+
+.checks-v2 {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.checks-v2 li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #334155;
+}
+.access-card-v2.registered .checks-v2 li {
+  color: #292524;
+}
+
+.check-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.check-icon.blue-check {
+  color: #0284c7;
+  font-weight: 800;
+  font-size: 15px;
+  line-height: 1;
+}
+.check-icon.circle-check {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1.5px solid #d97706;
+  color: #d97706;
+  font-size: 10.5px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-sizing: border-box;
+}
+
+.card-action-wrap {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-navy-pill {
+  width: 100%;
+  padding: 15px 24px;
+  border-radius: 9999px;
+  background: #06162E;
+  color: #ffffff !important;
+  font-weight: 750;
+  font-size: 14.5px;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px rgba(6, 22, 46, 0.2);
+  box-sizing: border-box;
+}
+.btn-navy-pill:hover {
+  background: #0d2850;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(6, 22, 46, 0.28);
+}
+
+.btn-gold-pill {
+  width: 100%;
+  padding: 15px 24px;
+  border-radius: 9999px;
+  background: #d97706;
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #06162E !important;
+  font-weight: 800;
+  font-size: 14.5px;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.3);
+  box-sizing: border-box;
+}
+.btn-gold-pill:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(217, 119, 6, 0.38);
+}
+
+.card-footnote {
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  margin: 0;
+  line-height: 1.4;
+}
+.access-card-v2.registered .card-footnote {
+  color: #78716c;
+}
+
+@media (max-width: 768px) {
+  .access-grid-v2 {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .access-card-v2 {
+    padding: 30px 24px;
+  }
+}
