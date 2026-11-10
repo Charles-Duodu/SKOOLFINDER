@@ -319,56 +319,135 @@
 </section>
 
         <!-- ========================================================
-     SECTION 3: DISCOVER & COMPARE (WITH DOCK & MATRIX)
-     ======================================================== -->
-<section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3">
-  <div class="container">
-    <div class="section-head split">
-      <div>
-        <div class="eyebrow"><span class="eyebrow-line"></span> DISCOVER &amp; COMPARE</div>
-        <h2 id="compare-heading">A clearer picture of <em>your options.</em></h2>
-        <p>Explore accredited institutions across Greater Accra and compare essentials side-by-side: location, curriculum, learning environment, and fee transparency.</p>
-      </div>
-      <button class="underlined-link" type="button" id="resetSchools">View all example schools <span aria-hidden="true">↗</span></button>
-    </div>
-
-    <div class="data-warning">
-      <span class="warning-info" aria-hidden="true">i</span>
-      <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records. Always confirm current intake and fee schedules with the school office.</span>
-    </div>
-
-    <!-- Sponsored Spotlight Banner (Image 2 Match) -->
-    <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: 14px; padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
-      <div style="display: flex; align-items: center; gap: 1rem;">
-        <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
-          ⭐
-        </div>
+             SECTION 3: NATIONWIDE SCHOOL DIRECTORY & REGIONAL HUBS (DIRECTORY CONTENT MATCH)
+             ======================================================== -->
+<section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3" style="background: var(--bg-main, #f8fafc); padding: 3rem 0 4rem;">
+  <div class="directory-container" style="max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;">
+    <!-- Directory Header -->
+    <div style="padding: 0.5rem 0 1.5rem;">
+      <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
         <div>
-          <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-            <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
-              Sponsored Spotlight
-            </span>
-            <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
-          </div>
-          <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
-            Experience World-Class British Cambridge Education in Cantonments
-          </h3>
-          <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
-            📍 Accra, Greater Accra &bull; Verified Accreditation
+          <h2 id="compare-heading" style="font-family: var(--font-heading, inherit); font-size: 2.25rem; font-weight: 800; color: var(--navy, #06162E); margin: 0 0 0.35rem 0;">
+            Nationwide School Directory &amp; Regional Hubs
+          </h2>
+          <p id="dir-count-text" style="color: var(--muted, #64748b); font-size: 0.95rem; margin: 0;">
+            Showing <strong>3</strong> accredited schools across Greater Accra, Kumasi, Cape Coast &amp; Takoradi.
           </p>
         </div>
+
+        <!-- Top Controls: Map/List View Toggle -->
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div class="directory-view-toggle">
+            <button id="toggle-list-view" class="view-toggle-btn active" type="button">
+              📋 Cards View
+            </button>
+            <button id="toggle-map-view" class="view-toggle-btn" type="button">
+              🗺️ Map View
+            </button>
+          </div>
+        </div>
       </div>
-      <button class="btn btn-gold btn-small" id="btn-parent-spotlight-cta" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
-        Explore Admissions &rarr;
-      </button>
     </div>
 
-    <!-- School Cards Grid (Rendered by app.js with Directory Layout) -->
-    <div class="schools-grid directory-schools-grid" id="schoolsGrid" aria-live="polite"></div>
-    <div id="resultMessage" class="result-message" aria-live="polite"></div>
+    <!-- Main Layout: Sidebar Filters + Content Area -->
+    <div class="directory-layout">
+      <!-- Filter Sidebar -->
+      <aside class="filter-sidebar">
+        <div class="filter-header">
+          <span class="filter-title"><span>⚡</span> Refine Search</span>
+          <button id="resetSchools" class="filter-reset-btn" type="button">Reset All</button>
+        </div>
+
+        <!-- Fit Adviser Direct Banner -->
+        <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); border-radius: var(--radius-md, 10px); padding: 0.85rem 1rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; box-shadow: var(--shadow-sm);">
+          <div>
+            <div style="font-weight: 800; font-size: 0.82rem; color: #fbbf24;">🎯 Not sure where to start?</div>
+            <div style="font-size: 0.72rem; color: rgba(255,255,255,0.85); margin-top: 0.15rem;">Try our 2-step Fit Adviser.</div>
+          </div>
+          <button id="btn-preview-launch-match" class="btn btn-gold btn-small" style="font-size: 0.72rem; padding: 0.3rem 0.65rem; font-weight: 800; white-space: nowrap; cursor: pointer;" type="button">
+            Fit Adviser &rarr;
+          </button>
+        </div>
+
+        <!-- Region Filter -->
+        <div class="filter-group">
+          <label class="filter-group-label" for="region">Region</label>
+          <select id="region" class="filter-select">
+            <option value="All" selected>All Regions</option>
+            <option value="Greater Accra">Greater Accra (Accra, Tema)</option>
+            <option value="Ashanti">Ashanti (Kumasi)</option>
+            <option value="Central">Central (Cape Coast)</option>
+            <option value="Western">Western (Sekondi-Takoradi)</option>
+            <option value="Eastern">Eastern (Koforidua)</option>
+          </select>
+        </div>
+
+        <!-- Area Input Filter -->
+        <div class="filter-group">
+          <label class="filter-group-label" for="query">Area</label>
+          <input type="text" id="query" class="filter-input" placeholder="type area name" />
+        </div>
+
+        <!-- Level Filter -->
+        <div class="filter-group">
+          <label class="filter-group-label" for="level">School Level</label>
+          <select id="level" class="filter-select">
+            <option value="" selected>All Levels</option>
+            <option value="Primary">Primary (Class 1-6)</option>
+            <option value="JHS">Junior High School (JHS)</option>
+            <option value="SHS">Senior High School (SHS)</option>
+          </select>
+        </div>
+
+        <!-- Curriculum Filter -->
+        <div class="filter-group">
+          <label class="filter-group-label" for="curriculum">Curriculum</label>
+          <select id="curriculum" class="filter-select">
+            <option value="" selected>All Curricula</option>
+            <option value="Cambridge">Cambridge (CIE / IGCSE)</option>
+            <option value="GES">GES Standards-based</option>
+            <option value="Montessori">Montessori</option>
+            <option value="IB">International Baccalaureate (IB)</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- Results Main Area -->
+      <main id="dir-results-main" style="min-width: 0; width: 100%;">
+        <!-- Sponsored Spotlight Banner -->
+        <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: 14px; padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
+              ⭐
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+                  Sponsored Spotlight
+                </span>
+                <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
+              </div>
+              <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
+                Experience World-Class British Cambridge Education in Cantonments
+              </h3>
+              <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
+                📍 Accra, Greater Accra &bull; Verified Accreditation
+              </p>
+            </div>
+          </div>
+          <button class="btn btn-gold btn-small" id="btn-parent-spotlight-cta" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
+            Explore Admissions &rarr;
+          </button>
+        </div>
+
+        <!-- School Cards Grid (Rendered by app.js with Directory Layout) -->
+        <div class="schools-grid directory-schools-grid" id="schoolsGrid" aria-live="polite"></div>
+        <div id="resultMessage" class="result-message" aria-live="polite"></div>
+      </main>
+    </div>
 
     <!-- Decision Band -->
-    <div class="decision-band">
+    <div class="decision-band" style="margin-top: 2.5rem;">
       <div class="decision-text">
         <span class="micro-label">OBJECTIVE COMPARISON</span>
         <h3>Look beyond the school name.</h3>
@@ -378,6 +457,16 @@
         <div>
           <span class="decision-icon">↔</span>
           <span><strong>Compare side-by-side</strong><small>Select up to 4 schools on desktop, 2 on mobile</small></span>
+        </div>
+        <div>
+          <span class="decision-icon">₵</span>
+          <span><strong>Understand total costs</strong><small>Tuition, uniforms, books, meals and transport</small></span>
+        </div>
+        <button class="btn btn-outline-navy" type="button" id="btn-parents-open-compare">Open comparison <span aria-hidden="true">→</span></button>
+      </div>
+    </div>
+  </div>
+</section>
         </div>
         <div>
           <span class="decision-icon">₵</span>

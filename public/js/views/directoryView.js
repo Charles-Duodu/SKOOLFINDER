@@ -404,7 +404,8 @@ const DirectoryView = {
           await State.toggleBookmark(schoolId, schoolName);
           const isNowSaved = State.isBookmarked(schoolId);
           btn.classList.toggle('active', isNowSaved);
-          btn.innerHTML = isNowSaved ? '🔖' : '🤍';
+          btn.innerHTML = isNowSaved ? '♥' : '♡';
+          btn.style.color = isNowSaved ? '#e11d48' : '#64748b';
         }
       };
     });

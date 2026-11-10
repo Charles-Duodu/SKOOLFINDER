@@ -1304,8 +1304,18 @@ const HomeView = {
       if (feeRaw.includes('elite') || (school.tuition_min && school.tuition_min >= 25000)) feeTierClass = 'badge-fee-elite';
     }
 
+    let fallbackImg = '/preview-v3/assets/school-campus.jpg';
+    const scName = (school.name || '').toLowerCase();
+    if (scName.includes('presbyterian') || scName.includes('presec') || scName.includes('stem')) {
+      fallbackImg = '/preview-v3/assets/school-stem.jpg';
+    } else if (scName.includes('international') || scName.includes('gis') || scName.includes('early') || scName.includes('montessori')) {
+      fallbackImg = '/preview-v3/assets/school-early.jpg';
+    }
+
+    const primaryCover = (school.coverImage && !school.coverImage.includes('unsplash.com')) ? school.coverImage : (school.banner_url || school.logo_url || fallbackImg);
+
     const galleryImgs = [
-      school.coverImage || school.banner_url || school.logo_url || '/assets/images/campus_hero.webp',
+      primaryCover,
       '/assets/images/science_lab.webp',
       '/assets/images/montessori_class.webp'
     ];
@@ -1317,10 +1327,10 @@ const HomeView = {
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
         <div class="card-mini-carousel" id="carousel-${school.id}">
-          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" onerror="this.onerror=null;this.src='/preview-v3/assets/school-campus.jpg'" />
+          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}'" />
           
-          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
-            ${isSaved ? '🔖' : '🤍'}
+          <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Shortlist' : 'Save School to Shortlist'}" aria-label="${isSaved ? 'Remove from shortlist' : 'Save to shortlist'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.95); border: 1px solid rgba(0,0,0,0.08); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.25rem; line-height: 1; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: transform 0.15s ease, color 0.15s ease; color: ${isSaved ? '#e11d48' : '#64748b'};">
+            ${isSaved ? '♥' : '♡'}
           </button>
 
           <div class="carousel-nav-dots" data-school-id="${school.id}">
@@ -1329,7 +1339,7 @@ const HomeView = {
             <span class="carousel-dot" data-img="${galleryImgs[2]}" title="Modern Classrooms"></span>
           </div>
 
-          <div class="school-card-badges">
+          <div class="school-card-badges" style="right: 54px;">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
             ${(school.verified || school.is_verified) ? '<span class="badge badge-verified" title="School ownership &amp; profile reviewed">🛡️ Verified Profile</span>' : ''}
             <span class="badge-radar-container"><span class="radar-pulse-core"></span> Admissions Open</span>
@@ -1697,7 +1707,8 @@ const HomeView = {
           await State.toggleBookmark(schoolId, schoolName);
           const isNowSaved = State.isBookmarked(schoolId);
           btn.classList.toggle('active', isNowSaved);
-          btn.innerHTML = isNowSaved ? '🔖' : '🤍';
+          btn.innerHTML = isNowSaved ? '♥' : '♡';
+          btn.style.color = isNowSaved ? '#e11d48' : '#64748b';
         }
       };
     });

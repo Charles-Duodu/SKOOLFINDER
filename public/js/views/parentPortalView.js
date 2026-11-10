@@ -6887,7 +6887,15 @@ const ParentPortalView = {
       if (typeof API !== 'undefined' && API.getSchools) {
         const schools = await API.getSchools({ region: 'All' });
         if (Array.isArray(schools) && schools.length > 0) {
-          previewSchools = schools.slice(0, 6);
+          const localImages = [
+            '/preview-v3/assets/school-campus.jpg',
+            '/preview-v3/assets/school-stem.jpg',
+            '/preview-v3/assets/school-early.jpg'
+          ];
+          previewSchools = schools.slice(0, 6).map((s, idx) => ({
+            ...s,
+            coverImage: (s.coverImage && !s.coverImage.includes('unsplash.com')) ? s.coverImage : localImages[idx % localImages.length]
+          }));
         }
       }
     } catch (e) {
@@ -7169,61 +7177,187 @@ const ParentPortalView = {
         </section>
 
         <!-- ========================================================
-             SECTION 3: DISCOVER & COMPARE (WITH DOCK & MATRIX)
+             SECTION 3: NATIONWIDE SCHOOL DIRECTORY & REGIONAL HUBS (DIRECTORY CONTENT MATCH)
              ======================================================== -->
-        <section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3">
-          <div class="container">
-            <div class="section-head split">
-              <div>
-                <div class="eyebrow"><span class="eyebrow-line"></span> DISCOVER &amp; COMPARE</div>
-                <h2 id="compare-heading">A Clearer Picture of Your Options</h2>
-                <p>Explore accredited institutions across Greater Accra and compare essentials side-by-side: location, curriculum, learning environment, and fee transparency.</p>
-              </div>
-              <button class="underlined-link" type="button" id="btn-parents-view-all-schools">View all schools <span aria-hidden="true">↗</span></button>
-            </div>
-
-            <div class="data-warning">
-              <span class="warning-info" aria-hidden="true">i</span>
-              <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records under Education Regulatory Bodies Act 1023. NaSIA licensing status verified. Always confirm current intake and fee schedules with the school office.</span>
-            </div>
-
-            <!-- Sponsored Spotlight Banner (Image 2 Match) -->
-            <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
-              <div style="display: flex; align-items: center; gap: 1rem;">
-                <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
-                  ⭐
-                </div>
+        <section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3" style="background: var(--bg-main, #f8fafc); padding: 3rem 0 4rem;">
+          <div class="directory-container" style="max-width: 1400px; margin: 0 auto; padding: 0 1.5rem;">
+            <!-- Directory Header -->
+            <div style="padding: 0.5rem 0 1.5rem;">
+              <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
                 <div>
-                  <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                    <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
-                      Sponsored Spotlight
-                    </span>
-                    <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
-                  </div>
-                  <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
-                    Experience World-Class British Cambridge Education in Cantonments
-                  </h3>
-                  <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
-                    📍 Accra, Greater Accra &bull; Verified Accreditation
+                  <h2 id="compare-heading" style="font-family: var(--font-heading, inherit); font-size: 2.25rem; font-weight: 800; color: var(--primary-900, #06162E); margin: 0 0 0.35rem 0;">
+                    Nationwide School Directory &amp; Regional Hubs
+                  </h2>
+                  <p id="parents-dir-count-text" style="color: var(--text-muted, #64748b); font-size: 0.95rem; margin: 0;">
+                    Showing <strong id="parents-dir-count-num">${previewSchools.slice(0, 3).length}</strong> accredited schools across Greater Accra, Kumasi, Cape Coast &amp; Takoradi.
                   </p>
                 </div>
+
+                <!-- Top Controls: Map/List View Toggle -->
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                  <div class="directory-view-toggle">
+                    <button id="parents-toggle-list-view" class="view-toggle-btn active" type="button">
+                      📋 Cards View
+                    </button>
+                    <button id="parents-toggle-map-view" class="view-toggle-btn" type="button">
+                      🗺️ Map View
+                    </button>
+                  </div>
+                </div>
               </div>
-              <button class="btn-pill btn-gold" id="btn-parent-spotlight-cta" data-target-url="/school/ab5af86d-c902-4853-9528-d6200104b5f6" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
-                Explore Admissions &rarr;
-              </button>
             </div>
 
-            <!-- Dynamic Horizontal School Cards List (Directory Image 2 Layout) -->
-            <div class="schools-grid directory-schools-grid" id="parents-preview-schools-grid">
-              ${previewSchools.slice(0, 3).map(s => `
-                <div class="school-card-col">
-                  ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : ''}
+            <!-- Main Layout: Sidebar Filters + Content Area -->
+            <div class="directory-layout">
+              <!-- Filter Sidebar -->
+              <aside class="filter-sidebar">
+                <div class="filter-header">
+                  <span class="filter-title"><span>⚡</span> Refine Search</span>
+                  <button id="parents-btn-reset-filters" class="filter-reset-btn" type="button">Reset All</button>
                 </div>
-              `).join('')}
+
+                <!-- Fit Adviser Direct Banner -->
+                <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); border-radius: var(--radius-md); padding: 0.85rem 1rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; box-shadow: var(--shadow-sm);">
+                  <div>
+                    <div style="font-weight: 800; font-size: 0.82rem; color: #fbbf24;">🎯 Not sure where to start?</div>
+                    <div style="font-size: 0.72rem; color: rgba(255,255,255,0.85); margin-top: 0.15rem;">Try our 2-step Fit Adviser.</div>
+                  </div>
+                  <button id="parents-btn-dir-launch-match" class="btn-pill btn-gold" style="font-size: 0.72rem; padding: 0.3rem 0.65rem; font-weight: 800; white-space: nowrap; cursor: pointer;" type="button">
+                    Fit Adviser &rarr;
+                  </button>
+                </div>
+
+                <!-- Region Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-region">Region</label>
+                  <select id="parents-filter-region" class="filter-select">
+                    <option value="All" selected>All Regions</option>
+                    <option value="Greater Accra">Greater Accra (Accra, Tema)</option>
+                    <option value="Ashanti">Ashanti (Kumasi)</option>
+                    <option value="Central">Central (Cape Coast)</option>
+                    <option value="Western">Western (Sekondi-Takoradi)</option>
+                    <option value="Eastern">Eastern (Koforidua)</option>
+                  </select>
+                </div>
+
+                <!-- Area Input Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-suburb">Area</label>
+                  <input type="text" id="parents-filter-suburb" class="filter-input" placeholder="type area name" />
+                </div>
+
+                <!-- Level Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-level">School Level</label>
+                  <select id="parents-filter-level" class="filter-select">
+                    <option value="All" selected>All Levels</option>
+                    <option value="Crèche">Crèche / Daycare</option>
+                    <option value="Kindergarten">Nursery &amp; Kindergarten</option>
+                    <option value="Primary">Primary (Class 1-6)</option>
+                    <option value="JHS">Junior High School (JHS)</option>
+                    <option value="SHS">Senior High School (SHS)</option>
+                  </select>
+                </div>
+
+                <!-- Curriculum Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-curriculum">Curriculum</label>
+                  <select id="parents-filter-curriculum" class="filter-select">
+                    <option value="All" selected>All Curricula</option>
+                    <option value="Cambridge">Cambridge (CIE / IGCSE)</option>
+                    <option value="GES">GES Standards-based</option>
+                    <option value="Montessori">Montessori</option>
+                    <option value="IB">International Baccalaureate (IB)</option>
+                  </select>
+                </div>
+
+                <!-- Attendance Type / Boarding Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-boarding">Attendance Type</label>
+                  <select id="parents-filter-boarding" class="filter-select">
+                    <option value="All" selected>Day &amp; Boarding</option>
+                    <option value="Day Only">Day Only</option>
+                    <option value="Boarding">Boarding Options</option>
+                  </select>
+                </div>
+
+                <!-- Fee Band Filter -->
+                <div class="filter-group">
+                  <label class="filter-group-label" for="parents-filter-feeband">Estimated Term Fees</label>
+                  <select id="parents-filter-feeband" class="filter-select">
+                    <option value="All" selected>All Fee Ranges</option>
+                    <option value="Budget">Budget (Under GH₵ 1,500)</option>
+                    <option value="Moderate">Moderate (GH₵ 1,500 - 4,000)</option>
+                    <option value="Premium">Premium (GH₵ 4,000 - 10,000)</option>
+                    <option value="International">Elite (GH₵ 10,000+)</option>
+                  </select>
+                </div>
+
+                <!-- Key Facilities Checkboxes -->
+                <div class="filter-group">
+                  <label class="filter-group-label">Must-Have Amenities</label>
+                  <div class="filter-checkbox-list">
+                    <label class="filter-checkbox-item">
+                      <input type="checkbox" class="parents-facility-checkbox" value="School Bus" />
+                      <span>School Bus Shuttle</span>
+                    </label>
+                    <label class="filter-checkbox-item">
+                      <input type="checkbox" class="parents-facility-checkbox" value="Science" />
+                      <span>Science &amp; Robotics Lab</span>
+                    </label>
+                    <label class="filter-checkbox-item">
+                      <input type="checkbox" class="parents-facility-checkbox" value="Swimming" />
+                      <span>Swimming Pool</span>
+                    </label>
+                    <label class="filter-checkbox-item">
+                      <input type="checkbox" class="parents-facility-checkbox" value="Sick Bay" />
+                      <span>Sick Bay &amp; Nurse</span>
+                    </label>
+                  </div>
+                </div>
+              </aside>
+
+              <!-- Results Main Area -->
+              <main id="parents-dir-results-main" style="min-width: 0; width: 100%;">
+                <!-- Sponsored Spotlight Banner -->
+                <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
+                      ⭐
+                    </div>
+                    <div>
+                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                        <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
+                          Sponsored Spotlight
+                        </span>
+                        <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
+                      </div>
+                      <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
+                        Experience World-Class British Cambridge Education in Cantonments
+                      </h3>
+                      <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
+                        📍 Accra, Greater Accra &bull; Verified Accreditation
+                      </p>
+                    </div>
+                  </div>
+                  <button class="btn-pill btn-gold" id="btn-parent-spotlight-cta" data-target-url="/school/ab5af86d-c902-4853-9528-d6200104b5f6" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
+                    Explore Admissions &rarr;
+                  </button>
+                </div>
+
+                <!-- Dynamic Horizontal School Cards List (Directory Layout) -->
+                <div class="schools-grid directory-schools-grid" id="parents-preview-schools-grid">
+                  ${previewSchools.slice(0, 3).map(s => `
+                    <div class="school-card-col">
+                      ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : ''}
+                    </div>
+                  `).join('')}
+                </div>
+              </main>
             </div>
 
             <!-- Decision Band -->
-            <div class="decision-band">
+            <div class="decision-band" style="margin-top: 2.5rem;">
               <div class="decision-text">
                 <span class="micro-label">OBJECTIVE COMPARISON</span>
                 <h3>Look beyond the school name.</h3>
@@ -7818,11 +7952,195 @@ const ParentPortalView = {
           await State.toggleBookmark(schoolId, schoolName);
           const isSaved = State.isBookmarked(schoolId);
           btn.classList.toggle('active', isSaved);
-          btn.innerHTML = isSaved ? '🔖' : '🤍';
+          btn.innerHTML = isSaved ? '♥' : '♡';
+          btn.style.color = isSaved ? '#e11d48' : '#64748b';
           ParentPortalView.updateGuestShortlistCounter();
         }
       });
     });
+
+    // Directory Filter & Controls Wiring on Parents Page
+    const attachParentDirectoryEvents = () => {
+      const applyFilters = () => {
+        const region = document.getElementById('parents-filter-region')?.value || 'All';
+        const suburb = (document.getElementById('parents-filter-suburb')?.value || '').toLowerCase().trim();
+        const level = document.getElementById('parents-filter-level')?.value || 'All';
+        const curriculum = document.getElementById('parents-filter-curriculum')?.value || 'All';
+        const boarding = document.getElementById('parents-filter-boarding')?.value || 'All';
+        const feeBand = document.getElementById('parents-filter-feeband')?.value || 'All';
+        const checkedFacilities = Array.from(document.querySelectorAll('.parents-facility-checkbox:checked')).map(c => c.value.toLowerCase());
+
+        const allSchools = ParentPortalView.previewSchoolsList || [];
+        const filtered = allSchools.filter(s => {
+          if (region !== 'All' && s.region && !s.region.includes(region)) return false;
+          if (suburb) {
+            const matchSuburb = (s.suburb || '').toLowerCase().includes(suburb);
+            const matchName = (s.name || '').toLowerCase().includes(suburb);
+            if (!matchSuburb && !matchName) return false;
+          }
+          if (level !== 'All') {
+            const lvls = Array.isArray(s.levels) ? s.levels.join(' ') : (s.levels || '');
+            if (!lvls.toLowerCase().includes(level.toLowerCase())) return false;
+          }
+          if (curriculum !== 'All') {
+            const currs = Array.isArray(s.curriculum) ? s.curriculum.join(' ') : (s.curriculum || '');
+            if (!currs.toLowerCase().includes(curriculum.toLowerCase())) return false;
+          }
+          if (boarding !== 'All') {
+            const b = (s.boarding || s.attendance || s.feature || '').toLowerCase();
+            if (boarding === 'Day Only' && !b.includes('day')) return false;
+            if (boarding === 'Boarding' && !b.includes('board')) return false;
+          }
+          if (feeBand !== 'All') {
+            const fb = (s.feeBand || '').toLowerCase();
+            if (!fb.includes(feeBand.toLowerCase())) return false;
+          }
+          if (checkedFacilities.length > 0) {
+            const facText = (Array.isArray(s.facilities) ? s.facilities.join(' ') : (s.feature || '')).toLowerCase();
+            for (const f of checkedFacilities) {
+              if (!facText.includes(f)) return false;
+            }
+          }
+          return true;
+        });
+
+        const grid = document.getElementById('parents-preview-schools-grid');
+        const countEl = document.getElementById('parents-dir-count-num');
+        if (countEl) countEl.textContent = filtered.length;
+        if (grid) {
+          if (filtered.length === 0) {
+            grid.innerHTML = `
+              <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px dashed var(--border-light); padding: 3rem 1.5rem; text-align: center; width: 100%;">
+                <div style="font-size: 2.5rem; margin-bottom: 0.75rem;">🔍</div>
+                <h4 style="font-family: var(--font-heading); font-size: 1.25rem; color: var(--primary-900); margin-bottom: 0.5rem;">No schools matched your filters</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Try clearing your search criteria or resetting filters.</p>
+                <button id="parents-btn-clear-empty" class="btn-pill btn-primary" type="button" style="padding: 0.4rem 1rem; font-size: 0.85rem; cursor: pointer;">Clear Filters</button>
+              </div>
+            `;
+            document.getElementById('parents-btn-clear-empty')?.addEventListener('click', resetAllFilters);
+          } else {
+            grid.innerHTML = filtered.map(s => `
+              <div class="school-card-col">
+                ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : ''}
+              </div>
+            `).join('');
+            rebindCardActions();
+          }
+        }
+      };
+
+      const resetAllFilters = () => {
+        const reg = document.getElementById('parents-filter-region');
+        if (reg) reg.value = 'All';
+        const sub = document.getElementById('parents-filter-suburb');
+        if (sub) sub.value = '';
+        const lvl = document.getElementById('parents-filter-level');
+        if (lvl) lvl.value = 'All';
+        const cur = document.getElementById('parents-filter-curriculum');
+        if (cur) cur.value = 'All';
+        const brd = document.getElementById('parents-filter-boarding');
+        if (brd) brd.value = 'All';
+        const fee = document.getElementById('parents-filter-feeband');
+        if (fee) fee.value = 'All';
+        document.querySelectorAll('.parents-facility-checkbox').forEach(cb => { cb.checked = false; });
+        applyFilters();
+      };
+
+      const rebindCardActions = () => {
+        document.querySelectorAll('#parents-preview-schools-grid .btn-card-view').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sid = btn.dataset.schoolId;
+            if (sid && typeof App !== 'undefined') App.navigate('school-detail', sid);
+          });
+        });
+        document.querySelectorAll('#parents-preview-schools-grid .btn-card-wa').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const wa = btn.dataset.wa;
+            if (wa) {
+              const cleanWa = wa.replace(/[^0-9]/g, '');
+              window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
+            }
+          });
+        });
+        document.querySelectorAll('#parents-preview-schools-grid .btn-card-compare').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sid = btn.dataset.schoolId;
+            if (sid && typeof State !== 'undefined') {
+              const s = (ParentPortalView.previewSchoolsList || []).find(x => x.id === sid) || { id: sid };
+              State.toggleComparison(s);
+              btn.classList.toggle('active', State.isInCompare(sid));
+            }
+          });
+        });
+        document.querySelectorAll('#parents-preview-schools-grid .btn-card-bookmark').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            const sid = btn.dataset.schoolId;
+            const sname = btn.dataset.schoolName || 'School';
+            if (sid && typeof State !== 'undefined') {
+              await State.toggleBookmark(sid, sname);
+              const isSaved = State.isBookmarked(sid);
+              btn.classList.toggle('active', isSaved);
+              btn.innerHTML = isSaved ? '♥' : '♡';
+              btn.style.color = isSaved ? '#e11d48' : '#64748b';
+              ParentPortalView.updateGuestShortlistCounter();
+            }
+          });
+        });
+        document.querySelectorAll('#parents-preview-schools-grid .carousel-dot').forEach(dot => {
+          dot.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const parentDots = dot.parentElement;
+            const sid = parentDots?.dataset?.schoolId;
+            const targetImg = document.getElementById(`img-${sid}`);
+            if (targetImg && dot.dataset.img) {
+              targetImg.style.opacity = '0.5';
+              setTimeout(() => {
+                targetImg.src = dot.dataset.img;
+                targetImg.style.opacity = '1';
+              }, 120);
+              parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
+              dot.classList.add('active');
+            }
+          });
+        });
+      };
+
+      document.getElementById('parents-btn-reset-filters')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        resetAllFilters();
+      });
+
+      ['parents-filter-region', 'parents-filter-level', 'parents-filter-curriculum', 'parents-filter-boarding', 'parents-filter-feeband'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', applyFilters);
+      });
+      document.getElementById('parents-filter-suburb')?.addEventListener('input', applyFilters);
+      document.querySelectorAll('.parents-facility-checkbox').forEach(cb => {
+        cb.addEventListener('change', applyFilters);
+      });
+
+      document.getElementById('parents-btn-dir-launch-match')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof App !== 'undefined') App.navigate('matchmaker');
+      });
+
+      document.getElementById('parents-toggle-list-view')?.addEventListener('click', () => {
+        document.getElementById('parents-toggle-list-view')?.classList.add('active');
+        document.getElementById('parents-toggle-map-view')?.classList.remove('active');
+        document.getElementById('parents-dir-results-main').style.display = 'block';
+      });
+
+      document.getElementById('parents-toggle-map-view')?.addEventListener('click', () => {
+        if (typeof App !== 'undefined') {
+          if (typeof State !== 'undefined' && State.filters) State.filters.viewMode = 'map';
+          App.navigate('directory');
+        }
+      });
+    };
+    attachParentDirectoryEvents();
 
     document.querySelectorAll('#parents-preview-schools-grid .carousel-dot').forEach(dot => {
       dot.addEventListener('click', (e) => {

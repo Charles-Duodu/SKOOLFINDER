@@ -126,10 +126,19 @@
   position: absolute;
   top: 1rem;
   left: 1rem;
+  right: 54px;
   display: flex;
   flex-wrap: wrap;
   gap: 0.4rem;
   z-index: 2;
+}
+
+.btn-card-bookmark:hover {
+  transform: scale(1.14);
+  color: #e11d48 !important;
+}
+.btn-card-bookmark.active {
+  color: #e11d48 !important;
 }
 
 .school-card-fee-pill {
