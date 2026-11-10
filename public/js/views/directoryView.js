@@ -97,34 +97,10 @@ const DirectoryView = {
                 </select>
               </div>
 
-              <!-- Suburb Filter -->
+              <!-- Area Input Filter -->
               <div class="filter-group">
-                <label class="filter-group-label">Suburb / Enclave</label>
-                <select id="filter-suburb" class="filter-select">
-                  <option value="All" ${State.filters.suburb === 'All' ? 'selected' : ''}>All Neighborhoods</option>
-                  <optgroup label="Greater Accra">
-                    <option value="East Legon" ${State.filters.suburb === 'East Legon' ? 'selected' : ''}>East Legon</option>
-                    <option value="Cantonments" ${State.filters.suburb === 'Cantonments' ? 'selected' : ''}>Cantonments</option>
-                    <option value="Airport Residential" ${State.filters.suburb === 'Airport Residential' ? 'selected' : ''}>Airport Residential</option>
-                    <option value="Spintex" ${State.filters.suburb === 'Spintex' ? 'selected' : ''}>Spintex Road</option>
-                    <option value="Tema" ${State.filters.suburb === 'Tema' ? 'selected' : ''}>Tema (Comm 1-25)</option>
-                    <option value="Adenta" ${State.filters.suburb === 'Adenta' ? 'selected' : ''}>Adenta / Oyarifa</option>
-                  </optgroup>
-                  <optgroup label="Kumasi (Ashanti)">
-                    <option value="Ahodwo" ${State.filters.suburb === 'Ahodwo' ? 'selected' : ''}>Ahodwo</option>
-                    <option value="Nhyiaeso" ${State.filters.suburb === 'Nhyiaeso' ? 'selected' : ''}>Nhyiaeso</option>
-                    <option value="Ridge" ${State.filters.suburb === 'Ridge' ? 'selected' : ''}>Ridge Residential</option>
-                    <option value="KNUST Enclave" ${State.filters.suburb === 'KNUST Enclave' ? 'selected' : ''}>KNUST Enclave</option>
-                  </optgroup>
-                  <optgroup label="Central (Cape Coast)">
-                    <option value="Pedu" ${State.filters.suburb === 'Pedu' ? 'selected' : ''}>Pedu / Kotokuraba</option>
-                    <option value="Cape Coast Ridge" ${State.filters.suburb === 'Cape Coast Ridge' ? 'selected' : ''}>Ridge / Adisadel Hill</option>
-                  </optgroup>
-                  <optgroup label="Western (Sekondi-Takoradi)">
-                    <option value="Beach Road" ${State.filters.suburb === 'Beach Road' ? 'selected' : ''}>Beach Road / Chapel Hill</option>
-                    <option value="Airport Ridge" ${State.filters.suburb === 'Airport Ridge' ? 'selected' : ''}>Takoradi Airport Ridge</option>
-                  </optgroup>
-                </select>
+                <label class="filter-group-label" for="filter-suburb">Area</label>
+                <input type="text" id="filter-suburb" class="filter-input" placeholder="type area name" value="${State.filters.suburb && State.filters.suburb !== 'All' ? State.filters.suburb : ''}" />
               </div>
 
               <!-- Level Filter -->
@@ -509,12 +485,41 @@ const DirectoryView = {
     // Filter Selects (Fast in-place refresh)
     const selects = [
       { id: 'filter-region', key: 'region' },
-      { id: 'filter-suburb', key: 'suburb' },
       { id: 'filter-level', key: 'level' },
       { id: 'filter-curriculum', key: 'curriculum' },
       { id: 'filter-boarding', key: 'boarding' },
       { id: 'filter-feeband', key: 'feeBand' }
     ];
+
+    // Area Input Filter (debounced live search)
+    const suburbInput = document.getElementById('filter-suburb');
+    if (suburbInput) {
+      const handleAreaFilter = async () => {
+        const val = suburbInput.value.trim();
+        State.filters.suburb = val || 'All';
+        try {
+          const schools = await API.getSchools(State.filters);
+          DirectoryView.updateResults(schools);
+        } catch (err) {
+          console.warn('Area filter error:', err);
+        }
+      };
+
+      suburbInput.addEventListener('input', () => {
+        if (typeof App !== 'undefined' && App.debounce) {
+          App.debounce(handleAreaFilter, 300);
+        } else {
+          handleAreaFilter();
+        }
+      });
+      suburbInput.addEventListener('change', handleAreaFilter);
+      suburbInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleAreaFilter();
+        }
+      });
+    }
 
     selects.forEach(({ id, key }) => {
       const el = document.getElementById(id);

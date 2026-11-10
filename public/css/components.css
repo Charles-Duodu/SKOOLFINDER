@@ -390,6 +390,27 @@
   outline: none;
 }
 
+.filter-input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.filter-input:focus {
+  border-color: var(--primary-600);
+  box-shadow: 0 0 0 3px rgba(18, 75, 148, 0.1);
+}
+.filter-input::placeholder {
+  color: #94a3b8;
+  font-size: 0.88rem;
+}
+
 .filter-checkbox-list {
   display: flex;
   flex-direction: column;
