@@ -3528,6 +3528,32 @@ body.has-comparison-dock .sd-chat-window {
 /* ========================================================
    PARENTS CONSOLIDATED STOREFRONT (BLUEPRINT v2.0 / 6-SECTIONS)
    ======================================================== */
+:root {
+  --navy-deep: #06162E;
+  --navy: #0A224E;
+  --navy-light: #124B94;
+  --gold: #f5b63b;
+  --gold-hover: #e5a425;
+  --gold-dark: #b17a15;
+  --gold-light: #fef3c7;
+  --cream: #fbf8f0;
+  --mist: #f4f7fa;
+  --green: #10b981;
+}
+
+.section-pad {
+  padding: 80px 0;
+}
+
+.parent-portal-gateway-page {
+  background: #ffffff;
+}
+
+.parent-portal-gateway-page .container {
+  width: min(1180px, calc(100% - 48px));
+  margin-inline: auto;
+}
+
 /* ========================================================
    SECTION 1: HERO (LUXURY BLUE GRADIENT AS ATTACHED IMAGE 1)
    ======================================================== */

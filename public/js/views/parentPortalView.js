@@ -588,7 +588,7 @@ const ParentPortalView = {
     }
   },
 
-  
+
   // Next Best Step rule calculation
   getNextBestStep(shortlists = [], applications = [], inquiries = []) {
     const considering = shortlists.filter(s => s.stage === 'considering');
@@ -1061,15 +1061,15 @@ const ParentPortalView = {
                   <!-- School Badges / Pills in this set -->
                   <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem;">
                     ${(comp.schoolIds || []).map(id => {
-                      const found = (this.shortlistsData || []).find(s => s.schoolId === id || s.slug === id);
-                      const name = found ? found.schoolName : id.replace(/^sch-/, '').replace(/-/g, ' ').toUpperCase();
-                      return `
+      const found = (this.shortlistsData || []).find(s => s.schoolId === id || s.slug === id);
+      const name = found ? found.schoolName : id.replace(/^sch-/, '').replace(/-/g, ' ').toUpperCase();
+      return `
                         <div style="display: flex; align-items: center; justify-content: space-between; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.45rem 0.75rem; font-size: 0.84rem;">
                           <span style="font-weight: 700; color: #1e293b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">🏫 ${name}</span>
                           <span style="font-size: 0.75rem; color: #1266C4; font-weight: 600;">Inspect</span>
                         </div>
                       `;
-                    }).join('')}
+    }).join('')}
                   </div>
                 </div>
 
@@ -2923,10 +2923,10 @@ const ParentPortalView = {
         <!-- Report Card Items -->
         <div style="display: grid; grid-template-columns: 1fr; gap: 1.75rem;">
           ${reportCards.map(rc => {
-            const topSubjects = (rc.subjects || []).slice(0, 4);
-            const attendancePct = Math.round(((rc.attendance?.timesPresent || 59) / (rc.attendance?.timesSchoolOpened || 60)) * 100);
+      const topSubjects = (rc.subjects || []).slice(0, 4);
+      const attendancePct = Math.round(((rc.attendance?.timesPresent || 59) / (rc.attendance?.timesSchoolOpened || 60)) * 100);
 
-            return `
+      return `
               <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid var(--border-color); padding: 2rem; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;">
                 <!-- Decorative Top Strip -->
                 <div style="position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, #059669, #3b82f6, #f59e0b);"></div>
@@ -3051,7 +3051,7 @@ const ParentPortalView = {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -3075,13 +3075,13 @@ const ParentPortalView = {
     return `
       <div style="display: flex; flex-direction: column; gap: 1.75rem;">
         ${invoices.map(inv => {
-          const total = Number(inv.totalAmount) || 0;
-          const paid = Number(inv.amountPaid) || 0;
-          const balance = Number(inv.balanceDue) || 0;
-          const percentPaid = total > 0 ? Math.round((paid / total) * 100) : 0;
-          const statusBadge = this.getInvoiceStatusBadge(inv.status);
+      const total = Number(inv.totalAmount) || 0;
+      const paid = Number(inv.amountPaid) || 0;
+      const balance = Number(inv.balanceDue) || 0;
+      const percentPaid = total > 0 ? Math.round((paid / total) * 100) : 0;
+      const statusBadge = this.getInvoiceStatusBadge(inv.status);
 
-          return `
+      return `
             <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-color); padding: 1.75rem; box-shadow: var(--shadow-sm);">
               <!-- Top Header -->
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
@@ -3201,7 +3201,7 @@ const ParentPortalView = {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
       </div>
     `;
   },
@@ -3300,16 +3300,16 @@ const ParentPortalView = {
           </div>
         </div>
         ${applications.map(app => {
-          const statusBadge = this.getStatusBadge(app.status);
-          const studentName = `${app.student?.firstName || ''} ${app.student?.lastName || ''}`.trim() || 'Student Applicant';
-          const grade = app.gradeApplying || 'Class 4';
-          const schoolName = app.schoolName || 'Ghana International School (GIS)';
-          const submittedDate = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '22 Oct 2026';
-          const isOfferReady = (app.status || '').toLowerCase().includes('offer') || app.stage >= 5;
-          const isAccepted = (app.status || '').toLowerCase().includes('accept') || app.stage >= 6;
-          const isDeclined = (app.status || '').toLowerCase().includes('decline');
+      const statusBadge = this.getStatusBadge(app.status);
+      const studentName = `${app.student?.firstName || ''} ${app.student?.lastName || ''}`.trim() || 'Student Applicant';
+      const grade = app.gradeApplying || 'Class 4';
+      const schoolName = app.schoolName || 'Ghana International School (GIS)';
+      const submittedDate = app.submittedAt ? new Date(app.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '22 Oct 2026';
+      const isOfferReady = (app.status || '').toLowerCase().includes('offer') || app.stage >= 5;
+      const isAccepted = (app.status || '').toLowerCase().includes('accept') || app.stage >= 6;
+      const isDeclined = (app.status || '').toLowerCase().includes('decline');
 
-          return `
+      return `
             <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid ${isAccepted ? '#059669' : (isOfferReady ? '#D5A63B' : '#e2e8f0')}; padding: 1.75rem; box-shadow: var(--shadow-sm); transition: transform 0.2s, box-shadow 0.2s;">
               <!-- Application Header -->
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
@@ -3465,7 +3465,7 @@ const ParentPortalView = {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
       </div>
     `;
   },
@@ -3495,9 +3495,9 @@ const ParentPortalView = {
 
         <div style="display: flex; flex-direction: column; gap: 1rem;">
           ${smsList.map(sms => {
-            const timeStr = sms.deliveryTime ? new Date(sms.deliveryTime).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
-            const isWA = sms.channel.includes('WhatsApp');
-            return `
+      const timeStr = sms.deliveryTime ? new Date(sms.deliveryTime).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recent';
+      const isWA = sms.channel.includes('WhatsApp');
+      return `
               <div class="card" style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 1.25rem 1.5rem; box-shadow: var(--shadow-sm); display: flex; gap: 1.25rem; align-items: flex-start;">
                 <div style="width: 44px; height: 44px; border-radius: 50%; background: ${isWA ? '#ecfdf5' : '#eff6ff'}; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
                   ${isWA ? '💬' : '📱'}
@@ -3521,7 +3521,7 @@ const ParentPortalView = {
                 </div>
               </div>
             `;
-          }).join('')}
+    }).join('')}
         </div>
       </div>
     `;
@@ -3564,11 +3564,11 @@ const ParentPortalView = {
         </div>
 
         ${inquiries.map(inq => {
-          const inqDate = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
-          const refCode = inq.referenceNumber || inq.inquiryNumber || inq.id || 'SF-INQ-001';
-          const isTour = inq.tourRequested || (inq.subject && inq.subject.toLowerCase().includes('tour'));
+      const inqDate = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Recent';
+      const refCode = inq.referenceNumber || inq.inquiryNumber || inq.id || 'SF-INQ-001';
+      const isTour = inq.tourRequested || (inq.subject && inq.subject.toLowerCase().includes('tour'));
 
-          return `
+      return `
             <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1.5px solid #e2e8f0; padding: 1.5rem; box-shadow: var(--shadow-sm);">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                 <div style="flex: 1; min-width: 280px;">
@@ -3619,7 +3619,7 @@ const ParentPortalView = {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
       </div>
     `;
   },
@@ -3645,8 +3645,8 @@ const ParentPortalView = {
     return `
       <div style="display: flex; flex-direction: column; gap: 1.25rem;">
         ${inquiries.map(inq => {
-          const inqDate = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '23 Oct 2026';
-          return `
+      const inqDate = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '23 Oct 2026';
+      return `
             <div class="card" style="background: #ffffff; border-radius: var(--radius-xl); border: 1px solid var(--border-color); padding: 1.5rem; box-shadow: var(--shadow-sm);">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
                 <div>
@@ -3680,7 +3680,7 @@ const ParentPortalView = {
               </div>
             </div>
           `;
-        }).join('')}
+    }).join('')}
       </div>
     `;
   },
@@ -4116,9 +4116,9 @@ const ParentPortalView = {
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.25rem;">
             ${availableClubs.map(club => {
-              const isEnrolled = enrolledIds.includes(club.id);
+      const isEnrolled = enrolledIds.includes(club.id);
 
-              return `
+      return `
                 <div style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 1.25rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
@@ -4171,7 +4171,7 @@ const ParentPortalView = {
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
         </div>
 
@@ -4371,23 +4371,23 @@ const ParentPortalView = {
       immunizationStatus: rawRecord.immunizationStatus || (Array.isArray(rawRecord.immunizations) ? `${rawRecord.immunizations.length} Vaccines Certified` : '100% GHS Compliant')
     };
 
-        const rawVisits = (this.overviewData?.sickbayVisits && this.overviewData.sickbayVisits.length > 0) 
-      ? this.overviewData.sickbayVisits 
+    const rawVisits = (this.overviewData?.sickbayVisits && this.overviewData.sickbayVisits.length > 0)
+      ? this.overviewData.sickbayVisits
       : [
-          {
-            id: 'sb-log-01',
-            studentName: 'Kwame Mensah',
-            gradeLevel: 'Grade 8 Gold',
-            date: 'Today',
-            time: '10:15 AM',
-            complaint: 'Mild Exercise-Induced Wheezing (Post 400m PE Sprint)',
-            vitals: { temp: '36.8°C', pulse: '84 bpm', spo2: '98%' },
-            treatment: 'Ventolin Inhaler 2 puffs with spacer chamber, rested on cot for 20 mins',
-            outcome: 'Returned to Class (Fit)',
-            notes: 'Lungs clear upon auscultation. Peak flow returned to baseline.',
-            matronName: 'Matron Grace Agyemang, SRN'
-          }
-        ];
+        {
+          id: 'sb-log-01',
+          studentName: 'Kwame Mensah',
+          gradeLevel: 'Grade 8 Gold',
+          date: 'Today',
+          time: '10:15 AM',
+          complaint: 'Mild Exercise-Induced Wheezing (Post 400m PE Sprint)',
+          vitals: { temp: '36.8°C', pulse: '84 bpm', spo2: '98%' },
+          treatment: 'Ventolin Inhaler 2 puffs with spacer chamber, rested on cot for 20 mins',
+          outcome: 'Returned to Class (Fit)',
+          notes: 'Lungs clear upon auscultation. Peak flow returned to baseline.',
+          matronName: 'Matron Grace Agyemang, SRN'
+        }
+      ];
 
     const visits = rawVisits.map(v => ({
       id: v.id,
@@ -4613,31 +4613,31 @@ const ParentPortalView = {
     const loans = (this.overviewData?.borrowedBooks && this.overviewData.borrowedBooks.length > 0)
       ? this.overviewData.borrowedBooks
       : [
-          {
-            id: 'loan-01',
-            bookTitle: 'Things Fall Apart (African Trilogy)',
-            bookAuthor: 'Chinua Achebe',
-            studentName: 'Kwame Mensah',
-            gradeLevel: 'Primary Class 5',
-            borrowDate: '2026-10-14',
-            dueDate: '2026-10-28',
-            status: 'Active Loan',
-            fineDueGHS: 0,
-            barcode: 'GIS-LIB-BK-005-02'
-          },
-          {
-            id: 'loan-02',
-            bookTitle: 'Cambridge IGCSE Complete Mathematics: Extended (5th Edition)',
-            bookAuthor: 'David Rayner & Ian Bettison',
-            studentName: 'Kwame Mensah',
-            gradeLevel: 'Primary Class 5',
-            borrowDate: '2026-10-05',
-            dueDate: '2026-10-19',
-            status: 'Overdue',
-            fineDueGHS: 12,
-            barcode: 'GIS-LIB-BK-002-14'
-          }
-        ];
+        {
+          id: 'loan-01',
+          bookTitle: 'Things Fall Apart (African Trilogy)',
+          bookAuthor: 'Chinua Achebe',
+          studentName: 'Kwame Mensah',
+          gradeLevel: 'Primary Class 5',
+          borrowDate: '2026-10-14',
+          dueDate: '2026-10-28',
+          status: 'Active Loan',
+          fineDueGHS: 0,
+          barcode: 'GIS-LIB-BK-005-02'
+        },
+        {
+          id: 'loan-02',
+          bookTitle: 'Cambridge IGCSE Complete Mathematics: Extended (5th Edition)',
+          bookAuthor: 'David Rayner & Ian Bettison',
+          studentName: 'Kwame Mensah',
+          gradeLevel: 'Primary Class 5',
+          borrowDate: '2026-10-05',
+          dueDate: '2026-10-19',
+          status: 'Overdue',
+          fineDueGHS: 12,
+          barcode: 'GIS-LIB-BK-002-14'
+        }
+      ];
 
     const catalog = this.overviewData?.libraryCatalog || [
       {
@@ -4726,8 +4726,8 @@ const ParentPortalView = {
 
           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.25rem;">
             ${loans.map(loan => {
-              const isOverdue = loan.status === 'Overdue' || (loan.fineDueGHS && loan.fineDueGHS > 0);
-              return `
+      const isOverdue = loan.status === 'Overdue' || (loan.fineDueGHS && loan.fineDueGHS > 0);
+      return `
                 <div style="background: #ffffff; border-radius: var(--radius-lg); border: ${isOverdue ? '2px solid #ef4444' : '1px solid var(--border-color)'}; padding: 1.35rem; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; justify-content: space-between;">
                   <div>
                     <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem;">
@@ -4777,7 +4777,7 @@ const ParentPortalView = {
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
         </div>
 
@@ -5142,7 +5142,7 @@ const ParentPortalView = {
           try {
             const vRes = await API.getParentVouchers();
             ParentPortalView.vouchersData = vRes?.vouchers || [];
-          } catch (e) {}
+          } catch (e) { }
           App.refreshCurrentView();
         }
       });
@@ -5290,7 +5290,7 @@ const ParentPortalView = {
           State.bookmarkedSchoolIds = (State.bookmarkedSchoolIds || []).filter(id => id !== schoolId);
           try {
             localStorage.setItem('skoolfinder_bookmarks', JSON.stringify(State.bookmarkedSchoolIds));
-          } catch (e) {}
+          } catch (e) { }
           State.showToast("Removed school from shortlists", "info");
           const container = document.getElementById('parent-portal-tab-content');
           if (container) {
@@ -5345,7 +5345,7 @@ const ParentPortalView = {
           });
           try {
             localStorage.setItem('skoolfinder_comparison', JSON.stringify(State.comparisonList));
-          } catch (e) {}
+          } catch (e) { }
         }
         App.navigate('compare');
       });
@@ -5362,7 +5362,7 @@ const ParentPortalView = {
         }));
         try {
           localStorage.setItem('skoolfinder_comparison', JSON.stringify(State.comparisonList));
-        } catch (e) {}
+        } catch (e) { }
         App.navigate('compare');
       }
     });
@@ -5394,11 +5394,11 @@ const ParentPortalView = {
       try {
         const saved = localStorage.getItem(`skoolfinder_doc_${docKey}`);
         if (saved === 'true') chk.checked = true;
-      } catch (e) {}
+      } catch (e) { }
       chk.addEventListener('change', (e) => {
         try {
           localStorage.setItem(`skoolfinder_doc_${docKey}`, e.currentTarget.checked ? 'true' : 'false');
-        } catch (e) {}
+        } catch (e) { }
       });
     });
 
@@ -5418,7 +5418,7 @@ const ParentPortalView = {
       });
     });
 
-    
+
     // Enrolled Ward Subtab Switching
     document.querySelectorAll('.btn-enrolled-subtab').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -6389,7 +6389,7 @@ const ParentPortalView = {
     `;
   },
 
-async renderAuthGateway() {
+  async renderAuthGateway() {
     let previewSchools = [];
     try {
       if (typeof API !== 'undefined' && API.getSchools) {
@@ -6609,13 +6609,18 @@ async renderAuthGateway() {
             <!-- Dynamic School Cards Grid -->
             <div class="schools-grid" id="parents-preview-schools-grid">
               ${previewSchools.map((s, idx) => {
-                const isComp = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.includes(s.id) : false;
-                const feeText = s.feeBand || (s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max || s.tuition_min * 1.5).toLocaleString()} / Term` : 'Fee Not Disclosed');
-                const img = s.coverImage || (idx === 0 ? '/preview-v3/assets/school-campus.jpg' : (idx === 1 ? '/preview-v3/assets/school-stem.jpg' : '/preview-v3/assets/school-early.jpg'));
-                return `
+      const isComp = (typeof State !== 'undefined' && typeof State.isInCompare === 'function') ? State.isInCompare(s.id) : false;
+      const feeText = s.feeBand || (s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max || s.tuition_min * 1.5).toLocaleString()} / Term` : 'Fee Not Disclosed');
+      const localFallbacks = [
+        '/preview-v3/assets/school-campus.jpg',
+        '/preview-v3/assets/school-stem.jpg',
+        '/preview-v3/assets/school-early.jpg'
+      ];
+      const img = (s.coverImage && !s.coverImage.includes('unsplash.com')) ? s.coverImage : localFallbacks[idx % localFallbacks.length];
+      return `
                   <article class="school-card" data-school-id="${s.id}">
                     <div class="school-image">
-                      <img src="${img}" alt="${s.name}" loading="lazy">
+                      <img src="${img}" alt="${s.name}" loading="lazy" onerror="this.onerror=null;this.src='/preview-v3/assets/school-campus.jpg'">
                       <span class="school-tag">${s.verified ? 'NaSIA Verified' : 'Accredited'}</span>
                     </div>
                     <div class="school-body">
@@ -6636,7 +6641,7 @@ async renderAuthGateway() {
                     </div>
                   </article>
                 `;
-              }).join('')}
+    }).join('')}
             </div>
 
             <!-- Decision Band -->
@@ -7151,7 +7156,7 @@ async renderAuthGateway() {
       const suburb = document.getElementById('portal-search-suburb')?.value.trim();
       const level = document.getElementById('portal-search-level')?.value;
       const curriculum = document.getElementById('portal-search-curriculum')?.value;
-      
+
       if (typeof State !== 'undefined') {
         State.filters = State.filters || {};
         if (suburb) State.filters.query = suburb;
@@ -7170,20 +7175,66 @@ async renderAuthGateway() {
       }
     });
 
-    // Filter chips
-    document.querySelectorAll('.parent-filter-chip').forEach(chip => {
-      chip.addEventListener('click', (e) => {
-        const type = e.currentTarget.dataset.filterType;
-        const val = e.currentTarget.dataset.filterVal;
-        if (typeof State !== 'undefined') {
-          State.filters = State.filters || {};
-          if (type === 'level') State.filters.level = val;
-          if (type === 'curriculum') State.filters.curriculum = val;
-          if (type === 'suburb') State.filters.query = val;
+    // Targeted Discovery Filter Tabs & Chips
+    const chipFilters = {
+      level: [
+        { label: 'Crèche & Preschool (0–5 yrs)', type: 'level', val: 'Crèche' },
+        { label: 'Primary School (Class 1–6)', type: 'level', val: 'Primary' },
+        { label: 'Junior High (JHS 1–3)', type: 'level', val: 'JHS' },
+        { label: 'Senior High (SHS 1–3)', type: 'level', val: 'SHS' }
+      ],
+      curriculum: [
+        { label: 'National (GES / NaCCA)', type: 'curriculum', val: 'GES (NaCCA)' },
+        { label: 'Cambridge International (CIE)', type: 'curriculum', val: 'Cambridge (CIE)' },
+        { label: 'Montessori Method', type: 'curriculum', val: 'Montessori' },
+        { label: 'International Baccalaureate (IB)', type: 'curriculum', val: 'International Baccalaureate (IB)' }
+      ],
+      area: [
+        { label: '📍 Cantonments', type: 'suburb', val: 'Cantonments' },
+        { label: '📍 East Legon', type: 'suburb', val: 'East Legon' },
+        { label: '📍 Airport Residential', type: 'suburb', val: 'Airport Residential' },
+        { label: '📍 Tema Community', type: 'suburb', val: 'Tema' },
+        { label: '📍 Spintex Road', type: 'suburb', val: 'Spintex' },
+        { label: '📍 Achimota', type: 'suburb', val: 'Achimota' }
+      ]
+    };
+
+    const attachChipListeners = () => {
+      document.querySelectorAll('.parent-filter-chip').forEach(chip => {
+        chip.onclick = (e) => {
+          const type = e.currentTarget.dataset.filterType;
+          const val = e.currentTarget.dataset.filterVal;
+          if (typeof State !== 'undefined') {
+            State.filters = State.filters || {};
+            if (type === 'level') State.filters.level = val;
+            if (type === 'curriculum') State.filters.curriculum = val;
+            if (type === 'suburb') State.filters.query = val;
+          }
+          App.navigate('directory');
+        };
+      });
+    };
+
+    document.querySelectorAll('.tab-group button[data-tab]').forEach(tabBtn => {
+      tabBtn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-group button[data-tab]').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-selected', 'false');
+        });
+        e.currentTarget.classList.add('active');
+        e.currentTarget.setAttribute('aria-selected', 'true');
+        const tabKey = e.currentTarget.dataset.tab;
+        const container = document.getElementById('quickChips');
+        if (container && chipFilters[tabKey]) {
+          container.innerHTML = chipFilters[tabKey].map(item => `
+            <button type="button" class="parent-filter-chip" data-filter-type="${item.type}" data-filter-val="${item.val}">${item.label}</button>
+          `).join('');
+          attachChipListeners();
         }
-        App.navigate('directory');
       });
     });
+
+    attachChipListeners();
 
     document.getElementById('btn-quick-explore-all')?.addEventListener('click', () => {
       App.navigate('directory');
