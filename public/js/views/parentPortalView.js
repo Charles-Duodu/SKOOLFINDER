@@ -7037,9 +7037,59 @@ const ParentPortalView = {
         </section>
 
         <!-- ========================================================
-             SECTION 2: DISCOVER & COMPARE (WITH DOCK & MATRIX)
+             SECTION 2: BUILT AROUND YOUR CHOICE (TWO FREE ACCESS OPTIONS)
              ======================================================== -->
-        <section class="section-two section-pad" id="compare" aria-labelledby="compare-heading" data-section="2">
+        <section class="section-two section-pad" id="free" aria-labelledby="free-heading" data-section="2">
+          <div class="container">
+            <div class="section-head centered">
+              <div class="eyebrow">BUILT AROUND YOUR CHOICE</div>
+              <h2 id="free-heading">Two Ways to Explore: Both Completely Free</h2>
+              <p>Start right away as a guest with no signup, or create a free parent account to save your shortlisted schools and comparison tables.</p>
+            </div>
+
+            <div class="access-grid">
+              <!-- Guest Card -->
+              <article class="access-card guest">
+                <div class="access-top">
+                  <span class="access-symbol" aria-hidden="true">↗</span>
+                  <span class="pill">NO ACCOUNT NEEDED</span>
+                </div>
+                <h3>Explore as a guest</h3>
+                <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
+                <ul class="checks">
+                  <li>Search all accredited schools and view public profiles</li>
+                  <li>Side-by-side comparison matrix for up to 4 institutions</li>
+                  <li>Explore suburb locations, curricula, and fee transparency</li>
+                  <li>Direct WhatsApp and phone contact channels where supported</li>
+                </ul>
+                <button type="button" id="btn-parents-guest-explore" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></button>
+              </article>
+
+              <!-- Registered Account Card -->
+              <article class="access-card registered">
+                <div class="access-top">
+                  <span class="access-symbol" aria-hidden="true">✦</span>
+                  <span class="pill">OPTIONAL · 100% FREE</span>
+                </div>
+                <h3>Make it your school search</h3>
+                <p>A proposed personal home for your family's school-planning preferences.</p>
+                <ul class="checks">
+                  <li>Save school shortlists and bookmarks permanently</li>
+                  <li>Save side-by-side comparison tables across your devices</li>
+                  <li>Track application milestones, open days, and scheduled visits</li>
+                  <li>Receive admissions window and deadline reminders</li>
+                </ul>
+                <button class="btn btn-gold" type="button" id="btn-parents-scroll-signup">Create free account <span aria-hidden="true">→</span></button>
+                <small>Registration connects cleanly to the existing Parent Portal dashboard.</small>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 3: DISCOVER & COMPARE (WITH DOCK & MATRIX)
+             ======================================================== -->
+        <section class="section-three section-pad" id="compare" aria-labelledby="compare-heading" data-section="3">
           <div class="container">
             <div class="section-head split">
               <div>
@@ -7111,56 +7161,6 @@ const ParentPortalView = {
                 </div>
                 <button class="btn btn-outline-navy" type="button" id="btn-parents-open-compare">Open comparison <span aria-hidden="true">→</span></button>
               </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ========================================================
-             SECTION 3: TWO FREE ACCESS OPTIONS
-             ======================================================== -->
-        <section class="section-three section-pad" id="free" aria-labelledby="free-heading" data-section="3">
-          <div class="container">
-            <div class="section-head centered">
-              <div class="eyebrow">BUILT AROUND YOUR CHOICE</div>
-              <h2 id="free-heading">Two Ways to Explore: Both Completely Free</h2>
-              <p>Start right away as a guest with no signup, or create a free parent account to save your shortlisted schools and comparison tables.</p>
-            </div>
-
-            <div class="access-grid">
-              <!-- Guest Card -->
-              <article class="access-card guest">
-                <div class="access-top">
-                  <span class="access-symbol" aria-hidden="true">↗</span>
-                  <span class="pill">NO ACCOUNT NEEDED</span>
-                </div>
-                <h3>Explore as a guest</h3>
-                <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
-                <ul class="checks">
-                  <li>Search all accredited schools and view public profiles</li>
-                  <li>Side-by-side comparison matrix for up to 4 institutions</li>
-                  <li>Explore suburb locations, curricula, and fee transparency</li>
-                  <li>Direct WhatsApp and phone contact channels where supported</li>
-                </ul>
-                <button type="button" id="btn-parents-guest-explore" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></button>
-              </article>
-
-              <!-- Registered Account Card -->
-              <article class="access-card registered">
-                <div class="access-top">
-                  <span class="access-symbol" aria-hidden="true">✦</span>
-                  <span class="pill">OPTIONAL · 100% FREE</span>
-                </div>
-                <h3>Make it your school search</h3>
-                <p>A proposed personal home for your family's school-planning preferences.</p>
-                <ul class="checks">
-                  <li>Save school shortlists and bookmarks permanently</li>
-                  <li>Save side-by-side comparison tables across your devices</li>
-                  <li>Track application milestones, open days, and scheduled visits</li>
-                  <li>Receive admissions window and deadline reminders</li>
-                </ul>
-                <button class="btn btn-gold" type="button" id="btn-parents-scroll-signup">Create free account <span aria-hidden="true">→</span></button>
-                <small>Registration connects cleanly to the existing Parent Portal dashboard.</small>
-              </article>
             </div>
           </div>
         </section>
