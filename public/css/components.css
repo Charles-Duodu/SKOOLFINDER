@@ -2718,9 +2718,10 @@ body.has-comparison-dock .sd-chat-window {
 
 
 /* ==========================================================================
-   Who Are You: Sub-Header Role Strip (Theme B)
+   Who Are You: Sub-Header Role Strip (Retired - All Portals use Explore Portals)
    ========================================================================== */
 .who-are-you-bar {
+  display: none !important;
   background: var(--theme-b-canvas, #F7F9FC);
   border-top: 1px solid #e2e8f0;
   border-bottom: 1.5px solid #cbd5e1;
