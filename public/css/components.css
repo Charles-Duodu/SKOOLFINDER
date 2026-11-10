@@ -79,8 +79,9 @@
    ======================================================== */
 .schools-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-  gap: 1.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  max-width: 1700px;
 }
 
 .school-card {
@@ -317,11 +318,19 @@
 /* ========================================================
    Directory Layout with Filter Sidebar
    ======================================================== */
+.directory-container {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 2rem;
+  margin: 0;
+}
+
 .directory-layout {
   display: grid;
-  grid-template-columns: 290px 1fr;
+  grid-template-columns: 300px 1fr;
   gap: 2rem;
-  padding: 2.5rem 0;
+  padding: 1.5rem 0 3rem;
+  width: 100%;
 }
 
 .filter-sidebar {

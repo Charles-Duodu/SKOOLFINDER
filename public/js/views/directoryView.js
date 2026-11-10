@@ -28,7 +28,7 @@ const DirectoryView = {
 
     return `
       <section style="background: var(--bg-main); min-height: 80vh;">
-        <div class="container">
+        <div class="directory-container">
           <!-- Directory Header & Breadcrumb -->
           <div style="padding: 2rem 0 1rem;">
             <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
