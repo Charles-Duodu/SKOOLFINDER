@@ -181,7 +181,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard', 'opportunities'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard', 'opportunities', 'about'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -320,6 +320,13 @@ const App = {
         keywords: 'supplier portal Ghana, educational supplies catalogue, school procurement bids',
         canonicalUrl: 'https://skoolfinder.vercel.app/supplier-dashboard',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Suppliers Marketplace', url: '/suppliers' }, { name: 'Supplier Dashboard', url: '/supplier-dashboard' }]
+      },
+      'about': {
+        title: 'About SkoolFinder Ghana | One Platform. Four Communities. Better Connections.',
+        description: 'Learn about SkoolFinder Ghana — connecting families, schools, educators, and educational suppliers across Greater Accra and Ghana.',
+        keywords: 'about SkoolFinder Ghana, Ghana education directory, educational ecosystem Greater Accra',
+        canonicalUrl: 'https://skoolfinder.vercel.app/about',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'About SkoolFinder', url: '/about' }]
       }
     };
     if (viewName !== 'school-detail') {
@@ -431,6 +438,10 @@ const App = {
         content = await SupplierDashboardView.render();
         mainRoot.innerHTML = content;
         SupplierDashboardView.attachEvents();
+      } else if (viewName === 'about') {
+        content = await AboutView.render();
+        mainRoot.innerHTML = content;
+        AboutView.attachEvents();
       }
 
       // Render Footer
@@ -524,7 +535,8 @@ const App = {
         'for-schools': 'for-schools',
         'for-teachers': 'for-teachers',
         'for-suppliers': 'for-suppliers',
-        'supplier-dashboard': 'supplier-dashboard'
+        'supplier-dashboard': 'supplier-dashboard',
+        'about': 'about'
       };
 
       if (rootPath && routeMap[rootPath]) {

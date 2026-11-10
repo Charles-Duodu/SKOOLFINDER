@@ -96,6 +96,11 @@ const Navbar = {
                 <span>✨</span> Opportunities
               </a>
             </li>
+            <li>
+              <a href="/about" id="nav-link-about" class="nav-link-direct ${State.currentView === 'about' ? 'active' : ''}">
+                <span>📖</span> About
+              </a>
+            </li>
             <li class="nav-item-dropdown" style="position: relative;">
               <button type="button" id="nav-link-portals" class="nav-link-direct" style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 700; color: #0A2046; font-size: 0.92rem;">
                 <span>🌐</span> Explore Portals <span style="font-size: 0.65rem;">▼</span>
@@ -186,6 +191,9 @@ const Navbar = {
               </a>
               <a href="/opportunities" id="mob-link-opportunities" class="mobile-nav-item ${State.currentView === 'opportunities' ? 'active' : ''}">
                 <span>✨</span> Opportunities
+              </a>
+              <a href="/about" id="mob-link-about" class="mobile-nav-item ${State.currentView === 'about' ? 'active' : ''}">
+                <span>📖</span> About
               </a>
               <a href="/directory" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
                 <span>🏫</span> Browse Schools
@@ -316,6 +324,14 @@ const Navbar = {
     };
     document.getElementById('nav-link-opportunities')?.addEventListener('click', handleOpportunitiesNav);
     document.getElementById('mob-link-opportunities')?.addEventListener('click', handleOpportunitiesNav);
+
+    const handleAboutNav = (e) => {
+      e.preventDefault();
+      closeMobDrawer();
+      App.navigate('about');
+    };
+    document.getElementById('nav-link-about')?.addEventListener('click', handleAboutNav);
+    document.getElementById('mob-link-about')?.addEventListener('click', handleAboutNav);
 
     document.getElementById('nav-link-directory')?.addEventListener('click', (e) => {
       e.preventDefault();

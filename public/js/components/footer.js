@@ -77,7 +77,8 @@ const Footer = {
             <div>
               &copy; 2026 SkoolFinder Ghana. All rights reserved.
             </div>
-            <div style="display: flex; gap: 1.5rem;">
+            <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
+              <a href="/about" class="footer-about-link" style="color: #fde68a; font-weight: 700;">About SkoolFinder</a>
               <a href="#" class="footer-policy-link" data-policy="privacy">Privacy Policy</a>
               <a href="#" class="footer-policy-link" data-policy="terms">Terms of Verification</a>
               <a href="#" class="footer-policy-link" data-policy="accreditation">Accreditation Guidelines</a>
@@ -89,6 +90,13 @@ const Footer = {
   },
 
   attachEvents() {
+    document.querySelectorAll('.footer-about-link').forEach(el => {
+      el.onclick = (e) => {
+        e.preventDefault();
+        App.navigate('about');
+      };
+    });
+
     document.querySelectorAll('.footer-link-schools').forEach(el => {
       el.onclick = (e) => {
         e.preventDefault();

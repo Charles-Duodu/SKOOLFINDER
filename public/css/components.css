@@ -6093,3 +6093,865 @@ body.has-comparison-dock .sd-chat-window {
     display: none;
   }
 }
+
+
+/* ========================================================
+   ABOUT SKOOLFINDER GHANA PAGE (CONCEPT BLUEPRINT)
+   ======================================================== */
+.about-page-wrapper {
+  background: #ffffff;
+  color: #0f172a;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* 00. Hero Section */
+.about-hero-section {
+  position: relative;
+  background: radial-gradient(circle at 75% 25%, #0e2954 0%, #0a2046 45%, #06162e 100%);
+  color: #ffffff;
+  padding: 5.5rem 1.5rem 4.5rem;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.about-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.about-hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #F59E0B;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1.15rem;
+}
+
+.about-hero-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(2.35rem, 4.4vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 1.25rem 0;
+}
+
+.about-hero-title .title-muted {
+  color: #cbd5e1;
+}
+
+.about-hero-title .title-gold {
+  color: #F59E0B;
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.about-hero-desc {
+  color: #94A3B8;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  margin: 0 0 2rem;
+  max-width: 520px;
+}
+
+.about-hero-ctas {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-about-gold {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  color: #0A2046 !important;
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.78rem 1.65rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+
+.btn-about-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(245, 158, 11, 0.45);
+}
+
+.btn-about-outline {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.btn-about-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Central Ecosystem Orbit Illustration */
+.about-orbit-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-orbit-svg-rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.about-orbit-center-hub {
+  position: relative;
+  z-index: 5;
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #f8fafc 70%, #f1f5f9 100%);
+  border: 4px solid #1266C4;
+  outline: 8px solid rgba(18, 102, 196, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35), 0 0 35px rgba(245, 158, 11, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.about-orbit-center-hub:hover {
+  transform: scale(1.05);
+}
+
+.about-orbit-brand-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.about-orbit-brand-flag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #B45309;
+  letter-spacing: 0.12em;
+  margin-top: 0.25rem;
+  text-transform: uppercase;
+}
+
+/* 4 Orbit Persona Node Cards */
+.about-orbit-node {
+  position: absolute;
+  z-index: 6;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 24px rgba(6, 22, 46, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 150px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.about-orbit-node:hover {
+  transform: translateY(-4px) scale(1.04);
+  border-color: #1266C4;
+  box-shadow: 0 14px 30px rgba(18, 102, 196, 0.3);
+}
+
+.about-orbit-node-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.about-orbit-node-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.2;
+}
+
+.about-orbit-node-sub {
+  font-size: 0.7rem;
+  color: #64748b;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+/* Positions around 480px orbit */
+.about-orbit-node-top-left {
+  top: 10%;
+  left: 2%;
+}
+
+.about-orbit-node-top-right {
+  top: 10%;
+  right: 2%;
+}
+
+.about-orbit-node-bottom-left {
+  bottom: 12%;
+  left: 2%;
+}
+
+.about-orbit-node-bottom-right {
+  bottom: 12%;
+  right: 2%;
+}
+
+/* Sub-hero Assurance Banner */
+.about-assurance-strip {
+  background: #030d1d;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 1.1rem 1.5rem;
+}
+
+.about-assurance-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.about-assurance-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-assurance-check {
+  color: #F59E0B;
+  font-weight: 800;
+}
+
+/* 01. Our Story Section */
+.about-story-section {
+  padding: 5.5rem 1.5rem 5rem;
+  background: #ffffff;
+}
+
+.about-story-container {
+  max-width: 1140px;
+  margin: 0 auto;
+}
+
+.about-section-eyebrow {
+  color: #B45309;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.about-section-heading {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(2rem, 3.5vw, 2.65rem);
+  font-weight: 800;
+  color: #0A2046;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem;
+}
+
+.about-story-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 3.5rem;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.about-story-copy p {
+  color: #475569;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1.35rem;
+}
+
+.about-story-copy p strong {
+  color: #0A2046;
+  font-weight: 700;
+}
+
+.about-quote-card {
+  background: #FFFDF7;
+  border: 1.5px solid #FDE68A;
+  border-left: 5px solid #F59E0B;
+  border-radius: 20px;
+  padding: 2.75rem 2.25rem;
+  box-shadow: 0 12px 32px rgba(180, 83, 9, 0.06);
+  position: relative;
+}
+
+.about-quote-mark {
+  color: #F59E0B;
+  font-size: 3rem;
+  line-height: 1;
+  font-family: Georgia, serif;
+  margin-bottom: 0.5rem;
+}
+
+.about-quote-text {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.25rem, 2.2vw, 1.5rem);
+  font-weight: 700;
+  color: #0A2046;
+  line-height: 1.45;
+  margin: 0 0 1.5rem;
+}
+
+.about-quote-tag {
+  color: #B45309;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* 02. The Ecosystem Grid */
+.about-eco-section {
+  padding: 5rem 1.5rem 5.5rem;
+  background: #F8FAFC;
+  border-top: 1px solid rgba(226, 232, 240, 0.8);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.about-eco-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 3rem;
+}
+
+.about-eco-grid {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+}
+
+.about-community-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.about-community-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(10, 32, 70, 0.10);
+  border-color: rgba(18, 102, 196, 0.35);
+}
+
+.about-card-top-visual {
+  position: relative;
+  height: 130px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem;
+  overflow: hidden;
+}
+
+.about-card-badge-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.about-card-photo-pill {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #ffffff;
+  box-shadow: 0 6px 18px rgba(10, 32, 70, 0.12);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.about-card-photo-pill img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-card-body {
+  padding: 1.75rem 2rem 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.about-card-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0A2046;
+  margin: 0 0 0.65rem;
+}
+
+.about-card-desc {
+  color: #64748b;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+  flex: 1;
+}
+
+.about-card-link {
+  color: #1266C4;
+  font-weight: 800;
+  font-size: 0.92rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.about-card-link:hover {
+  color: #0A2046;
+  gap: 0.65rem;
+}
+
+.about-eco-footer-divider {
+  max-width: 1140px;
+  margin: 3.5rem auto 0;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  color: #94A3B8;
+  font-size: 0.88rem;
+  font-weight: 600;
+  justify-content: center;
+}
+
+.about-eco-footer-divider::before,
+.about-eco-footer-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(203, 213, 225, 0.8);
+}
+
+/* 03. How We Connect Section */
+.about-connect-section {
+  padding: 5.5rem 1.5rem 5rem;
+  background: #ffffff;
+}
+
+.about-connect-container {
+  max-width: 1140px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+.about-tabs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+}
+
+.about-tab-btn {
+  background: #F8FAFC;
+  border: 1.5px solid #E2E8F0;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #334155;
+  width: 100%;
+}
+
+.about-tab-btn:hover {
+  background: #ffffff;
+  border-color: #CBD5E1;
+  transform: translateX(4px);
+}
+
+.about-tab-btn.active {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+  color: #0A2046;
+  border-left-width: 5px;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.12);
+}
+
+.about-tab-arrow {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.about-tab-btn.active .about-tab-arrow {
+  color: #B45309;
+  transform: translateX(2px);
+}
+
+/* Dynamic Journey Card */
+.about-journey-card {
+  background: radial-gradient(circle at 80% 20%, #102a52 0%, #0a2046 55%, #06162e 100%);
+  color: #ffffff;
+  border-radius: 24px;
+  padding: 2.75rem 2.25rem;
+  box-shadow: 0 20px 48px rgba(6, 22, 46, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.about-journey-eyebrow {
+  display: inline-block;
+  color: #F59E0B;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+
+.about-journey-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 0.5rem;
+  line-height: 1.25;
+}
+
+.about-journey-subtitle {
+  color: #94A3B8;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 0 0 2rem;
+}
+
+.about-journey-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.about-step-pill-card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.15rem 1rem;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.about-step-number {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #F59E0B;
+  color: #0A2046;
+  font-size: 0.75rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-step-text {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  line-height: 1.35;
+}
+
+.about-journey-footer {
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94A3B8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.about-journey-footer strong {
+  color: #FBBF24;
+}
+
+/* 04. Our Purpose Section */
+.about-purpose-section {
+  padding: 5.5rem 1.5rem 5rem;
+  background: #FAF8F5;
+}
+
+.about-purpose-container {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.about-purpose-header {
+  text-align: center;
+  margin-bottom: 3.25rem;
+}
+
+.about-purpose-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-purpose-card {
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  padding: 2.5rem 2.25rem;
+  box-shadow: 0 8px 24px rgba(10, 32, 70, 0.04);
+}
+
+.about-purpose-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #FEF3C7;
+  color: #B45309;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.about-purpose-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #0A2046;
+  margin: 0 0 0.85rem;
+}
+
+.about-purpose-desc {
+  color: #475569;
+  font-size: 1rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.about-locality-banner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  border-radius: 9999px;
+  padding: 0.85rem 1.5rem;
+  max-width: 860px;
+  margin: 0 auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.about-locality-pill {
+  background: #FEF3C7;
+  color: #92400E;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.about-locality-text {
+  color: #64748b;
+  font-size: 0.92rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+/* 05. Be Part of Our Story (CTA) */
+.about-cta-section {
+  background: radial-gradient(circle at 50% 50%, #0d2854 0%, #0a2046 50%, #06162e 100%);
+  color: #ffffff;
+  padding: 5.5rem 1.5rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-cta-container {
+  max-width: 740px;
+  margin: 0 auto;
+}
+
+.about-cta-eyebrow {
+  color: #F59E0B;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.about-cta-title {
+  font-family: var(--font-heading, 'Plus Jakarta Sans', sans-serif);
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+}
+
+.about-cta-desc {
+  color: #94A3B8;
+  font-size: 1.08rem;
+  line-height: 1.65;
+  margin: 0 auto 2.25rem;
+  max-width: 620px;
+}
+
+.about-cta-btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .about-hero-container {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .about-hero-desc {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .about-hero-ctas {
+    justify-content: center;
+  }
+  .about-story-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .about-connect-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .about-journey-steps {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .about-eco-grid,
+  .about-purpose-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-locality-banner {
+    border-radius: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+  .about-orbit-wrapper {
+    max-width: 320px;
+    height: 320px;
+  }
+  .about-orbit-node {
+    padding: 0.5rem 0.65rem;
+    min-width: 120px;
+  }
+  .about-orbit-center-hub {
+    width: 110px;
+    height: 110px;
+  }
+  .about-orbit-brand-title {
+    font-size: 0.95rem;
+  }
+}
