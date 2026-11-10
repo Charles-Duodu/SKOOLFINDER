@@ -1333,12 +1333,6 @@ const HomeView = {
             ${isSaved ? '♥' : '♡'}
           </button>
 
-          <div class="carousel-nav-dots" data-school-id="${school.id}">
-            <span class="carousel-dot active" data-img="${galleryImgs[0]}" title="Campus Front"></span>
-            <span class="carousel-dot" data-img="${galleryImgs[1]}" title="Science &amp; Tech Labs"></span>
-            <span class="carousel-dot" data-img="${galleryImgs[2]}" title="Modern Classrooms"></span>
-          </div>
-
           <div class="school-card-badges" style="right: 54px;">
             <span class="badge ${badgeClass}">${curriculumTag}</span>
             ${(school.verified || school.is_verified) ? '<span class="badge badge-verified" title="School ownership &amp; profile reviewed">🛡️ Verified Profile</span>' : ''}

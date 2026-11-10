@@ -7209,17 +7209,6 @@ const ParentPortalView = {
                   <button id="parents-btn-reset-filters" class="filter-reset-btn" type="button">Reset All</button>
                 </div>
 
-                <!-- Fit Adviser Direct Banner -->
-                <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); border-radius: var(--radius-md); padding: 0.85rem 1rem; color: #ffffff; margin-bottom: 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; box-shadow: var(--shadow-sm);">
-                  <div>
-                    <div style="font-weight: 800; font-size: 0.82rem; color: #fbbf24;">🎯 Not sure where to start?</div>
-                    <div style="font-size: 0.72rem; color: rgba(255,255,255,0.85); margin-top: 0.15rem;">Try our 2-step Fit Adviser.</div>
-                  </div>
-                  <button id="parents-btn-dir-launch-match" class="btn-pill btn-gold" style="font-size: 0.72rem; padding: 0.3rem 0.65rem; font-weight: 800; white-space: nowrap; cursor: pointer;" type="button">
-                    Fit Adviser &rarr;
-                  </button>
-                </div>
-
                 <!-- Region Filter -->
                 <div class="filter-group">
                   <label class="filter-group-label" for="parents-filter-region">Region</label>
@@ -7312,32 +7301,6 @@ const ParentPortalView = {
 
               <!-- Results Main Area -->
               <main id="parents-dir-results-main" style="min-width: 0; width: 100%;">
-                <!-- Sponsored Spotlight Banner -->
-                <div id="dir-active-sponsored-banner" style="background: linear-gradient(135deg, #091e42 0%, #1e3a8a 100%); border-radius: var(--radius-lg); padding: 1.25rem 1.75rem; color: #ffffff; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border: 1.5px solid #fbbf24; box-shadow: 0 10px 25px rgba(10,32,70,0.18);">
-                  <div style="display: flex; align-items: center; gap: 1rem;">
-                    <div style="width: 48px; height: 48px; border-radius: 10px; background: rgba(251,191,36,0.15); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; border: 1px solid rgba(251,191,36,0.4); flex-shrink: 0;">
-                      ⭐
-                    </div>
-                    <div>
-                      <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
-                        <span style="background: #fbbf24; color: #000; font-size: 0.68rem; font-weight: 800; padding: 0.15rem 0.55rem; border-radius: 100px; letter-spacing: 0.05em; text-transform: uppercase;">
-                          Sponsored Spotlight
-                        </span>
-                        <span style="font-size: 0.82rem; color: #93c5fd; font-weight: 700;">Ghana International School (GIS)</span>
-                      </div>
-                      <h3 style="color: #ffffff; font-size: 1.15rem; margin: 0 0 0.25rem 0; font-weight: 800; font-family: var(--font-heading);">
-                        Experience World-Class British Cambridge Education in Cantonments
-                      </h3>
-                      <p style="color: #cbd5e1; font-size: 0.82rem; margin: 0;">
-                        📍 Accra, Greater Accra &bull; Verified Accreditation
-                      </p>
-                    </div>
-                  </div>
-                  <button class="btn-pill btn-gold" id="btn-parent-spotlight-cta" data-target-url="/school/ab5af86d-c902-4853-9528-d6200104b5f6" style="font-weight: 800; padding: 0.55rem 1.35rem; font-size: 0.85rem; white-space: nowrap; cursor: pointer;">
-                    Explore Admissions &rarr;
-                  </button>
-                </div>
-
                 <!-- Dynamic Horizontal School Cards List (Directory Layout) -->
                 <div class="schools-grid directory-schools-grid" id="parents-preview-schools-grid">
                   ${previewSchools.slice(0, 3).map(s => `
