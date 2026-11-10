@@ -610,3 +610,4 @@ const AboutView = {
     });
   }
 };
+

@@ -181,7 +181,7 @@ const App = {
     if (param) State.currentSchoolId = param;
 
     if (updateUrl) {
-      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard', 'opportunities', 'about'].includes(viewName);
+      const isPathRoute = ['parents', 'teachers', 'suppliers', 'schools', 'admin', 'directory', 'compare', 'matchmaker', 'cssps', 'resources', 'school-detail', 'for-schools', 'for-teachers', 'for-suppliers', 'supplier-dashboard', 'opportunities', 'about', 'contact'].includes(viewName);
       const targetPath = param ? `/${viewName}/${param}` : `/${viewName}`;
       const targetHash = param ? `#/${viewName}/${param}` : `#/${viewName}`;
 
@@ -327,6 +327,13 @@ const App = {
         keywords: 'about SkoolFinder Ghana, Ghana education directory, educational ecosystem Greater Accra',
         canonicalUrl: 'https://skoolfinder.vercel.app/about',
         breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'About SkoolFinder', url: '/about' }]
+      },
+      'contact': {
+        title: 'Contact SkoolFinder Ghana | Support, Enquiries & Partnerships',
+        description: "Let's connect. Contact SkoolFinder Ghana for support, general enquiries, school admissions, teacher jobs, or supplier procurement across Greater Accra.",
+        keywords: 'contact SkoolFinder Ghana, support SkoolFinder, Ghana school directory help, education customer support Accra',
+        canonicalUrl: 'https://skoolfinder.vercel.app/contact',
+        breadcrumbs: [{ name: 'Home', url: '/' }, { name: 'Contact Us', url: '/contact' }]
       }
     };
     if (viewName !== 'school-detail') {
@@ -442,6 +449,10 @@ const App = {
         content = await AboutView.render();
         mainRoot.innerHTML = content;
         AboutView.attachEvents();
+      } else if (viewName === 'contact') {
+        content = await ContactView.render();
+        mainRoot.innerHTML = content;
+        ContactView.attachEvents();
       }
 
       // Render Footer
@@ -536,7 +547,8 @@ const App = {
         'for-teachers': 'for-teachers',
         'for-suppliers': 'for-suppliers',
         'supplier-dashboard': 'supplier-dashboard',
-        'about': 'about'
+        'about': 'about',
+        'contact': 'contact'
       };
 
       if (rootPath && routeMap[rootPath]) {

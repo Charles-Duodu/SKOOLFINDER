@@ -79,6 +79,7 @@ const Footer = {
             </div>
             <div style="display: flex; gap: 1.5rem; flex-wrap: wrap;">
               <a href="/about" class="footer-about-link" style="color: #fde68a; font-weight: 700;">About SkoolFinder</a>
+              <a href="/contact" class="footer-contact-link" style="color: #fde68a; font-weight: 700;">Contact Us</a>
               <a href="#" class="footer-policy-link" data-policy="privacy">Privacy Policy</a>
               <a href="#" class="footer-policy-link" data-policy="terms">Terms of Verification</a>
               <a href="#" class="footer-policy-link" data-policy="accreditation">Accreditation Guidelines</a>
@@ -94,6 +95,13 @@ const Footer = {
       el.onclick = (e) => {
         e.preventDefault();
         App.navigate('about');
+      };
+    });
+
+    document.querySelectorAll('.footer-contact-link').forEach(el => {
+      el.onclick = (e) => {
+        e.preventDefault();
+        App.navigate('contact');
       };
     });
 

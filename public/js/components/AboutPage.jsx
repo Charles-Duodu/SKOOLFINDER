@@ -522,3 +522,4 @@ export default function AboutPage({ onNavigate = (route) => window.location.href
     </div>
   );
 }
+
