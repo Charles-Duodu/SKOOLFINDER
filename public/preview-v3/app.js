@@ -173,16 +173,17 @@
     renderSchools();renderDock();
   }
   function renderDock(){
-    const count=state.comparison.size;$('#compareDock').hidden=count===0;$('#dockCount').textContent=`${count} school${count===1?'':'s'} selected`;
+    const dock = $('#compareDock');
+    if (dock) dock.hidden = true;
   }
-  $('#clearCompare').addEventListener('click',()=>{state.comparison.clear();saveState();renderSchools();renderDock()});
+  $('#clearCompare')?.addEventListener('click',()=>{state.comparison.clear();saveState();renderSchools();renderDock()});
   function showCompare(){
     const selected=[...state.comparison].map(id=>schools.find(s=>s.id===id)).filter(Boolean);
     if(!selected.length){showDialog('Choose schools to compare','<p>Use the Compare button on the fictional school cards to build a sample side-by-side comparison. No account is needed in this demonstration.</p>');return}
     const row=(label,f)=>`<tr><th>${label}</th>${selected.map(s=>`<td>${escapeHTML(f(s))}</td>`).join('')}</tr>`;
     showDialog('Your example comparison',`<p>This comparison uses fictional records and makes no claims about actual Ghanaian schools.</p><div class="modal-compare"><table><thead>${row('Details',s=>s.name)}</thead><tbody>${row('Area',s=>s.area)}${row('School level',s=>s.level.join(', '))}${row('Curriculum',s=>s.curriculum.join(', '))}${row('School fees',()=> 'Not provided')}${row('Admissions',()=> 'Confirm with school')}</tbody></table></div>`,'GUEST COMPARISON PREVIEW');
   }
-  $('#viewCompare').addEventListener('click',showCompare);
+  $('#viewCompare')?.addEventListener('click',showCompare);
   $('#openComparison').addEventListener('click',showCompare);
   const guides={
     visit:{title:'Questions to ask on a school visit',html:'<p>Before visiting, prepare a short checklist for the headteacher or admissions team.</p><ul><li>How does the school communicate with families?</li><li>What support is available for different learning needs?</li><li>What fees are compulsory and which are optional?</li><li>How do arrival, collection and student safety procedures work?</li></ul><p>This is illustrative advice, not a published SkoolFinder article.</p>'},

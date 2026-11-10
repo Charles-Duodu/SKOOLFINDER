@@ -1226,23 +1226,10 @@ p { color: var(--muted); }
 }
 
 /* Compare Dock */
-.compare-dock {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 50;
-  background: var(--navy-deep);
-  color: #ffffff;
-  border-radius: 12px;
-  padding: 12px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 24px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-  border: 1px solid rgba(245, 182, 59, 0.3);
-  min-width: min(520px, calc(100% - 32px));
+.compare-dock,
+#compareDock {
+  display: none !important;
+  pointer-events: none !important;
 }
 .dock-icon { font-size: 20px; color: var(--gold); }
 .compare-dock strong { font-size: 13px; color: #fde68a; display: block; }

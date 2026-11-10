@@ -7418,18 +7418,6 @@ const ParentPortalView = {
           </div>
         </section>
 
-        <!-- FLOATING COMPARISON DOCK -->
-        <div class="compare-dock" id="compareDock" ${compCount === 0 ? 'hidden' : ''} role="status">
-          <div style="display: flex; align-items: center; gap: 12px;">
-            <span class="dock-icon">↔</span>
-            <span><strong id="dockCount">${compCount} school${compCount === 1 ? '' : 's'} selected</strong><small>School profiles ready to compare</small></span>
-          </div>
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <button class="clear-btn" id="clearCompare" type="button">Clear</button>
-            <button class="btn btn-gold btn-small" id="viewCompare" type="button">Compare now →</button>
-          </div>
-        </div>
-
         <!-- AUTH MODAL (POPUPS ON DEMAND FOR SIGNUP / SIGNIN) -->
         <dialog id="parent-auth-modal" class="info-dialog" style="max-width: 580px; padding: 0; border-radius: 20px; overflow: hidden;">
           <div style="padding: 1.25rem 1.75rem; background: #06162E; color: #ffffff; display: flex; align-items: center; justify-content: space-between;">
@@ -7757,30 +7745,7 @@ const ParentPortalView = {
         const isAdded = State.isInCompare(id);
         btn.setAttribute('aria-pressed', isAdded ? 'true' : 'false');
         btn.textContent = isAdded ? '✓ Added' : '↔ Compare';
-        const dock = document.getElementById('compareDock');
-        const dockCount = document.getElementById('dockCount');
-        if (dock && dockCount) {
-          dock.hidden = State.comparisonList.length === 0;
-          dockCount.textContent = `${State.comparisonList.length} school${State.comparisonList.length === 1 ? '' : 's'} selected`;
-        }
       });
-    });
-
-    // Comparison dock actions
-    document.getElementById('clearCompare')?.addEventListener('click', () => {
-      if (typeof State !== 'undefined') {
-        State.comparisonList = [];
-        const dock = document.getElementById('compareDock');
-        if (dock) dock.hidden = true;
-        document.querySelectorAll('.btn-school-card-compare').forEach(b => {
-          b.setAttribute('aria-pressed', 'false');
-          b.textContent = '↔ Compare';
-        });
-      }
-    });
-
-    document.getElementById('viewCompare')?.addEventListener('click', () => {
-      App.navigate('compare');
     });
 
     // Section 2: Two Free Options

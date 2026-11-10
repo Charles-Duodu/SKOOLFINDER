@@ -443,23 +443,12 @@
 /* ========================================================
    Floating Comparison Bar
    ======================================================== */
-.comparison-floating-bar {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 90;
-  background: var(--primary-900);
-  color: #ffffff;
-  padding: 0.9rem 1.75rem;
-  border-radius: var(--radius-full);
-  box-shadow: 0 12px 30px rgba(10, 17, 40, 0.45);
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(12px);
-  animation: slide-up 0.3s ease;
+.comparison-floating-bar,
+#comparison-floating-bar,
+.compare-dock,
+#compareDock {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 @keyframes slide-up {
@@ -1433,23 +1422,10 @@
 /* ========================================================
    FEATURE 15: AI Admissions & CSSPS Guidance Chatbot ("Akosua")
    ======================================================== */
-.sd-chatbot-fab {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9998;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%);
-  color: #ffffff;
-  padding: 0.75rem 1.25rem;
-  border-radius: 9999px;
-  border: 2px solid rgba(245, 158, 11, 0.75);
-  box-shadow: 0 10px 25px -5px rgba(10, 17, 40, 0.4), 0 0 15px rgba(245, 158, 11, 0.25);
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  font-family: var(--font-body);
+.sd-chatbot-fab,
+#sd-chatbot-fab-btn {
+  display: none !important;
+  pointer-events: none !important;
 }
 
 .sd-chatbot-fab:hover {

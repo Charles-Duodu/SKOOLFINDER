@@ -45,18 +45,6 @@ const AIChatbot = {
     if (!root) return;
 
     root.innerHTML = `
-      <!-- Floating Action Button -->
-      <button class="sd-chatbot-fab" id="sd-chatbot-fab-btn" aria-label="Akosua AI Advisor - CSSPS & School Admissions" style="${this.isOpen ? 'display: none;' : 'display: flex;'}">
-        <div class="sd-chatbot-avatar-wrap">
-          👩🏾‍💼
-          <span class="sd-chatbot-status-dot"></span>
-        </div>
-        <div class="sd-chatbot-fab-text">
-          <span class="sd-chatbot-fab-title">Akosua AI <span class="badge" style="background: rgba(245,158,11,0.25); color: #fef08a; padding: 1px 6px; font-size: 0.65rem;">🇬🇭 Advisor</span></span>
-          <span class="sd-chatbot-fab-sub">CSSPS & School Admissions</span>
-        </div>
-      </button>
-
       <!-- Chat Window -->
       <div class="sd-chat-window" id="sd-chat-window" style="${this.isOpen ? 'display: flex;' : 'display: none;'}">
         <!-- Header -->
@@ -178,7 +166,7 @@ const AIChatbot = {
     const fab = document.getElementById('sd-chatbot-fab-btn');
     const win = document.getElementById('sd-chat-window');
     if (win) win.style.display = 'none';
-    if (fab) fab.style.display = 'flex';
+    if (fab) fab.style.display = 'none';
   },
 
   restart() {

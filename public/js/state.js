@@ -430,48 +430,17 @@ const State = {
     this.renderComparisonBar();
   },
   renderComparisonBar() {
-    let bar = document.getElementById('comparison-floating-bar');
-    if (!bar) {
-      bar = document.createElement('div');
-      bar.id = 'comparison-floating-bar';
-      bar.className = 'comparison-floating-bar';
-      document.body.appendChild(bar);
-    }
-
     if (typeof MobileNav !== 'undefined') MobileNav.updateBadge();
     const navPill = document.querySelector('#btn-nav-compare .comparison-counter-pill');
     if (navPill) navPill.textContent = this.comparisonList.length;
 
-    if (this.comparisonList.length === 0) {
+    // Permanently remove floating comparison dock to keep viewports clear
+    const bar = document.getElementById('comparison-floating-bar');
+    if (bar) {
       bar.style.display = 'none';
-      if (typeof document !== 'undefined') document.body.classList.remove('has-comparison-dock');
-      return;
+      bar.remove();
     }
-
-    if (typeof document !== 'undefined') document.body.classList.add('has-comparison-dock');
-    bar.style.display = 'flex';
-    bar.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 0.75rem;">
-        <span class="comparison-counter-pill">${this.comparisonList.length} / 4</span>
-        <span style="font-weight: 700; font-size: 0.95rem;">Schools Selected for Comparison</span>
-      </div>
-      <div style="display: flex; gap: 0.75rem; align-items: center;">
-        <button id="btn-view-comparison" class="btn-pill btn-gold" style="padding: 0.4rem 1rem; font-size: 0.85rem;">
-          Compare Now
-        </button>
-        <button id="btn-clear-comparison" style="color: rgba(255,255,255,0.7); font-size: 0.8rem; text-decoration: underline;">
-          Clear
-        </button>
-      </div>
-    `;
-
-    document.getElementById('btn-view-comparison').onclick = () => {
-      App.navigate('compare');
-    };
-    document.getElementById('btn-clear-comparison').onclick = () => {
-      this.clearCompare();
-      App.refreshCurrentView();
-    };
+    if (typeof document !== 'undefined') document.body.classList.remove('has-comparison-dock');
   },
 
   // Toast System
