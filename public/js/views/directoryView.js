@@ -14,7 +14,8 @@ const DirectoryView = {
         API.getActivePromotions('directory_top')
       ]);
       if (schoolsRes.status === 'fulfilled') {
-        schools = Array.isArray(schoolsRes.value) ? schoolsRes.value : [];
+        const rawSchools = Array.isArray(schoolsRes.value) ? schoolsRes.value : [];
+        schools = rawSchools.slice(0, 3);
       }
       if (promoRes.status === 'fulfilled' && promoRes.value?.success && promoRes.value?.promotions?.length > 0) {
         activePromo = promoRes.value.promotions[0];
@@ -336,20 +337,21 @@ const DirectoryView = {
   },
 
   updateResults(schools) {
+    const displaySchools = Array.isArray(schools) ? schools.slice(0, 3) : [];
     const countEl = document.getElementById('dir-count-text');
     if (countEl) {
-      countEl.innerHTML = `Showing <strong>${schools.length}</strong> accredited schools matching your criteria.`;
+      countEl.innerHTML = `Showing <strong>${displaySchools.length}</strong> accredited demonstration schools matching your criteria.`;
     }
 
     const mainEl = document.getElementById('dir-results-main');
     if (!mainEl) return;
 
     if (this.viewMode === 'map') {
-      this.initMap(schools);
+      this.initMap(displaySchools);
       return;
     }
 
-    if (schools.length === 0) {
+    if (displaySchools.length === 0) {
       mainEl.innerHTML = `
         <div style="background: #ffffff; border-radius: var(--radius-xl); border: 1px dashed var(--border-light); padding: 4rem 2rem; text-align: center;">
           <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
@@ -368,7 +370,7 @@ const DirectoryView = {
     } else {
       mainEl.innerHTML = `
         <div class="schools-grid">
-          ${schools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
+          ${displaySchools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
         </div>
       `;
       this.attachCardEvents();
