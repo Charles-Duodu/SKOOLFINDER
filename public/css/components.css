@@ -5796,15 +5796,18 @@ body.has-comparison-dock .sd-chat-window {
    ======================================================== */
 .explore-more-section {
   position: relative;
-  background: radial-gradient(circle at 50% 10%, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.95) 100%);
+  z-index: 2;
+  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.04) 0%, rgba(248, 250, 252, 0.74) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   padding: 5rem 1.5rem 5.5rem;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75);
   overflow: hidden;
 }
 
 [data-theme="dark"] .explore-more-section {
-  background: radial-gradient(circle at 50% 10%, #0a1628 0%, #060e1a 100%);
-  border-bottom: 1px solid rgba(30, 41, 59, 0.85);
+  background: radial-gradient(circle at 50% 0%, rgba(18, 102, 196, 0.12) 0%, rgba(10, 20, 38, 0.80) 100%);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.75);
 }
 
 .explore-more-container {
