@@ -244,7 +244,11 @@ const DirectoryView = {
                   </div>
                 ` : `
                   <div class="schools-grid directory-schools-grid">
-                    ${schools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
+                    ${schools.map(s => `
+                      <div class="school-card-col">
+                        ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s)}
+                      </div>
+                    `).join('')}
                   </div>
                 `}
               `}
@@ -346,7 +350,11 @@ const DirectoryView = {
     } else {
       mainEl.innerHTML = `
         <div class="schools-grid directory-schools-grid">
-          ${displaySchools.map(s => (typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s))).join('')}
+          ${displaySchools.map(s => `
+            <div class="school-card-col">
+              ${typeof HomeView !== 'undefined' && HomeView.renderSchoolCard ? HomeView.renderSchoolCard(s) : this.renderSchoolCard(s)}
+            </div>
+          `).join('')}
         </div>
       `;
       this.attachCardEvents();

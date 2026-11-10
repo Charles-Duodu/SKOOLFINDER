@@ -1215,7 +1215,7 @@ const HomeView = {
     return `
       <div class="school-card-enhanced school-card" id="card-${school.id}">
         <div class="card-mini-carousel" id="carousel-${school.id}">
-          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" />
+          <img src="${galleryImgs[0]}" alt="${school.name}" class="carousel-img" id="img-${school.id}" loading="lazy" onerror="this.onerror=null;this.src='/preview-v3/assets/school-campus.jpg'" />
           
           <button class="btn-card-bookmark ${isSaved ? 'active' : ''}" data-school-id="${school.id}" data-school-name="${(school.name || 'School').replace(/"/g, '&quot;')}" title="${isSaved ? 'Remove from Saved Bookmarks' : 'Bookmark / Save School'}" style="position: absolute; top: 12px; right: 12px; z-index: 6; background: rgba(255,255,255,0.92); border: none; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.05rem; box-shadow: 0 2px 8px rgba(0,0,0,0.18); transition: transform 0.15s ease;">
             ${isSaved ? '🔖' : '🤍'}
