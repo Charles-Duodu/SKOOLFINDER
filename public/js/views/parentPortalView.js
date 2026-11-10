@@ -6932,12 +6932,6 @@ const ParentPortalView = {
           <div class="ambient-glow glow-bottom-left"></div>
 
           <div class="container hero-content-center">
-            <!-- National Workspace Badge -->
-            <div class="national-badge">
-              <span class="badge-flag">🇬🇭</span>
-              <span class="badge-text">GH NATIONAL PRE-TERTIARY PARENT &amp; ADMISSIONS WORKSPACE</span>
-            </div>
-
             <!-- Main Headline -->
             <h1 class="hero-blue-title">
               Simplify Admissions &amp; Establish Your Child's Educational Future
