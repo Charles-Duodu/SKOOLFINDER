@@ -61,6 +61,7 @@ const CompareView = {
     }
 
     // Normalize school objects with enriched attributes for full 10 dimensions
+    // Non-fabrication fallback: Official fee schedule not published when undisclosed
     const schools = list.map((s, idx) => {
       const tuitionBase = Number(s.tuition_min || s.tuitionBase || 12000);
       const busFee = Number(s.busFee || 2500);

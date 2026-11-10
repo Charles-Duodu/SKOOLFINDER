@@ -93,7 +93,7 @@ const Navbar = {
             </li>
             <li>
               <a href="/directory" id="nav-link-directory" class="nav-link-direct ${State.currentView === 'directory' ? 'active' : ''}">
-                <span>🏫</span> Find Schools
+                <span>🏫</span> Browse Schools
               </a>
             </li>
             <li class="nav-item-dropdown" style="position: relative;">
@@ -246,7 +246,7 @@ const Navbar = {
                 <span>🏠</span> Home
               </a>
               <a href="/directory" id="mob-link-directory" class="mobile-nav-item ${State.currentView === 'directory' ? 'active' : ''}">
-                <span>🏫</span> Find Schools
+                <span>🏫</span> Browse Schools
               </a>
               ${State.comparisonList.length > 0 ? `
                 <a href="#" id="mob-link-compare" class="mobile-nav-item ${State.currentView === 'compare' ? 'active' : ''}">

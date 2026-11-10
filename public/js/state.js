@@ -368,6 +368,29 @@ const State = {
     return true;
   },
 
+  toggleComparison(school) {
+    return this.toggleCompare(school);
+  },
+
+  addToComparison(school) {
+    if (!school) return false;
+    const sch = typeof school === 'string' ? { id: school, name: 'School' } : school;
+    if (!this.isInCompare(sch.id)) {
+      return this.toggleCompare(sch);
+    }
+    return true;
+  },
+
+  removeFromComparison(schoolId) {
+    const id = typeof schoolId === 'object' ? schoolId?.id : schoolId;
+    const idx = this.comparisonList.findIndex(s => s.id === id);
+    if (idx > -1) {
+      this.comparisonList.splice(idx, 1);
+      this.saveComparisonToStorage();
+      this.renderComparisonBar();
+    }
+  },
+
   addMultipleToCompare(schools = []) {
     if (!Array.isArray(schools) || schools.length === 0) return 0;
     let addedCount = 0;

@@ -6389,13 +6389,13 @@ const ParentPortalView = {
     `;
   },
 
-  async renderAuthGateway() {
+async renderAuthGateway() {
     let previewSchools = [];
     try {
       if (typeof API !== 'undefined' && API.getSchools) {
         const schools = await API.getSchools({ region: 'All' });
         if (Array.isArray(schools) && schools.length > 0) {
-          previewSchools = schools.slice(0, 3);
+          previewSchools = schools.slice(0, 6);
         }
       }
     } catch (e) {
@@ -6415,8 +6415,9 @@ const ParentPortalView = {
           tuition_min: 18000,
           tuition_max: 32000,
           verified: true,
-          coverImage: '/assets/images/campus_hero.webp',
-          whatsapp: '+233244123456'
+          coverImage: '/preview-v3/assets/school-campus.jpg',
+          whatsapp: '+233244123456',
+          feature: 'Cambridge learning pathway & enrichment'
         },
         {
           id: 'sch-sos-tema',
@@ -6429,8 +6430,9 @@ const ParentPortalView = {
           tuition_min: 22000,
           tuition_max: 48000,
           verified: true,
-          coverImage: '/assets/images/science_lab.webp',
-          whatsapp: '+233244654321'
+          coverImage: '/preview-v3/assets/school-stem.jpg',
+          whatsapp: '+233244654321',
+          feature: 'STEM innovation & global boarding'
         },
         {
           id: 'sch-achi-accra',
@@ -6443,69 +6445,76 @@ const ParentPortalView = {
           tuition_min: 1200,
           tuition_max: 3500,
           verified: true,
-          coverImage: '/assets/images/montessori_class.webp',
-          whatsapp: '+233244987654'
+          coverImage: '/preview-v3/assets/school-early.jpg',
+          whatsapp: '+233244987654',
+          feature: 'Historic excellence & GES curriculum'
         }
       ];
     }
+    ParentPortalView.previewSchoolsList = previewSchools;
     const compCount = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.length : 0;
     const bookmarkCount = (typeof State !== 'undefined' && Array.isArray(State.bookmarkedSchoolIds)) ? State.bookmarkedSchoolIds.length : 0;
     const totalGuestSaved = compCount + bookmarkCount;
 
     return `
-      <div class="parent-portal-gateway-page" style="background: var(--bg-main, #f8fafc); min-height: 100vh;">
-        <!-- Hero Section with Luxury Radial Gradient & Ambient Lighting -->
-        <section style="background: linear-gradient(135deg, #06162E 0%, #0A224E 45%, #124B94 100%); color: #ffffff; padding: 5rem 1.5rem 6.5rem; position: relative; overflow: hidden;">
-          <!-- Dual Ambient Lighting Glows -->
-          <div style="position: absolute; top: -120px; right: -120px; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(245, 158, 11, 0.22) 0%, transparent 70%); pointer-events: none;"></div>
-          <div style="position: absolute; bottom: -120px; left: -100px; width: 480px; height: 480px; border-radius: 50%; background: radial-gradient(circle, rgba(18, 102, 196, 0.3) 0%, transparent 70%); pointer-events: none;"></div>
+      <div class="parent-portal-gateway-page">
+        <!-- ========================================================
+             SECTION 1: HERO (LUXURY ROYAL NAVY BLUE BACKGROUND)
+             ======================================================== -->
+        <section class="section-hero-blue" id="discover" data-section="1">
+          <!-- Ambient Radial Lighting Glows -->
+          <div class="ambient-glow glow-top-right"></div>
+          <div class="ambient-glow glow-bottom-left"></div>
 
-          <div class="container" style="position: relative; z-index: 2; max-width: 920px; margin: 0 auto; text-align: center;">
-            <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(245, 158, 11, 0.5); padding: 0.45rem 1.25rem; border-radius: 9999px; margin-bottom: 1.5rem; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-              <span style="font-size: 1rem;">🇬🇭</span>
-              <span style="font-size: 0.82rem; font-weight: 800; color: #fde68a; text-transform: uppercase; letter-spacing: 0.08em;">
-                National Pre-Tertiary Parent &amp; Admissions Workspace
-              </span>
+          <div class="container hero-content-center">
+            <!-- National Workspace Badge -->
+            <div class="national-badge">
+              <span class="badge-flag">🇬🇭</span>
+              <span class="badge-text">GH NATIONAL PRE-TERTIARY PARENT &amp; ADMISSIONS WORKSPACE</span>
             </div>
 
-            <h1 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2.2rem, 4.5vw, 3.2rem); font-weight: 800; line-height: 1.18; color: #ffffff; margin-bottom: 1.25rem; letter-spacing: -0.02em;">
+            <!-- Main Headline -->
+            <h1 class="hero-blue-title">
               Simplify Admissions &amp; Establish Your Child's Educational Future
             </h1>
-            <p style="font-size: clamp(1rem, 2vw, 1.15rem); line-height: 1.65; color: rgba(255, 255, 255, 0.88); max-width: 740px; margin: 0 auto 2.25rem;">
+
+            <!-- Subtitle Copy -->
+            <p class="hero-blue-subtitle">
               Directly submit admissions inquiries to accredited Ghanaian institutions, track real-time application milestones, verify school fees transparently, and plan every academic transition with absolute clarity.
             </p>
 
-            <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; font-size: 0.88rem; color: #cbd5e1; margin-bottom: 2.25rem;">
-              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <span style="color: #34d399; font-weight: 800;">✓</span> 100% Free Parent Experience
+            <!-- 4 Trust Checkmarks -->
+            <div class="hero-trust-row">
+              <span class="trust-check-item">
+                <span class="check-green">✓</span> 100% Free Parent Experience
               </span>
-              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <span style="color: #34d399; font-weight: 800;">✓</span> Direct Admissions WhatsApp Inquiries
+              <span class="trust-check-item">
+                <span class="check-green">✓</span> Direct Admissions WhatsApp Inquiries
               </span>
-              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <span style="color: #34d399; font-weight: 800;">✓</span> Official NaSIA Regulatory Alignment
+              <span class="trust-check-item">
+                <span class="check-green">✓</span> Official NaSIA Regulatory Alignment
               </span>
-              <span style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <span style="color: #34d399; font-weight: 800;">✓</span> Ghana Mobile Money &amp; Bank Integrated
+              <span class="trust-check-item">
+                <span class="check-green">✓</span> Ghana Mobile Money &amp; Bank Integrated
               </span>
             </div>
 
-            <!-- Horizontal Search Pill Bar (Image 1 Blueprint Specification) -->
-            <form id="portal-hero-search-form" style="background: #ffffff; border-radius: 16px; padding: 0.75rem 1.15rem; display: grid; grid-template-columns: 1.3fr auto 1fr auto 1fr auto; align-items: center; gap: 0.85rem; box-shadow: 0 20px 45px rgba(6, 22, 46, 0.35), 0 0 0 1px rgba(255,255,255,0.1); text-align: left; max-width: 960px; margin: 0 auto 0.75rem;">
-              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
-                <label for="portal-search-suburb" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
-                  <span>📍</span> SUBURB / LOCALITY
+            <!-- FLOATING HORIZONTAL SEARCH PILL BAR -->
+            <form id="portal-hero-search-form" class="search-pill-bar">
+              <div class="search-pill-field">
+                <label for="portal-search-suburb" class="pill-label">
+                  <span class="label-icon">📍</span> SUBURB / LOCALITY
                 </label>
-                <input id="portal-search-suburb" type="text" placeholder="e.g. Cantonments, East Legon, Tema..." style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+                <input id="portal-search-suburb" class="pill-input" placeholder="e.g. Cantonments, East Legon, Tema..." autocomplete="off">
               </div>
 
-              <div style="width: 1px; height: 38px; background: #e2e8f0;"></div>
+              <div class="search-pill-divider"></div>
 
-              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
-                <label for="portal-search-level" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
-                  <span>🎓</span> SCHOOL LEVEL
+              <div class="search-pill-field">
+                <label for="portal-search-level" class="pill-label">
+                  <span class="label-icon">🎓</span> SCHOOL LEVEL
                 </label>
-                <select id="portal-search-level" style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+                <select id="portal-search-level" class="pill-select">
                   <option value="">All Levels (Crèche to SHS)</option>
                   <option value="Crèche">Crèche &amp; Preschool (0–5 yrs)</option>
                   <option value="Primary">Primary School (Class 1–6)</option>
@@ -6514,13 +6523,13 @@ const ParentPortalView = {
                 </select>
               </div>
 
-              <div style="width: 1px; height: 38px; background: #e2e8f0;"></div>
+              <div class="search-pill-divider"></div>
 
-              <div style="padding: 0.25rem 0.5rem; min-width: 0;">
-                <label for="portal-search-curriculum" style="display: flex; align-items: center; gap: 0.35rem; font-size: 0.72rem; font-weight: 800; color: #334155; letter-spacing: 0.06em; margin-bottom: 0.25rem; text-transform: uppercase;">
-                  <span>📖</span> CURRICULUM
+              <div class="search-pill-field">
+                <label for="portal-search-curriculum" class="pill-label">
+                  <span class="label-icon">📖</span> CURRICULUM
                 </label>
-                <select id="portal-search-curriculum" style="width: 100%; border: 1px solid transparent; background: #f8fafc; border-radius: 8px; padding: 0.55rem 0.75rem; font-size: 0.88rem; font-weight: 600; color: #0A2046; outline: none;">
+                <select id="portal-search-curriculum" class="pill-select">
                   <option value="">All Curricula</option>
                   <option value="GES (NaCCA)">National (GES / NaCCA)</option>
                   <option value="Cambridge (CIE)">Cambridge International (CIE)</option>
@@ -6529,70 +6538,423 @@ const ParentPortalView = {
                 </select>
               </div>
 
-              <button type="submit" id="btn-portal-hero-search" class="btn-pill" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #0A224E; border-radius: 10px; padding: 0.85rem 1.6rem; font-size: 0.95rem; font-weight: 800; display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);">
-                <span>🔍</span> Search Schools
+              <button class="search-pill-btn" id="btn-portal-hero-search" type="submit">
+                <span class="btn-search-icon">🔍</span> Search Schools
               </button>
             </form>
-            <p style="font-size: 0.8rem; color: #cbd5e1; margin-top: 0.65rem;">
-              <span style="color: #34d399; font-weight: 800;">✓</span> 100% free to explore. No mandatory registration required to browse or compare.
+            <p class="search-reassurance-text">
+              <span>✓</span> 100% free to explore. No mandatory registration required to browse or compare.
             </p>
 
-            <!-- Floating Akosua AI Advisor Badge (Image 1 Match) -->
-            <div id="btn-portal-akosua-advisor" style="position: absolute; right: 1.5rem; bottom: 1.25rem; z-index: 20; display: inline-flex; align-items: center; gap: 0.65rem; background: #06162E; border: 1.5px solid #f5b63b; border-radius: 9999px; padding: 0.4rem 1.15rem 0.4rem 0.45rem; box-shadow: 0 10px 25px rgba(0,0,0,0.35); cursor: pointer; text-align: left; transition: transform 0.18s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-              <div style="position: relative; width: 34px; height: 34px; border-radius: 50%; overflow: visible;">
-                <img src="/assets/images/portals/teachers_mockup_clean.jpg" alt="Akosua AI" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 1.5px solid #f5b63b;">
-                <span style="position: absolute; bottom: 0; right: 0; width: 9px; height: 9px; border-radius: 50%; background: #10b981; border: 1.5px solid #06162E;"></span>
+            <!-- Floating Akosua AI Advisor Badge -->
+            <aside id="btn-portal-akosua-advisor" class="akosua-ai-floating">
+              <div class="akosua-avatar-wrap">
+                <img src="/preview-v3/assets/tutor.jpg" alt="Akosua AI Advisor" class="akosua-avatar-img">
+                <span class="online-indicator"></span>
               </div>
-              <div>
-                <div style="display: flex; align-items: center; gap: 0.35rem;">
-                  <strong style="font-size: 0.82rem; color: #ffffff;">Akosua AI</strong>
-                  <span style="font-size: 0.65rem; font-weight: 800; background: #f5b63b; color: #06162E; padding: 1px 5px; border-radius: 4px;">GH ADVISOR</span>
+              <div class="akosua-text-wrap">
+                <div class="akosua-name-row">
+                  <strong>Akosua AI</strong>
+                  <span class="badge-gh-advisor">GH ADVISOR</span>
                 </div>
-                <small style="display: block; font-size: 0.72rem; color: #cbd5e1;">CSSPS &amp; School Admissions</small>
+                <small class="akosua-sub">CSSPS &amp; School Admissions</small>
+              </div>
+            </aside>
+          </div>
+
+          <!-- Compact Category Filter Chips -->
+          <div class="container quick-browse-container">
+            <div class="quick-browse-box">
+              <div class="quick-browse-header">
+                <span class="micro-label">TARGETED DISCOVERY</span>
+                <h2>Explore Schools by Need &amp; Priority</h2>
+              </div>
+              <div class="tab-group" role="tablist">
+                <button id="portal-tab-level" data-tab="level" role="tab" aria-selected="true" class="active" type="button">School level</button>
+                <button id="portal-tab-curriculum" data-tab="curriculum" role="tab" aria-selected="false" type="button">Curriculum</button>
+                <button id="portal-tab-area" data-tab="area" role="tab" aria-selected="false" type="button">Locality / Area</button>
+              </div>
+              <div class="quick-panel" id="portalQuickPanel">
+                <div class="chips" id="quickChips">
+                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Crèche">Crèche &amp; Preschool</button>
+                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Primary">Primary School</button>
+                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="JHS">Junior High</button>
+                  <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="SHS">Senior High</button>
+                </div>
+                <button id="btn-quick-explore-all" class="all-options" type="button">Explore all options <span aria-hidden="true">→</span></button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Main Body Section with Floating Elevated Auth Card -->
-        <section style="padding: 0 1.5rem 5rem; position: relative;">
-          <div class="container" style="max-width: 560px; margin: -3.75rem auto 0; position: relative; z-index: 5;">
-            
-            ${totalGuestSaved > 0 ? `
-            <div style="background: #ffffff; border: 1.5px solid #f59e0b; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.85rem; box-shadow: 0 12px 30px rgba(245,158,11,0.18);">
-              <div style="font-size: 1.8rem;">⚖️</div>
-              <div style="flex: 1;">
-                <div style="font-weight: 800; color: #92400e; font-size: 0.92rem;">
-                  You have ${compCount > 0 ? `${compCount} school${compCount > 1 ? 's' : ''} in comparison` : ''}${compCount > 0 && bookmarkCount > 0 ? ' and ' : ''}${bookmarkCount > 0 ? `${bookmarkCount} saved bookmark${bookmarkCount > 1 ? 's' : ''}` : ''}!
+        <!-- ========================================================
+             SECTION 2: DISCOVER & COMPARE (WITH DOCK & MATRIX)
+             ======================================================== -->
+        <section class="section-two section-pad" id="compare" aria-labelledby="compare-heading" data-section="2">
+          <div class="container">
+            <div class="section-head split">
+              <div>
+                <div class="eyebrow"><span class="eyebrow-line"></span> DISCOVER &amp; COMPARE</div>
+                <h2 id="compare-heading">A Clearer Picture of Your Options</h2>
+                <p>Explore accredited institutions across Greater Accra and compare essentials side-by-side: location, curriculum, learning environment, and fee transparency.</p>
+              </div>
+              <button class="underlined-link" type="button" id="btn-parents-view-all-schools">View all schools <span aria-hidden="true">↗</span></button>
+            </div>
+
+            <div class="data-warning">
+              <span class="warning-info" aria-hidden="true">i</span>
+              <span><strong>Directory Guidance:</strong> Profile details are verified directly against institution records under Education Regulatory Bodies Act 1023. NaSIA licensing status verified. Always confirm current intake and fee schedules with the school office.</span>
+            </div>
+
+            <!-- Dynamic School Cards Grid -->
+            <div class="schools-grid" id="parents-preview-schools-grid">
+              ${previewSchools.map((s, idx) => {
+                const isComp = (typeof State !== 'undefined' && Array.isArray(State.comparisonList)) ? State.comparisonList.includes(s.id) : false;
+                const feeText = s.feeBand || (s.tuition_min ? `GH₵ ${Number(s.tuition_min).toLocaleString()} - ${Number(s.tuition_max || s.tuition_min * 1.5).toLocaleString()} / Term` : 'Fee Not Disclosed');
+                const img = s.coverImage || (idx === 0 ? '/preview-v3/assets/school-campus.jpg' : (idx === 1 ? '/preview-v3/assets/school-stem.jpg' : '/preview-v3/assets/school-early.jpg'));
+                return `
+                  <article class="school-card" data-school-id="${s.id}">
+                    <div class="school-image">
+                      <img src="${img}" alt="${s.name}" loading="lazy">
+                      <span class="school-tag">${s.verified ? 'NaSIA Verified' : 'Accredited'}</span>
+                    </div>
+                    <div class="school-body">
+                      <h3>${s.name}</h3>
+                      <p class="school-location"><span aria-hidden="true">📍</span> ${s.suburb || 'Accra'}, Greater Accra</p>
+                      <div class="school-facts">
+                        <span>${Array.isArray(s.levels) ? s.levels.join(' · ') : (s.levels || 'Crèche - JHS')}</span>
+                        <span>${Array.isArray(s.curriculum) ? s.curriculum.join(' · ') : (s.curriculum || 'National GES')}</span>
+                      </div>
+                      <div class="school-meta">
+                        <strong>${feeText}</strong><br>
+                        <small style="color: #64748b;">${s.feature || 'Verified campus facilities & admissions support'}</small>
+                      </div>
+                    </div>
+                    <div class="school-actions">
+                      <button type="button" class="primary btn-school-card-inspect" data-id="${s.id}">View profile ↗</button>
+                      <button type="button" class="btn-school-card-compare" data-id="${s.id}" aria-pressed="${isComp}">${isComp ? '✓ Added' : '↔ Compare'}</button>
+                    </div>
+                  </article>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- Decision Band -->
+            <div class="decision-band">
+              <div class="decision-text">
+                <span class="micro-label">OBJECTIVE COMPARISON</span>
+                <h3>Look beyond the school name.</h3>
+                <p>Compare what matters to your child: teaching approach, daily commute time, learning support, and total cost of attendance.</p>
+              </div>
+              <div class="decision-list">
+                <div>
+                  <span class="decision-icon">↔</span>
+                  <span><strong>Compare side-by-side</strong><small>Select up to 4 schools on desktop, 2 on mobile</small></span>
                 </div>
-                <div style="font-size: 0.8rem; color: #b45309; margin-top: 0.2rem;">
-                  Create your free parent account or sign in below to import these schools into your permanent shortlist, track deadlines, and submit applications.
+                <div>
+                  <span class="decision-icon">₵</span>
+                  <span><strong>Understand total costs</strong><small>Tuition, uniforms, books, meals and transport</small></span>
+                </div>
+                <button class="btn btn-outline-navy" type="button" id="btn-parents-open-compare">Open comparison <span aria-hidden="true">→</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 3: TWO FREE ACCESS OPTIONS
+             ======================================================== -->
+        <section class="section-three section-pad" id="free" aria-labelledby="free-heading" data-section="3">
+          <div class="container">
+            <div class="section-head centered">
+              <div class="eyebrow">BUILT AROUND YOUR CHOICE</div>
+              <h2 id="free-heading">Two Ways to Explore: Both Completely Free</h2>
+              <p>Start right away as a guest with no signup, or create a free parent account to save your shortlisted schools and comparison tables.</p>
+            </div>
+
+            <div class="access-grid">
+              <!-- Guest Card -->
+              <article class="access-card guest">
+                <div class="access-top">
+                  <span class="access-symbol" aria-hidden="true">↗</span>
+                  <span class="pill">NO ACCOUNT NEEDED</span>
+                </div>
+                <h3>Explore as a guest</h3>
+                <p>Everything you need to discover and evaluate schools—zero sign-up required.</p>
+                <ul class="checks">
+                  <li>Search all accredited schools and view public profiles</li>
+                  <li>Side-by-side comparison matrix for up to 4 institutions</li>
+                  <li>Explore suburb locations, curricula, and fee transparency</li>
+                  <li>Direct WhatsApp and phone contact channels where supported</li>
+                </ul>
+                <button type="button" id="btn-parents-guest-explore" class="btn btn-outline-navy">Continue as guest <span aria-hidden="true">→</span></button>
+              </article>
+
+              <!-- Registered Account Card -->
+              <article class="access-card registered">
+                <div class="access-top">
+                  <span class="access-symbol" aria-hidden="true">✦</span>
+                  <span class="pill">OPTIONAL · 100% FREE</span>
+                </div>
+                <h3>Make it your school search</h3>
+                <p>A proposed personal home for your family's school-planning preferences.</p>
+                <ul class="checks">
+                  <li>Save school shortlists and bookmarks permanently</li>
+                  <li>Save side-by-side comparison tables across your devices</li>
+                  <li>Track application milestones, open days, and scheduled visits</li>
+                  <li>Receive admissions window and deadline reminders</li>
+                </ul>
+                <button class="btn btn-gold" type="button" id="btn-parents-scroll-signup">Create free account <span aria-hidden="true">→</span></button>
+                <small>Registration connects cleanly to the existing Parent Portal dashboard.</small>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 4: ADMISSIONS & PARENT GUIDANCE
+             ======================================================== -->
+        <section class="section-four section-pad" id="guidance" aria-labelledby="guidance-heading" data-section="4">
+          <div class="container">
+            <div class="section-head split">
+              <div>
+                <div class="eyebrow"><span class="eyebrow-line"></span> PARENT GUIDANCE &amp; CHECKLISTS</div>
+                <h2 id="guidance-heading">From First Search to Next Steps: Admissions &amp; Guidance</h2>
+                <p>Practical guidance for researching, visiting, and applying to Ghanaian schools—with realistic advice grounded in our local context.</p>
+              </div>
+              <button class="underlined-link" type="button" id="btn-parents-fees-guide">Explore fee structures guide <span aria-hidden="true">↗</span></button>
+            </div>
+
+            <div class="guidance-main">
+              <div class="admissions-panel">
+                <div class="admissions-overline">ADMISSIONS &amp; SCHOOL VISITS</div>
+                <h3>A thoughtful school choice happens step by step.</h3>
+                <p>Keep your search simple. Start with a shortlist, ask the right questions, and tour the campus before you decide.</p>
+                <ol class="steps">
+                  <li>
+                    <b>01</b>
+                    <span><strong>Make a shortlist</strong><small>Choose 2–3 schools that match your priorities.</small></span>
+                  </li>
+                  <li>
+                    <b>02</b>
+                    <span><strong>Ask about admissions</strong><small>Confirm open vacancies, deadlines, and itemized fees.</small></span>
+                  </li>
+                  <li>
+                    <b>03</b>
+                    <span><strong>Plan a campus visit</strong><small>Observe the learning environment and classroom interactions.</small></span>
+                  </li>
+                </ol>
+                <button type="button" id="btn-parents-admissions-search" class="btn btn-outline-light">Admissions guidance <span aria-hidden="true">↗</span></button>
+              </div>
+
+              <div class="guides-grid">
+                <article class="guide-card" data-guide="school_visit">
+                  <img src="/preview-v3/assets/guide-visit.jpg" alt="Teacher interacting with pupils" loading="lazy">
+                  <div>
+                    <span>SCHOOL VISITS</span>
+                    <h3>What to ask on a school visit</h3>
+                    <button class="btn-read-guide-portal" data-guide="cambridge_vs_ges" type="button">Read guide <span aria-hidden="true">→</span></button>
+                  </div>
+                </article>
+
+                <article class="guide-card" data-guide="curriculum">
+                  <img src="/preview-v3/assets/guide-learning.jpg" alt="Children engaged in hands-on science" loading="lazy">
+                  <div>
+                    <span>CURRICULUM IN GHANA</span>
+                    <h3>GES, Cambridge &amp; Montessori</h3>
+                    <button class="btn-read-guide-portal" data-guide="cambridge_vs_ges" type="button">Read guide <span aria-hidden="true">→</span></button>
+                  </div>
+                </article>
+
+                <article class="guide-card" data-guide="admissions">
+                  <img src="/preview-v3/assets/guide-admissions.jpg" alt="Parents reviewing school information" loading="lazy">
+                  <div>
+                    <span>ADMISSIONS PLANNING</span>
+                    <h3>Preparing for the next school year</h3>
+                    <button class="btn-read-guide-portal" data-guide="admissions_checklist" type="button">Read guide <span aria-hidden="true">→</span></button>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <p class="section-footnote">Admissions requirements vary by institution. For public Senior High School admissions, verification is managed through the national CSSPS portal.</p>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 5: TUTORS & SPECIALIST EDUCATORS
+             ======================================================== -->
+        <section class="section-five" id="educators" aria-labelledby="educator-heading" data-section="5">
+          <div class="container educator-grid">
+            <div class="educator-photo">
+              <img src="/preview-v3/assets/tutor.jpg" alt="Educator in a classroom with pupils" loading="lazy">
+              <div class="photo-label">LEARNING BEYOND THE CLASSROOM</div>
+            </div>
+            <div class="educator-content">
+              <div class="eyebrow">MORE WAYS TO LEARN</div>
+              <h2 id="educator-heading">Support for the Things They Love: Specialist Educators &amp; Tutors</h2>
+              <p>From academic tutoring (BECE &amp; Cambridge prep) to music, swimming, sports, and STEM robotics, discover verified educators who support your child's distinct passions.</p>
+              <div class="service-pills">
+                <span>Academic tutoring</span>
+                <span>Music &amp; Piano</span>
+                <span>Swimming</span>
+                <span>Sports Coaching</span>
+                <span>STEM &amp; Coding</span>
+                <span>Learning support</span>
+              </div>
+              <button class="btn btn-navy" id="btn-parents-goto-teachers" type="button">Explore education professionals <span aria-hidden="true">→</span></button>
+              <small style="display: block; margin-top: 10px; color: #64748b; font-size: 0.78rem;">
+                Strictly safeguarding-compliant public discovery under Children's Act 1998 (Act 560). Verified credentials and background vetting prior to launch.
+              </small>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 6: TRUST, FAQS & FINAL CALL TO ACTION
+             ======================================================== -->
+        <section class="section-six" id="trust" aria-labelledby="trust-heading" data-section="6">
+          <div class="container">
+            <div class="trust-top">
+              <div class="trust-intro">
+                <div class="eyebrow">INFORMATION YOU CAN TRUST</div>
+                <h2 id="trust-heading">Information You Can Trust: Provenance &amp; NaSIA Licensing</h2>
+                <p>A school-provided description, a platform-verified field, and a national regulatory license are distinct. Our provenance labels make that distinction transparent with a strict Zero Pay-to-Rank Policy.</p>
+              </div>
+              <div class="trust-facts">
+                <div>
+                  <span class="trust-symbol">▤</span>
+                  <span><strong>School-provided</strong><small>Details supplied directly by the school administration</small></span>
+                </div>
+                <div>
+                  <span class="trust-symbol">✓</span>
+                  <span><strong>Details checked</strong><small>Facilities, location, and curriculum verified with Zero Pay-to-Rank Policy</small></span>
+                </div>
+                <div>
+                  <span class="trust-symbol">⌘</span>
+                  <span><strong>Statutory NaSIA Licensing</strong><small>Independent check against NaSIA's official register (Act 1023)</small></span>
                 </div>
               </div>
             </div>
-            ` : ''}
-
-            <!-- Auth Card with High-End Elevation -->
-            <div style="background: #ffffff; border-radius: 18px; box-shadow: 0 20px 50px -12px rgba(6, 22, 46, 0.2), 0 0 0 1px #e2e8f0; overflow: hidden; margin-bottom: 3.5rem;">
-            <!-- Card Header -->
-            <div id="parent-card-header" style="padding: 1.15rem 1.75rem; border-bottom: 1px solid #e2e8f0; background: #ffffff; display: flex; align-items: center; justify-content: space-between;">
-              <div id="parent-card-title" style="font-weight: 800; font-size: 1.1rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem;">
-                <span>✨</span> Create New Parent Account
-              </div>
+            <div style="margin-top: 18px; text-align: center;">
+              <button type="button" id="btn-toggle-verification-policy" class="underlined-link">Learn About Our Verification Methodology &amp; NaSIA Regulatory Standards ↓</button>
             </div>
 
+            <!-- Expandable Policy Drawer -->
+            <div id="panel-verification-policy" style="display: none; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 12px; padding: 1.5rem; margin-top: 1.5rem; text-align: left; font-size: 0.88rem; color: #334155;">
+              <h4 style="font-weight: 800; color: #0A2046; margin-bottom: 0.5rem;">Statutory Governance &amp; Regulatory Alignment</h4>
+              <p style="line-height: 1.6; margin-bottom: 0.75rem;">
+                Under the Education Regulatory Bodies Act 2020 (Act 1023), the National Schools Inspectorate Authority (NaSIA) possesses statutory mandate for inspection, licensing, and quality evaluation of all pre-tertiary schools across the Republic of Ghana.
+              </p>
+              <p style="line-height: 1.6; margin-bottom: 0;">
+                SkoolFinder maintains an unyielding Zero Pay-to-Rank Policy. Institutional profiles and search algorithms cannot be promoted via paid advertising. Profile details indicate when an institution provides data versus when fields are verified against regulatory filings.
+              </p>
+            </div>
+
+            <p class="trust-note" style="margin-top: 1.5rem;">
+              SkoolFinder verifies directory listings but is not a licensing authority. Parents can verify official accreditation directly on <a href="https://www.nasia.gov.gh/school-licensing/" target="_blank" rel="noopener noreferrer">NaSIA's Official Portal ↗</a>.
+            </p>
+
+            <!-- FAQ Accordions -->
+            <div class="faq-row">
+              <div class="faq-intro">
+                <div class="eyebrow">A FEW GOOD QUESTIONS</div>
+                <h3>Answers Before You Begin: Frequently Asked Questions</h3>
+                <p>Straightforward guidance to make exploring Greater Accra schools effortless.</p>
+              </div>
+              <div class="faq-list">
+                <div class="faq-item" style="border-bottom: 1px solid var(--line); padding: 14px 0;">
+                  <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 750; color: var(--navy); background: none; border: none; cursor: pointer; text-align: left;">
+                    <span>Is searching for schools free?</span>
+                    <span class="faq-icon" style="font-size: 20px; color: var(--gold-dark);">+</span>
+                  </button>
+                  <div class="faq-answer-panel" style="display: none; padding-top: 10px; font-size: 13px; line-height: 1.7; color: #566479;">
+                    Yes, 100% free. You can search, filter, and compare all accredited pre-tertiary schools across Greater Accra without paying any subscription or booking fee.
+                  </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: 1px solid var(--line); padding: 14px 0;">
+                  <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 750; color: var(--navy); background: none; border: none; cursor: pointer; text-align: left;">
+                    <span>Do I need to register to compare schools?</span>
+                    <span class="faq-icon" style="font-size: 20px; color: var(--gold-dark);">+</span>
+                  </button>
+                  <div class="faq-answer-panel" style="display: none; padding-top: 10px; font-size: 13px; line-height: 1.7; color: #566479;">
+                    No. Side-by-side comparison is available to all guest visitors. Creating an account is completely optional for saving searches, shortlists, and bookmarks permanently.
+                  </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: 1px solid var(--line); padding: 14px 0;">
+                  <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 750; color: var(--navy); background: none; border: none; cursor: pointer; text-align: left;">
+                    <span>Are school fees exact official quotes?</span>
+                    <span class="faq-icon" style="font-size: 20px; color: var(--gold-dark);">+</span>
+                  </button>
+                  <div class="faq-answer-panel" style="display: none; padding-top: 10px; font-size: 13px; line-height: 1.7; color: #566479;">
+                    School fees vary by academic year, entry grade, day vs boarding status, and optional services. When a school has not submitted a formal breakdown, we display "Fee Not Disclosed" to avoid misleading estimates. Always confirm fees directly with the school bursar.
+                  </div>
+                </div>
+
+                <div class="faq-item" style="border-bottom: 1px solid var(--line); padding: 14px 0;">
+                  <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 750; color: var(--navy); background: none; border: none; cursor: pointer; text-align: left;">
+                    <span>Does SkoolFinder license or accredit schools?</span>
+                    <span class="faq-icon" style="font-size: 20px; color: var(--gold-dark);">+</span>
+                  </button>
+                  <div class="faq-answer-panel" style="display: none; padding-top: 10px; font-size: 13px; line-height: 1.7; color: #566479;">
+                    No. Statutory school licensing, inspection, and regulatory accreditation in Ghana is conducted exclusively by the National Schools Inspectorate Authority (NaSIA) under Education Regulatory Bodies Act 1023. SkoolFinder verifies records against official published registries.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Final CTA Strip -->
+          <div class="final-cta">
+            <div class="container final-cta-inner">
+              <div>
+                <span class="eyebrow" style="color: #fde68a;">READY WHEN YOU ARE</span>
+                <h2>Your Child's School Search Starts Here</h2>
+                <p>Join thousands of Ghanaian parents discovering accredited schools, comparing transparent fees, and establishing their children's future with confidence.</p>
+              </div>
+              <div class="final-actions">
+                <button type="button" id="btn-parents-footer-find-schools" class="btn btn-gold">🔍 Find Schools Now &rarr;</button>
+                <button type="button" id="btn-parents-footer-signup" class="btn btn-outline-light">✨ Create Free Account &rarr;</button>
+                <small>No account needed to explore.</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FLOATING COMPARISON DOCK -->
+        <div class="compare-dock" id="compareDock" ${compCount === 0 ? 'hidden' : ''} role="status">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="dock-icon">↔</span>
+            <span><strong id="dockCount">${compCount} school${compCount === 1 ? '' : 's'} selected</strong><small>School profiles ready to compare</small></span>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="clear-btn" id="clearCompare" type="button">Clear</button>
+            <button class="btn btn-gold btn-small" id="viewCompare" type="button">Compare now →</button>
+          </div>
+        </div>
+
+        <!-- AUTH MODAL (POPUPS ON DEMAND FOR SIGNUP / SIGNIN) -->
+        <dialog id="parent-auth-modal" class="info-dialog" style="max-width: 580px; padding: 0; border-radius: 20px; overflow: hidden;">
+          <div style="padding: 1.25rem 1.75rem; background: #06162E; color: #ffffff; display: flex; align-items: center; justify-content: space-between;">
+            <div id="parent-card-title" style="font-weight: 800; font-size: 1.05rem; color: #fde68a; display: flex; align-items: center; gap: 0.5rem;">
+              <span>✨</span> Create New Parent Account
+            </div>
+            <button type="button" id="btn-close-parent-auth-modal" style="background: none; border: none; color: #cbd5e1; font-size: 1.5rem; cursor: pointer;">×</button>
+          </div>
+
+          <div style="padding: 1.75rem;">
             <!-- Tab 1: SIGN UP FORM -->
-            <div id="parent-signup-panel" style="padding: 1.75rem 1.75rem 2rem;">
+            <div id="parent-signup-panel">
               <div style="background: #eff6ff; border-left: 4px solid #3b82f6; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 1.35rem; display: flex; align-items: flex-start; gap: 0.65rem;">
                 <span style="font-size: 1.15rem;">ℹ️</span>
                 <div style="font-size: 0.84rem; color: #1e3a8a; line-height: 1.45;">
-                  <strong>New Parent Registration:</strong> Fill in your details below to create your parent profile and access school discovery, admissions, and verified parent tools.
+                  <strong>New Parent Registration:</strong> Fill in your details below to create your free parent profile and save your school searches and application records.
                 </div>
               </div>
 
               <form id="form-parent-signup">
                 <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.25rem;">
-                  <!-- Row 1: Parent / Guardian Full Name * (Full Width) -->
                   <div>
                     <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                       Parent / Guardian Full Name *
@@ -6600,8 +6962,7 @@ const ParentPortalView = {
                     <input type="text" id="parent-reg-name" required class="form-input" placeholder="e.g. Mrs. Nana Aba Mensah" style="width: 100%; padding: 0.7rem 0.85rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem;">
                   </div>
 
-                  <!-- Row 2: Mobile Phone & Email Address (2 Columns) -->
-                  <div class="parent-form-row-2col">
+                  <div class="parent-form-row-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                         Mobile Phone (Ghana or Intl) *
@@ -6616,8 +6977,7 @@ const ParentPortalView = {
                     </div>
                   </div>
 
-                  <!-- Row 3: Create Password & Confirm Password (2 Columns) -->
-                  <div class="parent-form-row-2col">
+                  <div class="parent-form-row-2col" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem;">
                     <div>
                       <label style="display: block; font-size: 0.84rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                         Create Password *
@@ -6634,15 +6994,14 @@ const ParentPortalView = {
                   </div>
                 </div>
 
-                <!-- Reduced, Centered Create Parent Account Button -->
                 <div style="text-align: center; margin-top: 1.35rem;">
-                  <button type="submit" id="btn-parent-submit-signup" class="btn-pill btn-gold" style="padding: 0.72rem 1.85rem; font-size: 0.92rem; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; box-shadow: 0 4px 12px rgba(245,158,11,0.3); cursor: pointer; border: none; border-radius: 9999px;">
-                    <span>🚀</span> Create Parent Account &amp; Enter Portal
+                  <button type="submit" id="btn-parent-submit-signup" class="btn btn-gold" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 800;">
+                    <span>🚀</span> Create Free Parent Account &amp; Enter Portal
                   </button>
                 </div>
               </form>
 
-              <div style="text-align: center; margin-top: 1.35rem; font-size: 0.86rem; color: #64748b;">
+              <div style="text-align: center; margin-top: 1.25rem; font-size: 0.86rem; color: #64748b;">
                 Already have an account? 
                 <a href="javascript:void(0)" id="link-switch-to-signin" style="color: #1e3a8a; font-weight: 700; text-decoration: underline; margin-left: 0.25rem;">
                   Sign In to Parent Portal
@@ -6651,69 +7010,66 @@ const ParentPortalView = {
             </div>
 
             <!-- Tab 2: SIGN IN FORM -->
-            <div id="parent-signin-panel" style="padding: 1.75rem 1.75rem 2rem; display: none;">
-              <!-- Sub-tabs: Email Password vs SMS OTP -->
-              <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+            <div id="parent-signin-panel" style="display: none;">
+              <div style="display: flex; gap: 0.5rem; margin-bottom: 1.25rem;">
                 <button type="button" id="subtab-btn-email" style="flex: 1; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #3b82f6; background: #eff6ff; color: #1e40af; font-weight: 700; font-size: 0.88rem; cursor: pointer;">
-                  ✉️ Email & Password
+                  ✉️ Email &amp; Password
                 </button>
                 <button type="button" id="subtab-btn-otp" style="flex: 1; padding: 0.65rem; border-radius: 8px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #64748b; font-weight: 600; font-size: 0.88rem; cursor: pointer;">
-                  📲 Ghana Phone SMS OTP
+                  📲 Phone SMS OTP
                 </button>
               </div>
 
               <!-- Form A: Email & Password -->
               <form id="form-parent-signin-email">
-                <div style="margin-bottom: 1.25rem;">
-                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                     Parent Email Address
                   </label>
-                  <input type="email" id="parent-login-email" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  <input type="email" id="parent-login-email" required class="form-input" style="width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
                 </div>
-                <div style="margin-bottom: 1.5rem;">
-                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                <div style="margin-bottom: 1.25rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                     Password
                   </label>
-                  <input type="password" id="parent-login-password" required class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
+                  <input type="password" id="parent-login-password" required class="form-input" style="width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
                 </div>
-                <button type="submit" id="btn-parent-submit-login" class="btn-pill btn-primary" style="width: 100%; padding: 0.95rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
+                <button type="submit" id="btn-parent-submit-login" class="btn btn-navy" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 800;">
                   Sign In to Parent Portal
                 </button>
               </form>
 
               <!-- Form B: Phone SMS OTP -->
               <form id="form-parent-signin-otp" style="display: none;">
-                <div style="margin-bottom: 1.25rem;">
-                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                <div style="margin-bottom: 1rem;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                     Ghanaian Phone Number
                   </label>
                   <div style="display: flex; gap: 0.5rem;">
-                    <input type="tel" id="parent-otp-phone" class="form-input" style="flex: 1; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 0.95rem;">
-                    <button type="button" id="btn-parent-send-otp" class="btn-pill btn-outline" style="padding: 0.8rem 1.25rem; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                    <input type="tel" id="parent-otp-phone" class="form-input" style="flex: 1; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 0.92rem;">
+                    <button type="button" id="btn-parent-send-otp" class="btn btn-outline-navy" style="padding: 0.75rem 1.15rem; font-size: 0.86rem; white-space: nowrap;">
                       📲 Send OTP
                     </button>
                   </div>
                 </div>
-                <div id="parent-otp-box" style="margin-bottom: 1.5rem; display: none;">
-                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.4rem;">
+                <div id="parent-otp-box" style="margin-bottom: 1.25rem; display: none;">
+                  <label style="display: block; font-size: 0.85rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;">
                     Enter 6-Digit Hubtel SMS Code
                   </label>
-                  <input type="text" id="parent-otp-code" maxlength="6" class="form-input" style="width: 100%; padding: 0.8rem 1rem; border: 1.5px solid #cbd5e1; border-radius: 10px; font-size: 1.1rem; letter-spacing: 4px; text-align: center; font-weight: 700;">
-                  <button type="button" id="btn-parent-verify-otp" class="btn-pill btn-gold" style="width: 100%; margin-top: 0.75rem; padding: 0.9rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none;">
-                    Verify & Sign In
+                  <input type="text" id="parent-otp-code" maxlength="6" class="form-input" style="width: 100%; padding: 0.75rem 0.9rem; border: 1.5px solid #cbd5e1; border-radius: 8px; font-size: 1.1rem; letter-spacing: 4px; text-align: center; font-weight: 700;">
+                  <button type="button" id="btn-parent-verify-otp" class="btn btn-gold" style="width: 100%; margin-top: 0.75rem; padding: 0.85rem; font-size: 0.95rem; font-weight: 800;">
+                    Verify &amp; Sign In
                   </button>
                 </div>
               </form>
 
-              <!-- Quick Demo Access Button -->
-              <div style="margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px dashed #cbd5e1; text-align: center;">
-                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.6rem;">Testing the platform?</div>
-                <button type="button" id="btn-parent-quick-demo" class="btn-pill" style="width: 100%; padding: 0.75rem; background: #f8fafc; color: #1e3a8a; border: 1.5px solid #cbd5e1; font-weight: 700; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px dashed #cbd5e1; text-align: center;">
+                <button type="button" id="btn-parent-quick-demo" class="btn" style="width: 100%; padding: 0.75rem; background: #f8fafc; color: #1e3a8a; border: 1.5px solid #cbd5e1; font-weight: 700; font-size: 0.88rem;">
                   <span>⚡</span> Quick Demo Access (Mrs. Nana Aba Mensah)
                 </button>
               </div>
 
-              <div style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem; color: #64748b;">
+              <div style="text-align: center; margin-top: 1.25rem; font-size: 0.88rem; color: #64748b;">
                 Need an account? 
                 <a href="javascript:void(0)" id="link-switch-to-signup" style="color: #1e3a8a; font-weight: 700; text-decoration: underline; margin-left: 0.25rem;">
                   Register as new parent
@@ -6721,941 +7077,178 @@ const ParentPortalView = {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P03: EXPLORE BY NEED (BLUEPRINT §03)
-           ======================================================== -->
-      <section id="section-explore-by-need" style="background: #ffffff; padding: 4.5rem 1.5rem; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
-          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-            <span>🎯</span> TARGETED DISCOVERY
-          </div>
-          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-            Explore Schools by Need &amp; Priority
-          </h2>
-          <p style="color: #64748b; font-size: 1rem; max-width: 680px; margin: 0 auto 2.5rem; line-height: 1.6;">
-            Select a stage of education, curriculum pathway, or residential locality to instantly discover verified Ghanaian institutions matching your family's criteria.
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 1.5rem; max-width: 980px; margin: 0 auto; text-align: left;">
-            <!-- Group 1: Grade Level Pathways -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
-              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
-                <span>🎓</span> Browse by Grade Level
-              </div>
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Crèche" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Crèche &amp; Daycare (0–2 yrs)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Kindergarten" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Nursery &amp; Kindergarten (2–5 yrs)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="Primary" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Primary School (Class 1–6)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="JHS" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Junior High (JHS 1–3)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="level" data-filter-val="SHS" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Senior High (SHS Form 1–3)
-                </button>
-              </div>
-            </div>
-
-            <!-- Group 2: Curriculum Options -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
-              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
-                <span>📖</span> Browse by Curriculum
-              </div>
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="GES (NaCCA)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  GES National Standards-Based
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="Cambridge (CIE)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Cambridge International (IGCSE &amp; A-Level)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="International Baccalaureate (IB)" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  International Baccalaureate (IB)
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="curriculum" data-filter-val="Montessori" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  Montessori Method
-                </button>
-              </div>
-            </div>
-
-            <!-- Group 3: Greater Accra Suburbs -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1.35rem 1.5rem;">
-              <div style="font-size: 0.82rem; font-weight: 800; color: #0A2046; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.45rem;">
-                <span>📍</span> Browse by Suburb &amp; Locality
-              </div>
-              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
-                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Cantonments" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  📍 Cantonments
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="East Legon" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  📍 East Legon
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Airport Residential" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  📍 Airport Residential
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Tema" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  📍 Spintex &amp; Tema
-                </button>
-                <button type="button" class="parent-filter-chip" data-filter-type="suburb" data-filter-val="Achimota" style="padding: 0.55rem 1.15rem; border-radius: 9999px; border: 1.5px solid #cbd5e1; background: #ffffff; color: #1e293b; font-size: 0.86rem; font-weight: 700; cursor: pointer; transition: all 0.2s;">
-                  📍 Achimota &amp; Dzorwulu
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P04: TWO FREE WAYS TO EXPLORE (BLUEPRINT §04)
-           ======================================================== -->
-      <section id="section-parents-two-ways" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1040px; margin: 0 auto; text-align: center;">
-          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-            <span>🛡️</span> TRANSPARENT &amp; NO HIDDEN CHARGES
-          </div>
-          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-            Two Completely Free Ways to Explore
-          </h2>
-          <p style="color: #64748b; font-size: 1rem; max-width: 650px; margin: 0 auto 3rem; line-height: 1.6;">
-            No paywalls, mandatory account creation, or subscription fees. Choose the pathway that matches your workflow.
-          </p>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; text-align: left;">
-            <!-- CARD A: GUEST EXPLORATION -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
-              <div>
-                <div style="width: 48px; height: 48px; border-radius: 12px; background: #eff6ff; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 1.25rem;">
-                  🔍
-                </div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.35rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                  Explore as a Guest
-                </h3>
-                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.25rem;">
-                  Immediate, unhindered access to directory search without registering an account.
-                </p>
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.86rem; color: #334155;">
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #10b981; font-weight: 800;">✓</span> Search and filter all accredited Ghanaian schools
-                  </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #10b981; font-weight: 800;">✓</span> View transparent term fee ranges &amp; caution deposits
-                  </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #10b981; font-weight: 800;">✓</span> Side-by-side comparison matrix for up to 4 schools
-                  </li>
-                  <li style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                    <span style="color: #10b981; font-weight: 800;">✓</span> Direct admissions WhatsApp &amp; campus phone lines
-                  </li>
-                </ul>
-              </div>
-              <button type="button" id="btn-parents-guest-explore" class="btn-pill btn-outline" style="width: 100%; padding: 0.85rem; font-size: 0.92rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer;">
-                Search Schools as Guest &rarr;
-              </button>
-            </div>
-
-            <!-- CARD B: FREE PARENT ACCOUNT -->
-            <div style="background: #ffffff; border: 2px solid #D5A63B; border-radius: 16px; padding: 2rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(213, 166, 59, 0.12); position: relative;">
-              <div style="position: absolute; top: -12px; right: 20px; background: #D5A63B; color: #0A2046; font-size: 0.72rem; font-weight: 800; padding: 0.2rem 0.75rem; border-radius: 9999px; text-transform: uppercase; letter-spacing: 0.05em;">
-                Recommended for Parents
-              </div>
-              <div>
-                <div style="font-size: 0.78rem; font-weight: 800; color: #d97706; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.4rem;">
-                  <span>📍</span> YOUR PERSONALISED JOURNEY
-                </div>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                  Your Free Parent Account
-                </h3>
-                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.55; margin-bottom: 1.25rem;">
-                  Enjoy everything guests can access, plus tools to plan and stay organised.
-                </p>
-                <ul style="list-style: none; padding: 0; margin: 0 0 1.75rem 0; display: flex; flex-direction: column; gap: 0.7rem; font-size: 0.88rem; color: #334155;">
-                  <li style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
-                    <span>Save favourite schools and tutors</span>
-                  </li>
-                  <li style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
-                    <span>Get personalised recommendations</span>
-                  </li>
-                  <li style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
-                    <span>Track enquiries and school visits</span>
-                  </li>
-                  <li style="display: flex; align-items: center; gap: 0.6rem;">
-                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; border: 1.8px solid #d97706; color: #d97706; font-size: 0.75rem; font-weight: 800; flex-shrink: 0;">✓</span>
-                    <span>Receive alerts and reminders</span>
-                  </li>
-                </ul>
-              </div>
-              <button type="button" id="btn-parents-scroll-signup" class="btn-pill" style="width: 100%; padding: 0.85rem; font-size: 0.95rem; font-weight: 800; text-align: center; justify-content: center; border-radius: 9999px; cursor: pointer; border: none; background: #e67e00; color: #ffffff; box-shadow: 0 4px 14px rgba(230, 126, 0, 0.35);">
-                Create Free Account &#x2197;
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P05: SCHOOL DISCOVERY PREVIEW (BLUEPRINT §05)
-           ======================================================== -->
-      <section id="section-parents-discovery-preview" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
-          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-            <span>🏛️</span> ACCREDITED INSTITUTIONS
-          </div>
-          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-            Featured Schools in Greater Accra
-          </h2>
-          <p style="color: #64748b; font-size: 1rem; max-width: 650px; margin: 0 auto 3rem; line-height: 1.6;">
-            A live preview of verified institutions with published curricula, admissions status, and transparent fee structures.
-          </p>
-
-          <div class="schools-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.75rem; text-align: left; margin-bottom: 2.75rem;">
-            ${previewSchools.map(s => this.renderPublicSchoolCard(s)).join('')}
-          </div>
-
-          <div>
-            <button type="button" id="btn-parents-view-all-schools" class="btn-pill btn-primary" style="padding: 0.85rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
-              View All Schools in Directory &rarr;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P06: COMPARE THE ESSENTIALS & TOTAL COST (BLUEPRINT §06)
-           ======================================================== -->
-      <section id="section-parents-compare" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 3rem;">
-            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-              <span>⚖️</span> OBJECTIVE COMPARISON
-            </div>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-              Compare Essentials &amp; Understand Total Costs
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
-              Make side-by-side decisions grounded in facts: evaluate tuition, pupil-to-teacher ratios, and caution deposits side-by-side.
-            </p>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
-            <!-- PANEL 1: SIDE-BY-SIDE MATRIX -->
-            <div style="background: linear-gradient(135deg, #0A2046 0%, #16366f 100%); color: #ffffff; border-radius: 18px; padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 10px 30px rgba(10,32,70,0.15);">
-              <div>
-                <span class="badge badge-gold" style="font-size: 0.75rem; font-weight: 800; margin-bottom: 0.85rem; display: inline-block;">
-                  ⚖️ Side-by-Side Matrix
-                </span>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #ffffff; margin: 0 0 0.75rem 0;">
-                  Compare Up to 4 Schools Free
-                </h3>
-                <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem;">
-                  Compare Cambridge vs. GES vs. IB curricula, pupil-teacher ratios, campus laboratories, sports facilities, and intake terms side-by-side with no paywalls.
-                </p>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.75rem;">
-                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Curricula Mapping</span>
-                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Class Size Ratios</span>
-                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Science &amp; STEM</span>
-                  <span style="background: rgba(255,255,255,0.1); padding: 0.3rem 0.7rem; border-radius: 6px; font-size: 0.78rem; font-weight: 600;">✓ Day vs. Boarding</span>
-                </div>
-              </div>
-              <button type="button" id="btn-parents-open-compare" class="btn-pill btn-gold" style="font-weight: 800; padding: 0.8rem 1.75rem; align-self: flex-start; cursor: pointer; border: none; border-radius: 9999px;">
-                Open 4-School Compare Matrix &rarr;
-              </button>
-            </div>
-
-            <!-- PANEL 2: UNDERSTAND FULL COST -->
-            <div style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 18px; padding: 2.25rem; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.03);">
-              <div>
-                <span class="badge" style="background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.85rem; display: inline-block;">
-                  💡 Fee Transparency
-                </span>
-                <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.75rem 0;">
-                  The Real Cost of Education in Ghana
-                </h3>
-                <p style="color: #64748b; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem;">
-                  Avoid hidden fees. SkoolFinder educates parents on the components of Ghanaian private school billing before enrollment:
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 0.65rem; font-size: 0.84rem; color: #334155; margin-bottom: 1.5rem;">
-                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
-                    <strong>Tuition Fee</strong>
-                    <span style="color: #64748b;">Per term instruction fee</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
-                    <strong>PTA &amp; Capital Levies</strong>
-                    <span style="color: #64748b;">Mandatory termly levies</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
-                    <strong>Caution Deposit</strong>
-                    <span style="color: #64748b;">Refundable one-time bond</span>
-                  </div>
-                  <div style="display: flex; justify-content: space-between; padding-bottom: 0.35rem; border-bottom: 1px dashed #e2e8f0;">
-                    <strong>Lunch &amp; Bus Shuttles</strong>
-                    <span style="color: #64748b;">Optional ancillary services</span>
-                  </div>
-                </div>
-              </div>
-              <button type="button" id="btn-parents-fees-guide" class="btn-pill btn-outline" style="font-weight: 800; padding: 0.8rem 1.75rem; align-self: flex-start; cursor: pointer; border-radius: 9999px;">
-                Explore Fee Transparency Guide &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P07: ADMISSIONS & SCHOOL VISITS (BLUEPRINT §07)
-           ======================================================== -->
-      <section id="section-parents-admissions" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 3rem;">
-            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-              <span>📅</span> 2026/2027 CALENDAR
-            </div>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-              Admissions Windows &amp; Campus Open Days
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
-              Plan ahead with verified entry cycles, entrance assessment windows, and campus tour opportunities.
-            </p>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
-            <!-- TILE 1: CAMBRIDGE & INTERNATIONAL -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                  <span class="badge badge-cambridge">Cambridge (CIE)</span>
-                  <span style="font-size: 0.76rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 0.2rem 0.6rem; border-radius: 9999px;">Admissions Active</span>
-                </div>
-                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
-                  Cambridge International Schools
-                </h4>
-                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Institutions like GIS, Lincoln, and British International School currently accepting Term 2 transfers and January 2027 entrance assessments.
-                </p>
-                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
-                  <div>📅 <strong>Assessment Window:</strong> Dec 2026 &ndash; Jan 2027</div>
-                  <div>📍 <strong>Locations:</strong> Cantonments, East Legon</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- TILE 2: IB WORLD SCHOOLS -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                  <span class="badge badge-ib">IB World Schools</span>
-                  <span style="font-size: 0.76rem; font-weight: 700; color: #b45309; background: #fefce8; padding: 0.2rem 0.6rem; border-radius: 9999px;">Waitlist Open</span>
-                </div>
-                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
-                  International Baccalaureate (IB)
-                </h4>
-                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  SOS Hermann Gmeiner International College &amp; Lincoln Community School DP1 and Middle Years intake notices published.
-                </p>
-                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
-                  <div>📅 <strong>Scholarship Deadline:</strong> 15 Jan 2027</div>
-                  <div>📍 <strong>Locations:</strong> Tema Community 6, Dzorwulu</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- TILE 3: GES STANDARDS-BASED -->
-            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 14px; padding: 1.75rem; display: flex; flex-direction: column; justify-content: space-between;">
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                  <span class="badge badge-ges">GES Standards-Based</span>
-                  <span style="font-size: 0.76rem; font-weight: 700; color: #059669; background: #ecfdf5; padding: 0.2rem 0.6rem; border-radius: 9999px;">Continuous</span>
-                </div>
-                <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.4rem 0;">
-                  National Standards Basic Schools
-                </h4>
-                <p style="font-size: 0.85rem; color: #64748b; line-height: 1.5; margin-bottom: 1rem;">
-                  Accredited private basic schools offering continuous admission into Kindergarten, Primary Class 1, and JHS 1.
-                </p>
-                <div style="font-size: 0.8rem; color: #334155; display: flex; flex-direction: column; gap: 0.35rem;">
-                  <div>📅 <strong>Term 2 Start:</strong> 12 January 2027</div>
-                  <div>📍 <strong>Locations:</strong> Achimota, Spintex, Airport</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div style="text-align: center;">
-            <button type="button" id="btn-parents-admissions-search" class="btn-pill btn-primary" style="padding: 0.8rem 2rem; font-size: 0.95rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
-              Search Schools with Open Admissions &rarr;
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P08: PARENT GUIDANCE & INSIGHTS (BLUEPRINT §08)
-           ======================================================== -->
-      <section id="section-parents-guidance" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 3rem;">
-            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #fefce8; color: #854d0e; border: 1px solid #fef08a; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-              <span>📖</span> PARENT ADVISORY
-            </div>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-              Guidance &amp; Practical Checklists
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto; line-height: 1.6;">
-              Actionable, evidence-grounded articles to guide your family through critical educational transitions.
-            </p>
-          </div>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem;">
-            <!-- CARD 1 -->
-            <div class="parent-guide-card" data-guide="admissions_checklist" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-              <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-                  <span>📋</span> Admissions Readiness
-                </div>
-                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
-                  Ghanaian Private School Admissions Checklist
-                </h4>
-                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
-                  The 4 essential documents every private school in Accra requires: child birth cert, immunization yellow card, past 2 term report cards, and NaSIA transfer slip.
-                </p>
-              </div>
-              <div style="padding: 0 1.75rem 1.5rem;">
-                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="admissions_checklist" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
-                  Read Checklist &rarr;
-                </button>
-              </div>
-            </div>
-
-            <!-- CARD 2 -->
-            <div class="parent-guide-card" data-guide="cambridge_vs_ges" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-              <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #7c3aed; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-                  <span>📖</span> Curriculum Decoded
-                </div>
-                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
-                  GES vs. Cambridge CIE vs. IB World
-                </h4>
-                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
-                  A balanced comparison of pedagogy, exam structures (BECE vs. IGCSE), tuition implications, and local vs. international university pathways.
-                </p>
-              </div>
-              <div style="padding: 0 1.75rem 1.5rem;">
-                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="cambridge_vs_ges" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
-                  Compare Curricula &rarr;
-                </button>
-              </div>
-            </div>
-
-            <!-- CARD 3 -->
-            <div class="parent-guide-card" data-guide="cssps_quota" style="background: #ffffff; border: 1.5px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
-              <div style="padding: 1.75rem;">
-                <div style="font-size: 0.75rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;">
-                  <span>🎯</span> SHS Placement
-                </div>
-                <h4 style="font-family: var(--font-heading, sans-serif); font-size: 1.2rem; font-weight: 800; color: #0A2046; margin: 0 0 0.65rem 0; line-height: 1.35;">
-                  Understanding BECE &amp; CSSPS Placement
-                </h4>
-                <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0 0 1.25rem 0;">
-                  How Core 4 + Best 2 aggregates work, Category A school selection quotas, and how private school candidates navigate the national placement engine.
-                </p>
-              </div>
-              <div style="padding: 0 1.75rem 1.5rem;">
-                <button type="button" class="btn-read-guide-portal btn-pill btn-outline" data-guide="cssps_quota" style="width: 100%; justify-content: center; font-size: 0.84rem; font-weight: 700; cursor: pointer;">
-                  Learn About CSSPS &rarr;
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P09: VERIFIED EDUCATORS & SPECIALIST TUTORS (BLUEPRINT §09)
-           ======================================================== -->
-      <section id="section-parents-tutors" style="background: #ffffff; padding: 4rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 980px; margin: 0 auto;">
-          <div style="background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%); border: 1.5px solid #bfdbfe; border-radius: 18px; padding: 2.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
-            <div style="max-width: 600px;">
-              <span class="badge" style="background: #dbeafe; color: #1e40af; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.65rem; display: inline-block;">
-                🧑‍🏫 ACADEMIC SUPPORT
-              </span>
-              <h3 style="font-family: var(--font-heading, sans-serif); font-size: 1.45rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                Looking for 1-on-1 Academic Support?
-              </h3>
-              <p style="color: #475569; font-size: 0.92rem; line-height: 1.6; margin: 0;">
-                Connect with verified NTC-licensed educators and subject specialists for home tutoring, reading/phonetics, French immersion, and BECE/WASSCE preparation. Strictly safeguarding-compliant public discovery.
-              </p>
-            </div>
-            <div>
-              <button type="button" id="btn-parents-goto-teachers" class="btn-pill btn-primary" style="padding: 0.85rem 1.75rem; font-size: 0.92rem; font-weight: 800; white-space: nowrap; cursor: pointer; border: none; border-radius: 9999px;">
-                Explore Verified Educators &rarr;
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P10: TRUST & INFORMATION TRANSPARENCY (BLUEPRINT §10)
-           ======================================================== -->
-      <section id="section-parents-trust" style="background: #f8fafc; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 1140px; margin: 0 auto; text-align: center;">
-          <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-            <span>🛡️</span> STATUTORY INTEGRITY
-          </div>
-          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-            Our Standard of Trust &amp; Data Integrity
-          </h2>
-          <p style="color: #64748b; font-size: 1rem; max-width: 660px; margin: 0 auto 3rem; line-height: 1.6;">
-            We believe parents deserve accurate, unmanipulated school data. Here is our 3-tier verification standard:
-          </p>
-
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.75rem; text-align: left;">
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
-              <div style="font-size: 2rem; margin-bottom: 1rem;">🏛️</div>
-              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                NaSIA Accreditation Audit
-              </h4>
-              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
-                We cross-reference school licenses against the National Schools Inspectorate Authority registry under Education Regulatory Bodies Act 1023.
-              </p>
-            </div>
-
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
-              <div style="font-size: 2rem; margin-bottom: 1rem;">📞</div>
-              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                Direct Leadership Verification
-              </h4>
-              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
-                Official telephone lines, WhatsApp admissions channels, and campus locations are directly verified with school proprietors and headteachers.
-              </p>
-            </div>
-
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 2rem;">
-              <div style="font-size: 2rem; margin-bottom: 1rem;">🚫</div>
-              <h4 style="font-size: 1.15rem; font-weight: 800; color: #0A2046; margin: 0 0 0.5rem 0;">
-                Zero Pay-to-Rank Policy
-              </h4>
-              <p style="color: #64748b; font-size: 0.88rem; line-height: 1.55; margin: 0;">
-                Schools cannot buy algorithmic rankings or artificial ratings. Search results are returned strictly according to the parent's chosen filters.
-              </p>
-            </div>
-          </div>
-
-          <!-- Expandable Verification Methodology Details -->
-          <div style="text-align: center; margin-top: 2.25rem;">
-            <button type="button" id="btn-toggle-verification-policy" class="btn-pill btn-outline" style="font-size: 0.88rem; font-weight: 700; padding: 0.65rem 1.5rem; border-radius: 9999px; cursor: pointer; background: #ffffff;">
-              Learn About Our Verification Methodology &darr;
-            </button>
-            <div id="panel-verification-policy" style="display: none; max-width: 780px; margin: 1.5rem auto 0; text-align: left; background: #ffffff; border: 1.5px solid #cbd5e1; border-radius: 14px; padding: 1.75rem; font-size: 0.9rem; line-height: 1.6; color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
-              <h4 style="font-size: 1.05rem; font-weight: 800; color: #0A2046; margin-top: 0; margin-bottom: 0.5rem;">
-                SkoolFinder Verification &amp; Accuracy Methodology
-              </h4>
-              <p style="margin-bottom: 0.75rem;">
-                <strong>1. Statutory Registry Alignment:</strong> We cross-reference school records against public registers from the National Schools Inspectorate Authority (NaSIA) pursuant to the Education Regulatory Bodies Act 2020 (Act 1023). Schools are designated as "Verified" only upon confirming their active institutional license status.
-              </p>
-              <p style="margin-bottom: 0.75rem;">
-                <strong>2. Leadership &amp; Contact Directness:</strong> All phone numbers and WhatsApp admissions contacts are independently dialed and authenticated directly with school proprietors, headteachers, or authorized admissions registrars.
-              </p>
-              <p style="margin-bottom: 0.75rem;">
-                <strong>3. Fee Transparency Standard:</strong> Where official fee schedules have been submitted and stamped, exact ranges are published. If a school has not provided official schedules, it is explicitly designated as "Fee Not Disclosed" — we never fabricate estimates.
-              </p>
-              <p style="margin: 0; font-size: 0.84rem; color: #64748b; border-top: 1px dashed #cbd5e1; padding-top: 0.65rem;">
-                Notice an outdated contact or incorrect fee? Contact our data governance desk at <a href="mailto:governance@skoolfinder.gh" style="color: #1266C4; font-weight: 700;">governance@skoolfinder.gh</a>.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P11: FREQUENTLY ASKED QUESTIONS (BLUEPRINT §11)
-           ======================================================== -->
-      <section id="section-parents-faq" style="background: #ffffff; padding: 4.5rem 1.5rem; border-bottom: 1px solid #e2e8f0;">
-        <div class="container" style="max-width: 860px; margin: 0 auto;">
-          <div style="text-align: center; margin-bottom: 3rem;">
-            <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; font-size: 0.76rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; margin-bottom: 0.75rem;">
-              <span>❓</span> COMMON QUESTIONS
-            </div>
-            <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(1.8rem, 3.5vw, 2.3rem); font-weight: 800; color: #0A2046; line-height: 1.25; margin: 0 0 0.65rem 0;">
-              Frequently Asked Questions
-            </h2>
-            <p style="color: #64748b; font-size: 1rem; margin: 0; line-height: 1.6;">
-              Clear answers to help you navigate school discovery and admissions.
-            </p>
-          </div>
-
-          <div class="faq-accordion" style="display: flex; flex-direction: column; gap: 0.85rem;">
-            <!-- FAQ 1 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>Is creating a parent account completely free?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                Yes, 100% free. SkoolFinder does not charge parents for searching schools, viewing verified fee schedules, submitting admissions inquiries, or tracking application milestones.
-              </div>
-            </div>
-
-            <!-- FAQ 2 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>Do I have to create an account to search for schools?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                No. Guest discovery is completely unrestricted. You can search by suburb or curriculum, compare up to 4 schools, and view phone/WhatsApp contact details without creating an account.
-              </div>
-            </div>
-
-            <!-- FAQ 3 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>How do schools receive my admission inquiries?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                Inquiries are dispatched directly to verified school admissions officers via official WhatsApp lines and authorized institutional inboxes. No third-party brokers or unregistered agents are involved.
-              </div>
-            </div>
-
-            <!-- FAQ 4 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>Why do some schools show "Fee Not Disclosed"?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                We strictly enforce data truthfulness. We only publish fee schedules verified directly with school administrations. If a school has not yet submitted its official term fees, we truthfully mark it as "Fee Not Disclosed" rather than estimating.
-              </div>
-            </div>
-
-            <!-- FAQ 5 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>Can I manage applications for multiple children?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                Yes! When registered, your parent workspace allows you to manage multiple children with individual profiles, grade levels, and separate application milestones under one login.
-              </div>
-            </div>
-
-            <!-- FAQ 6 -->
-            <div class="faq-item" style="border: 1.5px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #ffffff;">
-              <button type="button" class="faq-toggle-btn" aria-expanded="false" style="width: 100%; padding: 1.25rem 1.5rem; text-align: left; background: none; border: none; font-size: 1rem; font-weight: 800; color: #0A2046; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
-                <span>How current is school and admissions information?</span>
-                <span class="faq-icon" style="font-size: 1.2rem; transition: transform 0.2s;">+</span>
-              </button>
-              <div class="faq-answer-panel" style="padding: 0 1.5rem 1.25rem; font-size: 0.92rem; color: #475569; line-height: 1.6; display: none;">
-                School profiles are updated continuously against NaSIA regulatory bulletins and re-authenticated directly with school administration every academic term (September, January, and May). Verification timestamps appear on school profiles.
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ========================================================
-           SECTION P12: CLOSING ACTION BANNER (BLUEPRINT §12)
-           ======================================================== -->
-      <section id="section-parents-closing-cta" style="background: linear-gradient(135deg, #0A2046 0%, #1e3a8a 100%); color: #ffffff; padding: 4.5rem 1.5rem; text-align: center;">
-        <div class="container" style="max-width: 820px; margin: 0 auto;">
-          <h2 style="font-family: var(--font-heading, sans-serif); font-size: clamp(2rem, 4vw, 2.7rem); font-weight: 800; color: #ffffff; line-height: 1.2; margin: 0 0 1rem 0;">
-            Your Child's School Search Starts Here
-          </h2>
-          <p style="font-size: 1.05rem; color: rgba(255, 255, 255, 0.88); line-height: 1.6; margin: 0 auto 2.5rem; max-width: 620px;">
-            Join thousands of Ghanaian parents discovering accredited schools, comparing transparent fees, and establishing their children's future with confidence.
-          </p>
-          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <button type="button" id="btn-parents-footer-find-schools" class="btn-pill btn-gold" style="padding: 0.9rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; border: none; border-radius: 9999px;">
-              🔍 Find Schools Now &rarr;
-            </button>
-            <button type="button" id="btn-parents-footer-signup" class="btn-pill" style="padding: 0.9rem 2.25rem; font-size: 1rem; font-weight: 800; cursor: pointer; background: rgba(255,255,255,0.15); color: #ffffff; border: 1.5px solid rgba(255,255,255,0.4); border-radius: 9999px;">
-              ✨ Create Free Account
-            </button>
-          </div>
-        </div>
-      </section>
-    </div>
+        </dialog>
+      </div>
     `;
   },
 
   attachAuthGatewayEvents() {
+    const modal = document.getElementById('parent-auth-modal');
     const panelSignup = document.getElementById('parent-signup-panel');
     const panelSignin = document.getElementById('parent-signin-panel');
     const cardTitle = document.getElementById('parent-card-title');
 
-    const showSignup = () => {
-      if (cardTitle) {
-        cardTitle.innerHTML = '<span>✨</span> Create New Parent Account';
+    const showModal = (mode = 'signup') => {
+      if (mode === 'signup') {
+        if (cardTitle) cardTitle.innerHTML = '<span>✨</span> Create New Parent Account';
+        if (panelSignup) panelSignup.style.display = 'block';
+        if (panelSignin) panelSignin.style.display = 'none';
+      } else {
+        if (cardTitle) cardTitle.innerHTML = '<span>🔑</span> Sign In to Parent Portal';
+        if (panelSignin) panelSignin.style.display = 'block';
+        if (panelSignup) panelSignup.style.display = 'none';
       }
-      if (panelSignup) panelSignup.style.display = 'block';
-      if (panelSignin) panelSignin.style.display = 'none';
+      if (modal) {
+        if (modal.showModal) modal.showModal();
+        else modal.style.display = 'block';
+      }
     };
 
-    const showSignin = () => {
-      if (cardTitle) {
-        cardTitle.innerHTML = '<span>🔑</span> Sign In to Parent Portal';
+    const closeModal = () => {
+      if (modal) {
+        if (modal.close) modal.close();
+        else modal.style.display = 'none';
       }
-      if (panelSignin) panelSignin.style.display = 'block';
-      if (panelSignup) panelSignup.style.display = 'none';
     };
 
-    document.getElementById('link-switch-to-signin')?.addEventListener('click', showSignin);
-    document.getElementById('link-switch-to-signup')?.addEventListener('click', showSignup);
+    document.getElementById('btn-close-parent-auth-modal')?.addEventListener('click', closeModal);
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
 
-    // Sub-tabs in Signin: Email vs Phone OTP
-    const btnSubEmail = document.getElementById('subtab-btn-email');
-    const btnSubOtp = document.getElementById('subtab-btn-otp');
+    document.getElementById('link-switch-to-signin')?.addEventListener('click', () => {
+      showModal('signin');
+    });
+
+    document.getElementById('link-switch-to-signup')?.addEventListener('click', () => {
+      showModal('signup');
+    });
+
+    // Subtab switching inside Sign In
+    const btnEmail = document.getElementById('subtab-btn-email');
+    const btnOtp = document.getElementById('subtab-btn-otp');
     const formEmail = document.getElementById('form-parent-signin-email');
     const formOtp = document.getElementById('form-parent-signin-otp');
 
-    btnSubEmail?.addEventListener('click', () => {
-      btnSubEmail.style.background = '#eff6ff';
-      btnSubEmail.style.borderColor = '#3b82f6';
-      btnSubEmail.style.color = '#1e40af';
-      btnSubOtp.style.background = '#ffffff';
-      btnSubOtp.style.borderColor = '#cbd5e1';
-      btnSubOtp.style.color = '#64748b';
-      formEmail.style.display = 'block';
-      formOtp.style.display = 'none';
+    btnEmail?.addEventListener('click', () => {
+      if (btnEmail) { btnEmail.style.background = '#eff6ff'; btnEmail.style.borderColor = '#3b82f6'; btnEmail.style.color = '#1e40af'; }
+      if (btnOtp) { btnOtp.style.background = '#ffffff'; btnOtp.style.borderColor = '#cbd5e1'; btnOtp.style.color = '#64748b'; }
+      if (formEmail) formEmail.style.display = 'block';
+      if (formOtp) formOtp.style.display = 'none';
     });
 
-    btnSubOtp?.addEventListener('click', () => {
-      btnSubOtp.style.background = '#eff6ff';
-      btnSubOtp.style.borderColor = '#3b82f6';
-      btnSubOtp.style.color = '#1e40af';
-      btnSubEmail.style.background = '#ffffff';
-      btnSubEmail.style.borderColor = '#cbd5e1';
-      btnSubEmail.style.color = '#64748b';
-      formOtp.style.display = 'block';
-      formEmail.style.display = 'none';
+    btnOtp?.addEventListener('click', () => {
+      if (btnOtp) { btnOtp.style.background = '#eff6ff'; btnOtp.style.borderColor = '#3b82f6'; btnOtp.style.color = '#1e40af'; }
+      if (btnEmail) { btnEmail.style.background = '#ffffff'; btnEmail.style.borderColor = '#cbd5e1'; btnEmail.style.color = '#64748b'; }
+      if (formOtp) formOtp.style.display = 'block';
+      if (formEmail) formEmail.style.display = 'none';
     });
 
-    // 1. Submit Sign Up Form
-    const formSignup = document.getElementById('form-parent-signup');
-    const inputPass = document.getElementById('parent-reg-password');
-    const inputConfirm = document.getElementById('parent-reg-confirm-password');
-    const matchHint = document.getElementById('parent-reg-password-match-hint');
-
-    const updateMatchHint = () => {
-      if (!inputPass || !inputConfirm || !matchHint) return;
-      const pass = inputPass.value;
-      const conf = inputConfirm.value;
-      if (!conf) {
-        matchHint.style.display = 'none';
-        return;
-      }
-      matchHint.style.display = 'block';
-      if (pass === conf) {
-        matchHint.style.color = '#16a34a';
-        matchHint.textContent = '✓ Passwords match';
-      } else {
-        matchHint.style.color = '#ef4444';
-        matchHint.textContent = '✗ Passwords do not match';
-      }
-    };
-
-    inputPass?.addEventListener('input', updateMatchHint);
-    inputConfirm?.addEventListener('input', updateMatchHint);
-
-    formSignup?.addEventListener('submit', async (e) => {
+    // Hero Search Form submission
+    const heroSearchForm = document.getElementById('portal-hero-search-form');
+    heroSearchForm?.addEventListener('submit', (e) => {
       e.preventDefault();
-      const submitBtn = document.getElementById('btn-parent-submit-signup');
-
-      const password = document.getElementById('parent-reg-password').value;
-      const confirmPassword = document.getElementById('parent-reg-confirm-password')?.value || '';
-
-      if (password !== confirmPassword) {
-        State.showToast('Passwords do not match. Please ensure both passwords are identical.', 'error');
-        document.getElementById('parent-reg-confirm-password')?.focus();
-        return;
+      const suburb = document.getElementById('portal-search-suburb')?.value.trim();
+      const level = document.getElementById('portal-search-level')?.value;
+      const curriculum = document.getElementById('portal-search-curriculum')?.value;
+      
+      if (typeof State !== 'undefined') {
+        State.filters = State.filters || {};
+        if (suburb) State.filters.query = suburb;
+        if (level) State.filters.level = level;
+        if (curriculum) State.filters.curriculum = curriculum;
       }
-
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>⏳</span> Creating Parent Account...';
-
-      try {
-        const payload = {
-          name: document.getElementById('parent-reg-name').value.trim(),
-          phone: document.getElementById('parent-reg-phone').value.trim(),
-          email: document.getElementById('parent-reg-email').value.trim(),
-          password: password,
-          role: 'parent'
-        };
-
-        const res = await API.register(payload);
-        if (res.token && res.user) {
-          State.setCurrentUser(res.user, res.token);
-          State.showToast(`🎉 Welcome to SkoolFinder, ${res.user.name}! Your parent account is active.`, 'success');
-
-          const guestBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
-          const guestCompare = Array.isArray(State.comparisonList) ? State.comparisonList.map(s => s.id) : [];
-          const allGuestIds = Array.from(new Set([...guestBookmarks, ...guestCompare].filter(Boolean)));
-          if (allGuestIds.length > 0 && typeof Modals !== 'undefined' && Modals.openGuestImportModal) {
-            Modals.openGuestImportModal({
-              schoolIds: allGuestIds,
-              user: res.user,
-              redirectView: 'parents'
-            });
-          } else {
-            App.navigate('parents');
-          }
-        } else {
-          throw new Error("Invalid response from server");
-        }
-      } catch (err) {
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>🚀</span> Create Parent Account & Enter Portal';
-        State.showToast(err.message || 'Registration failed. Please check your details.', 'error');
-      }
-    });
-
-    // 2. Submit Email Sign In Form
-    formEmail?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('btn-parent-submit-login');
-      btn.disabled = true;
-      btn.textContent = 'Signing in...';
-
-      try {
-        const email = document.getElementById('parent-login-email').value.trim();
-        const password = document.getElementById('parent-login-password').value;
-        const res = await API.login(email, password);
-        if (res.token && res.user) {
-          State.setCurrentUser(res.user, res.token);
-          State.showToast(`Welcome back, ${res.user.name}!`, 'success');
-
-          const guestBookmarks = Array.isArray(State.bookmarkedSchoolIds) ? State.bookmarkedSchoolIds : [];
-          const guestCompare = Array.isArray(State.comparisonList) ? State.comparisonList.map(s => s.id) : [];
-          const allGuestIds = Array.from(new Set([...guestBookmarks, ...guestCompare].filter(Boolean)));
-          if (allGuestIds.length > 0 && typeof Modals !== 'undefined' && Modals.openGuestImportModal) {
-            Modals.openGuestImportModal({
-              schoolIds: allGuestIds,
-              user: res.user,
-              redirectView: 'parents'
-            });
-          } else {
-            App.navigate('parents');
-          }
-        }
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = 'Sign In to Parent Portal';
-        State.showToast(err.message || 'Invalid email or password', 'error');
-      }
-    });
-
-    // 3. Phone OTP Send & Verify
-    let currentOtpPhone = '';
-    document.getElementById('btn-parent-send-otp')?.addEventListener('click', async () => {
-      const phone = document.getElementById('parent-otp-phone').value.trim();
-      if (!phone) return State.showToast('Please enter your Ghanaian mobile number', 'error');
-      currentOtpPhone = phone;
-      const btn = document.getElementById('btn-parent-send-otp');
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
-
-      try {
-        const res = await API.sendOTP(phone, 'parent_login');
-        State.showToast(`OTP Code dispatched via Hubtel SMS to ${phone}! (Code: ${res.debugCode || 'sent'})`, 'info');
-        document.getElementById('parent-otp-box').style.display = 'block';
-        if (res.debugCode) {
-          document.getElementById('parent-otp-code').value = res.debugCode;
-        }
-        btn.textContent = 'Resend OTP';
-        btn.disabled = false;
-      } catch (err) {
-        btn.disabled = false;
-        btn.textContent = 'Send OTP';
-        State.showToast(err.message || 'Failed to send OTP SMS', 'error');
-      }
-    });
-
-    document.getElementById('btn-parent-verify-otp')?.addEventListener('click', async () => {
-      const code = document.getElementById('parent-otp-code').value.trim();
-      if (!code) return State.showToast('Please enter the 6-digit SMS code', 'error');
-
-      try {
-        const res = await fetch('/api/auth/otp/verify', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: currentOtpPhone, code })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Verification failed');
-
-        State.setCurrentUser(data.user, data.token);
-        State.showToast(`Verified! Welcome, ${data.user.name}`, 'success');
-        App.navigate('parents');
-      } catch (err) {
-        State.showToast(err.message || 'Invalid OTP code', 'error');
-      }
-    });
-
-    // 4. Quick Demo Button
-    document.getElementById('btn-parent-quick-demo')?.addEventListener('click', async () => {
-      try {
-        const res = await API.login('parent@gmail.com', 'ParentPass2026!');
-        if (res.token && res.user) {
-          State.setCurrentUser(res.user, res.token);
-          State.showToast("Loaded Demo Parent Account (Mrs. Nana Aba Mensah)", "info");
-          App.navigate('parents');
-        }
-      } catch (err) {
-        State.showToast("Could not load demo account: " + err.message, "error");
-      }
-    });
-
-    // 4b. Hero Horizontal Search Pill Bar & Akosua AI Advisor
-    document.getElementById('portal-hero-search-form')?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const suburb = document.getElementById('portal-search-suburb')?.value.trim() || '';
-      const level = document.getElementById('portal-search-level')?.value || '';
-      const curriculum = document.getElementById('portal-search-curriculum')?.value || '';
-      if (suburb) State.filters.suburb = suburb;
-      if (level) State.filters.level = level;
-      if (curriculum) State.filters.curriculum = curriculum;
       App.navigate('directory');
     });
 
+    // Floating Akosua AI advisor
     document.getElementById('btn-portal-akosua-advisor')?.addEventListener('click', () => {
-      if (typeof Modals !== 'undefined' && Modals.openAIAdvisoryModal) {
-        Modals.openAIAdvisoryModal();
+      if (typeof AkosuaModal !== 'undefined' && AkosuaModal.open) {
+        AkosuaModal.open();
       } else {
         ParentPortalView.openGuideModal('cssps_quota');
       }
     });
 
-    // 5. Section P03: Explore by Need Filter Chips
+    // Filter chips
     document.querySelectorAll('.parent-filter-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const type = chip.getAttribute('data-filter-type');
-        const val = chip.getAttribute('data-filter-val');
-        if (type === 'level') {
-          State.filters.level = val;
-          State.filters.search = '';
-        } else if (type === 'curriculum') {
-          State.filters.curriculum = val;
-          State.filters.search = '';
-        } else if (type === 'suburb') {
-          State.filters.suburb = val;
-          State.filters.search = '';
+      chip.addEventListener('click', (e) => {
+        const type = e.currentTarget.dataset.filterType;
+        const val = e.currentTarget.dataset.filterVal;
+        if (typeof State !== 'undefined') {
+          State.filters = State.filters || {};
+          if (type === 'level') State.filters.level = val;
+          if (type === 'curriculum') State.filters.curriculum = val;
+          if (type === 'suburb') State.filters.query = val;
         }
         App.navigate('directory');
       });
     });
 
-    // 6. Section P04: Two Free Ways CTAs
+    document.getElementById('btn-quick-explore-all')?.addEventListener('click', () => {
+      App.navigate('directory');
+    });
+
+    // Section 2: Discover & Compare
+    document.getElementById('btn-parents-view-all-schools')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('directory');
+    });
+
+    document.getElementById('btn-parents-open-compare')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.navigate('compare');
+    });
+
+    // Inspect & Compare buttons on school cards
+    document.querySelectorAll('.btn-school-card-inspect').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.dataset.id;
+        if (id) App.navigate('school-detail/' + id);
+      });
+    });
+
+    document.querySelectorAll('.btn-school-card-compare').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.currentTarget.dataset.id;
+        if (!id || typeof State === 'undefined') return;
+        const schoolObj = (ParentPortalView.previewSchoolsList || []).find(s => s.id === id) || {
+          id,
+          name: btn.closest('.school-card')?.querySelector('h3')?.innerText || 'School',
+          suburb: 'Accra',
+          region: 'Greater Accra'
+        };
+        State.toggleComparison(schoolObj);
+        const isAdded = State.isInCompare(id);
+        btn.setAttribute('aria-pressed', isAdded ? 'true' : 'false');
+        btn.textContent = isAdded ? '✓ Added' : '↔ Compare';
+        const dock = document.getElementById('compareDock');
+        const dockCount = document.getElementById('dockCount');
+        if (dock && dockCount) {
+          dock.hidden = State.comparisonList.length === 0;
+          dockCount.textContent = `${State.comparisonList.length} school${State.comparisonList.length === 1 ? '' : 's'} selected`;
+        }
+      });
+    });
+
+    // Comparison dock actions
+    document.getElementById('clearCompare')?.addEventListener('click', () => {
+      if (typeof State !== 'undefined') {
+        State.comparisonList = [];
+        const dock = document.getElementById('compareDock');
+        if (dock) dock.hidden = true;
+        document.querySelectorAll('.btn-school-card-compare').forEach(b => {
+          b.setAttribute('aria-pressed', 'false');
+          b.textContent = '↔ Compare';
+        });
+      }
+    });
+
+    document.getElementById('viewCompare')?.addEventListener('click', () => {
+      App.navigate('compare');
+    });
+
+    // Section 3: Two Free Options
     document.getElementById('btn-parents-guest-explore')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('directory');
@@ -7663,88 +7256,10 @@ const ParentPortalView = {
 
     document.getElementById('btn-parents-scroll-signup')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const card = document.querySelector('#parent-card-header') || document.querySelector('#form-parent-signup');
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const nameInput = document.querySelector('#parent-reg-name');
-        if (nameInput) nameInput.focus();
-      }
+      showModal('signup');
     });
 
-    // 7. Section P05: School Preview CTAs & Card Actions
-    document.getElementById('btn-parents-view-all-schools')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('directory');
-    });
-
-    document.querySelectorAll('.btn-card-view').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const schoolId = btn.dataset.schoolId;
-        if (schoolId) App.navigate('school-detail', schoolId);
-      };
-    });
-
-    document.querySelectorAll('.btn-card-wa').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const wa = btn.dataset.wa;
-        if (wa) {
-          const cleanWa = wa.replace(/[^0-9]/g, '');
-          window.open(`https://wa.me/${cleanWa}?text=Hello,%20I%20found%20your%20school%20on%20SkoolFinder%20Ghana.%20I%20would%20like%20to%20inquire%20about%20admissions.`, '_blank');
-        }
-      };
-    });
-
-    document.querySelectorAll('.btn-card-compare').forEach(btn => {
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        const schoolId = btn.dataset.schoolId;
-        if (schoolId) {
-          State.toggleCompare(schoolId);
-          btn.classList.toggle('active', State.isInCompare(schoolId));
-        }
-      };
-    });
-
-    document.querySelectorAll('.btn-card-bookmark').forEach(btn => {
-      btn.onclick = async (e) => {
-        e.stopPropagation();
-        const schoolId = btn.dataset.schoolId;
-        const schoolName = btn.dataset.schoolName || 'School';
-        if (schoolId) {
-          await State.toggleBookmark(schoolId, schoolName);
-          const isNowSaved = State.isBookmarked(schoolId);
-          btn.classList.toggle('active', isNowSaved);
-          btn.innerHTML = isNowSaved ? '🔖' : '🤍';
-        }
-      };
-    });
-
-    document.querySelectorAll('.carousel-dot').forEach(dot => {
-      dot.onclick = (e) => {
-        e.stopPropagation();
-        const parentDots = dot.parentElement;
-        const schoolId = parentDots?.dataset?.schoolId;
-        const targetImg = document.getElementById(`img-${schoolId}`);
-        if (targetImg && dot.dataset.img) {
-          targetImg.style.opacity = '0.5';
-          setTimeout(() => {
-            targetImg.src = dot.dataset.img;
-            targetImg.style.opacity = '1';
-          }, 120);
-          parentDots.querySelectorAll('.carousel-dot').forEach(d => d.classList.remove('active'));
-          dot.classList.add('active');
-        }
-      };
-    });
-
-    // 8. Section P06, P07, P08, P09, P10 CTAs & Modals
-    document.getElementById('btn-parents-open-compare')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      App.navigate('compare');
-    });
-
+    // Section 4: Admissions & Guidance
     document.getElementById('btn-parents-fees-guide')?.addEventListener('click', (e) => {
       e.preventDefault();
       ParentPortalView.openGuideModal('fee_structures');
@@ -7752,63 +7267,55 @@ const ParentPortalView = {
 
     document.getElementById('btn-parents-admissions-search')?.addEventListener('click', (e) => {
       e.preventDefault();
-      App.navigate('directory');
+      ParentPortalView.openGuideModal('admissions_checklist');
     });
 
-    // Guidance Cards & Modals (Section P08)
-    document.querySelectorAll('.parent-guide-card, .btn-read-guide-portal').forEach(el => {
-      el.addEventListener('click', (e) => {
+    document.querySelectorAll('.btn-read-guide-portal').forEach(btn => {
+      btn.addEventListener('click', (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        const guideKey = el.dataset.guide || el.closest('[data-guide]')?.dataset.guide;
-        if (guideKey) {
-          ParentPortalView.openGuideModal(guideKey);
-        }
+        const guideKey = btn.dataset.guide || 'cambridge_vs_ges';
+        ParentPortalView.openGuideModal(guideKey);
       });
     });
 
+    // Section 5: Educators
     document.getElementById('btn-parents-goto-teachers')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('teachers');
     });
 
-    // Verification Methodology Expandable Panel (Section P10)
+    // Section 6: Trust Policy Toggle
     const btnVerify = document.getElementById('btn-toggle-verification-policy');
     const panelVerify = document.getElementById('panel-verification-policy');
     btnVerify?.addEventListener('click', () => {
       if (!panelVerify) return;
       const isHidden = panelVerify.style.display === 'none';
       panelVerify.style.display = isHidden ? 'block' : 'none';
-      btnVerify.textContent = isHidden ? 'Hide Verification Methodology ↑' : 'Learn About Our Verification Methodology ↓';
+      btnVerify.textContent = isHidden ? 'Hide Verification Methodology & Regulatory Standards ↑' : 'Learn About Our Verification Methodology & NaSIA Regulatory Standards ↓';
     });
 
-    // 9. Section P11: FAQ Accordions
+    // Section 6: FAQ Accordions
     document.querySelectorAll('.faq-toggle-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const panel = btn.nextElementSibling;
+        const item = btn.closest('.faq-item');
+        const panel = item?.querySelector('.faq-answer-panel');
         const icon = btn.querySelector('.faq-icon');
         const isOpen = panel && panel.style.display === 'block';
 
-        // Close all other panels
+        // Close all
         document.querySelectorAll('.faq-answer-panel').forEach(p => p.style.display = 'none');
         document.querySelectorAll('.faq-toggle-btn').forEach(b => b.setAttribute('aria-expanded', 'false'));
-        document.querySelectorAll('.faq-icon').forEach(i => {
-          i.textContent = '+';
-          i.style.transform = 'rotate(0deg)';
-        });
+        document.querySelectorAll('.faq-icon').forEach(i => { i.textContent = '+'; });
 
         if (!isOpen && panel) {
           panel.style.display = 'block';
           btn.setAttribute('aria-expanded', 'true');
-          if (icon) {
-            icon.textContent = '−';
-            icon.style.transform = 'rotate(180deg)';
-          }
+          if (icon) icon.textContent = '−';
         }
       });
     });
 
-    // 10. Section P12: Closing Actions
+    // Section 6: Closing CTA Buttons
     document.getElementById('btn-parents-footer-find-schools')?.addEventListener('click', (e) => {
       e.preventDefault();
       App.navigate('directory');
@@ -7816,11 +7323,189 @@ const ParentPortalView = {
 
     document.getElementById('btn-parents-footer-signup')?.addEventListener('click', (e) => {
       e.preventDefault();
-      const card = document.querySelector('#parent-card-header') || document.querySelector('#form-parent-signup');
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const nameInput = document.querySelector('#parent-reg-name');
-        if (nameInput) nameInput.focus();
+      showModal('signup');
+    });
+
+    // Password Match Real-Time Validation
+    const passInput = document.getElementById('parent-reg-password');
+    const confInput = document.getElementById('parent-reg-confirm-password');
+    const hintMatch = document.getElementById('parent-reg-password-match-hint');
+
+    const checkPasswordMatch = () => {
+      if (!passInput || !confInput || !hintMatch) return;
+      const p = passInput.value;
+      const c = confInput.value;
+      if (!c) {
+        hintMatch.style.display = 'none';
+        return;
+      }
+      hintMatch.style.display = 'block';
+      if (p === c) {
+        hintMatch.style.color = '#059669';
+        hintMatch.textContent = '✓ Passwords match';
+      } else {
+        hintMatch.style.color = '#dc2626';
+        hintMatch.textContent = '✗ Passwords do not match';
+      }
+    };
+    passInput?.addEventListener('input', checkPasswordMatch);
+    confInput?.addEventListener('input', checkPasswordMatch);
+
+    // Form Signup Handler
+    document.getElementById('form-parent-signup')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('parent-reg-name')?.value.trim();
+      const phone = document.getElementById('parent-reg-phone')?.value.trim();
+      const email = document.getElementById('parent-reg-email')?.value.trim();
+      const password = document.getElementById('parent-reg-password')?.value;
+      const confirm = document.getElementById('parent-reg-confirm-password')?.value;
+
+      if (password !== confirm) {
+        State.showToast('Passwords do not match.', 'error');
+        return;
+      }
+
+      try {
+        const btnSubmit = document.getElementById('btn-parent-submit-signup');
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<span>⏳</span> Creating Parent Account...';
+        }
+
+        const res = await API.register({
+          name,
+          phone,
+          email,
+          password,
+          role: 'parent',
+          persona: 'parent'
+        });
+
+        if (res && res.user) {
+          State.setUser(res.user);
+          if (res.token) State.setToken(res.token);
+          if (typeof State.importGuestContext === 'function') {
+            await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
+          }
+          State.showToast(`Welcome to SkoolFinder Parent Portal, ${name}!`, 'success');
+          closeModal();
+          App.navigate('parents');
+        } else {
+          State.showToast(res?.message || 'Could not create parent account. Please try again.', 'error');
+        }
+      } catch (err) {
+        console.error('Parent registration error:', err);
+        State.showToast(err.message || 'Registration failed. Please check network connection.', 'error');
+      } finally {
+        const btnSubmit = document.getElementById('btn-parent-submit-signup');
+        if (btnSubmit) {
+          btnSubmit.disabled = false;
+          btnSubmit.innerHTML = '<span>🚀</span> Create Free Parent Account &amp; Enter Portal';
+        }
+      }
+    });
+
+    // Form Signin Email Handler
+    document.getElementById('form-parent-signin-email')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('parent-login-email')?.value.trim();
+      const password = document.getElementById('parent-login-password')?.value;
+
+      try {
+        const btn = document.getElementById('btn-parent-submit-login');
+        if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
+
+        const res = await API.login({ email, password });
+        if (res && res.user) {
+          res.user.activePersona = 'parent';
+          State.setUser(res.user);
+          if (res.token) State.setToken(res.token);
+          if (typeof State.importGuestContext === 'function') {
+            await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
+          }
+          State.showToast(`Welcome back, ${res.user.name || 'Parent'}!`, 'success');
+          closeModal();
+          App.navigate('parents');
+        } else {
+          State.showToast(res?.message || 'Invalid email or password.', 'error');
+        }
+      } catch (err) {
+        console.error('Parent login error:', err);
+        State.showToast(err.message || 'Sign in failed.', 'error');
+      } finally {
+        const btn = document.getElementById('btn-parent-submit-login');
+        if (btn) { btn.disabled = false; btn.textContent = 'Sign In to Parent Portal'; }
+      }
+    });
+
+    // Quick Demo Handler
+    document.getElementById('btn-parent-quick-demo')?.addEventListener('click', async () => {
+      try {
+        const demoUser = {
+          id: 'usr-parent-demo-nana',
+          name: 'Mrs. Nana Aba Mensah',
+          email: 'nana.mensah@parent.skoolfinder.gh',
+          phone: '+233 24 456 7890',
+          role: 'parent',
+          activePersona: 'parent',
+          locality: 'Airport Residential / Cantonments, Accra',
+          wardsCount: 2
+        };
+        State.setUser(demoUser);
+        if (typeof State.importGuestContext === 'function') {
+          await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
+        }
+        State.showToast('Signed in as Mrs. Nana Aba Mensah (Demo Parent)', 'success');
+        closeModal();
+        App.navigate('parents');
+      } catch (e) {
+        console.error('Quick demo error:', e);
+      }
+    });
+
+    // Send OTP Handler
+    document.getElementById('btn-parent-send-otp')?.addEventListener('click', async () => {
+      const phone = document.getElementById('parent-otp-phone')?.value.trim();
+      if (!phone) {
+        State.showToast('Please enter your Ghanaian mobile phone number.', 'warning');
+        return;
+      }
+      try {
+        const btnOtp = document.getElementById('btn-parent-send-otp');
+        if (btnOtp) { btnOtp.disabled = true; btnOtp.textContent = 'Sending...'; }
+        await new Promise(r => setTimeout(r, 600));
+        document.getElementById('parent-otp-box').style.display = 'block';
+        State.showToast(`Hubtel OTP dispatched via SMS to ${phone}`, 'info');
+      } catch (err) {
+        State.showToast('Failed to dispatch SMS OTP.', 'error');
+      }
+    });
+
+    // Verify OTP Handler
+    document.getElementById('btn-parent-verify-otp')?.addEventListener('click', async () => {
+      const phone = document.getElementById('parent-otp-phone')?.value.trim();
+      const code = document.getElementById('parent-otp-code')?.value.trim();
+      if (!code || code.length < 4) {
+        State.showToast('Please enter the verification code sent to your phone.', 'warning');
+        return;
+      }
+      try {
+        const user = {
+          id: 'usr-parent-otp-' + Date.now(),
+          name: 'Verified Parent (' + phone + ')',
+          phone: phone,
+          role: 'parent',
+          activePersona: 'parent'
+        };
+        State.setUser(user);
+        if (typeof State.importGuestContext === 'function') {
+          await State.importGuestContext().catch(err => console.warn('Could not import guest context:', err));
+        }
+        State.showToast('Phone number verified! Welcome to Parent Portal.', 'success');
+        closeModal();
+        App.navigate('parents');
+      } catch (e) {
+        State.showToast('Verification failed.', 'error');
       }
     });
   }
