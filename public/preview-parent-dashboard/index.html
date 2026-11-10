@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#06162E">
+<title>My Parents Dashboard · SkoolFinder Ghana | Standalone Interactive Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=sidebar_v4">
+</head>
+<body class="dashboard-body">
+
+<!-- Standalone Preview Top Ribbon -->
+<aside class="preview-ribbon" role="status">
+  <div class="ribbon-inner">
+    <span class="ribbon-dot"></span>
+    <strong>STANDALONE DESIGN PREVIEW: PARENT COMMAND &amp; DISCOVERY WORKSPACE</strong>
+    <span>Sidebar Navigation Architecture (Image 2 &amp; 3) · Zero Changes to Live App</span>
+  </div>
+</aside>
+
+<!-- Dashboard Two-Column Shell (Matching Image 3) -->
+<div class="dashboard-shell">
+
+  <!-- ========================================================
+       SIDEBAR NAVIGATION (EXACT SPEC FROM IMAGE 2)
+       ======================================================== -->
+  <aside class="dashboard-sidebar" aria-label="Parent Command Navigation">
+    
+    <!-- Institutional / Parent Profile Header -->
+    <div class="sidebar-brand-header">
+      <div class="sidebar-avatar-box">
+        <!-- Squircle Blue Icon -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <div class="sidebar-brand-info">
+        <h2 class="sidebar-brand-name">Dr. Elizabeth Mensah</h2>
+        <div class="sidebar-brand-badges">
+          <span class="badge-tier">PRIMARY GUARDIAN</span>
+          <span class="badge-status">Verified</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Groups -->
+    <div class="sidebar-nav-scroll">
+      
+      <!-- Group 1: Executive Command -->
+      <div class="nav-group">
+        <div class="nav-group-header">
+          <div class="nav-group-title">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
+            <span>Executive Command</span>
+          </div>
+          <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+
+        <div class="nav-group-items">
+          <button type="button" class="sidebar-nav-item" data-hub="dashboard" onclick="window.switchHub('dashboard')">
+            <div class="nav-item-left">
+              <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              </svg>
+              <span>Dashboard Overview</span>
+            </div>
+            <span class="nav-item-badge badge-active">Live</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Group 2: School Discovery & Shortlist -->
+      <div class="nav-group">
+        <div class="nav-group-header">
+          <div class="nav-group-title">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+            </svg>
+            <span>Admissions &amp; Discovery</span>
+          </div>
+          <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+
+        <div class="nav-group-items">
+          <button type="button" class="sidebar-nav-item active" data-hub="find" onclick="window.switchHub('find')">
+            <div class="nav-item-left">
+              <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <span>Find Schools</span>
+            </div>
+            <span class="nav-item-badge badge-neutral">Directory</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-hub="saved" onclick="window.switchHub('saved')">
+            <div class="nav-item-left">
+              <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+              <span>Saved Schools</span>
+            </div>
+            <span class="nav-item-badge badge-count">3</span>
+          </button>
+
+          <button type="button" class="sidebar-nav-item" data-hub="enquiries" onclick="window.switchHub('enquiries')">
+            <div class="nav-item-left">
+              <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <span>My Enquiries</span>
+            </div>
+            <span class="nav-item-badge badge-offer">1 offer 🎉</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Group 3: Family & Account Governance -->
+      <div class="nav-group">
+        <div class="nav-group-header">
+          <div class="nav-group-title">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Family &amp; Governance</span>
+          </div>
+          <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+
+        <div class="nav-group-items">
+          <button type="button" class="sidebar-nav-item" data-hub="account" onclick="window.switchHub('account')">
+            <div class="nav-item-left">
+              <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span>My Account</span>
+            </div>
+            <span class="nav-item-badge badge-neutral">2 Wards</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Additional Parent Tools (Matching SaaS Depth in Image 2) -->
+      <div class="nav-group">
+        <div class="nav-group-header collapsed" onclick="alert('Tuition &amp; Fees tracker preview: Mobile Money &amp; Bank Card settlement module')">
+          <div class="nav-group-title">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span>Tuition &amp; Receipts</span>
+          </div>
+          <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-group-header collapsed" onclick="alert('NaSIA Regulatory Verification: All listed institutions verified under Ghana Education Act 778')">
+          <div class="nav-group-title">
+            <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>Regulatory &amp; NaSIA</span>
+          </div>
+          <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="support-card">
+        <div class="support-title">Admissions Hotline</div>
+        <div class="support-contact">📞 +233 24 111 2222</div>
+        <div class="support-sub">Mon–Fri 8:00 AM – 5:00 PM GMT</div>
+      </div>
+      <div class="sidebar-user-row">
+        <div class="sidebar-portal-tag">
+          <span class="portal-dot"></span>
+          <span>Parent Space Live</span>
+        </div>
+        <button type="button" class="btn-sidebar-signout" onclick="alert('Demo session active: Dr. Elizabeth Mensah')">Sign Out</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ========================================================
+       MAIN CONTENT WORKSPACE AREA (EXACT MATCH TO IMAGE 3)
+       ======================================================== -->
+  <div class="dashboard-main-area">
+
+    <!-- Top Navigation Bar for Main Area -->
+    <header class="dashboard-topbar">
+      <div class="topbar-left">
+        <a href="/preview-v3/index.html" class="topbar-brand">
+          <span class="topbar-brand-icon">🎓</span>
+          <strong>SkoolFinder</strong>
+        </a>
+        <span class="topbar-sep">/</span>
+        <span class="topbar-portal-badge">👨‍👩‍👧 Parent Space</span>
+        <span class="topbar-sep">/</span>
+        <span class="topbar-current" id="topbarCurrentSection">Find Schools</span>
+      </div>
+
+      <div class="topbar-right">
+        <a href="/preview-v3/index.html" class="topbar-link">🏠 Home</a>
+        <a href="javascript:void(0)" class="topbar-link" onclick="window.switchHub('find')">🏫 Browse Schools</a>
+        <div class="topbar-user-pill">
+          <span>👤</span>
+          <span>Dr. Elizabeth Mensah</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Workspace Injected Dynamically by app.js -->
+    <main class="dashboard-workspace" id="workspaceRoot" aria-live="polite">
+      <!-- Injected by app.js -->
+    </main>
+
+  </div>
+
+</div>
+
+<!-- Interactive Detail Modal -->
+<div class="preview-modal" id="previewModal">
+  <div class="modal-box">
+    <button class="modal-close-x" onclick="window.closeModal()" aria-label="Close modal">&times;</button>
+    <h3 id="modalTitle" style="font-size: 19px; font-weight: 800; color: var(--navy); margin-bottom: 14px;">Details</h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script src="app.js?v=sidebar_v4"></script>
+</body>
+</html>

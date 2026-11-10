@@ -2,7 +2,7 @@
  * SkoolFinder Ghana - Parent Admissions & Tracking Portal View
  */
 const ParentPortalView = {
-  activeTab: 'overview',
+  activeTab: 'find',
   shortlistsData: null,
   shortlistFilter: 'all',
   overviewData: null,
@@ -322,219 +322,476 @@ const ParentPortalView = {
 
     const totalOutstanding = invoices.reduce((acc, inv) => acc + (Number(inv.balanceDue) || 0), 0);
 
+        const activeHub = this.activeTab || 'find';
+    const savedCount = (this.shortlistsData || savedSchools || []).length;
+    const appsCount = applications.length;
+    const invCount = invoices.length;
+
     return `
-      <section style="background: var(--bg-main); min-height: 85vh; padding: 2.5rem 0 5rem;">
-        <div class="container">
-          <!-- Active Parent Account Status Banner -->
-          <div style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 0.9rem 1.4rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: var(--shadow-sm);">
-            <div style="display: flex; align-items: center; gap: 0.85rem;">
-              <span style="font-size: 1.8rem; background: var(--primary-50); width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">👨‍👩‍👧</span>
-              <div>
-                <div style="font-size: 0.95rem; font-weight: 800; color: var(--primary-900);">
-                  ${parentName}
-                  <span class="badge" style="background: var(--emerald-50); color: var(--emerald-800); border: 1px solid var(--emerald-200); font-weight: 700; font-size: 0.72rem; margin-left: 0.5rem;">
-                    🟢 ACTIVE PARENT SESSION
-                  </span>
-                </div>
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem;">
-                  ✉️ ${parentEmail} &bull; 📞 ${parentPhone} &bull; 📍 ${profile?.suburb || 'Ghana Basic / SHS'}
-                </div>
-              </div>
+      <div class="dashboard-shell">
+        <!-- ========================================================
+             LEFT SIDEBAR NAVIGATION (IMAGE 2 & 3 SPECIFICATION)
+             ======================================================== -->
+        <aside class="dashboard-sidebar" aria-label="Parent Command Navigation">
+          
+          <!-- Parent Profile Header -->
+          <div class="sidebar-brand-header">
+            <div class="sidebar-avatar-box">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
             </div>
-            <div style="display: flex; align-items: center; gap: 0.75rem;">
-              <button id="btn-parent-logout" class="btn-pill" style="font-size: 0.82rem; padding: 0.45rem 1rem; background: #fee2e2; color: #991b1b; border: 1.5px solid #fecaca; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.35rem;">
-                <span>🚪</span> Sign Out
-              </button>
-            </div>
-          </div>
-
-          <!-- Parent Portal Header -->
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
-            <div>
-              <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
-                <span class="badge" style="background: var(--emerald-50); color: var(--emerald-800); border: 1px solid var(--emerald-200); font-weight: 700;">
-                  👨‍👩‍👧 VERIFIED PARENT ACCOUNT
-                </span>
-                <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">
-                  Active Admissions & Academic Year 2026/2027
-                </span>
-              </div>
-              <h1 style="font-family: var(--font-heading); font-size: 2.2rem; font-weight: 800; color: var(--primary-900); margin: 0 0 0.4rem 0;">
-                Welcome, ${parentName}
-              </h1>
-              <p style="color: var(--text-muted); font-size: 0.95rem; margin: 0;">
-                ✉️ ${parentEmail} &nbsp;•&nbsp; 📞 ${parentPhone} &nbsp;•&nbsp; 
-                <span style="color: var(--primary-700); font-weight: 600;">Ghana Ministry of Education / GES Unified Admissions & Fee Portal</span>
-              </p>
-            </div>
-
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-              <button id="btn-parent-cssps" class="btn-pill" style="font-size: 0.85rem; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #3b82f6; font-weight: 700;" onclick="App.navigate('cssps')">
-                🎓 BECE CSSPS Predictor
-              </button>
-              <button id="btn-parent-past-questions" class="btn-pill" style="font-size: 0.85rem; background: #fdf2f8; color: #9d174d; border: 1.5px solid #ec4899; font-weight: 700;" onclick="App.navigate('past-questions')">
-                📚 Past Questions & Schemes
-              </button>
-              <button id="btn-parent-digital-id" class="btn-pill" style="font-size: 0.85rem; background: linear-gradient(135deg, #0a1128 0%, #1e3a8a 100%); color: #ffffff; border: 1.5px solid #f59e0b; box-shadow: 0 4px 12px rgba(10,17,40,0.25); font-weight: 700;">
-                🪪 Digital Student ID
-              </button>
-              <button id="btn-open-link-student" class="btn-pill btn-gold" style="font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);">
-                <span>➕</span> Link Child by Student ID
-              </button>
-              <button id="btn-browse-schools" class="btn-pill btn-outline" style="font-size: 0.85rem;" onclick="App.navigate('directory')">
-                🔍 Find Schools
-              </button>
-              <button id="btn-parent-switch-demo" class="btn-pill btn-secondary" style="font-size: 0.85rem;">
-                🔄 Switch Demo Role
-              </button>
-            </div>
-          </div>
-
-          <!-- Top Analytics / Status Ribbon -->
-          <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-bottom: 2.5rem;">
-            <!-- Metric 1: Applications -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: var(--primary-50); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                📝
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Active Applications
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
-                  ${applications.length}
-                </div>
-                <div style="font-size: 0.75rem; color: var(--emerald-600); font-weight: 600;">
-                  ${applications.length > 0 ? '🟢 Under official review' : 'No active apps'}
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric 2: Shortlisted Schools -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: #eff6ff; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                📌
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Shortlisted Schools
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
-                  ${(this.shortlistsData || savedSchools || []).length}
-                </div>
-                <div style="font-size: 0.75rem; color: #1266C4; font-weight: 600;">
-                  5-Stage Decision Board
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric 3: Saved Comparisons -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: #fefce8; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                ⚖️
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Saved Comparisons
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
-                  ${(this.savedComparisonsData || []).length}
-                </div>
-                <div style="font-size: 0.75rem; color: #b45309; font-weight: 600;">
-                  20 Max Boards (100% Free)
-                </div>
-              </div>
-            </div>
-
-            <!-- Metric 4: School Fees & MoMo Bills -->
-            <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
-              <div style="font-size: 2.2rem; background: #ecfdf5; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
-                💳
-              </div>
-              <div>
-                <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
-                  Fees Outstanding
-                </div>
-                <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: ${totalOutstanding > 0 ? 'var(--rose-600)' : 'var(--emerald-600)'};">
-                  GH₵ ${totalOutstanding.toLocaleString()}
-                </div>
-                <div style="font-size: 0.75rem; color: var(--emerald-700); font-weight: 600;">
-                  Instant MoMo settlement
-                </div>
+            <div class="sidebar-brand-info">
+              <h2 class="sidebar-brand-name">${parentName}</h2>
+              <div class="sidebar-brand-badges">
+                <span class="badge-tier">PRIMARY GUARDIAN</span>
+                <span class="badge-status">Verified</span>
               </div>
             </div>
           </div>
 
-          <!-- Blueprint v4.2 Decision Engine Navigation Tabs -->
-          <div role="tablist" aria-label="Parent Portal Navigation Tabs" style="display: flex; gap: 0.5rem; border-bottom: 2px solid #e2e8f0; margin-bottom: 2rem; overflow-x: auto; padding-bottom: 0.35rem; scrollbar-width: thin;">
-            <button role="tab" aria-selected="${this.activeTab === 'overview'}" class="parent-tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-tab="overview" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'overview' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'overview' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🧭 Command Centre
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'shortlists'}" class="parent-tab-btn ${this.activeTab === 'shortlists' ? 'active' : ''}" data-tab="shortlists" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'shortlists' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'shortlists' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              📌 5-State Decision Board
-              <span class="badge" style="background: #eff6ff; color: #1266C4; font-weight: 700;">${(this.shortlistsData || savedSchools || []).length}</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'comparisons'}" class="parent-tab-btn ${this.activeTab === 'comparisons' ? 'active' : ''}" data-tab="comparisons" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'comparisons' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'comparisons' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              ⚖️ Saved Comparisons
-              <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">${(this.savedComparisonsData || []).length}</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'journey'}" class="parent-tab-btn ${this.activeTab === 'journey' ? 'active' : ''}" data-tab="journey" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'journey' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'journey' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🛣️ My School Journey
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'planning'}" class="parent-tab-btn ${this.activeTab === 'planning' ? 'active' : ''}" data-tab="planning" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'planning' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'planning' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              📋 Planning Studio
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'toolkit'}" class="parent-tab-btn ${this.activeTab === 'toolkit' ? 'active' : ''}" data-tab="toolkit" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'toolkit' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'toolkit' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🧰 Parent Toolkit
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'applications'}" class="parent-tab-btn ${this.activeTab === 'applications' ? 'active' : ''}" data-tab="applications" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'applications' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'applications' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              📝 Admissions &amp; Apps
-              <span class="badge" style="background: var(--primary-100); color: var(--primary-800); font-weight: 700;">${applications.length}</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'watchlist'}" class="parent-tab-btn ${this.activeTab === 'watchlist' ? 'active' : ''}" data-tab="watchlist" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'watchlist' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'watchlist' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🔔 Watchlist &amp; Searches
-              <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">4</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'notifications'}" class="parent-tab-btn ${this.activeTab === 'notifications' ? 'active' : ''}" data-tab="notifications" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'notifications' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'notifications' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              📬 Notifications
-              <span class="badge" style="background: #fef3c7; color: #92400e; font-weight: 700;">2 new</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'family'}" class="parent-tab-btn ${this.activeTab === 'family' ? 'active' : ''}" data-tab="family" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'family' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'family' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              👶 Family &amp; Children
-              <span class="badge" style="background: #f3e8ff; color: #7e22ce; font-weight: 700;">2 wards</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'privacy'}" class="parent-tab-btn ${this.activeTab === 'privacy' ? 'active' : ''}" data-tab="privacy" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'privacy' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'privacy' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🛡️ DPA 843 &amp; Security
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'support'}" class="parent-tab-btn ${this.activeTab === 'support' ? 'active' : ''}" data-tab="support" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'support' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'support' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              💡 Help &amp; Support
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'invoices'}" class="parent-tab-btn ${this.activeTab === 'invoices' ? 'active' : ''}" data-tab="invoices" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'invoices' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'invoices' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              💳 Fees &amp; MoMo Invoices
-              <span class="badge" style="background: ${totalOutstanding > 0 ? '#fee2e2' : '#dcfce7'}; color: ${totalOutstanding > 0 ? '#991b1b' : '#166534'}; font-weight: 700;">${invoices.length}</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'inquiries'}" class="parent-tab-btn ${this.activeTab === 'inquiries' ? 'active' : ''}" data-tab="inquiries" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'inquiries' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'inquiries' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              💬 Direct Messages
-              <span class="badge" style="background: var(--gold-100); color: var(--gold-800); font-weight: 700;">${inquiries.length}</span>
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'tutors'}" class="parent-tab-btn ${this.activeTab === 'tutors' ? 'active' : ''}" data-tab="tutors" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'tutors' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'tutors' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🧑‍🏫 Tutors
-            </button>
-            <button role="tab" aria-selected="${this.activeTab === 'enrolled'}" class="parent-tab-btn ${this.activeTab === 'enrolled' ? 'active' : ''}" data-tab="enrolled" style="padding: 0.75rem 1.25rem; background: none; border: none; font-size: 0.92rem; font-weight: 800; color: ${this.activeTab === 'enrolled' ? '#0A2046' : '#64748b'}; border-bottom: 3px solid ${this.activeTab === 'enrolled' ? '#D5A63B' : 'transparent'}; cursor: pointer; display: flex; align-items: center; gap: 0.45rem; white-space: nowrap; transition: all 0.2s;">
-              🎒 Enrolled Hub (SIS)
-            </button>
+          <!-- Navigation Groups -->
+          <div class="sidebar-nav-scroll">
+            
+            <!-- Group 1: Executive Command -->
+            <div class="nav-group">
+              <div class="nav-group-header">
+                <div class="nav-group-title">
+                  <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                  </svg>
+                  <span>Executive Command</span>
+                </div>
+                <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+
+              <div class="nav-group-items">
+                <button type="button" class="sidebar-nav-item ${activeHub === 'overview' ? 'active' : ''}" data-tab="overview">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+                      <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+                      <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+                      <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+                    </svg>
+                    <span>Dashboard Overview</span>
+                  </div>
+                  <span class="nav-item-badge badge-active">Live</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 2: School Discovery & Admissions -->
+            <div class="nav-group">
+              <div class="nav-group-header">
+                <div class="nav-group-title">
+                  <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                  </svg>
+                  <span>Admissions &amp; Discovery</span>
+                </div>
+                <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+
+              <div class="nav-group-items">
+                <button type="button" class="sidebar-nav-item ${activeHub === 'find' ? 'active' : ''}" data-tab="find">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="11" cy="11" r="8"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <span>Find Schools</span>
+                  </div>
+                  <span class="nav-item-badge badge-neutral">Directory</span>
+                </button>
+
+                <button type="button" class="sidebar-nav-item ${activeHub === 'shortlists' ? 'active' : ''}" data-tab="shortlists">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    <span>Saved Schools</span>
+                  </div>
+                  <span class="nav-item-badge badge-count">${savedCount}</span>
+                </button>
+
+                <button type="button" class="sidebar-nav-item ${activeHub === 'applications' ? 'active' : ''}" data-tab="applications">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                    </svg>
+                    <span>My Enquiries</span>
+                  </div>
+                  <span class="nav-item-badge badge-offer">${appsCount > 0 ? appsCount + ' active 🎉' : '0'}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 3: Family & Account Governance -->
+            <div class="nav-group">
+              <div class="nav-group-header">
+                <div class="nav-group-title">
+                  <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                  <span>Family &amp; Governance</span>
+                </div>
+                <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+
+              <div class="nav-group-items">
+                <button type="button" class="sidebar-nav-item ${activeHub === 'family' ? 'active' : ''}" data-tab="family">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>My Account</span>
+                  </div>
+                  <span class="nav-item-badge badge-neutral">2 Wards</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Group 4: Tuition & Additional Services -->
+            <div class="nav-group">
+              <div class="nav-group-header">
+                <div class="nav-group-title">
+                  <svg class="group-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                  <span>Tuition &amp; Services</span>
+                </div>
+                <svg class="group-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+
+              <div class="nav-group-items">
+                <button type="button" class="sidebar-nav-item ${activeHub === 'invoices' ? 'active' : ''}" data-tab="invoices">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                      <line x1="2" y1="10" x2="22" y2="10"></line>
+                    </svg>
+                    <span>Tuition &amp; Receipts</span>
+                  </div>
+                  <span class="nav-item-badge ${totalOutstanding > 0 ? 'badge-offer' : 'badge-neutral'}">${invCount}</span>
+                </button>
+
+                <button type="button" class="sidebar-nav-item ${activeHub === 'tutors' ? 'active' : ''}" data-tab="tutors">
+                  <div class="nav-item-left">
+                    <svg class="item-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
+                      <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+                    </svg>
+                    <span>Verified Tutors</span>
+                  </div>
+                  <span class="nav-item-badge badge-neutral">Directory</span>
+                </button>
+              </div>
+            </div>
+
           </div>
 
-          <!-- Dynamic Tab Content Root -->
-          <div id="parent-portal-tab-content">
+          <!-- Sidebar Footer -->
+          <div class="sidebar-footer">
+            <div class="support-card">
+              <div class="support-title">Admissions Hotline</div>
+              <div class="support-contact">📞 +233 24 111 2222</div>
+              <div class="support-sub">Mon–Fri 8:00 AM – 5:00 PM GMT</div>
+            </div>
+            <div class="sidebar-user-row">
+              <div class="sidebar-portal-tag">
+                <span class="portal-dot"></span>
+                <span>Parent Space Live</span>
+              </div>
+              <button type="button" id="btn-parent-logout" class="btn-sidebar-signout">Sign Out</button>
+            </div>
+          </div>
+
+        </aside>
+
+        <!-- ========================================================
+             RIGHT MAIN AREA (IMAGE 3 SPECIFICATION)
+             ======================================================== -->
+        <div class="dashboard-main-area">
+
+          <!-- Top Navigation Bar for Main Area -->
+          <header class="dashboard-topbar">
+            <div class="topbar-left">
+              <a href="#/home" class="topbar-brand" onclick="App.navigate('home')">
+                <span style="font-size: 20px;">🎓</span>
+                <strong>SkoolFinder</strong>
+              </a>
+              <span class="topbar-sep">/</span>
+              <span class="topbar-portal-badge">👨‍👩‍👧 Parent Space</span>
+              <span class="topbar-sep">/</span>
+              <span class="topbar-current" id="topbarCurrentSection">${this.getSectionTitle(activeHub)}</span>
+            </div>
+
+            <div class="topbar-right">
+              <a href="#/home" class="topbar-link" onclick="App.navigate('home')">🏠 Home</a>
+              <a href="javascript:void(0)" class="topbar-link" id="topbar-link-browse" onclick="ParentPortalView.switchTab('find')">🏫 Browse Schools</a>
+              <div class="topbar-user-pill">
+                <span>👤</span>
+                <span>${parentName}</span>
+              </div>
+            </div>
+          </header>
+
+          <!-- Dynamic Workspace Root -->
+          <main class="dashboard-workspace" id="parent-portal-tab-content" aria-live="polite">
             ${this.renderTabContent()}
-          </div>
+          </main>
+
         </div>
-      </section>
+      </div>
+    `;
+  },
+
+
+  getSectionTitle(tab) {
+    const map = {
+      find: 'Find Schools (Accredited Discovery)',
+      overview: 'Dashboard Overview',
+      shortlists: 'Saved Schools & Shortlist',
+      applications: 'My Enquiries & Admissions',
+      family: 'Family & Account Settings',
+      invoices: 'Tuition & MoMo Invoices',
+      tutors: 'Verified Tutors',
+      enrolled: 'Enrolled Ward Hub (SIS)'
+    };
+    return map[tab] || 'Parent Workspace';
+  },
+
+  switchTab(tab) {
+    this.activeTab = tab;
+    // Update active class on sidebar items
+    document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+      const isMatch = btn.dataset.tab === tab;
+      btn.classList.toggle('active', isMatch);
+      btn.setAttribute('aria-selected', isMatch ? 'true' : 'false');
+    });
+    // Update topbar breadcrumb
+    const topbarLabel = document.getElementById('topbarCurrentSection');
+    if (topbarLabel) {
+      topbarLabel.textContent = this.getSectionTitle(tab);
+    }
+    // Render content
+    const container = document.getElementById('parent-portal-tab-content');
+    if (container) {
+      container.innerHTML = this.renderTabContent();
+      this.attachTabChildEvents();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  },
+
+  async toggleBookmark(schoolId) {
+    if (typeof State.toggleBookmark === 'function') {
+      await State.toggleBookmark(schoolId);
+      State.showToast('Shortlist updated!', 'success');
+      const badge = document.querySelector('.sidebar-nav-item[data-tab="shortlists"] .badge-count');
+      if (badge) {
+        badge.textContent = State.bookmarkedSchoolIds?.length || 0;
+      }
+    }
+  },
+
+  renderFindTab() {
+    const savedCount = (this.shortlistsData || this.overviewData?.savedSchools || []).length;
+    const schools = this.discoverySchools && this.discoverySchools.length > 0 
+      ? this.discoverySchools 
+      : [
+          {
+            id: 'sch-gis-accra',
+            name: 'Ghana International School (GIS)',
+            suburb: 'Cantonments',
+            region: 'Greater Accra',
+            level: 'Primary · JHS · SHS',
+            curriculum: 'Cambridge International (CIE)',
+            tuition: 'GH₵ 22,000 / Term',
+            img: '/preview-v3/assets/school-campus.jpg',
+            accreditation: 'NaSIA Certified Gold'
+          },
+          {
+            id: 'sch-sos-tema',
+            name: 'SOS-Hermann Gmeiner International College',
+            suburb: 'Tema',
+            region: 'Greater Accra',
+            level: 'JHS · SHS',
+            curriculum: 'International Baccalaureate (IB)',
+            tuition: 'GH₵ 28,000 / Term',
+            img: '/preview-v3/assets/school-stem.jpg',
+            accreditation: 'NaSIA Certified Gold'
+          },
+          {
+            id: 'sch-achi-accra',
+            name: 'Achimota Basic School',
+            suburb: 'Achimota',
+            region: 'Greater Accra',
+            level: 'Primary · JHS',
+            curriculum: 'GES Standards-Based (NaCCA)',
+            tuition: 'GH₵ 2,400 / Term',
+            img: '/preview-v3/assets/school-early.jpg',
+            accreditation: 'NaSIA Certified A+'
+          },
+          {
+            id: 'sch-roman-ridge',
+            name: 'The Roman Ridge School',
+            suburb: 'Airport',
+            region: 'Greater Accra',
+            level: 'Primary · JHS · SHS',
+            curriculum: 'Cambridge International',
+            tuition: 'GH₵ 19,500 / Term',
+            img: '/preview-v3/assets/school-campus.jpg',
+            accreditation: 'NaSIA Certified Gold'
+          },
+          {
+            id: 'sch-lcs-accra',
+            name: 'Lincoln Community School',
+            suburb: 'East Legon',
+            region: 'Greater Accra',
+            level: 'Preschool · Primary · JHS · SHS',
+            curriculum: 'International Baccalaureate (IB)',
+            tuition: 'GH₵ 45,000 / Term',
+            img: '/preview-v3/assets/school-stem.jpg',
+            accreditation: 'IB World School'
+          },
+          {
+            id: 'sch-morning-star',
+            name: 'Morning Star School',
+            suburb: 'Cantonments',
+            region: 'Greater Accra',
+            level: 'Preschool · Primary · JHS',
+            curriculum: 'GES &amp; Cambridge Foundation',
+            tuition: 'GH₵ 8,500 / Term',
+            img: '/preview-v3/assets/school-early.jpg',
+            accreditation: 'NaSIA Certified A'
+          }
+        ];
+
+    return `
+      <div class="workspace-header" style="align-items: flex-start; justify-content: space-between; margin-bottom: 24px;">
+        <div class="workspace-title-group">
+          <div class="discovery-eyebrow">SCHOOL DISCOVERY</div>
+          <h2 class="discovery-title">Find a school <em>that fits.</em></h2>
+          <p class="workspace-desc" style="margin-top: 6px; color: #475569; font-size: 14.5px;">Use simple filters to explore illustrative school listings. Live search will reuse SkoolFinder's existing public directory.</p>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 4px; flex-shrink: 0;">
+          <button type="button" class="btn-pill btn-outline btn-switch-tab" data-target-tab="shortlists" style="padding: 10px 18px; font-size: 13px; font-weight: 750; border: 1.5px solid #cbd5e1; border-radius: 9999px; background: #ffffff; color: var(--primary-900, #0A224E); cursor: pointer;">
+            View My Shortlist (${savedCount})
+          </button>
+        </div>
+      </div>
+
+      <!-- 2x2 Discovery Filter Card (Pixel-Matched to Image 1) -->
+      <div class="discovery-filter-card">
+        <form id="discovery-filter-form" class="discovery-filter-grid" onsubmit="event.preventDefault();">
+          <div class="filter-field">
+            <label class="filter-label" for="filter-school-loc">School or location</label>
+            <input id="filter-school-loc" class="filter-control" type="text" placeholder="Search schools or areas">
+          </div>
+
+          <div class="filter-field">
+            <label class="filter-label" for="filter-school-level">School level</label>
+            <div class="filter-select-wrap">
+              <select id="filter-school-level" class="filter-control">
+                <option value="">All levels</option>
+                <option value="Primary">Primary School</option>
+                <option value="JHS">Junior High (JHS)</option>
+                <option value="SHS">Senior High (SHS)</option>
+                <option value="Preschool">Preschool &amp; Crèche</option>
+              </select>
+              <svg class="select-chevron" width="11" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 1.5L6 6.5L10.5 1.5" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="filter-field">
+            <label class="filter-label" for="filter-area">Area</label>
+            <div class="filter-select-wrap">
+              <select id="filter-area" class="filter-control field-highlighted">
+                <option value="">All areas</option>
+                <option value="Cantonments">Cantonments</option>
+                <option value="Airport">Airport Residential Area</option>
+                <option value="East Legon">East Legon</option>
+                <option value="Ridge">Ridge</option>
+                <option value="Labone">Labone</option>
+                <option value="Achimota">Achimota</option>
+                <option value="Tema">Tema</option>
+              </select>
+              <svg class="select-chevron" width="11" height="7" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 1.5L6 6.5L10.5 1.5" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="filter-field">
+            <button type="button" id="btn-run-discovery-search" class="btn-search-discovery">
+              <span>Search</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Live Search Results Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px;">
+        <div style="font-size: 13.5px; font-weight: 750; color: #334155;" id="discovery-results-count">
+          Showing ${schools.length} Featured Accredited Schools
+        </div>
+        <div style="font-size: 12px; color: #64748b; font-weight: 600;">
+          NaSIA Licensing &bull; Fee Transparency Verified
+        </div>
+      </div>
+
+      <!-- Demonstration Schools Grid -->
+      <div class="dashboard-grid" id="discovery-schools-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        ${schools.map(s => `
+          <article class="school-card" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid var(--border-color, #e2e8f0); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+            <div style="height: 150px; position: relative; overflow: hidden; background: #0A2046;">
+              <img src="${s.img || '/preview-v3/assets/school-campus.jpg'}" alt="${s.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/preview-v3/assets/school-campus.jpg'">
+              <span style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.95); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; color: #0A224E;">NaSIA Verified</span>
+              <span style="position: absolute; top: 10px; right: 10px; background: rgba(6,22,46,0.85); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">${s.suburb || 'Accra'}</span>
+            </div>
+            <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+              <h4 style="font-size: 15px; font-weight: 800; color: var(--primary-900, #0A224E); margin: 0 0 4px 0;">${s.name}</h4>
+              <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">📍 ${s.suburb || 'Greater Accra'}, Greater Accra</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+                <span style="font-size: 11px; font-weight: 700; background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px;">${s.level || 'All Grades'}</span>
+                <span style="font-size: 11px; font-weight: 700; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px;">${s.curriculum || 'Cambridge / GES'}</span>
+              </div>
+              <div style="font-size: 12.5px; font-weight: 800; color: var(--primary-900, #0A224E); margin-top: auto; padding-top: 8px;">
+                ${s.tuition || 'Fees on Request'}
+              </div>
+            </div>
+            <div style="display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid #f1f5f9;">
+              <button type="button" class="btn-pill" style="flex: 1; padding: 7px 10px; font-size: 11.5px; background: #0A224E; color: #ffffff; border: none; font-weight: 750;" onclick="App.navigate('school-detail', { id: '${s.id}' })">View Profile ↗</button>
+              <button type="button" class="btn-pill" style="padding: 7px 12px; font-size: 11.5px; background: #ffffff; border: 1.5px solid #cbd5e1; color: #0A224E; font-weight: 700;" onclick="ParentPortalView.toggleBookmark('${s.id}')">↔ Compare</button>
+            </div>
+          </article>
+        `).join('')}
+      </div>
     `;
   },
 
   renderTabContent() {
+    if (this.activeTab === "find") {
+      return this.renderFindTab();
+    }
     if (this.activeTab === 'overview') {
       return this.renderOverviewTab();
     } else if (this.activeTab === 'shortlists') {
@@ -679,6 +936,10 @@ const ParentPortalView = {
     const shortlists = this.shortlistsData || [];
     const applications = this.overviewData?.applications || [];
     const inquiries = this.overviewData?.inquiries || [];
+    const invoices = this.overviewData?.invoices || [];
+    const totalOutstanding = invoices.reduce((acc, inv) => acc + (Number(inv.balanceDue) || 0), 0);
+    const user = State.currentUser;
+    const parentName = this.overviewData?.user?.name || user?.name || "Parent / Guardian";
     const nbs = this.getNextBestStep(shortlists, applications, inquiries);
 
     const counts = {
@@ -691,6 +952,99 @@ const ParentPortalView = {
 
     return `
       <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Overview Header & Action -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <div class="discovery-eyebrow">COMMAND CENTRE OVERVIEW</div>
+            <h2 style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900, #0A224E); margin: 0 0 0.3rem 0;">
+              Welcome Back, ${parentName}
+            </h2>
+            <p style="color: #64748b; font-size: 0.95rem; margin: 0;">
+              Here is the real-time status of your family's 2026/2027 admissions journey in Greater Accra.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn-pill btn-gold btn-switch-tab" data-target-tab="find" style="padding: 9px 18px; font-size: 13px; font-weight: 750; cursor: pointer;">
+              🔍 Browse Directory
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Analytics Metric Cards -->
+        <div class="dashboard-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem;">
+          <!-- Metric 1: Applications -->
+          <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+            <div style="font-size: 2.2rem; background: var(--primary-50); width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+              📝
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                Active Applications
+              </div>
+              <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
+                ${applications.length}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--emerald-600); font-weight: 600;">
+                ${applications.length > 0 ? '🟢 Under official review' : 'No active apps'}
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 2: Shortlisted Schools -->
+          <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+            <div style="font-size: 2.2rem; background: #eff6ff; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+              📌
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                Shortlisted Schools
+              </div>
+              <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
+                ${shortlists.length}
+              </div>
+              <div style="font-size: 0.75rem; color: #1266C4; font-weight: 600;">
+                5-Stage Decision Board
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 3: Saved Comparisons -->
+          <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+            <div style="font-size: 2.2rem; background: #fefce8; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+              ⚖️
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                Saved Comparisons
+              </div>
+              <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: var(--primary-900);">
+                ${(this.savedComparisonsData || []).length}
+              </div>
+              <div style="font-size: 0.75rem; color: #b45309; font-weight: 600;">
+                20 Max Boards (100% Free)
+              </div>
+            </div>
+          </div>
+
+          <!-- Metric 4: School Fees & MoMo Bills -->
+          <div class="analytics-stat-card" style="background: #ffffff; border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 1.25rem;">
+            <div style="font-size: 2.2rem; background: #ecfdf5; width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-md);">
+              💳
+            </div>
+            <div>
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                Fees Outstanding
+              </div>
+              <div style="font-family: var(--font-heading); font-size: 1.85rem; font-weight: 800; color: ${totalOutstanding > 0 ? 'var(--rose-600)' : 'var(--emerald-600)'};">
+                GH₵ ${totalOutstanding.toLocaleString()}
+              </div>
+              <div style="font-size: 0.75rem; color: var(--emerald-700); font-weight: 600;">
+                Instant MoMo settlement
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Next Best Step Guidance Card -->
         <div style="background: linear-gradient(135deg, #0A2046 0%, #1266C4 100%); color: #ffffff; border-radius: var(--radius-xl); padding: 1.75rem 2rem; border-bottom: 4px solid #D5A63B; box-shadow: 0 10px 25px -5px rgba(10,32,70,0.3); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
           <div style="flex: 1; min-width: 280px;">
@@ -5092,23 +5446,31 @@ const ParentPortalView = {
       App.navigate('parents');
     });
 
-    // Tab switching
+        // Sidebar Navigation Switching (Image 2 & 3)
+    document.querySelectorAll('.sidebar-nav-item').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tab = e.currentTarget.dataset.tab;
+        if (tab) {
+          this.switchTab(tab);
+        }
+      });
+    });
+
+    document.querySelectorAll('.btn-switch-tab').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget.dataset.targetTab;
+        if (target) {
+          this.switchTab(target);
+        }
+      });
+    });
+
+    // Legacy Tab switching fallback
     document.querySelectorAll('.parent-tab-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const tab = e.currentTarget.dataset.tab;
         if (tab && tab !== this.activeTab) {
-          this.activeTab = tab;
-          const container = document.getElementById('parent-portal-tab-content');
-          if (container) {
-            container.innerHTML = this.renderTabContent();
-            this.attachTabChildEvents();
-          }
-          // Update tab styles
-          document.querySelectorAll('.parent-tab-btn').forEach(b => {
-            const isActive = b.dataset.tab === tab;
-            b.style.color = isActive ? 'var(--primary-900)' : 'var(--text-muted)';
-            b.style.borderBottom = isActive ? '3px solid var(--gold-500)' : 'transparent';
-          });
+          this.switchTab(tab);
         }
       });
     });
@@ -5132,6 +5494,93 @@ const ParentPortalView = {
   },
 
   attachTabChildEvents() {
+    // Phase 4: Discovery Filter Card Search Listeners
+    if (this.activeTab === 'find' || !this.activeTab) {
+      const locInput = document.getElementById('filter-school-loc');
+      const lvlSelect = document.getElementById('filter-school-level');
+      const areaSelect = document.getElementById('filter-area');
+      const searchBtn = document.getElementById('btn-run-discovery-search');
+      const searchForm = document.getElementById('discovery-filter-form');
+
+      const handleSearch = () => {
+        const q = (locInput?.value || '').toLowerCase().trim();
+        const lvl = (lvlSelect?.value || '').toLowerCase().trim();
+        const area = (areaSelect?.value || '').toLowerCase().trim();
+
+        const all = this.discoverySchools && this.discoverySchools.length > 0 
+          ? this.discoverySchools 
+          : [
+              { id: 'sch-gis-accra', name: 'Ghana International School (GIS)', suburb: 'Cantonments', level: 'Primary · JHS · SHS', curriculum: 'Cambridge International (CIE)', tuition: 'GH₵ 22,000 / Term', img: '/preview-v3/assets/school-campus.jpg' },
+              { id: 'sch-sos-tema', name: 'SOS-Hermann Gmeiner International College', suburb: 'Tema', level: 'JHS · SHS', curriculum: 'International Baccalaureate (IB)', tuition: 'GH₵ 28,000 / Term', img: '/preview-v3/assets/school-stem.jpg' },
+              { id: 'sch-achi-accra', name: 'Achimota Basic School', suburb: 'Achimota', level: 'Primary · JHS', curriculum: 'GES Standards-Based (NaCCA)', tuition: 'GH₵ 2,400 / Term', img: '/preview-v3/assets/school-early.jpg' },
+              { id: 'sch-roman-ridge', name: 'The Roman Ridge School', suburb: 'Airport', level: 'Primary · JHS · SHS', curriculum: 'Cambridge International', tuition: 'GH₵ 19,500 / Term', img: '/preview-v3/assets/school-campus.jpg' },
+              { id: 'sch-lcs-accra', name: 'Lincoln Community School', suburb: 'East Legon', level: 'Preschool · Primary · JHS · SHS', curriculum: 'International Baccalaureate (IB)', tuition: 'GH₵ 45,000 / Term', img: '/preview-v3/assets/school-stem.jpg' },
+              { id: 'sch-morning-star', name: 'Morning Star School', suburb: 'Cantonments', level: 'Preschool · Primary · JHS', curriculum: 'GES & Cambridge Foundation', tuition: 'GH₵ 8,500 / Term', img: '/preview-v3/assets/school-early.jpg' }
+            ];
+
+        const filtered = all.filter(s => {
+          const matchQ = !q || s.name.toLowerCase().includes(q) || (s.suburb && s.suburb.toLowerCase().includes(q)) || (s.curriculum && s.curriculum.toLowerCase().includes(q));
+          const matchLvl = !lvl || (s.level && s.level.toLowerCase().includes(lvl));
+          const matchArea = !area || (s.suburb && s.suburb.toLowerCase().includes(area));
+          return matchQ && matchLvl && matchArea;
+        });
+
+        const grid = document.getElementById('discovery-schools-grid');
+        const count = document.getElementById('discovery-results-count');
+        if (grid) {
+          if (filtered.length === 0) {
+            grid.innerHTML = `
+              <div style="grid-column: 1 / -1; padding: 40px; text-align: center; background: #ffffff; border: 1px dashed var(--border-color, #e2e8f0); border-radius: 14px;">
+                <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
+                <strong style="color: var(--primary-900, #0A224E); font-size: 16px;">No exact school matches found for these filters</strong>
+                <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Try searching by suburb ("Cantonments", "East Legon") or reset to "All areas".</p>
+                <button type="button" class="btn-pill btn-outline" style="margin-top: 14px;" id="btn-reset-discovery-filters">Reset Filters</button>
+              </div>
+            `;
+            document.getElementById('btn-reset-discovery-filters')?.addEventListener('click', () => {
+              if (locInput) locInput.value = '';
+              if (lvlSelect) lvlSelect.value = '';
+              if (areaSelect) areaSelect.value = '';
+              handleSearch();
+            });
+          } else {
+            grid.innerHTML = filtered.map(s => `
+              <article class="school-card" style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid var(--border-color, #e2e8f0); border-radius: 14px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                <div style="height: 150px; position: relative; overflow: hidden; background: #0A2046;">
+                  <img src="${s.img || '/preview-v3/assets/school-campus.jpg'}" alt="${s.name}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='/preview-v3/assets/school-campus.jpg'">
+                  <span style="position: absolute; top: 10px; left: 10px; background: rgba(255,255,255,0.95); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; color: #0A224E;">NaSIA Verified</span>
+                  <span style="position: absolute; top: 10px; right: 10px; background: rgba(6,22,46,0.85); color: #ffffff; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;">${s.suburb || 'Accra'}</span>
+                </div>
+                <div style="padding: 16px; flex: 1; display: flex; flex-direction: column;">
+                  <h4 style="font-size: 15px; font-weight: 800; color: var(--primary-900, #0A224E); margin: 0 0 4px 0;">${s.name}</h4>
+                  <div style="font-size: 12px; color: #64748b; margin-bottom: 10px;">📍 ${s.suburb || 'Greater Accra'}, Greater Accra</div>
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;">
+                    <span style="font-size: 11px; font-weight: 700; background: #f1f5f9; color: #475569; padding: 2px 8px; border-radius: 4px;">${s.level || 'All Grades'}</span>
+                    <span style="font-size: 11px; font-weight: 700; background: #eff6ff; color: #1e40af; padding: 2px 8px; border-radius: 4px;">${s.curriculum || 'Cambridge / GES'}</span>
+                  </div>
+                  <div style="font-size: 12.5px; font-weight: 800; color: var(--primary-900, #0A224E); margin-top: auto; padding-top: 8px;">
+                    ${s.tuition || 'Fees on Request'}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid #f1f5f9;">
+                  <button type="button" class="btn-pill" style="flex: 1; padding: 7px 10px; font-size: 11.5px; background: #0A224E; color: #ffffff; border: none; font-weight: 750;" onclick="App.navigate('school-detail', { id: '${s.id}' })">View Profile ↗</button>
+                  <button type="button" class="btn-pill" style="padding: 7px 12px; font-size: 11.5px; background: #ffffff; border: 1.5px solid #cbd5e1; color: #0A224E; font-weight: 700;" onclick="ParentPortalView.toggleBookmark('${s.id}')">↔ Compare</button>
+                </div>
+              </article>
+            `).join('');
+          }
+        }
+        if (count) {
+          count.textContent = `Showing ${filtered.length} of ${all.length} Featured Accredited Schools`;
+        }
+      };
+
+      locInput?.addEventListener('input', handleSearch);
+      lvlSelect?.addEventListener('change', handleSearch);
+      areaSelect?.addEventListener('change', handleSearch);
+      searchBtn?.addEventListener('click', handleSearch);
+      searchForm?.addEventListener('submit', (e) => { e.preventDefault(); handleSearch(); });
+    }
     // Package F: Parent Portal Voucher Wallet Handlers
     document.getElementById("btn-portal-buy-voucher")?.addEventListener("click", () => {
       Modals.openPaystackCheckoutModal({
