@@ -7167,9 +7167,6 @@ const ParentPortalView = {
             <span>Find a Vetted Tutor</span>
             <span aria-hidden="true">&rarr;</span>
           </a>
-          <a href="#educators" id="btn-strip-browse-educators" class="btn btn-outline-pill tutors-strip-btn-secondary">
-            Browse All Educators
-          </a>
         </div>
       </div>
     </div>
