@@ -120,6 +120,10 @@ const App = {
   },
 
   async navigate(viewName, param = null, updateUrl = true) {
+    if (typeof Navbar !== 'undefined') {
+      Navbar.isSwitchingRole = false;
+    }
+
     // Normalization & Aliases (Parent Portal Route Normalization)
     if (viewName === 'parent-portal') {
       viewName = 'parents';

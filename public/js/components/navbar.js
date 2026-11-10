@@ -9,15 +9,15 @@ const Navbar = {
   getActivePortal() {
     const view = State.currentView;
     if (view === 'parents' || view === 'parent-portal') return 'parent';
-    if (view === 'schools' || view === 'dashboard') return 'school';
-    if (view === 'teachers' || view === 'jobs') return 'teacher';
-    if (view === 'suppliers' || view === 'supplier-dashboard') return 'supplier';
+    if (view === 'schools' || view === 'dashboard' || view === 'for-schools') return 'school';
+    if (view === 'teachers' || view === 'jobs' || view === 'for-teachers') return 'teacher';
+    if (view === 'suppliers' || view === 'supplier-dashboard' || view === 'for-suppliers') return 'supplier';
     if (view === 'admin') return 'admin';
     return null;
   },
 
   render() {
-    if (this.lastView !== State.currentView) {
+    if (this.lastView !== State.currentView || State.currentView === 'parents' || State.currentView === 'parent-portal') {
       this.isSwitchingRole = false;
       this.lastView = State.currentView;
     }
@@ -174,8 +174,8 @@ const Navbar = {
           </div>
         </div>
 
-        <!-- WHO ARE YOU: SUB-HEADER STRIP (Context-Aware Single Portal Isolation, Hidden on Clean Homepage) -->
-        ${State.currentView !== 'home' ? `
+        <!-- WHO ARE YOU: SUB-HEADER STRIP (Context-Aware Single Portal Isolation, Hidden on Clean Homepage and Parents Hub) -->
+        ${(State.currentView !== 'home' && State.currentView !== 'parents' && State.currentView !== 'parent-portal') ? `
         <div class="who-are-you-bar">
           <div class="container who-are-you-inner">
             <span class="who-label">
@@ -364,11 +364,23 @@ const Navbar = {
         link.onclick = (e) => {
           e.preventDefault();
           portalsMenu.style.display = 'none';
+          Navbar.isSwitchingRole = false;
           const portal = link.dataset.portal;
-          if (portal === 'parents') App.navigate('parents');
-          else if (portal === 'for-schools') App.navigate('for-schools');
-          else if (portal === 'for-teachers') App.navigate('for-teachers');
-          else if (portal === 'for-suppliers') App.navigate('for-suppliers');
+          if (portal === 'parents') {
+            if (State.currentView === 'parents' || State.currentView === 'parent-portal') {
+              document.getElementById('header-root').innerHTML = Navbar.render();
+              Navbar.attachEvents();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+              App.navigate('parents');
+            }
+          } else if (portal === 'for-schools') {
+            App.navigate('for-schools');
+          } else if (portal === 'for-teachers') {
+            App.navigate('for-teachers');
+          } else if (portal === 'for-suppliers') {
+            App.navigate('for-suppliers');
+          }
         };
       });
     }
