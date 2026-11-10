@@ -5848,7 +5848,8 @@ body.has-comparison-dock .sd-chat-window {
 }
 
 .explore-more-subtitle {
-  color: #64748B;
+  color: #334155;
+  font-weight: 500;
   font-size: 1.05rem;
   line-height: 1.55;
   margin: 0 auto;
@@ -5856,7 +5857,7 @@ body.has-comparison-dock .sd-chat-window {
 }
 
 [data-theme="dark"] .explore-more-subtitle {
-  color: #94A3B8;
+  color: #CBD5E1;
 }
 
 .explore-more-gold-dash {
