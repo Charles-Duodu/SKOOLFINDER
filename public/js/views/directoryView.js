@@ -29,11 +29,8 @@ const DirectoryView = {
     return `
       <section style="background: var(--bg-main); min-height: 80vh;">
         <div class="directory-container">
-          <!-- Directory Header & Breadcrumb -->
-          <div style="padding: 2rem 0 1rem;">
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
-              <a href="#" class="breadcrumb-home" style="color: var(--primary-600); font-weight: 600;">Home</a> / School Directory
-            </div>
+          <!-- Directory Header -->
+          <div style="padding: 1.5rem 0 1rem;">
             <div style="display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
               <div>
                 <h1 style="font-family: var(--font-heading); font-size: 2.25rem; font-weight: 800; color: var(--primary-900);">
@@ -44,7 +41,7 @@ const DirectoryView = {
                 </p>
               </div>
 
-              <!-- Top Controls: Search & Map/List View Toggle -->
+              <!-- Top Controls: Map/List View Toggle -->
               <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
                 <!-- View Mode Toggle -->
                 <div class="directory-view-toggle">
@@ -54,11 +51,6 @@ const DirectoryView = {
                   <button id="toggle-map-view" class="view-toggle-btn ${this.viewMode === 'map' ? 'active' : ''}">
                     🗺️ Map View
                   </button>
-                </div>
-
-                <!-- Quick Search Input -->
-                <div style="min-width: 250px;">
-                  <input type="text" id="dir-search-input" class="search-input" placeholder="Search school or suburb..." value="${State.filters.search || ''}" />
                 </div>
               </div>
             </div>
