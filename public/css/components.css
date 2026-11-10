@@ -5419,7 +5419,7 @@ body.has-comparison-dock .sd-chat-window {
   box-shadow: 0 4px 16px rgba(10, 32, 70, 0.05) !important;
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s ease !important;
   width: 100% !important;
-  min-height: 230px !important;
+  min-height: 270px !important;
 }
 
 .directory-schools-grid .school-card:hover {
@@ -5428,15 +5428,15 @@ body.has-comparison-dock .sd-chat-window {
   border-color: rgba(18, 102, 196, 0.32) !important;
 }
 
-/* Left Image / Carousel */
+/* Left Image / Carousel - Increased Size for Prominent Visual Impact */
 .directory-schools-grid .card-mini-carousel {
-  width: 290px !important;
-  min-width: 290px !important;
-  max-width: 290px !important;
+  width: 400px !important;
+  min-width: 400px !important;
+  max-width: 400px !important;
   position: relative !important;
   overflow: hidden !important;
   height: auto !important;
-  min-height: 230px !important;
+  min-height: 275px !important;
   flex-shrink: 0 !important;
   background: #06162E !important;
 }
@@ -5459,7 +5459,7 @@ body.has-comparison-dock .sd-chat-window {
   display: flex !important;
   flex-direction: column !important;
   justify-content: space-between !important;
-  padding: 1.35rem 1.75rem !important;
+  padding: 1.4rem 1.85rem !important;
   min-width: 0 !important;
 }
 
@@ -5552,6 +5552,15 @@ body.has-comparison-dock .sd-chat-window {
   transform: translateY(-1px) !important;
 }
 
+/* Tablet Breakpoint */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .directory-schools-grid .card-mini-carousel {
+    width: 320px !important;
+    min-width: 320px !important;
+    max-width: 320px !important;
+  }
+}
+
 /* Mobile: Stack vertically on small screens */
 @media (max-width: 768px) {
   .directory-schools-grid .school-card {
@@ -5561,7 +5570,7 @@ body.has-comparison-dock .sd-chat-window {
     width: 100% !important;
     min-width: 100% !important;
     max-width: 100% !important;
-    height: 195px !important;
-    min-height: 195px !important;
+    height: 220px !important;
+    min-height: 220px !important;
   }
 }
