@@ -67,7 +67,7 @@ const HomeView = {
         <div class="hero-ambient-glow-2"></div>
 
         <div class="container hero-content">
-          <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 1.25rem;">
+          <div style="display: flex; gap: 0.75rem; justify-content: center; align-items: center; flex-wrap: wrap; margin-bottom: 0.85rem;">
             <button id="btn-hero-role-tour" class="hero-tour-pill" title="Take a 30-second guided tour for Parents, Schools, Suppliers &amp; Teachers">
               <span>🧭</span> New to SkoolFinder? Take a 30s Guided Tour &rarr;
             </button>
@@ -272,7 +272,6 @@ const HomeView = {
               <circle cx="720" cy="350" r="5.5" class="eco-terminal-core" filter="url(#electric-terminal-glow)" />
               <circle cx="720" cy="350" r="2.5" fill="#FFFFFF" />
             </svg>
-            </svg>
 
             <div class="eco-v3-center-node">
               <div class="eco-v3-center-cap">🎓</div>
@@ -386,7 +385,7 @@ const HomeView = {
           <!-- Bottom Trust Bar -->
           <div class="eco-v3-trust-bar">
             <div class="eco-v3-trust-lead">
-              <span class="eco-v3-lead-title">A trusted and safe platform</span>
+              <span class="eco-v3-lead-title">Why SkoolFinder</span>
             </div>
             <div class="eco-v3-trust-items">
               <div class="eco-v3-trust-item">
@@ -527,9 +526,9 @@ const HomeView = {
       <!-- ========================================================
            SECTION 05: WHY SKOOLFINDER GHANA? (BLUEPRINT §07)
            ======================================================== -->
-      <section id="section-why-skoolfinder" class="home-section-overlay home-section-overlay-tint" style="padding: 4.5rem 0;">
+      <section id="section-why-skoolfinder" class="home-section-overlay home-section-solid-white" style="padding: 3.5rem 0;">
         <div class="container">
-          <div style="text-align: center; max-width: 680px; margin: 0 auto 3rem;">
+          <div style="text-align: center; max-width: 680px; margin: 0 auto 2.35rem;">
             <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.85rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #fde68a; margin-bottom: 0.5rem;">
               <span>🇬🇭</span> VALUE &amp; TRUST STANDARDS
             </span>
