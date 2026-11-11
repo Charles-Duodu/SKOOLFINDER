@@ -717,6 +717,94 @@ const EmailService = {
       subject: `[SkoolFinder Procurement] New Wholesale Quote: ${supplierName} on "${rfqTitle}"`,
       html: wrapInEmailTemplate(`New Procurement Quotation Received`, `Quote ref ${referenceCode}`, contentHtml)
     });
+  },
+
+  /**
+   * 6. Public /contact Page — Support Desk Alert + Sender Acknowledgement
+   */
+  async sendContactEnquiry({
+    supportTo,
+    senderEmail,
+    senderName,
+    category,
+    enquiryType,
+    organization = '',
+    message,
+    referenceCode
+  }) {
+    const escapeHtml = (val) => String(val ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+    const safeName = escapeHtml(senderName);
+    const safeEmail = escapeHtml(senderEmail);
+    const safeCategory = escapeHtml(category);
+    const safeType = escapeHtml(enquiryType);
+    const safeOrg = escapeHtml(organization);
+    const safeMessage = escapeHtml(message).replace(/\r?\n/g, '<br/>');
+    const safeRef = escapeHtml(referenceCode);
+    const deskRecipient = supportTo || process.env.SUPPORT_EMAIL || FROM_EMAIL;
+
+    const supportHtml = `
+      <p style="font-size: 16px; line-height: 1.6;">A new ecosystem enquiry was submitted via the <strong>/contact</strong> page on SkoolFinder Ghana.</p>
+      <div style="background: #f8fafc; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 6px; margin: 20px 0;">
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Reference Code:</strong> <span style="font-family: monospace; color: #1e40af; font-weight: bold;">${safeRef}</span></p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>From:</strong> ${safeName} (&lt;${safeEmail}&gt;)</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Community Category:</strong> ${safeCategory}</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Enquiry Type:</strong> ${safeType}</p>
+        ${safeOrg ? `<p style="margin: 0 0 8px 0; font-size: 14px;"><strong>School / Organisation:</strong> ${safeOrg}</p>` : ''}
+        <p style="margin: 12px 0 4px 0; font-size: 14px;"><strong>Message:</strong></p>
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; font-size: 14px; line-height: 1.6; color: #334155;">${safeMessage}</div>
+      </div>
+      <p style="font-size: 14px; line-height: 1.6; color: #64748b;">
+        Reply directly to <strong>${safeEmail}</strong> and quote reference <strong>${safeRef}</strong>.
+      </p>
+    `;
+
+    const supportResult = await dispatchEmail({
+      to: deskRecipient,
+      recipientName: 'SkoolFinder Ghana Support',
+      portal: 'public',
+      templateType: 'contact_enquiry_support_alert',
+      referenceCode,
+      subject: `[SkoolFinder Contact ${referenceCode}] ${category} — ${enquiryType} from ${senderName}`,
+      text: `New Contact Enquiry (${referenceCode})\nFrom: ${senderName} <${senderEmail}>\nCategory: ${category}\nType: ${enquiryType}\nOrganisation: ${organization || 'N/A'}\n\nMessage:\n${message}`,
+      html: wrapInEmailTemplate('New Contact Enquiry Received', `Support ticket ${safeRef}`, supportHtml)
+    });
+
+    const confirmationHtml = `
+      <p style="font-size: 16px; line-height: 1.6;">Hello <strong>${safeName}</strong>,</p>
+      <p style="font-size: 16px; line-height: 1.6;">Thank you for contacting <strong>SkoolFinder Ghana</strong>. We have received your enquiry and routed it to our Greater Accra support desk.</p>
+      <div style="background: #f8fafc; border-left: 4px solid #0a2046; padding: 16px; border-radius: 6px; margin: 20px 0;">
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Reference Code:</strong> <span style="font-family: monospace; color: #1e40af; font-weight: bold;">${safeRef}</span></p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Category:</strong> ${safeCategory}</p>
+        <p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Enquiry Type:</strong> ${safeType}</p>
+        ${safeOrg ? `<p style="margin: 0 0 8px 0; font-size: 14px;"><strong>Organisation:</strong> ${safeOrg}</p>` : ''}
+      </div>
+      <p style="font-size: 14px; line-height: 1.6; color: #64748b;">
+        Keep your reference code handy for follow-ups. In the meantime, feel free to explore verified schools and opportunities on <a href="https://skoolfinder.com.gh" style="color: #2563eb; font-weight: 700;">SkoolFinder Ghana</a>.
+      </p>
+    `;
+
+    const confirmationResult = await dispatchEmail({
+      to: senderEmail,
+      recipientName: senderName,
+      portal: 'public',
+      templateType: 'contact_enquiry_confirmation',
+      referenceCode,
+      subject: `We received your enquiry [${referenceCode}] — SkoolFinder Ghana`,
+      text: `Hello ${senderName},\n\nThank you for contacting SkoolFinder Ghana. Your enquiry reference is ${referenceCode} (${category} - ${enquiryType}). Our team will review and respond shortly.`,
+      html: wrapInEmailTemplate('We Received Your Enquiry', `Reference ${safeRef}`, confirmationHtml)
+    });
+
+    return {
+      referenceCode,
+      supportResult,
+      confirmationResult
+    };
   }
 };
 

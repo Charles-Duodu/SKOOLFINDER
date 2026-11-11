@@ -274,8 +274,10 @@ const ContactView = {
                   </button>
                 </div>
 
+                <div id="contact-submit-receipt" style="display: none; margin-top: 1rem; padding: 1rem 1.25rem; background: #ecfdf5; border: 1.5px solid #10b981; border-radius: 12px; color: #065f46; font-size: 0.92rem; line-height: 1.5;"></div>
+
                 <div class="contact-disclaimer-text">
-                  This is an interactive design preview. The form is not connected to SkoolFinder support, so previewing does not send a message.
+                  Your enquiry is submitted securely to SkoolFinder Ghana Support, with an automated confirmation sent to your email address.
                 </div>
               </form>
             </div>
@@ -471,9 +473,11 @@ const ContactView = {
             </div>
           </div>
 
+          <div id="contact-modal-error" style="display: none; margin-bottom: 1rem; padding: 0.75rem 1rem; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; color: #b91c1c; font-size: 0.88rem; font-weight: 600;"></div>
+
           <div style="display: flex; justify-content: flex-end; gap: 0.75rem; border-top: 1px solid #e2e8f0; padding-top: 1rem;">
             <button type="button" id="btn-modal-edit" class="btn-pill btn-outline" style="padding: 0.6rem 1.25rem;">Edit Details</button>
-            <button type="button" id="btn-modal-confirm" class="btn-pill" style="background: #0A2046; color: #ffffff; padding: 0.6rem 1.5rem; font-weight: 800;">Looks Good &rarr;</button>
+            <button type="button" id="btn-modal-confirm" class="btn-pill" style="background: #0A2046; color: #ffffff; padding: 0.6rem 1.5rem; font-weight: 800;">Confirm &amp; Send Enquiry &rarr;</button>
           </div>
         </div>
       </div>
@@ -485,14 +489,64 @@ const ContactView = {
       if (e.target.id === 'contact-modal-backdrop') this.closePreviewModal();
     });
 
-    document.getElementById('btn-modal-confirm')?.addEventListener('click', () => {
-      this.closePreviewModal();
-      if (typeof State !== 'undefined' && State.showToast) {
-        State.showToast('✅ Enquiry details verified! SkoolFinder team will respond shortly.', 'success');
-      } else {
-        alert('Thank you! Your enquiry has been received.');
+    const confirmBtn = document.getElementById('btn-modal-confirm');
+    const editBtn = document.getElementById('btn-modal-edit');
+    const errorBox = document.getElementById('contact-modal-error');
+
+    confirmBtn?.addEventListener('click', async () => {
+      if (confirmBtn.disabled) return;
+      if (errorBox) {
+        errorBox.style.display = 'none';
+        errorBox.textContent = '';
       }
-      document.getElementById('contact-enquiry-form')?.reset();
+
+      const originalLabel = confirmBtn.innerHTML;
+      confirmBtn.disabled = true;
+      if (editBtn) editBtn.disabled = true;
+      confirmBtn.textContent = 'Sending Enquiry...';
+
+      try {
+        const response = await fetch('/api/inquiries/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || 'Unable to send your enquiry right now. Please try again.');
+        }
+
+        const refCode = data.referenceCode || '';
+        this.closePreviewModal();
+
+        const receiptEl = document.getElementById('contact-submit-receipt');
+        if (receiptEl) {
+          receiptEl.innerHTML = `
+            <div style="font-weight: 800; color: #064e3b; margin-bottom: 0.25rem;">Enquiry Sent Successfully${refCode ? ` (Ref: ${this.escapeHtml(refCode)})` : ''}</div>
+            <div>Thank you, <strong>${this.escapeHtml(formData.name)}</strong>. A confirmation has been queued for <strong>${this.escapeHtml(formData.email)}</strong> and our SkoolFinder Ghana support desk has been notified.</div>
+          `;
+          receiptEl.style.display = 'block';
+        }
+
+        if (typeof State !== 'undefined' && State.showToast) {
+          State.showToast(`✅ Enquiry sent${refCode ? ` (${refCode})` : ''}! Confirmation queued for ${formData.email}.`, 'success');
+        } else {
+          alert(`Thank you! Your enquiry${refCode ? ` (${refCode})` : ''} has been received.`);
+        }
+        document.getElementById('contact-enquiry-form')?.reset();
+      } catch (err) {
+        if (errorBox) {
+          errorBox.textContent = err.message || 'Network error while sending your enquiry.';
+          errorBox.style.display = 'block';
+        }
+        if (typeof State !== 'undefined' && State.showToast) {
+          State.showToast(err.message || 'Failed to send enquiry.', 'error');
+        }
+        confirmBtn.disabled = false;
+        if (editBtn) editBtn.disabled = false;
+        confirmBtn.innerHTML = originalLabel;
+      }
     });
   },
 
@@ -562,6 +616,18 @@ const ContactView = {
         }
         return;
       }
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        if (typeof State !== 'undefined' && State.showToast) {
+          State.showToast('Please enter a valid email address so we can send your confirmation.', 'error');
+        } else {
+          alert('Please enter a valid email address.');
+        }
+        return;
+      }
+
+      const receiptEl = document.getElementById('contact-submit-receipt');
+      if (receiptEl) receiptEl.style.display = 'none';
 
       this.openPreviewModal({ name, email, category, type, organization, message });
     });

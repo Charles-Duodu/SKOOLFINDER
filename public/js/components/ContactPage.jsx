@@ -18,6 +18,9 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
 
   const [openFaq, setOpenFaq] = useState(null);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [referenceCode, setReferenceCode] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
   const handleInputChange = (e) => {
@@ -34,6 +37,8 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
       organization: '',
       message: ''
     });
+    setSubmitError('');
+    setReferenceCode('');
     setSubmitted(false);
   };
 
@@ -53,12 +58,37 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
       alert('Please complete all required fields.');
       return;
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      alert('Please enter a valid email address.');
+      return;
+    }
+    setSubmitError('');
     setIsPreviewOpen(true);
   };
 
-  const handleConfirmSubmit = () => {
-    setIsPreviewOpen(false);
-    setSubmitted(true);
+  const handleConfirmSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const response = await fetch('/api/inquiries/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Unable to send your enquiry right now.');
+      }
+      setReferenceCode(data.referenceCode || '');
+      setIsPreviewOpen(false);
+      setSubmitted(true);
+    } catch (err) {
+      setSubmitError(err.message || 'Network error while sending your enquiry.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const faqs = [
@@ -277,8 +307,13 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
               <div style={{ background: '#ecfdf5', border: '1.5px solid #10b981', borderRadius: 16, padding: '2rem', textAlign: 'center' }}>
                 <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>✅</div>
                 <h3 style={{ color: '#065f46', fontFamily: 'var(--font-heading)', margin: '0 0 0.5rem' }}>Enquiry Received!</h3>
+                {referenceCode && (
+                  <div style={{ fontFamily: 'monospace', fontWeight: 800, color: '#064e3b', marginBottom: '0.5rem' }}>
+                    Ref: {referenceCode}
+                  </div>
+                )}
                 <p style={{ color: '#047857', fontSize: '0.95rem', margin: '0 0 1.5rem' }}>
-                  Thank you, {formData.name}. Our team has received your enquiry and will respond to {formData.email} promptly.
+                  Thank you, {formData.name}. Our team has received your enquiry and queued a confirmation email to {formData.email}.
                 </p>
                 <button type="button" onClick={handleClear} className="btn-contact-submit" style={{ display: 'inline-block' }}>
                   Send Another Message
@@ -386,7 +421,7 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
                 </div>
 
                 <div className="contact-disclaimer-text">
-                  This is an interactive design preview. The form is not connected to SkoolFinder support, so previewing does not send a message.
+                  Your enquiry is submitted securely to SkoolFinder Ghana Support, with an automated confirmation sent to your email address.
                 </div>
               </form>
             )}
@@ -515,9 +550,17 @@ export default function ContactPage({ onNavigate = (route) => window.location.hr
               </div>
             </div>
 
+            {submitError && (
+              <div style={{ marginBottom: '1rem', padding: '0.75rem 1rem', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 10, color: '#b91c1c', fontSize: '0.88rem', fontWeight: 600 }}>
+                {submitError}
+              </div>
+            )}
+
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', borderTop: '1px solid #e2e8f0', paddingTop: '1rem' }}>
-              <button type="button" onClick={() => setIsPreviewOpen(false)} className="btn-pill btn-outline" style={{ padding: '0.6rem 1.25rem' }}>Edit Details</button>
-              <button type="button" onClick={handleConfirmSubmit} className="btn-pill" style={{ background: '#0A2046', color: '#ffffff', padding: '0.6rem 1.5rem', fontWeight: 800 }}>Confirm &amp; Send &rarr;</button>
+              <button type="button" disabled={isSubmitting} onClick={() => setIsPreviewOpen(false)} className="btn-pill btn-outline" style={{ padding: '0.6rem 1.25rem' }}>Edit Details</button>
+              <button type="button" disabled={isSubmitting} onClick={handleConfirmSubmit} className="btn-pill" style={{ background: '#0A2046', color: '#ffffff', padding: '0.6rem 1.5rem', fontWeight: 800 }}>
+                {isSubmitting ? 'Sending Enquiry...' : <>Confirm &amp; Send Enquiry &rarr;</>}
+              </button>
             </div>
           </div>
         </div>

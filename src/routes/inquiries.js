@@ -161,6 +161,84 @@ Ref: ${referenceNumber}
 });
 
 /**
+ * POST /api/inquiries/contact
+ * Public /contact ecosystem enquiry submission: persists audit record and dispatches support + confirmation emails.
+ */
+router.post('/contact', async (req, res) => {
+  try {
+    const clean = (val, maxLen = 500) => String(val ?? '').trim().slice(0, maxLen);
+    const name = clean(req.body?.name, 120);
+    const email = clean(req.body?.email, 180);
+    const category = clean(req.body?.category, 100);
+    const type = clean(req.body?.type, 120);
+    const organization = clean(req.body?.organization, 180);
+    const message = clean(req.body?.message, 4000);
+
+    if (!name || !email || !category || !type || !message) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please fill in all required fields (name, email, category, type, and message).'
+      });
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Please provide a valid email address.'
+      });
+    }
+
+    const referenceCode = `SF-CNT-${Math.floor(100000 + Math.random() * 900000)}`;
+    const recipientType = /teacher/i.test(category)
+      ? 'teacher'
+      : /supplier|service/i.test(category)
+        ? 'supplier'
+        : 'school';
+
+    // Non-blocking audit persistence in enquiries table
+    try {
+      await supabaseAdmin.from('enquiries').insert({
+        sender_id: '00000000-0000-0000-0000-000000000001',
+        recipient_type: recipientType,
+        recipient_id: '00000000-0000-0000-0000-000000000001',
+        subject: `[${referenceCode}] Contact: ${category} — ${type}`,
+        message: `Name: ${name} | Email: ${email} | Category: ${category} | Type: ${type}${organization ? ` | Organisation: ${organization}` : ''}\n\n${message}`,
+        status: 'pending'
+      });
+    } catch (_) {}
+
+    const supportTo = process.env.SUPPORT_EMAIL || process.env.SCHOOL_ALERT_EMAIL || process.env.FROM_EMAIL || 'admissions@skoolfinder.com.gh';
+    const emailOutcome = await EmailService.sendContactEnquiry({
+      supportTo,
+      senderEmail: email,
+      senderName: name,
+      category,
+      enquiryType: type,
+      organization,
+      message,
+      referenceCode
+    });
+
+    const primaryResult = emailOutcome?.confirmationResult || emailOutcome?.supportResult || {};
+    const status = primaryResult.status || 'simulated';
+    const provider = primaryResult.provider || 'simulated';
+
+    return res.status(201).json({
+      success: true,
+      referenceCode,
+      provider,
+      status,
+      message: status === 'sent'
+        ? `Your enquiry (${referenceCode}) has been delivered to SkoolFinder Ghana Support and a confirmation was sent to ${email}.`
+        : `Your enquiry (${referenceCode}) has been recorded for SkoolFinder Ghana Support.`
+    });
+  } catch (err) {
+    console.error('Error submitting public contact enquiry:', err);
+    return res.status(500).json({ success: false, error: 'Failed to submit contact enquiry' });
+  }
+});
+
+/**
  * GET /api/inquiries
  * List inquiries
  */
