@@ -389,31 +389,39 @@ const HomeView = {
             </div>
             <div class="eco-v3-trust-items">
               <div class="eco-v3-trust-item">
-                <div class="eco-v3-trust-icon">🛡️</div>
+                <div class="eco-v3-trust-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
                 <div>
-                  <div class="eco-v3-trust-name">Verified schools (and business participants)</div>
-                  <div class="eco-v3-trust-caption">Identity and key document checks</div>
+                  <div class="eco-v3-trust-name">School &amp; Provider Information</div>
+                  <div class="eco-v3-trust-caption">See available details and completed checks.</div>
                 </div>
               </div>
               <div class="eco-v3-trust-item">
-                <div class="eco-v3-trust-icon">👥</div>
+                <div class="eco-v3-trust-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
                 <div>
-                  <div class="eco-v3-trust-name">A connected education community</div>
-                  <div class="eco-v3-trust-caption">Families, schools, professionals and trusted providers</div>
+                  <div class="eco-v3-trust-name">One Connected Community</div>
+                  <div class="eco-v3-trust-caption">Parents, schools, educators and suppliers.</div>
                 </div>
               </div>
               <div class="eco-v3-trust-item">
-                <div class="eco-v3-trust-icon">🔒</div>
+                <div class="eco-v3-trust-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
                 <div>
-                  <div class="eco-v3-trust-name">Privacy and child safety first</div>
-                  <div class="eco-v3-trust-caption">Built with safeguarding and data protection in mind</div>
+                  <div class="eco-v3-trust-name">Privacy &amp; Safety</div>
+                  <div class="eco-v3-trust-caption">A thoughtful approach to data and safeguarding.</div>
                 </div>
               </div>
               <div class="eco-v3-trust-item">
-                <div class="eco-v3-trust-icon">📈</div>
+                <div class="eco-v3-trust-icon" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#B45309" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                </div>
                 <div>
-                  <div class="eco-v3-trust-name">Real opportunities across Greater Accra</div>
-                  <div class="eco-v3-trust-caption">Admissions, jobs, tutoring, services and tenders</div>
+                  <div class="eco-v3-trust-name">Education Opportunities</div>
+                  <div class="eco-v3-trust-caption">Admissions, careers, services and tenders.</div>
                 </div>
               </div>
             </div>
